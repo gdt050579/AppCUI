@@ -284,7 +284,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         renderer.WriteText(*subitem, params);
         return;
     }
-
+    if (item->Height > 1)
+    {
+        params.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::OverwriteColors |
+                       WriteTextFlags::FitTextToWidth | WriteTextFlags::ClipToWidth;
+    }
     // first column
     int end_first_column = x + ((int) column->Width);
     x += (int) item->XOffset;
@@ -306,8 +310,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         params.X     = x;
         params.Align = column->Align;
         renderer.WriteText(*subitem, params);
-    }
-
+    }    
     // rest of the columns
     x = end_first_column + 1;
     subitem++;
@@ -329,9 +332,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.OverSelection);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.OverSelection);
             else
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Normal);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.Normal);
             if ((Flags & ListViewFlags::CheckBoxes) != ListViewFlags::None)
                 renderer.SetCursor(itemStarts - 2, y); // point the cursor to the check/uncheck
         }
@@ -339,7 +342,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Selection.Text);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Selection.Text);
         }
     }
     else
@@ -347,21 +350,21 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         if (Flags & GATTR_ENABLE)
         {
             if (((Flags & ListViewFlags::HideCurrentItemWhenNotFocused) == ListViewFlags::None) && (currentItem))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Inactive);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.Inactive);
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Inactive);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.Inactive);
         }
     }
     if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
     {
-        y++;
+        y += item->Height;
         ColorPair col = this->Cfg->Lines.Normal;
         if (!(this->Flags & GATTR_ENABLE))
             col = this->Cfg->Lines.Inactive;
         else if (Focused)
             col = this->Cfg->Lines.Focused;
-        renderer.DrawHorizontalLine(1, y, Layout.Width - 2, col);
+        renderer.DrawHorizontalLine(0, y, Layout.Width, col);
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
@@ -419,6 +422,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
     int y     = 0;
     auto colB = this->Cfg->Border.GetColor(this->GetControlState(ControlStateFlags::ProcessHoverStatus));
+    const int itemSeparatorHeight = (Flags && ListViewFlags::ItemSeparators) ? 1 : 0;
 
     if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
     {
@@ -438,9 +442,8 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     {
         InternalListViewItem* item = GetFilteredItem(index);
         DrawItem(renderer, item, y, index == static_cast<unsigned>(this->Items.CurentItemIndex));
-        y++;
-        if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
-            y++;
+        y += item->Height;
+        y += itemSeparatorHeight;
         index++;
     }
     // columns separators
@@ -454,7 +457,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         int yPoz  = ((int) this->Layout.Height) - 1;
         renderer.ResetClip();
         if (DrawSearchBar(renderer))
-            x_ofs += 17;
+            x_ofs += 15;
 
         // status information
         if ((this->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
@@ -1169,33 +1172,40 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
             y -= 2;
     }
 
-    if (Flags && ListViewFlags::ItemSeparators)
-        y = y / 2;
-
-    if (y < GetVisibleItemsCount())
+    const int itemSeparators = (Flags && ListViewFlags::ItemSeparators) ? 1 : 0;
+    auto cnt                 = GetVisibleItemsCount();
+    auto idx                 = this->Items.FirstVisibleIndex;
+    int pozY                 = 0;
+    while (cnt > 0)
     {
-        this->Filter.FilterModeEnabled = false;
-
-        if ((y + Items.FirstVisibleIndex) != this->Items.CurentItemIndex)
-            MoveTo(y + Items.FirstVisibleIndex);
-
-        if ((y + Items.FirstVisibleIndex) == this->Items.CurentItemIndex)
+        InternalListViewItem* i = GetFilteredItem(idx);
+        int next                = pozY + i->Height + itemSeparators;
+        if ((y >= pozY) && (y < next))
         {
-            auto i = GetFilteredItem(Items.CurentItemIndex);
-            if (x == ((1 - Columns.XOffset) + (int) i->XOffset))
+            // found an item
+            if (idx != this->Items.CurentItemIndex)
+                MoveTo(idx);
+            if (idx == this->Items.CurentItemIndex)
             {
-                if ((i->Flags & ITEM_FLAG_CHECKED) != 0)
-                    i->Flags -= ITEM_FLAG_CHECKED;
+                auto i = GetFilteredItem(Items.CurentItemIndex);
+                if (x == ((1 - Columns.XOffset) + (int) i->XOffset))
+                {
+                    if ((i->Flags & ITEM_FLAG_CHECKED) != 0)
+                        i->Flags -= ITEM_FLAG_CHECKED;
+                    else
+                        i->Flags |= ITEM_FLAG_CHECKED;
+                    TriggerListViewItemCheckedEvent();
+                }
                 else
-                    i->Flags |= ITEM_FLAG_CHECKED;
-                TriggerListViewItemCheckedEvent();
-            }
-            else
-            {
-                if (((button & Input::MouseButton::DoubleClicked) != Input::MouseButton::None))
-                    TriggerListViewItemPressedEvent();
+                {
+                    if (((button & Input::MouseButton::DoubleClicked) != Input::MouseButton::None))
+                        TriggerListViewItemPressedEvent();
+                }
             }
         }
+        pozY = next;
+        idx++;
+        cnt--;
     }
 }
 bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)

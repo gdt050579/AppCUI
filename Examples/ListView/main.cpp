@@ -3458,16 +3458,50 @@ class NoBorderDemo : public Window
     }
 };
 
+class ItemHeightDemo : public Window
+{
+  public:
+    ItemHeightDemo() : Window("Items Heights Example", "d:c,w:70,h:18", WindowFlags::None)
+    {
+        auto lv = Factory::ListView::Create(
+              this,
+              "l:1,t:1,r:1,b:3",
+              { { "Name", TextAlignament::Left, 45 },
+                { "Grade", TextAlignament::Right, 6 },
+                { "Cat", TextAlignament::Center, 8 } },
+              ListViewFlags::AllowMultipleItemsSelection|ListViewFlags::CheckBoxes);
+
+        // items
+        lv->AddItem({ "Georgescu\nMarian", "9", "ABC\nX" }).SetHeight(2);
+        lv->AddItem({ "Ionescu", "10", "X" }).SetHeight(3);
+        lv->AddItem({ "Dragos", "10", "Math" });
+        lv->AddItems({ { "Mike", "10", "English" },
+                       { "Raul", "7", "AAA" },
+                       { "Ionut", "5" },
+                       { "Gheorghita", "9" },
+                       { "Andrei", "7" },
+                       { "John", "8" } });
+        lv->AddItem({ "Neo", "9" }).SetHeight(2);
+        lv->AddItem({ "Gigi", "10" }).SetHeight(3);
+        lv->AddItems({ { "Teo", "10" },
+                       { "Andra", "7" },
+                       { "Alex", "5" },
+                       { "Maria", "9" },
+                       { "Sandu", "7" },
+                       { "Roxana", "8" } });
+    }
+};
+
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
           cbHideSearchBar, cbHideBorder, cbHideScrollBar, cbPopupSearch;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
-          rbSelect, rbItemTypes, rbCategory, rbHandlers, rbNoBorder;
+          rbSelect, rbItemTypes, rbCategory, rbHandlers, rbNoBorder, rbItemHeight;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:28", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:29", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
@@ -3501,6 +3535,7 @@ class MyWin : public Window
               this, "Usage of handlers to intercept ListView events", "x:1,y:21,w:56", MY_GROUP);
         rbNoBorder = Factory::RadioBox::Create(
               this, "Build a list view without border", "x:1,y:22,w:56", MY_GROUP);
+        rbItemHeight = Factory::RadioBox::Create(this, "Build a list view with items of different heights", "x:1,y:23,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:24", SHOW_DEFAULT_EXAMPLE);
 
@@ -3599,6 +3634,11 @@ class MyWin : public Window
         if (rbNoBorder->IsChecked())
         {
             NoBorderDemo win;
+            win.Show();
+        }
+        if (rbItemHeight->IsChecked())
+        {
+            ItemHeightDemo win;
             win.Show();
         }
     }
