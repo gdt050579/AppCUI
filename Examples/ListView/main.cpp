@@ -3467,7 +3467,7 @@ class ItemHeightDemo : public Window
               this,
               "l:1,t:1,r:1,b:3",
               { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 8 } },
-              ListViewFlags::AllowMultipleItemsSelection);
+              ListViewFlags::AllowMultipleItemsSelection|ListViewFlags::CheckBoxes);
 
         // items
         lv->AddItem({ "Georgescu", "9" }).SetHeight(2);

@@ -1176,7 +1176,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
     while (cnt > 0)
     {
         InternalListViewItem* i = GetFilteredItem(idx);
-        auto next               = pozY + i->Height + itemSeparators;
+        int next                = pozY + i->Height + itemSeparators;
         if ((y >= pozY) && (y < next))
         {
             // found an item
