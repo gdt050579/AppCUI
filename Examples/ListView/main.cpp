@@ -3465,11 +3465,13 @@ class ItemHeightDemo : public Window
     {
         auto lv = Factory::ListView::Create(
               this,
-              "d:c",
-              { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 8 } },
-              ListViewFlags::HideBorder | ListViewFlags::SearchMode);
+              "l:1,t:1,r:1,b:3",
+              { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 8 } });
 
         // items
+        lv->AddItem({ "Georgescu", "9" }).SetHeight(2);
+        lv->AddItem({ "Ionescu", "10" }).SetHeight(3);
+        lv->AddItem({ "Dragos", "10" });
     }
 };
 

@@ -329,9 +329,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.OverSelection);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.OverSelection);
             else
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Normal);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.Normal);
             if ((Flags & ListViewFlags::CheckBoxes) != ListViewFlags::None)
                 renderer.SetCursor(itemStarts - 2, y); // point the cursor to the check/uncheck
         }
@@ -355,13 +355,13 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     }
     if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
     {
-        y++;
+        y += item->Height;
         ColorPair col = this->Cfg->Lines.Normal;
         if (!(this->Flags & GATTR_ENABLE))
             col = this->Cfg->Lines.Inactive;
         else if (Focused)
             col = this->Cfg->Lines.Focused;
-        renderer.DrawHorizontalLine(1, y, Layout.Width - 2, col);
+        renderer.DrawHorizontalLine(0, y, Layout.Width, col);
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
@@ -419,6 +419,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
 {
     int y     = 0;
     auto colB = this->Cfg->Border.GetColor(this->GetControlState(ControlStateFlags::ProcessHoverStatus));
+    const int itemSeparatorHeight = (Flags && ListViewFlags::ItemSeparators) ? 1 : 0;
 
     if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
     {
@@ -438,9 +439,8 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     {
         InternalListViewItem* item = GetFilteredItem(index);
         DrawItem(renderer, item, y, index == static_cast<unsigned>(this->Items.CurentItemIndex));
-        y++;
-        if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
-            y++;
+        y += item->Height;
+        y += itemSeparatorHeight;
         index++;
     }
     // columns separators
