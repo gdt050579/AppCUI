@@ -339,7 +339,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         {
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Selection.Text);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Selection.Text);
         }
     }
     else
@@ -347,10 +347,10 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         if (Flags & GATTR_ENABLE)
         {
             if (((Flags & ListViewFlags::HideCurrentItemWhenNotFocused) == ListViewFlags::None) && (currentItem))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Inactive);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.Inactive);
             if (((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None) &&
                 (item->Flags & ITEM_FLAG_SELECTED))
-                renderer.FillHorizontalLine(itemStarts, y, this->Layout.Width, -1, Cfg->Cursor.Inactive);
+                renderer.FillRectSize(itemStarts, y, this->Layout.Width, item->Height, -1, Cfg->Cursor.Inactive);
         }
     }
     if ((Flags & ListViewFlags::ItemSeparators) != ListViewFlags::None)
