@@ -1169,33 +1169,40 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
             y -= 2;
     }
 
-    if (Flags && ListViewFlags::ItemSeparators)
-        y = y / 2;
-
-    if (y < GetVisibleItemsCount())
+    const int itemSeparators = (Flags && ListViewFlags::ItemSeparators) ? 1 : 0;
+    auto cnt                 = GetVisibleItemsCount();
+    auto idx                 = this->Items.FirstVisibleIndex;
+    int pozY                 = 0;
+    while (cnt > 0)
     {
-        this->Filter.FilterModeEnabled = false;
-
-        if ((y + Items.FirstVisibleIndex) != this->Items.CurentItemIndex)
-            MoveTo(y + Items.FirstVisibleIndex);
-
-        if ((y + Items.FirstVisibleIndex) == this->Items.CurentItemIndex)
+        InternalListViewItem* i = GetFilteredItem(idx);
+        auto next               = pozY + i->Height + itemSeparators;
+        if ((y >= pozY) && (y < next))
         {
-            auto i = GetFilteredItem(Items.CurentItemIndex);
-            if (x == ((1 - Columns.XOffset) + (int) i->XOffset))
+            // found an item
+            if (idx != this->Items.CurentItemIndex)
+                MoveTo(idx);
+            if (idx == this->Items.CurentItemIndex)
             {
-                if ((i->Flags & ITEM_FLAG_CHECKED) != 0)
-                    i->Flags -= ITEM_FLAG_CHECKED;
+                auto i = GetFilteredItem(Items.CurentItemIndex);
+                if (x == ((1 - Columns.XOffset) + (int) i->XOffset))
+                {
+                    if ((i->Flags & ITEM_FLAG_CHECKED) != 0)
+                        i->Flags -= ITEM_FLAG_CHECKED;
+                    else
+                        i->Flags |= ITEM_FLAG_CHECKED;
+                    TriggerListViewItemCheckedEvent();
+                }
                 else
-                    i->Flags |= ITEM_FLAG_CHECKED;
-                TriggerListViewItemCheckedEvent();
-            }
-            else
-            {
-                if (((button & Input::MouseButton::DoubleClicked) != Input::MouseButton::None))
-                    TriggerListViewItemPressedEvent();
+                {
+                    if (((button & Input::MouseButton::DoubleClicked) != Input::MouseButton::None))
+                        TriggerListViewItemPressedEvent();
+                }
             }
         }
+        pozY = next;
+        idx++;
+        cnt--;
     }
 }
 bool ListViewControlContext::OnMouseDrag(int x, int, Input::MouseButton)
