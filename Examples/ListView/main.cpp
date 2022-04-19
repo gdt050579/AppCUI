@@ -3466,15 +3466,17 @@ class ItemHeightDemo : public Window
         auto lv = Factory::ListView::Create(
               this,
               "l:1,t:1,r:1,b:3",
-              { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 8 } },
+              { { "Name", TextAlignament::Left, 45 },
+                { "Grade", TextAlignament::Right, 6 },
+                { "Cat", TextAlignament::Center, 8 } },
               ListViewFlags::AllowMultipleItemsSelection|ListViewFlags::CheckBoxes);
 
         // items
-        lv->AddItem({ "Georgescu", "9" }).SetHeight(2);
-        lv->AddItem({ "Ionescu", "10" }).SetHeight(3);
-        lv->AddItem({ "Dragos", "10" });
-        lv->AddItems({ { "Mike", "10" },
-                       { "Raul", "7" },
+        lv->AddItem({ "Georgescu\nMarian", "9", "ABC\nX" }).SetHeight(2);
+        lv->AddItem({ "Ionescu", "10", "X" }).SetHeight(3);
+        lv->AddItem({ "Dragos", "10", "Math" });
+        lv->AddItems({ { "Mike", "10", "English" },
+                       { "Raul", "7", "AAA" },
                        { "Ionut", "5" },
                        { "Gheorghita", "9" },
                        { "Andrei", "7" },

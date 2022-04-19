@@ -284,7 +284,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         renderer.WriteText(*subitem, params);
         return;
     }
-
+    if (item->Height > 1)
+    {
+        params.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::OverwriteColors |
+                       WriteTextFlags::FitTextToWidth | WriteTextFlags::ClipToWidth;
+    }
     // first column
     int end_first_column = x + ((int) column->Width);
     x += (int) item->XOffset;
@@ -306,8 +310,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         params.X     = x;
         params.Align = column->Align;
         renderer.WriteText(*subitem, params);
-    }
-
+    }    
     // rest of the columns
     x = end_first_column + 1;
     subitem++;
