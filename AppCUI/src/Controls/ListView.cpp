@@ -457,7 +457,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
         int yPoz  = ((int) this->Layout.Height) - 1;
         renderer.ResetClip();
         if (DrawSearchBar(renderer))
-            x_ofs += 17;
+            x_ofs += 15;
 
         // status information
         if ((this->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
