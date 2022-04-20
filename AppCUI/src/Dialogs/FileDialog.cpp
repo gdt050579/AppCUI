@@ -11,33 +11,7 @@ using namespace Controls;
 using namespace Dialogs;
 using namespace std::literals;
 
-#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
-#    include <sys/stat.h>
-#endif
-
 constexpr uint32 ALL_FILES_INDEX = 0xFFFFFFFFU;
-
-// Currently not all compilers support clock_cast (including gcc)
-// AppleClang supports std::chrono::file_clock::to_time_t, but gcc or VS doesn't
-// Have this frankenstein's monster while the compilers update
-//
-// Normally, we should be able to convert using clock_cast or a to_time_t kind of function
-// to say we have full support
-std::time_t getLastModifiedTime(const std::filesystem::directory_entry& entry)
-{
-#if BUILD_FOR_WINDOWS
-    auto lastTime = entry.last_write_time();
-    return std::chrono::system_clock::to_time_t(std::chrono::clock_cast<std::chrono::system_clock>(lastTime));
-#elif BUILD_FOR_OSX
-    struct stat attr;
-    stat(entry.path().string().c_str(), &attr);
-    return attr.st_mtimespec.tv_sec;
-#elif BUILD_FOR_UNIX
-    struct stat attr;
-    stat(entry.path().string().c_str(), &attr);
-    return attr.st_mtime;
-#endif
-}
 
 void ConvertSizeToString(uint64 size, char result[32])
 {
@@ -203,9 +177,9 @@ FileDialogWindow::FileDialogWindow(
     files = Factory::ListView::Create(
           splitPanelRight,
           "x:0,y:0,w:100%,h:100%",
-          { { "&Name", TextAlignament::Left, 31 },
-            { "&Size", TextAlignament::Right, 16 },
-            { "&Modified", TextAlignament::Center, 20 } },
+          { { "&Name", TextAlignament::Left, 26 },
+            { "&Size", TextAlignament::Right, 14 },
+            { "&Modified", TextAlignament::Center, 19 } },
           ListViewFlags::Sortable);
     files->Handlers()->ComparereItem =
           [](Reference<ListView> control, const ListViewItem& item1, const ListViewItem& item2) -> int
@@ -445,7 +419,7 @@ void FileDialogWindow::ReloadCurrentPath()
     }
 
     char size[32];
-    char dateBuffer[64]{ 0 };
+    AppCUI::OS::DateTime dt;
     try
     {
         for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
@@ -476,17 +450,9 @@ void FileDialogWindow::ReloadCurrentPath()
                 ConvertSizeToString((uint64) fileEntry.file_size(), size);
             }
 
-            const time_t date{ getLastModifiedTime(fileEntry) };
-            struct tm t;
-#if defined(BUILD_FOR_OSX) || defined(BUILD_FOR_UNIX)
-            localtime_r(&date, &t); // TODO: errno not treated
-            strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
-#else
-            localtime_s(&t, &date); // TODO: errno not treated
-            std::strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d  %H:%M:%S", &t);
-#endif
-
-            auto item = this->files->AddItem({ fileEntry.path().filename().u16string(), size, dateBuffer });
+            dt.CreateFrom(fileEntry);
+            auto item =
+                  this->files->AddItem({ fileEntry.path().filename().u16string(), size, dt.GetStringRepresentation() });
             if (fileEntry.is_directory())
             {
                 item.SetType(ListViewItem::Type::Highlighted);

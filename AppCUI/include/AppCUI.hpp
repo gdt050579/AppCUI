@@ -2171,6 +2171,41 @@ namespace OS
         void Close() override;
     };
 
+    class EXPORT DateTime
+    {
+        uint32 year, month, day, hour, minute, second;
+        char strFormat[32];
+      public:
+        DateTime();
+        void Reset();
+        bool CreateFrom(const std::filesystem::directory_entry& entry);
+        std::string_view GetStringRepresentation();
+        inline uint32 GetYear() const
+        {
+            return year;
+        }
+        inline uint32 GetMonth() const
+        {
+            return month;
+        }      
+        inline uint32 GetDay() const
+        {
+            return day;
+        }
+        inline uint32 GetHour() const
+        {
+            return hour;
+        }
+        inline uint32 GetMinute() const
+        {
+            return minute;
+        }
+        inline uint32 GetSecond() const
+        {
+            return second;
+        }
+    };
+
     class EXPORT Library
     {
         void* libraryHandle;
@@ -2185,6 +2220,7 @@ namespace OS
             return reinterpret_cast<T>(GetFunction(functionName));
         }
     };
+
     enum class SpecialFolder : uint32
     {
         AppPath = 0,
@@ -2213,6 +2249,7 @@ namespace OS
     // Fills the specialFolders map and roots vector with paths
     EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
     EXPORT std::filesystem::path GetCurrentApplicationPath();
+    
 
 } // namespace OS
 namespace Graphics
