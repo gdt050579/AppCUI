@@ -46,7 +46,7 @@ bool DateTime::CreateFrom(const std::filesystem::directory_entry& entry)
         result = attr.st_mtime;
         localtime_r(&result, &t);
 #endif
-        this->year    = t.tm_year;
+        this->year    = t.tm_year+1900;
         this->month   = t.tm_mon;
         this->day     = t.tm_mday;
         this->hour    = t.tm_hour;
