@@ -2173,12 +2173,13 @@ namespace OS
 
     class EXPORT DateTime
     {
-        uint32 year, month, day, hour, minute, seconds;
-
+        uint32 year, month, day, hour, minute, second;
+        char strFormat[32];
       public:
         DateTime();
         void Reset();
         bool CreateFrom(const std::filesystem::directory_entry& entry);
+        std::string_view GetStringRepresentation();
         inline uint32 GetYear() const
         {
             return year;
@@ -2199,11 +2200,27 @@ namespace OS
         {
             return minute;
         }
-        inline uint32 GetSeconds() const
+        inline uint32 GetSecond() const
         {
-            return seconds;
+            return second;
         }
     };
+
+    class EXPORT Library
+    {
+        void* libraryHandle;
+
+      public:
+        Library();
+        bool Load(const std::filesystem::path& path);
+        void* GetFunction(const char* functionName) const;
+        template <typename T>
+        inline T GetFunction(const char* functionName) const
+        {
+            return reinterpret_cast<T>(GetFunction(functionName));
+        }
+    };
+
     enum class SpecialFolder : uint32
     {
         AppPath = 0,

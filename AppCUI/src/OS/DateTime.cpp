@@ -11,12 +11,13 @@ DateTime::DateTime()
 }
 void DateTime::Reset()
 {
-    this->year    = 0;
-    this->month   = 0;
-    this->day     = 0;
-    this->hour    = 0;
-    this->minute  = 0;
-    this->seconds = 0;
+    this->year         = 0;
+    this->month        = 0;
+    this->day          = 0;
+    this->hour         = 0;
+    this->minute       = 0;
+    this->second      = 0;
+    this->strFormat[0] = 0;
 }
 // Currently not all compilers support clock_cast (including gcc)
 // AppleClang supports std::chrono::file_clock::to_time_t, but gcc or VS doesn't
@@ -50,7 +51,7 @@ bool DateTime::CreateFrom(const std::filesystem::directory_entry& entry)
         this->day     = t.tm_mday;
         this->hour    = t.tm_hour;
         this->minute  = t.tm_min;
-        this->seconds = t.tm_sec;
+        this->second = t.tm_sec;
         return true;
     }
     catch (...)
@@ -58,5 +59,15 @@ bool DateTime::CreateFrom(const std::filesystem::directory_entry& entry)
         Reset();
         RETURNERROR(false, "Exception triggered when reading time !");
     }
+}
+std::string_view DateTime::GetStringRepresentation()
+{
+    if (this->year == 0)
+    {
+        return "----/--/-- --:--:--";
+    }
+    AppCUI::Utils::String temp;
+    temp.Create(this->strFormat, sizeof(this->strFormat), true);
+    return temp.Format("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 }
 } // namespace AppCUI::OS
