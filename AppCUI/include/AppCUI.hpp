@@ -2171,18 +2171,37 @@ namespace OS
         void Close() override;
     };
 
-    class EXPORT Library
+    class EXPORT DateTime
     {
-        void* libraryHandle;
+        uint32 year, month, day, hour, minute, seconds;
 
       public:
-        Library();
-        bool Load(const std::filesystem::path& path);
-        void* GetFunction(const char* functionName) const;
-        template <typename T>
-        inline T GetFunction(const char* functionName) const
+        DateTime();
+        void Reset();
+        bool CreateFrom(const std::filesystem::directory_entry& entry);
+        inline uint32 GetYear() const
         {
-            return reinterpret_cast<T>(GetFunction(functionName));
+            return year;
+        }
+        inline uint32 GetMonth() const
+        {
+            return month;
+        }      
+        inline uint32 GetDay() const
+        {
+            return day;
+        }
+        inline uint32 GetHour() const
+        {
+            return hour;
+        }
+        inline uint32 GetMinute() const
+        {
+            return minute;
+        }
+        inline uint32 GetSeconds() const
+        {
+            return seconds;
         }
     };
     enum class SpecialFolder : uint32
@@ -2213,6 +2232,7 @@ namespace OS
     // Fills the specialFolders map and roots vector with paths
     EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
     EXPORT std::filesystem::path GetCurrentApplicationPath();
+    
 
 } // namespace OS
 namespace Graphics
