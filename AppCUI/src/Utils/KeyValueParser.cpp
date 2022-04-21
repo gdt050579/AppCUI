@@ -30,6 +30,13 @@ static uint8 ParserCharacterTypes[MAX_CHARS_IN_TABLE] = {
     CHAR_TYPE_OTHER, CHAR_TYPE_OTHER, CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER, CHAR_TYPE_EQ,    CHAR_TYPE_SEPARATOR,
     CHAR_TYPE_OTHER, CHAR_TYPE_EQ
 };
+#define CHECK_PARSE_ERROR(c, msg)                                                                                      \
+    if (!(c))                                                                                                          \
+    {                                                                                                                  \
+        error    = msg;                                                                                                \
+        errorPos = current;                                                                                            \
+        RETURNERROR(false, msg);                                                                                       \
+    }
 
 template <typename T>
 class Parser
@@ -37,6 +44,8 @@ class Parser
     const T* start;
     const T* end;
     const T* current;
+    std::string_view error;
+    const T* errorPos;
 
     inline void SkipSpaces()
     {
@@ -44,12 +53,13 @@ class Parser
                ((ParserCharacterTypes[*current]) == CHAR_TYPE_SPACE))
             current++;
     }
-    inline void ParseWord()
+    inline const T* ParseWord()
     {
         while ((current < end) &&
                ((((*current) < MAX_CHARS_IN_TABLE) && ((ParserCharacterTypes[*current]) == CHAR_TYPE_OTHER)) ||
                 ((*current) >= MAX_CHARS_IN_TABLE)))
             current++;
+        return current;
     }
     inline bool IsWord() const
     {
@@ -70,18 +80,80 @@ class Parser
               (current < end) && ((*current) < MAX_CHARS_IN_TABLE) &&
               ((ParserCharacterTypes[*current]) == CHAR_TYPE_SEPARATOR));
     }
+    inline bool AnalizeValue(const T* s, const T* e, int& value, bool& isPecentage)
+    {
+        bool negative    = false;
+        int32 firstPart  = 0;
+        int32 secondPart = 0;
+        isPecentage      = false;
+        if ((*s) == '-')
+        {
+            negative = true;
+            s++;
+        }
+        while ((s < e) && (((*s) < '0') || (*s > '9')))
+        {
+            firstPart = firstPart * 10 + (int32) ((*s) - '0');
+            s++;
+        }
+        if ((s < e) && ((*s) == '.'))
+        {
+            while ((s < e) && (((*s) < '0') || (*s > '9')))
+            {
+                secondPart = secondPart * 10 + (int32) ((*s) - '0');
+                s++;
+            }
+        }
+        if ((s < e) && ((*s) == '%'))
+        {
+            isPecentage = true;
+            s++;
+        }
+        if (s < e)
+            return false; // not a valid number
+        // valid number
+        if (negative)
+            firstPart = -firstPart;
+        if (isPecentage)
+            value = firstPart * 100 + (secondPart % 100);
+        else
+            value = firstPart;
+        // store it
+        return true;
+    }
+
   public:
     Parser(const T* _start, size_t size)
     {
         start = current = _start;
         end             = start + size;
+        errorPos        = nullptr;
     }
-    bool Next()
+    bool Next(KeyValuePair& pair)
     {
         SkipSpaces();
         if (current >= end)
             return false; // end the process
-        if (IsWord())
+        CHECK_PARSE_ERROR(IsWord(), "Expecting a valid key (word)");
+        auto keyStart   = current;
+        auto keyEnd     = ParseWord();
+        auto valueStart = nullptr;
+        auto valueEnd   = nullptr;
+        SkipSpaces();
+        if (IsEq())
+        {
+            current++;
+            SkipSpaces();
+            CHECK_PARSE_ERROR(IsWord(), "Expecting a valid value (word)");
+            valueStart = current;
+            valueyEnd  = ParseWord();
+            SkipSpaces();
+        }
+        if (IsSeparator())
+            current++;
+        // we have a key/value pair --> store it
+
+        return truel
     }
 };
 bool KeyValueParser::Parse(std::string_view text)
@@ -92,4 +164,5 @@ bool KeyValueParser::Parse(std::u16string_view text)
 {
     NOT_IMPLEMENTED(false);
 }
+#undef CHECK_PARSE_ERROR
 } // namespace AppCUI::Utils

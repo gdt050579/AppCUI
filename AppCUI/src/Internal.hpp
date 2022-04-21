@@ -331,6 +331,20 @@ namespace Utils
     };
     bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
     bool ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result);
+    struct KeyValuePair
+    {
+        struct
+        {
+            union
+            {
+                string_view ascii;
+                u16string_view unicode;
+            } String;
+            uint32 hash;
+            int32 number;
+            bool isNumber;
+        } Key, Value;
+    };
     class KeyValueParser
     {
         constexpr static uint32 MAX_ITEMS = 32;
