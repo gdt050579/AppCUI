@@ -80,12 +80,13 @@ class Parser
               (current < end) && ((*current) < MAX_CHARS_IN_TABLE) &&
               ((ParserCharacterTypes[*current]) == CHAR_TYPE_SEPARATOR));
     }
-    inline bool AnalizeValue(const T* s, const T* e, int& value, bool& isPecentage)
+    inline bool AnalizeValue(const T* s, const T* e, int& value, KeyValuePair::Type& type)
     {
-        bool negative    = false;
-        int32 firstPart  = 0;
-        int32 secondPart = 0;
-        isPecentage      = false;
+        bool negative     = false;
+        int32 firstPart   = 0;
+        int32 secondPart  = 0;
+        bool isPercentage = false;
+        type              = KeyValuePair::Type::String;
         if ((*s) == '-')
         {
             negative = true;
@@ -106,7 +107,7 @@ class Parser
         }
         if ((s < e) && ((*s) == '%'))
         {
-            isPecentage = true;
+            isPercentage = true;
             s++;
         }
         if (s < e)
@@ -114,12 +115,21 @@ class Parser
         // valid number
         if (negative)
             firstPart = -firstPart;
-        if (isPecentage)
+        if (isPercentage)
+        {
             value = firstPart * 100 + (secondPart % 100);
+            type  = KeyValuePair::Type::Percentage;
+        }
         else
+        {
             value = firstPart;
-        // store it
+            type  = KeyValuePair::Type::Number;
+        }
         return true;
+    }
+    inline uint32 ComputeHash(const T* s, const T* e)
+    {
+        return 0;
     }
 
   public:
@@ -135,10 +145,10 @@ class Parser
         if (current >= end)
             return false; // end the process
         CHECK_PARSE_ERROR(IsWord(), "Expecting a valid key (word)");
-        auto keyStart   = current;
-        auto keyEnd     = ParseWord();
-        auto valueStart = nullptr;
-        auto valueEnd   = nullptr;
+        auto keyStart       = current;
+        auto keyEnd         = ParseWord();
+        const T* valueStart = nullptr;
+        const T* valueEnd   = nullptr;
         SkipSpaces();
         if (IsEq())
         {
@@ -146,19 +156,51 @@ class Parser
             SkipSpaces();
             CHECK_PARSE_ERROR(IsWord(), "Expecting a valid value (word)");
             valueStart = current;
-            valueyEnd  = ParseWord();
+            valueEnd   = ParseWord();
             SkipSpaces();
         }
         if (IsSeparator())
             current++;
         // we have a key/value pair --> store it
-
-        return truel
+        if (valueStart)
+        {
+            // we have key = value => key = string
+            pair.Key.number = 0;
+            pair.Key.hash   = ComputeHash(keyStart, keyEnd);
+            pair.Key.type   = KeyValuePair::Type::String;
+            // pair.Key.String.ascii
+            if (!AnalizeValue(valueStart, valueEnd, pair.Value.number, pair.Value.type))
+            {
+                // we have a hash:
+                pair.Value.hash = ComputeHash(valueStart, valueEnd);
+                pair.Value.type = KeyValuePair::Type::String;
+            }
+        }
+        else
+        {
+            // we have just key
+            if (!AnalizeValue(keyStart, keyEnd, pair.Key.number, pair.Key.type))
+            {
+                // we have a hash:
+                pair.Key.hash = ComputeHash(valueStart, valueEnd);
+                pair.Key.type = KeyValuePair::Type::String;
+            }
+            pair.Value.type = KeyValuePair::Type::None;
+        }
+        return true;
     }
 };
 bool KeyValueParser::Parse(std::string_view text)
 {
     Parser<uint8> p((const uint8*) text.data(), text.size());
+    KeyValuePair* k = this->items;
+    KeyValuePair* e = k + KeyValueParser::MAX_ITEMS;
+    this->count     = 0;
+
+    while ((k < e) && (p.Next(*k)))
+        k++;
+    this->count = (uint32)(k - this->items);
+    return true;
 }
 bool KeyValueParser::Parse(std::u16string_view text)
 {

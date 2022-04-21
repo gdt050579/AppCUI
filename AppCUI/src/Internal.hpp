@@ -333,25 +333,29 @@ namespace Utils
     bool ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result);
     struct KeyValuePair
     {
+        enum class Type: uint8
+        {
+            None,
+            String,
+            Number,
+            Percentage
+        };
         struct
         {
-            union
-            {
-                string_view ascii;
-                u16string_view unicode;
-            } String;
+            //union
+            //{
+            //    string_view ascii;
+            //    u16string_view unicode;
+            //} String;
             uint32 hash;
             int32 number;
-            bool isNumber;
+            Type type;
         } Key, Value;
     };
     class KeyValueParser
     {
         constexpr static uint32 MAX_ITEMS = 32;
-        struct
-        {
-
-        } items[MAX_ITEMS];
+        KeyValuePair items[MAX_ITEMS];
         uint32 count;
 
       public:
