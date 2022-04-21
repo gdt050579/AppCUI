@@ -62,28 +62,32 @@ bool DateTime::CreateFrom(const std::filesystem::directory_entry& entry)
     return true;
 }
 
-inline uint64 FileTimeToPOSIX(uint32 low, uint32 high, uint32* nano = nullptr)
+constexpr uint64 WINDOWS_TICK      = 10000000ULL;
+constexpr uint64 SEC_TO_UNIX_EPOCH = 11644473600LL;
+
+static time_t FiletimeToUnix(uint64 windowsTicks)
 {
-    const uint64 now    = ((uint64) low + ((uint64) (high) << 32ULL)) - 116444736000000000ULL;
-    const uint64 result = now / 10000ULL;
-
-    if (nano != nullptr)
-    {
-        *nano = (uint32) (((now % 10000) * 100) & 0xFFFFFFFF);
-    }
-
-    return result;
-};
+    return (time_t) (windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
+}
 
 bool DateTime::CreateFromFileTime(const uint64 entry)
 {
-    return CreateFromFileTime(((const uint32*) &entry)[0], ((const uint32*) &entry)[1]);
+    return CreateFromFileTime(((const uint32*) &entry)[1], ((const uint32*) &entry)[0]);
 }
 
 bool DateTime::CreateFromFileTime(const uint32 low, const uint32 high)
 {
-    const auto timestamp = FileTimeToPOSIX(low, high);
-    const auto time      = (time_t) (timestamp / 1000000U);
+    union FT
+    {
+        struct
+        {
+            uint32 high;
+            uint32 low;
+        } pieces;
+        uint64 value{};
+    } ft{ high, low };
+
+    const auto time = FiletimeToUnix(ft.value);
     struct tm t;
     try
     {
@@ -95,7 +99,7 @@ bool DateTime::CreateFromFileTime(const uint32 low, const uint32 high)
         localtime_r(&time, &t);
 #endif
         this->year   = t.tm_year + 1900;
-        this->month  = t.tm_mon;
+        this->month  = t.tm_mon + 1;
         this->day    = t.tm_mday;
         this->hour   = t.tm_hour;
         this->minute = t.tm_min;
