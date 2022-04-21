@@ -344,7 +344,7 @@ namespace Utils
         {
             const void* data;
             uint32 dataSize;
-            uint32 hash;
+            uint64 hash;
             int32 number;
             Type type;
         } Key, Value;
@@ -352,15 +352,30 @@ namespace Utils
     class KeyValueParser
     {
         constexpr static uint32 MAX_ITEMS = 32;
+        constexpr static uint32 NO_ERRORS = 0xFFFFFFFF;
         KeyValuePair items[MAX_ITEMS];
+        uint32 errorPos;
+        string_view errorName;
         uint32 count;
 
       public:
-        KeyValueParser() : count(0)
+        KeyValueParser() : count(0), errorPos(NO_ERRORS)
         {
         }
         bool Parse(std::string_view text);
         bool Parse(std::u16string_view text);
+        inline bool HasError() const
+        {
+            return errorPos != NO_ERRORS;
+        }
+        inline uint32 GetErrorOffset() const
+        {
+            return errorPos;
+        }
+        inline std::string_view GetErrorName() const
+        {
+            return errorName;
+        }
         inline uint32 GetCount() const
         {
             return count;

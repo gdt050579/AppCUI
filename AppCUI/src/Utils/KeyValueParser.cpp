@@ -30,6 +30,20 @@ static uint8 ParserCharacterTypes[MAX_CHARS_IN_TABLE] = {
     CHAR_TYPE_OTHER, CHAR_TYPE_OTHER, CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER, CHAR_TYPE_EQ,    CHAR_TYPE_SEPARATOR,
     CHAR_TYPE_OTHER, CHAR_TYPE_EQ
 };
+const uint8 Parser_LoweCaseTable[256] = {
+    0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,
+    22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,
+    44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  97,
+    98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+    120, 121, 122, 91,  92,  93,  94,  95,  96,  97,  98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+    110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
+    132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153,
+    154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175,
+    176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197,
+    198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219,
+    220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
+    242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255
+};
 #define CHECK_PARSE_ERROR(c, msg)                                                                                      \
     if (!(c))                                                                                                          \
     {                                                                                                                  \
@@ -127,9 +141,17 @@ class Parser
         }
         return true;
     }
-    inline uint32 ComputeHash(const T* s, const T* e)
+    inline uint64 ComputeHash(const T* s, const T* e)
     {
-        return 0;
+        // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+        uint64 hash = 0xcbf29ce484222325ULL;
+        while (s < e)
+        {
+            hash = hash ^ (Parser_LoweCaseTable[(*s) & 0xFF]);
+            hash = hash * 0x00000100000001B3ULL;
+            s++;
+        }
+        return hash;
     }
 
   public:
@@ -141,6 +163,8 @@ class Parser
     }
     bool Next(KeyValuePair& pair)
     {
+        if (errorPos)
+            return false;
         SkipSpaces();
         if (current >= end)
             return false; // end the process
@@ -197,6 +221,14 @@ class Parser
         }
         return true;
     }
+    inline const T* GetErrorPos() const
+    {
+        return errorPos;
+    }
+    inline std::string_view GetErrorName() const
+    {
+        return error;
+    }
 };
 bool KeyValueParser::Parse(std::string_view text)
 {
@@ -204,9 +236,24 @@ bool KeyValueParser::Parse(std::string_view text)
     KeyValuePair* k = this->items;
     KeyValuePair* e = k + KeyValueParser::MAX_ITEMS;
     this->count     = 0;
+    this->errorPos  = KeyValueParser::NO_ERRORS;
+    this->errorName = "";
 
     while ((k < e) && (p.Next(*k)))
         k++;
+    if (k == e)
+    {
+        this->errorPos  = 0;
+        this->errorName = "Too many key/value pairs. Max allowed are 32 !";
+        return false;
+    }
+    if (p.GetErrorPos())
+    {
+        // we have an error
+        this->errorPos  = (uint32) (p.GetErrorPos() - ((const uint8*) text.data()));
+        this->errorName = p.GetErrorName();
+        return false;
+    }
     this->count = (uint32) (k - this->items);
     return true;
 }
@@ -216,9 +263,24 @@ bool KeyValueParser::Parse(std::u16string_view text)
     KeyValuePair* k = this->items;
     KeyValuePair* e = k + KeyValueParser::MAX_ITEMS;
     this->count     = 0;
+    this->errorPos  = KeyValueParser::NO_ERRORS;
+    this->errorName = "";
 
     while ((k < e) && (p.Next(*k)))
         k++;
+    if (k == e)
+    {
+        this->errorPos  = 0;
+        this->errorName = "Too many key/value pairs. Max allowed are 32 !";
+        return false;
+    }
+    if (p.GetErrorPos())
+    {
+        // we have an error
+        this->errorPos  = (uint32) (p.GetErrorPos() - ((const uint16*) text.data()));
+        this->errorName = p.GetErrorName();
+        return false;
+    }
     this->count = (uint32) (k - this->items);
     return true;
 }
