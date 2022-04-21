@@ -75,9 +75,14 @@ inline uint64 FileTimeToPOSIX(uint32 low, uint32 high, uint32* nano = nullptr)
     return result;
 };
 
-bool DateTime::CreateFromFileTime(const uint32 entry[2])
+bool DateTime::CreateFromFileTime(const uint64 entry)
 {
-    const auto timestamp = FileTimeToPOSIX(entry[0], entry[1]);
+    return CreateFromFileTime(((const uint32*) &entry)[0], ((const uint32*) &entry)[1]);
+}
+
+bool DateTime::CreateFromFileTime(const uint32 low, const uint32 high)
+{
+    const auto timestamp = FileTimeToPOSIX(low, high);
     const auto time      = (time_t) (timestamp / 1000000U);
     struct tm t;
     try
