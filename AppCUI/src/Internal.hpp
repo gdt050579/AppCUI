@@ -342,11 +342,8 @@ namespace Utils
         };
         struct
         {
-            //union
-            //{
-            //    string_view ascii;
-            //    u16string_view unicode;
-            //} String;
+            const void* data;
+            uint32 dataSize;
             uint32 hash;
             int32 number;
             Type type;
@@ -364,6 +361,14 @@ namespace Utils
         }
         bool Parse(std::string_view text);
         bool Parse(std::u16string_view text);
+        inline uint32 GetCount() const
+        {
+            return count;
+        }
+        inline const KeyValuePair& operator[](int index) const
+        {
+            return items[index];
+        }
     };
 } // namespace Utils
 namespace Log

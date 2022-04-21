@@ -162,13 +162,19 @@ class Parser
         if (IsSeparator())
             current++;
         // we have a key/value pair --> store it
+        pair.Key.data     = keyStart;
+        pair.Key.dataSize = (uint32) (keyEnd - keyStart);
+        pair.Key.number   = 0;
+        pair.Key.hash     = 0;
+        pair.Value.hash   = 0;
         if (valueStart)
         {
             // we have key = value => key = string
-            pair.Key.number = 0;
-            pair.Key.hash   = ComputeHash(keyStart, keyEnd);
-            pair.Key.type   = KeyValuePair::Type::String;
-            // pair.Key.String.ascii
+            pair.Key.hash       = ComputeHash(keyStart, keyEnd);
+            pair.Key.type       = KeyValuePair::Type::String;
+            pair.Value.data     = valueStart;
+            pair.Value.dataSize = (uint32) (valueEnd - valueStart);
+
             if (!AnalizeValue(valueStart, valueEnd, pair.Value.number, pair.Value.type))
             {
                 // we have a hash:
@@ -185,7 +191,9 @@ class Parser
                 pair.Key.hash = ComputeHash(valueStart, valueEnd);
                 pair.Key.type = KeyValuePair::Type::String;
             }
-            pair.Value.type = KeyValuePair::Type::None;
+            pair.Value.type     = KeyValuePair::Type::None;
+            pair.Value.data     = nullptr;
+            pair.Value.dataSize = 0;
         }
         return true;
     }
@@ -199,12 +207,20 @@ bool KeyValueParser::Parse(std::string_view text)
 
     while ((k < e) && (p.Next(*k)))
         k++;
-    this->count = (uint32)(k - this->items);
+    this->count = (uint32) (k - this->items);
     return true;
 }
 bool KeyValueParser::Parse(std::u16string_view text)
 {
-    NOT_IMPLEMENTED(false);
+    Parser<uint16> p((const uint16*) text.data(), text.size());
+    KeyValuePair* k = this->items;
+    KeyValuePair* e = k + KeyValueParser::MAX_ITEMS;
+    this->count     = 0;
+
+    while ((k < e) && (p.Next(*k)))
+        k++;
+    this->count = (uint32) (k - this->items);
+    return true;
 }
 #undef CHECK_PARSE_ERROR
 } // namespace AppCUI::Utils
