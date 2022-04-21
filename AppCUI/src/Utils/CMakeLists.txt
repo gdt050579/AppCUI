@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE Array32.cpp Buffer.cpp IniObject.cpp KeyUtils.cpp String.cpp UnicodeStringBuilder.cpp Number.cpp NumericFormatter.cpp Size.cpp ColorUtils.cpp)
+target_sources(AppCUI PRIVATE Array32.cpp Buffer.cpp IniObject.cpp KeyUtils.cpp KeyValueParser.cpp String.cpp UnicodeStringBuilder.cpp Number.cpp NumericFormatter.cpp Size.cpp ColorUtils.cpp)

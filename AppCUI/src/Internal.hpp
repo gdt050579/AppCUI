@@ -331,6 +331,22 @@ namespace Utils
     };
     bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
     bool ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result);
+    class KeyValueParser
+    {
+        constexpr static uint32 MAX_ITEMS = 32;
+        struct
+        {
+
+        } items[MAX_ITEMS];
+        uint32 count;
+
+      public:
+        KeyValueParser() : count(0)
+        {
+        }
+        bool Parse(std::string_view text);
+        bool Parse(std::u16string_view text);
+    };
 } // namespace Utils
 namespace Log
 {
