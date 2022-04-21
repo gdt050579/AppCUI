@@ -16,7 +16,7 @@ void DateTime::Reset()
     this->day          = 0;
     this->hour         = 0;
     this->minute       = 0;
-    this->second      = 0;
+    this->second       = 0;
     this->strFormat[0] = 0;
 }
 // Currently not all compilers support clock_cast (including gcc)
@@ -46,20 +46,65 @@ bool DateTime::CreateFrom(const std::filesystem::directory_entry& entry)
         result = attr.st_mtime;
         localtime_r(&result, &t);
 #endif
-        this->year    = t.tm_year+1900;
-        this->month   = t.tm_mon;
-        this->day     = t.tm_mday;
-        this->hour    = t.tm_hour;
-        this->minute  = t.tm_min;
+        this->year   = t.tm_year + 1900;
+        this->month  = t.tm_mon;
+        this->day    = t.tm_mday;
+        this->hour   = t.tm_hour;
+        this->minute = t.tm_min;
         this->second = t.tm_sec;
-        return true;
     }
     catch (...)
     {
         Reset();
         RETURNERROR(false, "Exception triggered when reading time !");
     }
+
+    return true;
 }
+
+inline uint64 FileTimeToPOSIX(uint32 low, uint32 high, uint32* nano = nullptr)
+{
+    const uint64 now    = ((uint64) low + ((uint64) (high) << 32ULL)) - 116444736000000000ULL;
+    const uint64 result = now / 10000ULL;
+
+    if (nano != nullptr)
+    {
+        *nano = (uint32) (((now % 10000) * 100) & 0xFFFFFFFF);
+    }
+
+    return result;
+};
+
+bool DateTime::CreateFromFileTime(const uint32 entry[2])
+{
+    const auto timestamp = FileTimeToPOSIX(entry[0], entry[1]);
+    const auto time      = (time_t) (timestamp / 1000000U);
+    struct tm t;
+    try
+    {
+#if BUILD_FOR_WINDOWS
+        localtime_s(&t, &time);
+#elif BUILD_FOR_OSX
+        localtime_r(&time, &t);
+#elif BUILD_FOR_UNIX
+        localtime_r(&time, &t);
+#endif
+        this->year   = t.tm_year + 1900;
+        this->month  = t.tm_mon;
+        this->day    = t.tm_mday;
+        this->hour   = t.tm_hour;
+        this->minute = t.tm_min;
+        this->second = t.tm_sec;
+    }
+    catch (...)
+    {
+        Reset();
+        RETURNERROR(false, "Exception triggered when reading time !");
+    }
+
+    return true;
+}
+
 std::string_view DateTime::GetStringRepresentation()
 {
     if (this->year == 0)
