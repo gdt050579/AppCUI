@@ -3461,6 +3461,17 @@ namespace Controls
         }
     };
 
+    class EXPORT ColumnsHeader
+    {
+        void* data;
+
+      public:
+        ColumnsHeader();
+        ~ColumnsHeader();
+        bool Add(std::initializer_list<ConstString> list);
+        bool Add(const ConstString columnFormat);
+    };
+
     class EXPORT Control
     {
       public:

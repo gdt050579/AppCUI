@@ -471,7 +471,11 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
-
+struct InternalColumnsHeader
+{
+    Reference<Control> host;
+    
+};
 struct InternalListViewColumn
 {
     CharacterBuffer Name;
