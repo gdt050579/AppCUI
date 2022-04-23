@@ -92,10 +92,8 @@ bool DateTime::CreateFromFileTime(const uint32 low, const uint32 high)
     try
     {
 #if BUILD_FOR_WINDOWS
-        localtime_s(&t, &time);
-#elif BUILD_FOR_OSX
-        localtime_r(&time, &t);
-#elif BUILD_FOR_UNIX
+        CHECK(localtime_s(&t, &time) == 0, false, "");
+#elif BUILD_FOR_OSX || BUILD_FOR_UNIX
         localtime_r(&time, &t);
 #endif
         this->year   = t.tm_year + 1900;
