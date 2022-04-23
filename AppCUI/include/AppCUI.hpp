@@ -569,6 +569,10 @@ namespace Utils
     class EXPORT String;
     using CharacterView = std::basic_string_view<Graphics::Character>;
     using ConstString   = variant<string_view, u8string_view, u16string_view, CharacterView>;
+
+    template <typename T>
+    class Reference;
+
     template <typename T>
     class Pointer : public unique_ptr<T>
     {
@@ -576,13 +580,15 @@ namespace Utils
         Pointer(T* obj) : unique_ptr<T>(obj)
         {
         }
-        operator T*()
+        inline operator T*()
+        {
+            return this->get();
+        }
+        inline Reference<T> ToReference() const
         {
             return this->get();
         }
     };
-    template <typename T>
-    class Reference;
 
     class GenericRef
     {
@@ -2175,6 +2181,7 @@ namespace OS
     {
         uint32 year, month, day, hour, minute, second;
         char strFormat[32];
+
       public:
         DateTime();
         void Reset();
@@ -2189,7 +2196,7 @@ namespace OS
         inline uint32 GetMonth() const
         {
             return month;
-        }      
+        }
         inline uint32 GetDay() const
         {
             return day;
@@ -2251,7 +2258,6 @@ namespace OS
     // Fills the specialFolders map and roots vector with paths
     EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
     EXPORT std::filesystem::path GetCurrentApplicationPath();
-    
 
 } // namespace OS
 namespace Graphics
