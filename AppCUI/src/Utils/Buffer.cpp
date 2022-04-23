@@ -88,6 +88,11 @@ void Buffer::Resize(size_t newSize)
             tmp++;
         }
     }
+    else
+    {
+        data = tmp;
+        memset(data, 0, newSize);
+    }
     this->length = newSize;
 }
 } // namespace AppCUI::Utils
