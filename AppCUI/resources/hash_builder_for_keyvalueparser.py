@@ -2,24 +2,30 @@ import os,sys
 
 data = {}
 
-template = r"""
-namespace ${NAMESPACE} {
+template_values = r"""
 	enum class Value: uint8
 	{
 		${VALUES}
-		Invalid = 0xFF
 	};
-	static constexpr Value Values[${DEVIDER}] = {
+"""
+template = r"""
+namespace ${NAMESPACE} {	
+	${VALUES}
+	static constexpr uint8 Values[${DEVIDER}] = {
 		${TABLE_VALUES}
 	};
 	static constexpr uint64 Hashes[${DEVIDER}] = {
 		${TABLE_HASHES}
 	};
-	inline Value HashToValue(uint64 hash) {
+	inline bool HashToValue(uint64 hash, ${TYPE}& resultedValue) {
 		const auto entry = hash % ${DEVIDER};
 		if (Hashes[entry]!=hash)
-			return Value::Invalid;
-		return Values[entry];
+			return false;
+		const auto res = Values[entry];
+		if (res==0xFF) // invalid value
+			return false;
+		resultedValue = static_cast<${TYPE}>(res);
+		return true;
 	}
 };
 """
@@ -86,6 +92,11 @@ def LoadIni(fname):
 	if not "namespace" in data["general"]:
 		Error("Namespace field must be defined for [general] section")
 		return False
+	if not "valuetype" in data["general"]:
+		Error("ValueType field must be defined for [general] section")
+		return False		
+	if (data["general"]["valuetype"] == "none") or (data["general"]["valuetype"] == "generate"):
+		data["general"]["valuetype"] = ""
 	if len(data["list"])==0:
 		Error("No values added to [list] section")
 		return False
@@ -108,9 +119,10 @@ def ComputeHashDevider(m):
 def BuildCode(devider):
 	global data
 	global template
+	global template_values
 	values = ""
 	idx = 0
-	table_values = ["Invalid"]*devider
+	table_values = ["0xFF"]*devider
 	table_hashes = [0]*devider
 	results = {}
 	for k in data["list"]:
@@ -120,20 +132,30 @@ def BuildCode(devider):
 			idx+=1
 		hash = ComputeFNVHash(k)
 		d_idx = hash % devider
-		table_values[d_idx] = data["list"][k]
+		if len(data["general"]["valuetype"])==0:		
+			table_values[d_idx] = "static_cast<uint8>(Value::"+data["list"][k]+")"
+		else:
+			table_values[d_idx] = "static_cast<uint8>("+data["general"]["valuetype"]+"::"+data["list"][k]+")"
 		table_hashes[d_idx] = hash
 	s_table_values = ""
 	for k in table_values:
-		s_table_values+="Values::"+k+","
+		s_table_values+=k+","
 	s_table_hashes = ""
 	for k in table_hashes:
 		s_table_hashes+="0x%X,"%k
+	value_type = data["general"]["valuetype"]
+	if len(value_type)==0:
+		values = template_values.replace(r"${VALUES}",values)
+		value_type = "Value"
+	else:
+		values = ""
 	s = template
 	s = s.replace(r"${NAMESPACE}",data["general"]["namespace"])
 	s = s.replace(r"${DEVIDER}",str(devider))
 	s = s.replace(r"${VALUES}",values)
 	s = s.replace(r"${TABLE_VALUES}",s_table_values)
 	s = s.replace(r"${TABLE_HASHES}",s_table_hashes)
+	s = s.replace(r"${TYPE}",value_type)
 	return s
 
 def main():
