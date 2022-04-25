@@ -67,12 +67,20 @@ def LoadIni(fname):
 		if not "=" in line:
 			Error("Expectin a key = value pair in `"+line+"`")
 			return False
-		k = line.split("=",1)[0].lower().strip()
-		v = line.split("=",1)[1].strip()
-		if section == "":
-			Error("No section defined for `"+line+"`")
-			return False
-		data[section][k] = v
+		if section == "list":
+			# format is value = key1,key2,...
+			value = line.split("=",1)[0].strip()
+			keys = line.split("=",1)[1].lower().strip().split(",")
+			if section == "":
+				Error("No section defined for `"+line+"`")
+				return False
+			for k in keys:
+				data[section][k.lower().strip()] = value
+		else:
+			# format is key = value
+			key = line.split("=",1)[0].lower().strip()
+			value = line.split("=",1)[1].strip()		
+			data[section][key] = value	
 
 	#generic checks
 	if not "namespace" in data["general"]:
