@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../Internal.hpp"
-#include <memory>
+#include "../ControlContext.hpp"
 
 namespace AppCUI
 {

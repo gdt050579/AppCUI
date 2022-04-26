@@ -1,5 +1,4 @@
 #include "WindowsTerminal.hpp"
-#include <string.h>
 
 namespace AppCUI::Internal
 {

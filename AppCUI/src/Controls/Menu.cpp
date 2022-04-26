@@ -1,4 +1,3 @@
-#include "Internal.hpp"
 #include "ControlContext.hpp"
 
 namespace AppCUI

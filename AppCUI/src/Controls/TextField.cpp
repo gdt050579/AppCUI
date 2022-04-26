@@ -1,5 +1,4 @@
 #include "ControlContext.hpp"
-#include "Internal.hpp"
 
 #define C_WIDTH ((Members->Layout.Width - 2) * Members->Layout.Height)
 #define EXIT_IF_READONLY()                                                                                             \

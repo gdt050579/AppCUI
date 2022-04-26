@@ -1,5 +1,4 @@
 #include "Internal.hpp"
-#include <codecvt>
 
 namespace AppCUI
 {
@@ -21,7 +20,7 @@ void CopyText(char16* dest, const T* source, size_t len)
     }
 }
 
-bool Utils::ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result)
+bool Utils::ConvertUTF8CharToUnicodeChar(const char8* p, const char8* end, UnicodeChar& result)
 {
     // unicode encoding (based on the code described in https://en.wikipedia.org/wiki/UTF-8)
     if (((*p) >> 5) == 6) // binary encoding 110xxxxx, followed by 10xxxxxx
@@ -70,7 +69,7 @@ bool Utils::ConvertUnicodeCharToUTF8Chat(char16 _ch, UTF8Char& result)
     uint8 extra = 64;
     uint8 last  = 0xC0;
 
-    while (ch >= ((uint32)extra))
+    while (ch >= ((uint32) extra))
     {
         result.Values[result.Length++] = (ch & 63) | 0x80;
         ch >>= 6;
@@ -335,7 +334,7 @@ void UnicodeStringBuilder::ToString(std::u8string& output) const
         UTF8Char u8Char;
         auto* p = this->chars;
         auto* e = p + this->length;
-        while (p<e)
+        while (p < e)
         {
             ConvertUnicodeCharToUTF8Chat(*p, u8Char);
             for (int i = (int32) u8Char.Length - 1; i >= 0; i--)

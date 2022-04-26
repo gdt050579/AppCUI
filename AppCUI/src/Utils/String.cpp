@@ -1,9 +1,6 @@
-#include <AppCUI.hpp>
 #include "Internal.hpp"
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <stdarg.h>
-#include <string.h>
 
 using namespace AppCUI;
 
@@ -23,13 +20,12 @@ const uint8 string_lowercase_table[256] = {
 };
 constexpr uint32 STRING_FLAG_STACK_BUFFER = 0x80000000;
 
-
 #define COMPUTE_TEXT_SIZE(text, textSize)                                                                              \
     if (textSize == 0xFFFFFFFF)                                                                                        \
     {                                                                                                                  \
         textSize = Len(text);                                                                                          \
     }
-#define PREPATE_STRING_SOURCE_DESTINATION_PARAMS                                                                       \
+#define PREPARE_STRING_SOURCE_DESTINATION_PARAMS                                                                       \
     CHECK(destination, false, "Expecting a valid (non-null) destination string");                                      \
     CHECK(source, false, "Expecting a valid (non-null) source parameter");                                             \
     CHECK(maxDestinationSize > 0,                                                                                      \
@@ -77,7 +73,7 @@ bool String::Add(
       uint32 sourceSize,
       uint32* resultedDestinationSize)
 {
-    PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
+    PREPARE_STRING_SOURCE_DESTINATION_PARAMS;
     COMPUTE_TEXT_SIZE(destination, destinationSize);
     CHECK(destinationSize + sourceSize < maxDestinationSize,
           false,
@@ -101,7 +97,7 @@ bool String::Set(
       uint32 sourceSize,
       uint32* resultedDestinationSize)
 {
-    PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
+    PREPARE_STRING_SOURCE_DESTINATION_PARAMS;
 
     if (sourceSize > 0)
     {

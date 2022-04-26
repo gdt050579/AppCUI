@@ -1,5 +1,4 @@
 #include "ControlContext.hpp"
-#include "Internal.hpp"
 
 #define CLEAR_SELECTION                                                                                                \
     if ((!selected) && (Selection.Start != INVALID_SELECTION))                                                         \

@@ -1,23 +1,22 @@
 #pragma once
 
 #include "AppCUI.hpp"
+
 #ifdef _WIN32
 #    include <windows.h>
 #    include <Shlobj.h>
 #else
-#    include <iostream>
-#    include <string.h>
 #    include <unistd.h>
 #    include <sys/ioctl.h>
 #    include <stdlib.h>
 #    include <cstdlib>
-#    include <stdio.h>
 #    include <fcntl.h>
 #    include <errno.h>
 #    include <sys/stat.h>
-
 #endif
-#include <memory>
+
+#include <stdio.h>
+#include <iostream>
 
 namespace AppCUI
 {
@@ -329,11 +328,11 @@ namespace Utils
         uint8 Values[8];
         uint32 Length;
     };
-    bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
+    bool ConvertUTF8CharToUnicodeChar(const char8* p, const char8* end, UnicodeChar& result);
     bool ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result);
     struct KeyValuePair
     {
-        enum class Type: uint8
+        enum class Type : uint8
         {
             None,
             String,

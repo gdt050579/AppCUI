@@ -1,7 +1,6 @@
 #include "NcursesTerminal.hpp"
 #include "ncurses.h"
 #include <poll.h>
-#include <string>
 
 namespace AppCUI::Internal
 {

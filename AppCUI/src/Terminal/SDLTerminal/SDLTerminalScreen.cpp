@@ -1,12 +1,8 @@
-#include "SDL.h"
-#include "SDL_ttf.h"
 #include "SDLTerminal.hpp"
 #include "cmrc/cmrc.hpp"
 #include <algorithm>
 #include <array>
-#include <filesystem>
 #include <fstream>
-#include <string>
 
 CMRC_DECLARE(font);
 

@@ -1,4 +1,5 @@
 #include "ImageLoader.hpp"
+
 #include <lodepng.h>
 
 namespace AppCUI::Graphics

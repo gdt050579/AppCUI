@@ -1,6 +1,4 @@
 #include "ControlContext.hpp"
-#include <string.h>
-#include <set>
 
 #ifdef MessageBox
 #    undef MessageBox

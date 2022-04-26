@@ -1,4 +1,5 @@
 #include "Internal.hpp"
+
 namespace AppCUI
 {
 using namespace Graphics;

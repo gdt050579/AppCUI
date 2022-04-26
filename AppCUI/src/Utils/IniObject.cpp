@@ -1,5 +1,5 @@
-#include <AppCUI.hpp>
 #include "Internal.hpp"
+
 #include <unordered_map>
 
 using namespace AppCUI;

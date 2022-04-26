@@ -1,5 +1,4 @@
 #include "ControlContext.hpp"
-#include "Internal.hpp"
 
 namespace AppCUI::Internal
 {
