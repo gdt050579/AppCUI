@@ -86,7 +86,7 @@ class Parser
     {
         return (
               (current < end) && ((*current) < MAX_CHARS_IN_TABLE) &&
-              ((ParserCharacterTypes[*current]) == CHAR_TYPE_OTHER));
+              ((ParserCharacterTypes[*current]) == CHAR_TYPE_EQ));
     }
     inline bool IsSeparator() const
     {
@@ -106,17 +106,20 @@ class Parser
             negative = true;
             s++;
         }
-        while ((s < e) && (((*s) < '0') || (*s > '9')))
+        while ((s < e) && (((*s) >= '0') && ((*s) <= '9')))
         {
             firstPart = firstPart * 10 + (int32) ((*s) - '0');
             s++;
         }
         if ((s < e) && ((*s) == '.'))
         {
-            while ((s < e) && (((*s) < '0') || (*s > '9')))
+            auto cnt = 0U;
+            while ((s < e) && (((*s) >= '0') && ((*s) <= '9')))
             {
-                secondPart = secondPart * 10 + (int32) ((*s) - '0');
+                if (cnt < 2) // only the first two decimals are stored
+                    secondPart = secondPart * 10 + (int32) ((*s) - '0');
                 s++;
+                cnt++;
             }
         }
         if ((s < e) && ((*s) == '%'))
@@ -127,8 +130,6 @@ class Parser
         if (s < e)
             return false; // not a valid number
         // valid number
-        if (negative)
-            firstPart = -firstPart;
         if (isPercentage)
         {
             value = firstPart * 100 + (secondPart % 100);
@@ -139,6 +140,8 @@ class Parser
             value = firstPart;
             type  = KeyValuePair::Type::Number;
         }
+        if (negative)
+            value = -value;
         return true;
     }
     inline uint64 ComputeHash(const T* s, const T* e)
