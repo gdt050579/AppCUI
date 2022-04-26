@@ -3,7 +3,7 @@ import os,sys
 data = {}
 
 template_values = r"""
-	enum class Value: uint8
+	enum class Type: uint8
 	{
 		${VALUES}
 	};
@@ -17,14 +17,14 @@ namespace ${NAMESPACE} {
 	static constexpr uint64 Hashes[${DEVIDER}] = {
 		${TABLE_HASHES}
 	};
-	inline bool HashToValue(uint64 hash, ${TYPE}& resultedValue) {
+	inline bool HashToType(uint64 hash, ${TYPE}& resultedType) {
 		const auto entry = hash % ${DEVIDER};
 		if (Hashes[entry]!=hash)
 			return false;
 		const auto res = Values[entry];
 		if (res==0xFF) // invalid value
 			return false;
-		resultedValue = static_cast<${TYPE}>(res);
+		resultedType = static_cast<${TYPE}>(res);
 		return true;
 	}
 };
@@ -133,7 +133,7 @@ def BuildCode(devider):
 		hash = ComputeFNVHash(k)
 		d_idx = hash % devider
 		if len(data["general"]["valuetype"])==0:		
-			table_values[d_idx] = "static_cast<uint8>(Value::"+data["list"][k]+")"
+			table_values[d_idx] = "static_cast<uint8>(Type::"+data["list"][k]+")"
 		else:
 			table_values[d_idx] = "static_cast<uint8>("+data["general"]["valuetype"]+"::"+data["list"][k]+")"
 		table_hashes[d_idx] = hash
@@ -146,7 +146,7 @@ def BuildCode(devider):
 	value_type = data["general"]["valuetype"]
 	if len(value_type)==0:
 		values = template_values.replace(r"${VALUES}",values)
-		value_type = "Value"
+		value_type = "Type"
 	else:
 		values = ""
 	s = template
