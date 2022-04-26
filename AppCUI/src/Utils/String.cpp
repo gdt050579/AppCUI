@@ -1,5 +1,7 @@
 #include "Internal.hpp"
 
+#include <stdarg.h>
+
 using namespace AppCUI;
 
 const uint8 string_lowercase_table[256] = {
