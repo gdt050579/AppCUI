@@ -1,4 +1,3 @@
-#include <string>
 #include "SDLTerminal.hpp"
 
 namespace AppCUI::Internal

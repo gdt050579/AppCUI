@@ -1,7 +1,7 @@
 #include "AppCUI.hpp"
+
 #include <set>
 #include <stack>
-#include <vector>
 
 namespace AppCUI
 {

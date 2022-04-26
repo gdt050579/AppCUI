@@ -1,8 +1,6 @@
-#include <AppCUI.hpp>
 #include "Internal.hpp"
-#include <iostream>
+
 #include <stdarg.h>
-#include <stdio.h>
 
 namespace AppCUI::Log
 {

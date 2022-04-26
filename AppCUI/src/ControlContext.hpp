@@ -1,10 +1,7 @@
 #pragma once
 
-#include "AppCUI.hpp"
 #include "Internal.hpp"
-#include <string.h>
-#include <vector>
-#include <map>
+
 #include <set>
 
 namespace AppCUI
@@ -474,7 +471,6 @@ struct InternalListViewItem
 struct InternalColumnsHeader
 {
     Reference<Control> host;
-    
 };
 struct InternalListViewColumn
 {

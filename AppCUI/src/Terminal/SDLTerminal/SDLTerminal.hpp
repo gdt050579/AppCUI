@@ -4,9 +4,6 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include <iterator>
-#include <map>
-#include <memory>
-#include <string>
 #include <unordered_map>
 
 namespace AppCUI

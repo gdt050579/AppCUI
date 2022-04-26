@@ -1,6 +1,4 @@
-#include "Internal.hpp"
 #include "ControlContext.hpp"
-#include <map>
 
 #ifdef MessageBox
 #    undef MessageBox

@@ -1,6 +1,4 @@
-#include <AppCUI.hpp>
 #include "Internal.hpp"
-#include <string.h>
 
 namespace AppCUI
 {

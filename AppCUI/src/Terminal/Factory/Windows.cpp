@@ -1,4 +1,3 @@
-#include <string.h>
 #include "../TerminalFactory.hpp"
 #include "../WindowsTerminal/WindowsTerminal.hpp"
 

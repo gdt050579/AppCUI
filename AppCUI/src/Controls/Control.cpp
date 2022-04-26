@@ -1,7 +1,6 @@
 #include "ControlContext.hpp"
-#include "Internal.hpp"
+
 #include <cstring>
-#include <string.h>
 
 namespace AppCUI
 {
