@@ -33,7 +33,7 @@ namespace ${NAMESPACE} {
 def ComputeFNVHash(s):
 	hash = 0xcbf29ce484222325
 	for c in s.lower():
-		hash = hash ^ (ord(c) ^ 0xFF)
+		hash = hash ^ (ord(c) & 0xFF)
 		hash = hash & 0xFFFFFFFFFFFFFFFF
 		hash = hash * 0x00000100000001B3
 		hash = hash & 0xFFFFFFFFFFFFFFFF
