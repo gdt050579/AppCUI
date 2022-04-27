@@ -84,11 +84,13 @@ namespace ColumnParser
     }
 }; // namespace ColumnParser
 
-bool InternalColumnsHeader::Add(KeyValueParser& parser)
+bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
     LocalString<256> error;
     ColumnParser::Type columnParamType;
-    for (auto idx = 0U; idx < parser.GetCount();idx++)
+    string_view asciiName;
+    u16string_view unicodeTextName;
+    for (auto idx = 0U; idx < parser.GetCount(); idx++)
     {
         const auto& item = parser[idx];
         if (ColumnParser::HashToType(item.Key.hash, columnParamType) == false)
@@ -96,10 +98,14 @@ bool InternalColumnsHeader::Add(KeyValueParser& parser)
             error.Set("Unknwon layout item: ");
             error.Add((const char*) item.Key.data, item.Key.dataSize);
             ASSERT(false, error.GetText());
-        } 
+        }
         switch (columnParamType)
         {
         case ColumnParser::Type::Name:
+            if (unicodeText)
+                unicodeTextName = u16string_view((const char16*) item.Value.data, item.Value.dataSize >> 1);
+            else
+                asciiName = string_view((const char*) item.Value.data, item.Value.dataSize);
             break;
         case ColumnParser::Type::Width:
             break;
