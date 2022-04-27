@@ -471,6 +471,7 @@ struct InternalListViewItem
 struct InternalColumnsHeader
 {
     Reference<Control> host;
+    bool Add(KeyValueParser& parser);
 };
 struct InternalListViewColumn
 {
