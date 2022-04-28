@@ -25,9 +25,12 @@ bool File::OpenWrite(const std::filesystem::path& filePath)
 {
     Close();
 
-    const auto longName = longPathPrefix + filePath.u16string();
-    HANDLE hFile        = CreateFileW(
-          (LPCWSTR) longName.c_str(),
+    LocalUnicodeStringBuilder<1024> longPath;
+    CHECK(longPath.Add(longPathPrefix), false, "");
+    CHECK(longPath.Add(filePath.u16string()), false, "");
+
+    HANDLE hFile = CreateFileW(
+          (LPCWSTR) longPath.GetString(),
           GENERIC_READ | GENERIC_WRITE,
           FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL,
@@ -53,9 +56,18 @@ bool File::OpenRead(const std::filesystem::path& filePath)
 {
     Close();
 
-    const auto longName = longPathPrefix + filePath.u16string();
-    HANDLE hFile        = CreateFileW(
-          (LPCWSTR) longName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+    LocalUnicodeStringBuilder<1024> longPath;
+    CHECK(longPath.Add(longPathPrefix), false, "");
+    CHECK(longPath.Add(filePath.u16string()), false, "");
+
+    HANDLE hFile = CreateFileW(
+          (LPCWSTR) longPath.GetString(),
+          GENERIC_READ,
+          FILE_SHARE_READ | FILE_SHARE_WRITE,
+          NULL,
+          OPEN_EXISTING,
+          0,
+          NULL);
     CHECK(hFile != INVALID_HANDLE_VALUE,
           false,
           "Fail to create: %s ==> Error code: %d",
@@ -71,9 +83,12 @@ bool File::Create(const std::filesystem::path& filePath, bool overwriteExisting)
 {
     Close();
 
-    const auto longName = longPathPrefix + filePath.u16string();
-    HANDLE hFile        = CreateFileW(
-          (LPCWSTR) longName.c_str(),
+    LocalUnicodeStringBuilder<1024> longPath;
+    CHECK(longPath.Add(longPathPrefix), false, "");
+    CHECK(longPath.Add(filePath.u16string()), false, "");
+
+    HANDLE hFile = CreateFileW(
+          (LPCWSTR) longPath.GetString(),
           GENERIC_READ | GENERIC_WRITE,
           FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL,
