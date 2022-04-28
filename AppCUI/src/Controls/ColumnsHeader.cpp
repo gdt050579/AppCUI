@@ -86,6 +86,31 @@ namespace ColumnParser
     }
 }; // namespace ColumnParser
 
+namespace ColumnAlign
+{
+
+    static constexpr uint8 Values[9] = {
+        static_cast<uint8>(TextAlignament::Center), 0xFF, static_cast<uint8>(TextAlignament::Right),
+        static_cast<uint8>(TextAlignament::Left),   0xFF, static_cast<uint8>(TextAlignament::Center),
+        static_cast<uint8>(TextAlignament::Left),   0xFF, static_cast<uint8>(TextAlignament::Right),
+    };
+    static constexpr uint64 Hashes[9] = {
+        0xAF63DE4C8601EFF2, 0x0, 0x76AAAA535714D805, 0xAF63E14C8601F50B, 0x0, 0x6F4B7EC4DCAA8AC4,
+        0x24B070ADA2041CB0, 0x0, 0xAF63EF4C86020CD5,
+    };
+    inline bool HashToType(uint64 hash, TextAlignament& resultedType)
+    {
+        const auto entry = hash % 9;
+        if (Hashes[entry] != hash)
+            return false;
+        const auto res = Values[entry];
+        if (res == 0xFF) // invalid value
+            return false;
+        resultedType = static_cast<TextAlignament>(res);
+        return true;
+    }
+}; // namespace ColumnAlign
+
 InternalColumn::InternalColumn(const InternalColumn& obj)
 {
 }
@@ -137,13 +162,14 @@ void InternalColumn::SetWidth(uint32 width)
     this->Width = (uint8) width;
 }
 
-
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
     LocalString<256> error;
     ColumnParser::Type columnParamType;
     string_view asciiName;
     u16string_view unicodeTextName;
+    TextAlignament textAlign = TextAlignament::Left;
+
     for (auto idx = 0U; idx < parser.GetCount(); idx++)
     {
         const auto& item = parser[idx];
@@ -164,6 +190,12 @@ bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
         case ColumnParser::Type::Width:
             break;
         case ColumnParser::Type::Align:
+            if (ColumnAlign::HashToType(item.Value.hash,textAlign)==false)
+            {
+                error.Set("Unknwon column align value: ");
+                error.Add((const char*) item.Value.data, item.Value.dataSize);
+                ASSERT(false, error.GetText());
+            }
             break;
         default:
             error.Set("Internal error - fail to parse item: ");
@@ -211,7 +243,7 @@ bool ColumnsHeader::Add(const ConstString columnFormat)
 }
 bool ColumnsHeader::Add(std::initializer_list<ConstString> list)
 {
-    const auto newReservedCapacity = ((list.size() + ICH->columns.size()) | 7) + 1; // align to 8 columns 
+    const auto newReservedCapacity = ((list.size() + ICH->columns.size()) | 7) + 1; // align to 8 columns
     ICH->columns.reserve(newReservedCapacity);
     for (auto& col : list)
     {
