@@ -3,6 +3,8 @@ using namespace AppCUI::Utils;
 
 namespace AppCUI
 {
+constexpr uint32 MINIM_COLUMN_WIDTH = 3;
+constexpr uint32 MAXIM_COLUMN_WIDTH = 256;
 
 namespace ColumnParser
 {
@@ -84,6 +86,58 @@ namespace ColumnParser
     }
 }; // namespace ColumnParser
 
+InternalColumn::InternalColumn(const InternalColumn& obj)
+{
+}
+InternalColumn::InternalColumn(InternalColumn&& obj)
+{
+}
+InternalColumn& InternalColumn::operator=(const InternalColumn& obj)
+{
+}
+InternalColumn& InternalColumn::operator=(InternalColumn& obj)
+{
+}
+void InternalColumn::Reset()
+{
+    this->HotKeyCode   = Key::None;
+    this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    this->Flags        = 0;
+    this->Align        = TextAlignament::Left;
+    this->Width        = 10;
+    this->Name.Clear();
+}
+bool InternalColumn::SetName(const ConstString& text)
+{
+    this->HotKeyCode   = Key::None;
+    this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+
+    CHECK(Name.SetWithHotKey(text, this->HotKeyOffset, this->HotKeyCode, Key::Ctrl),
+          false,
+          "Fail to set name to column !");
+
+    return true;
+}
+bool InternalColumn::SetAlign(TextAlignament align)
+{
+    if ((align == TextAlignament::Left) || (align == TextAlignament::Right) || (align == TextAlignament::Center))
+    {
+        this->Align = align;
+        return true;
+    }
+    RETURNERROR(
+          false,
+          "align parameter can only be one of the following: TextAlignament::Left, TextAlignament::Right or "
+          "TextAlignament::Center");
+}
+void InternalColumn::SetWidth(uint32 width)
+{
+    width       = std::max<>(width, MINIM_COLUMN_WIDTH);
+    width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
+    this->Width = (uint8) width;
+}
+
+
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
     LocalString<256> error;
@@ -125,6 +179,8 @@ namespace AppCUI::Controls
 {
 
 //============================================================================================
+#define ICH ((InternalColumnsHeader*) (this->data))
+
 ColumnsHeader::ColumnsHeader()
 {
     this->data = new InternalColumnsHeader();
@@ -155,10 +211,13 @@ bool ColumnsHeader::Add(const ConstString columnFormat)
 }
 bool ColumnsHeader::Add(std::initializer_list<ConstString> list)
 {
+    const auto newReservedCapacity = ((list.size() + ICH->columns.size()) | 7) + 1; // align to 8 columns 
+    ICH->columns.reserve(newReservedCapacity);
     for (auto& col : list)
     {
         CHECK(Add(col), false, "");
     }
     return true;
 }
+#undef ICH
 } // namespace AppCUI::Controls

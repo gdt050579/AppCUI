@@ -468,9 +468,33 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
+struct InternalColumn
+{
+    CharacterBuffer Name;
+    uint32 HotKeyOffset;
+    uint32 Flags;
+    Key HotKeyCode;
+    uint16 Width;
+    TextAlignament Align;
+
+    // copy & move operator
+    InternalColumn(const InternalColumn& obj);
+    InternalColumn(InternalColumn&& obj);
+    InternalColumn& operator=(const InternalColumn& obj);
+    InternalColumn& operator=(InternalColumn& obj);
+
+    void Reset();
+    bool SetName(const ConstString& text);
+    bool SetAlign(TextAlignament align);
+    void SetWidth(uint32 width);
+
+
+};
 struct InternalColumnsHeader
 {
+    std::vector<InternalColumn> columns;
     Reference<Control> host;
+
     bool Add(KeyValueParser& parser, bool unicodeText);
 };
 struct InternalListViewColumn
