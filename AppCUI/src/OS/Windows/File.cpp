@@ -28,6 +28,7 @@ bool File::OpenWrite(const std::filesystem::path& filePath)
     LocalUnicodeStringBuilder<1024> longPath;
     CHECK(longPath.Add(longPathPrefix), false, "");
     CHECK(longPath.Add(filePath.u16string()), false, "");
+    CHECK(longPath.AddChar(u'\0'), false, "");
 
     HANDLE hFile = CreateFileW(
           (LPCWSTR) longPath.GetString(),
@@ -59,6 +60,7 @@ bool File::OpenRead(const std::filesystem::path& filePath)
     LocalUnicodeStringBuilder<1024> longPath;
     CHECK(longPath.Add(longPathPrefix), false, "");
     CHECK(longPath.Add(filePath.u16string()), false, "");
+    CHECK(longPath.AddChar(u'\0'), false, "");
 
     HANDLE hFile = CreateFileW(
           (LPCWSTR) longPath.GetString(),
@@ -86,6 +88,7 @@ bool File::Create(const std::filesystem::path& filePath, bool overwriteExisting)
     LocalUnicodeStringBuilder<1024> longPath;
     CHECK(longPath.Add(longPathPrefix), false, "");
     CHECK(longPath.Add(filePath.u16string()), false, "");
+    CHECK(longPath.AddChar(u'\0'), false, "");
 
     HANDLE hFile = CreateFileW(
           (LPCWSTR) longPath.GetString(),
