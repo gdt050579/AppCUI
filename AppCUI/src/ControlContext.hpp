@@ -490,6 +490,7 @@ struct InternalColumn
     // copy & move operator
     void CopyObject(const InternalColumn& obj);
     void SwapObject(InternalColumn& obj);
+    InternalColumn();
     InternalColumn(const InternalColumn& obj);
     InternalColumn(InternalColumn&& obj);
     InternalColumn& operator=(const InternalColumn& obj);

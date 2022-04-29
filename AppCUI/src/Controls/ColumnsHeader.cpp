@@ -187,22 +187,28 @@ namespace ColumnWidth
     }
 }; // namespace ColumnWidth
 
+InternalColumn::InternalColumn()
+{
+    this->Reset();
+}
 InternalColumn::InternalColumn(const InternalColumn& obj)
 {
     this->CopyObject(obj);
 }
 InternalColumn::InternalColumn(InternalColumn&& obj)
 {
-    Reset();
+    this->Reset();
     this->SwapObject(obj);
 }
 InternalColumn& InternalColumn::operator=(const InternalColumn& obj)
 {
     this->CopyObject(obj);
+    return *this;
 }
 InternalColumn& InternalColumn::operator=(InternalColumn&& obj)
 {
     this->SwapObject(obj);
+    return *this;
 }
 void InternalColumn::Reset()
 {
