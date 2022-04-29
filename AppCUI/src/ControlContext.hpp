@@ -468,26 +468,39 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
+enum class InternalColumnWidthType: uint8
+{
+    Value,
+    Percentage,
+    MatchName,
+    Fill
+};
 struct InternalColumn
 {
-    CharacterBuffer Name;
-    uint32 HotKeyOffset;
-    uint32 Flags;
-    Key HotKeyCode;
-    uint16 Width;
-    TextAlignament Align;
+    CharacterBuffer name;
+    uint32 hotKeyOffset;
+    int32 x;
+    uint16 width;
+    uint16 widthTypeValue;
+    Key hotKeyCode;
+    TextAlignament align;
+    InternalColumnWidthType widthType;
+    
 
     // copy & move operator
+    void CopyObject(const InternalColumn& obj);
+    void SwapObject(InternalColumn& obj);
     InternalColumn(const InternalColumn& obj);
     InternalColumn(InternalColumn&& obj);
     InternalColumn& operator=(const InternalColumn& obj);
-    InternalColumn& operator=(InternalColumn& obj);
+    InternalColumn& operator=(InternalColumn&& obj);
 
     void Reset();
     bool SetName(const ConstString& text);
     bool SetAlign(TextAlignament align);
     void SetWidth(uint32 width);
-
+    void SetWidth(float percentage);
+    void SetWidth(double percentage);
 
 };
 struct InternalColumnsHeader

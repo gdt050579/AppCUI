@@ -111,33 +111,143 @@ namespace ColumnAlign
     }
 }; // namespace ColumnAlign
 
+namespace ColumnWidth
+{
+
+    enum class Type : uint8
+    {
+        Fill      = 0,
+        Default   = 1,
+        MatchName = 2,
+
+    };
+
+    static constexpr uint8 Values[24] = {
+        static_cast<uint8>(Type::Fill),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Default),
+        0xFF,
+        static_cast<uint8>(Type::MatchName),
+        static_cast<uint8>(Type::Fill),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::MatchName),
+        static_cast<uint8>(Type::Default),
+        0xFF,
+        static_cast<uint8>(Type::MatchName),
+        static_cast<uint8>(Type::MatchName),
+        0xFF,
+    };
+    static constexpr uint64 Hashes[24] = {
+        0xAAD01878F02A7608,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0xEBADA5168620C5FE,
+        0x0,
+        0xAF63E04C8601F358,
+        0xAF63DB4C8601EAD9,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x8A95807B55044C2,
+        0xAF63D94C8601E773,
+        0x0,
+        0xE7438E486E283D15,
+        0xC3BFE3A4FE4C13F6,
+        0x0,
+    };
+    inline bool HashToType(uint64 hash, Type& resultedType)
+    {
+        const auto entry = hash % 24;
+        if (Hashes[entry] != hash)
+            return false;
+        const auto res = Values[entry];
+        if (res == 0xFF) // invalid value
+            return false;
+        resultedType = static_cast<Type>(res);
+        return true;
+    }
+}; // namespace ColumnWidth
+
 InternalColumn::InternalColumn(const InternalColumn& obj)
 {
+    this->CopyObject(obj);
 }
 InternalColumn::InternalColumn(InternalColumn&& obj)
 {
+    Reset();
+    this->SwapObject(obj);
 }
 InternalColumn& InternalColumn::operator=(const InternalColumn& obj)
 {
+    this->CopyObject(obj);
 }
-InternalColumn& InternalColumn::operator=(InternalColumn& obj)
+InternalColumn& InternalColumn::operator=(InternalColumn&& obj)
 {
+    this->SwapObject(obj);
 }
 void InternalColumn::Reset()
 {
-    this->HotKeyCode   = Key::None;
-    this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    this->Flags        = 0;
-    this->Align        = TextAlignament::Left;
-    this->Width        = 10;
-    this->Name.Clear();
+    this->hotKeyCode     = Key::None;
+    this->hotKeyOffset   = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    this->align          = TextAlignament::Left;
+    this->width          = MINIM_COLUMN_WIDTH;
+    this->widthType      = InternalColumnWidthType::Value;
+    this->widthTypeValue = MINIM_COLUMN_WIDTH;
+    this->x              = 0;
+    this->name.Clear();
+}
+void InternalColumn::CopyObject(const InternalColumn& obj)
+{
+    this->hotKeyCode     = obj.hotKeyCode;
+    this->hotKeyOffset   = obj.hotKeyOffset;
+    this->align          = obj.align;
+    this->widthType      = obj.widthType;
+    this->widthTypeValue = obj.widthTypeValue;
+    this->name           = obj.name;
+
+    // these values need to be recomputed
+    this->width = MINIM_COLUMN_WIDTH;
+    this->x     = 0;
+}
+void InternalColumn::SwapObject(InternalColumn& obj)
+{
+    // direct copy (nothing to swap)
+    this->hotKeyCode     = obj.hotKeyCode;
+    this->hotKeyOffset   = obj.hotKeyOffset;
+    this->align          = obj.align;
+    this->widthType      = obj.widthType;
+    this->widthTypeValue = obj.widthTypeValue;
+    // these values need to be recomputed
+    this->width = MINIM_COLUMN_WIDTH;
+    this->x     = 0;
+    // swap name
+    this->name.Swap(obj.name);
 }
 bool InternalColumn::SetName(const ConstString& text)
 {
-    this->HotKeyCode   = Key::None;
-    this->HotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
+    this->hotKeyCode   = Key::None;
+    this->hotKeyOffset = CharacterBuffer::INVALID_HOTKEY_OFFSET;
 
-    CHECK(Name.SetWithHotKey(text, this->HotKeyOffset, this->HotKeyCode, Key::Ctrl),
+    CHECK(this->name.SetWithHotKey(text, this->hotKeyOffset, this->hotKeyCode, Key::Ctrl),
           false,
           "Fail to set name to column !");
 
@@ -147,7 +257,7 @@ bool InternalColumn::SetAlign(TextAlignament align)
 {
     if ((align == TextAlignament::Left) || (align == TextAlignament::Right) || (align == TextAlignament::Center))
     {
-        this->Align = align;
+        this->align = align;
         return true;
     }
     RETURNERROR(
@@ -155,20 +265,38 @@ bool InternalColumn::SetAlign(TextAlignament align)
           "align parameter can only be one of the following: TextAlignament::Left, TextAlignament::Right or "
           "TextAlignament::Center");
 }
-void InternalColumn::SetWidth(uint32 width)
+void InternalColumn::SetWidth(uint32 _width)
 {
-    width       = std::max<>(width, MINIM_COLUMN_WIDTH);
-    width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
-    this->Width = (uint8) width;
+    _width               = std::max<>(_width, MINIM_COLUMN_WIDTH);
+    _width               = std::min<>(_width, MAXIM_COLUMN_WIDTH);
+    this->widthTypeValue = (uint16) _width;
+    this->widthType      = InternalColumnWidthType::Value;
+}
+void InternalColumn::SetWidth(float percentage)
+{
+    if (percentage < 0)
+        return;
+    this->widthTypeValue = (uint16) (percentage * 10000);
+    this->widthType      = InternalColumnWidthType::Percentage;
+}
+void InternalColumn::SetWidth(double percentage)
+{
+    if (percentage < 0)
+        return;
+    this->widthTypeValue = (uint16) (percentage * 10000);
+    this->widthType      = InternalColumnWidthType::Percentage;
 }
 
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
     LocalString<256> error;
     ColumnParser::Type columnParamType;
+    ColumnWidth::Type columnWidthType;
     string_view asciiName;
     u16string_view unicodeTextName;
-    TextAlignament textAlign = TextAlignament::Left;
+    TextAlignament textAlign          = TextAlignament::Left;
+    InternalColumnWidthType widthType = InternalColumnWidthType::Value;
+    uint16 widthValue                 = MINIM_COLUMN_WIDTH;
 
     for (auto idx = 0U; idx < parser.GetCount(); idx++)
     {
@@ -188,9 +316,43 @@ bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
                 asciiName = string_view((const char*) item.Value.data, item.Value.dataSize);
             break;
         case ColumnParser::Type::Width:
+            if (item.Value.type == KeyValuePair::Type::Number)
+            {
+                ASSERT(item.Value.number > 0, "Column width should be bigger than 0");
+                widthType  = InternalColumnWidthType::Value;
+                widthValue = item.Value.number;
+            }
+            else if (item.Value.type == KeyValuePair::Type::Percentage)
+            {
+                ASSERT(item.Value.number > 0, "Column width (even in percentage) should be bigger than 0");
+                widthType  = InternalColumnWidthType::Percentage;
+                widthValue = item.Value.number;
+            }
+            else
+            {
+                if (ColumnWidth::HashToType(item.Value.hash, columnWidthType) == false)
+                {
+                    error.Set("Unknwon column width type: ");
+                    error.Add((const char*) item.Key.data, item.Key.dataSize);
+                    ASSERT(false, error.GetText());
+                }
+                else
+                {
+                    if (columnWidthType == ColumnWidth::Type::Fill)
+                        widthType = InternalColumnWidthType::Fill;
+                    else if (columnWidthType == ColumnWidth::Type::MatchName)
+                        widthType = InternalColumnWidthType::MatchName;
+                    else
+                    {
+                        // default value
+                        widthType  = InternalColumnWidthType::Value;
+                        widthValue = 12;
+                    }
+                }
+            }
             break;
         case ColumnParser::Type::Align:
-            if (ColumnAlign::HashToType(item.Value.hash,textAlign)==false)
+            if (ColumnAlign::HashToType(item.Value.hash, textAlign) == false)
             {
                 error.Set("Unknwon column align value: ");
                 error.Add((const char*) item.Value.data, item.Value.dataSize);
@@ -204,6 +366,18 @@ bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
             return false;
         }
     }
+    // add the column
+    auto& col = columns.emplace_back();
+    col.SetAlign(textAlign);
+    if (unicodeText)
+        col.SetName(unicodeTextName);
+    else
+        col.SetName(asciiName);
+    col.widthTypeValue = widthValue;
+    col.widthType      = widthType;
+    col.x              = 0;
+
+    return true;
 }
 } // namespace AppCUI
 
