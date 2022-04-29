@@ -112,6 +112,19 @@ bool DateTime::CreateFromFileTime(const uint32 low, const uint32 high)
     return true;
 }
 
+bool DateTime::CreateFromFATUTC(const uint32 entry)
+{
+    this->year  = ((entry & 0xFE00) >> 9) + 1980;
+    this->month = (entry & 0x1E0) >> 5;
+    this->day   = entry & 0x1F;
+
+    this->second = ((entry >> 16) & 0x1F) << 1;
+    this->minute = ((entry >> 16) & 0x7E0) >> 5;
+    this->hour   = ((entry >> 16) & 0xF800) >> 11;
+
+    return true;
+}
+
 std::string_view DateTime::GetStringRepresentation()
 {
     if (this->year == 0)
