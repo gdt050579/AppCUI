@@ -508,8 +508,12 @@ struct InternalColumnsHeader
 {
     std::vector<InternalColumn> columns;
     Reference<Control> host;
+    uint32 width;
+    int32 x, y;
 
+    InternalColumnsHeader();
     bool Add(KeyValueParser& parser, bool unicodeText);
+    void RecomputeColumnsSizes();
 };
 struct InternalListViewColumn
 {

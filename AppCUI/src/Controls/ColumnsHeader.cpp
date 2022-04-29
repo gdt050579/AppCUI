@@ -4,7 +4,7 @@ using namespace AppCUI::Utils;
 namespace AppCUI
 {
 constexpr uint32 MINIM_COLUMN_WIDTH = 3;
-constexpr uint32 MAXIM_COLUMN_WIDTH = 256;
+constexpr uint32 MAXIM_COLUMN_WIDTH = 255;
 
 namespace ColumnParser
 {
@@ -187,6 +187,16 @@ namespace ColumnWidth
     }
 }; // namespace ColumnWidth
 
+constexpr inline uint16 AdjustedColumnWidth(uint32 value)
+{
+    if (value < MINIM_COLUMN_WIDTH)
+        return (uint16) (MINIM_COLUMN_WIDTH);
+    else if (value > MAXIM_COLUMN_WIDTH)
+        return (uint16) (MAXIM_COLUMN_WIDTH);
+    else
+        return (uint16) value;
+}
+
 InternalColumn::InternalColumn()
 {
     this->Reset();
@@ -273,8 +283,6 @@ bool InternalColumn::SetAlign(TextAlignament align)
 }
 void InternalColumn::SetWidth(uint32 _width)
 {
-    _width               = std::max<>(_width, MINIM_COLUMN_WIDTH);
-    _width               = std::min<>(_width, MAXIM_COLUMN_WIDTH);
     this->widthTypeValue = (uint16) _width;
     this->widthType      = InternalColumnWidthType::Value;
 }
@@ -293,6 +301,12 @@ void InternalColumn::SetWidth(double percentage)
     this->widthType      = InternalColumnWidthType::Percentage;
 }
 
+InternalColumnsHeader::InternalColumnsHeader()
+{
+    this->x     = 0;
+    this->y     = 0;
+    this->width = 0;
+}
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
     LocalString<256> error;
@@ -385,6 +399,69 @@ bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 
     return true;
 }
+void InternalColumnsHeader::RecomputeColumnsSizes()
+{
+    uint32 columnsWithFill  = 0;
+    uint32 columnsTotalSize = 0;
+    for (auto& col : columns)
+    {
+        switch (col.widthType)
+        {
+        case InternalColumnWidthType::Value:
+            col.width = AdjustedColumnWidth(col.widthTypeValue);
+            break;
+        case InternalColumnWidthType::MatchName:
+            col.width = AdjustedColumnWidth(col.name.Len() + 3);
+            break;
+        case InternalColumnWidthType::Percentage:
+            col.width = AdjustedColumnWidth(this->width * ((uint32) col.widthTypeValue) / 10000U);
+            break;
+        case InternalColumnWidthType::Fill:
+            columnsWithFill++;
+            col.width = 0; // don't know it yet
+            break;
+        default:
+            // safety
+            col.width = 0;
+            break;
+        }
+        columnsTotalSize += col.width;
+    }
+    if (columnsWithFill > 0)
+    {
+        // add columns.size()-1 as the number of vertical separator (except for the last one)
+        auto totalRequiredSpace = columnsTotalSize + (uint32) columns.size() - 1;
+        auto fillValue = totalRequiredSpace < this->width ? ((this->width - totalRequiredSpace) / columnsWithFill) : 0;
+        for (auto& col : columns)
+        {
+            if (col.widthType == InternalColumnWidthType::Fill)
+            {
+                columnsWithFill--;
+                if (columnsWithFill==0)
+                {
+                    // last one --> make sure that we fill the entire space
+                    if (totalRequiredSpace < this->width)
+                        col.width = AdjustedColumnWidth(this->width - totalRequiredSpace);
+                    else
+                        col.width = AdjustedColumnWidth(fillValue);
+                }
+                else
+                {
+                    col.width = AdjustedColumnWidth(fillValue);
+                }
+                totalRequiredSpace += col.width;
+            }
+        }
+    }
+    // compute the positions
+    auto xPoz = this->x;
+    for (auto& col : columns)
+    {
+        col.x = xPoz;
+        xPoz += ((int32) (col.width)) + 1;
+    }
+}
+
 } // namespace AppCUI
 
 namespace AppCUI::Controls
