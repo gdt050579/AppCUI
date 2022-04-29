@@ -404,16 +404,19 @@ bool ColumnsHeader::Add(const ConstString columnFormat)
     if ((obj.Encoding == StringEncoding::Ascii) || (obj.Encoding == StringEncoding::UTF8))
     {
         CHECK(parser.Parse(string_view((const char*) obj.Data, obj.Length)), false, "");
+        CHECK(ICH->Add(parser, false), false, "");
+        return true;
     }
     else if (obj.Encoding == StringEncoding::Unicode16)
     {
         CHECK(parser.Parse(u16string_view((const char16*) obj.Data, obj.Length)), false, "");
+        CHECK(ICH->Add(parser, true), false, "");
+        return true;
     }
     else
     {
         RETURNERROR(false, "Current string formate (%d) is not supported", obj.Encoding);
     }
-    NOT_IMPLEMENTED(false);
 }
 bool ColumnsHeader::Add(std::initializer_list<ConstString> list)
 {
