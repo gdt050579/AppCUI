@@ -3472,10 +3472,11 @@ namespace Controls
         void* data;
 
       public:
-        ColumnsHeader();
+        ColumnsHeader(Reference<Control> hostControl);
         ~ColumnsHeader();
         bool Add(std::initializer_list<ConstString> list);
         bool Add(const ConstString columnFormat);
+        void Paint(Graphics::Renderer& renderer);
     };
 
     class EXPORT Control

@@ -301,11 +301,15 @@ void InternalColumn::SetWidth(double percentage)
     this->widthType      = InternalColumnWidthType::Percentage;
 }
 
-InternalColumnsHeader::InternalColumnsHeader()
+InternalColumnsHeader::InternalColumnsHeader(Reference<Control> hostControl)
 {
-    this->x     = 0;
-    this->y     = 0;
-    this->width = 0;
+    this->x             = 0;
+    this->y             = 0;
+    this->width         = 0;
+    this->Cfg           = AppCUI::Application::GetAppConfig();
+    this->sortable      = false;
+    this->sortAscendent = true;
+    this->host          = hostControl;
 }
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
@@ -437,7 +441,7 @@ void InternalColumnsHeader::RecomputeColumnsSizes()
             if (col.widthType == InternalColumnWidthType::Fill)
             {
                 columnsWithFill--;
-                if (columnsWithFill==0)
+                if (columnsWithFill == 0)
                 {
                     // last one --> make sure that we fill the entire space
                     if (totalRequiredSpace < this->width)
@@ -461,7 +465,90 @@ void InternalColumnsHeader::RecomputeColumnsSizes()
         xPoz += ((int32) (col.width)) + 1;
     }
 }
+void InternalColumnsHeader::Paint(Graphics::Renderer& renderer)
+{
+    const auto Members     = (ControlContext*) host->Context;
+    const auto state       = Members->GetControlState(ControlStateFlags::None);
+    const auto defaultCol  = Cfg->Header.Text.GetColor(state);
+    const auto defaultHK   = Cfg->Header.HotKey.GetColor(state);
+    const auto rightMargin = this->x + (int32) this->width;
+    auto colIndex          = 0U;
 
+    renderer.FillHorizontalLine(this->x, this->y, this->width, ' ', defaultCol);
+
+    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
+    params.Y           = y;
+    params.Color       = defaultCol;
+    params.HotKeyColor = defaultHK;
+
+    for (auto& col : this->columns)
+    {
+        // check if the column is outside visible range
+        if (((col.x + (int32) col.width) < this->x) || (col.x >= rightMargin))
+        {
+            colIndex++;
+            continue;
+        }
+        if (state == ControlState::Focused)
+        {
+            if (colIndex == SortParams.ColumnIndex)
+            {
+                params.Color = Cfg->Header.Text.PressedOrSelected;
+                renderer.FillHorizontalLineSize(col.x, this->y, col.width, ' ', params.Color); // highlight the column
+            }
+            else if (colIndex == Columns.HoverColumnIndex)
+            {
+                params.Color = Cfg->Header.Text.Hovered;
+                renderer.FillHorizontalLineSize(col.x, this->y, col.width, ' ', params.Color); // highlight the column
+            }
+            else
+                params.Color = defaultCol;
+        }
+        params.X     = col.x + 1;
+        params.Width = col.width >= 2 ? col.width - 2 : 0;
+        params.Align = col.align;
+        if ((col.hotKeyOffset == CharacterBuffer::INVALID_HOTKEY_OFFSET) || (!this->sortable))
+        {
+            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors;
+            renderer.WriteText(col.name, params);
+        }
+        else
+        {
+            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors |
+                           WriteTextFlags::HighlightHotKey;
+            if (state == ControlState::Focused)
+            {
+                if (colIndex == SortParams.ColumnIndex)
+                {
+                    params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected; 
+                }
+                else if (tr == Columns.HoverColumnIndex)
+                {
+                    params.HotKeyColor = Cfg->Header.HotKey.Hovered;
+                }
+                else
+                    params.HotKeyColor = defaultHK;
+            }
+            params.HotKeyPosition = col.hotKeyOffset;
+            renderer.WriteText(col.name, params);
+        }
+        const auto separatorX = col.x + (int32) col.width;
+        if ((state == ControlState::Focused) && (colIndex == SortParams.ColumnIndex))
+        {
+            renderer.WriteSpecialCharacter(
+                  separatorX - 1,
+                  this->y,
+                  this->sortAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
+                  Cfg->Header.HotKey.PressedOrSelected);
+        }
+
+        if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
+        {
+            renderer.DrawVerticalLine(separatorX, this->y, Layout.Height, Cfg->Lines.GetColor(state));
+        }
+        colIndex++;
+    }
+}
 } // namespace AppCUI
 
 namespace AppCUI::Controls
@@ -470,9 +557,9 @@ namespace AppCUI::Controls
 //============================================================================================
 #define ICH ((InternalColumnsHeader*) (this->data))
 
-ColumnsHeader::ColumnsHeader()
+ColumnsHeader::ColumnsHeader(Reference<Control> hostControl)
 {
-    this->data = new InternalColumnsHeader();
+    this->data = new InternalColumnsHeader(hostControl);
 }
 ColumnsHeader::~ColumnsHeader()
 {
@@ -510,6 +597,10 @@ bool ColumnsHeader::Add(std::initializer_list<ConstString> list)
         CHECK(Add(col), false, "");
     }
     return true;
+}
+void ColumnsHeader::Paint(Graphics::Renderer& renderer)
+{
+    ICH->Paint(renderer);
 }
 #undef ICH
 } // namespace AppCUI::Controls

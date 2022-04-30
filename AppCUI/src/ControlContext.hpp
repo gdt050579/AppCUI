@@ -508,12 +508,16 @@ struct InternalColumnsHeader
 {
     std::vector<InternalColumn> columns;
     Reference<Control> host;
+    Reference<AppCUI::Application::Config> Cfg;
     uint32 width;
     int32 x, y;
+    bool sortable, sortAscendent;
+    
 
-    InternalColumnsHeader();
+    InternalColumnsHeader(Reference<Control> hostControl);
     bool Add(KeyValueParser& parser, bool unicodeText);
     void RecomputeColumnsSizes();
+    void Paint(Graphics::Renderer& renderer);
 };
 struct InternalListViewColumn
 {
