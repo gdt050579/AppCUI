@@ -3,8 +3,9 @@ using namespace AppCUI::Utils;
 
 namespace AppCUI
 {
-constexpr uint32 MINIM_COLUMN_WIDTH = 3;
-constexpr uint32 MAXIM_COLUMN_WIDTH = 255;
+constexpr uint32 MINIM_COLUMN_WIDTH   = 3;
+constexpr uint32 MAXIM_COLUMN_WIDTH   = 255;
+constexpr uint32 INVALID_COLUMN_INDEX = 0xFFFFFFFF;
 
 namespace ColumnParser
 {
@@ -303,13 +304,15 @@ void InternalColumn::SetWidth(double percentage)
 
 InternalColumnsHeader::InternalColumnsHeader(Reference<Control> hostControl)
 {
-    this->x             = 0;
-    this->y             = 0;
-    this->width         = 0;
-    this->Cfg           = AppCUI::Application::GetAppConfig();
-    this->sortable      = false;
-    this->sortAscendent = true;
-    this->host          = hostControl;
+    this->x                  = 0;
+    this->y                  = 0;
+    this->width              = 0;
+    this->Cfg                = AppCUI::Application::GetAppConfig();
+    this->sortable           = false;
+    this->sortAscendent      = true;
+    this->host               = hostControl;
+    this->sortColumnIndex    = INVALID_COLUMN_INDEX;
+    this->hoveredColumnIndex = INVALID_COLUMN_INDEX;
 }
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
@@ -491,12 +494,12 @@ void InternalColumnsHeader::Paint(Graphics::Renderer& renderer)
         }
         if (state == ControlState::Focused)
         {
-            if (colIndex == SortParams.ColumnIndex)
+            if (colIndex == this->sortColumnIndex)
             {
                 params.Color = Cfg->Header.Text.PressedOrSelected;
                 renderer.FillHorizontalLineSize(col.x, this->y, col.width, ' ', params.Color); // highlight the column
             }
-            else if (colIndex == Columns.HoverColumnIndex)
+            else if (colIndex == this->hoveredColumnIndex)
             {
                 params.Color = Cfg->Header.Text.Hovered;
                 renderer.FillHorizontalLineSize(col.x, this->y, col.width, ' ', params.Color); // highlight the column
@@ -518,11 +521,11 @@ void InternalColumnsHeader::Paint(Graphics::Renderer& renderer)
                            WriteTextFlags::HighlightHotKey;
             if (state == ControlState::Focused)
             {
-                if (colIndex == SortParams.ColumnIndex)
+                if (colIndex == this->sortColumnIndex)
                 {
-                    params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected; 
+                    params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected;
                 }
-                else if (tr == Columns.HoverColumnIndex)
+                else if (colIndex == this->hoveredColumnIndex)
                 {
                     params.HotKeyColor = Cfg->Header.HotKey.Hovered;
                 }

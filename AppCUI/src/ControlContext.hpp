@@ -510,6 +510,7 @@ struct InternalColumnsHeader
     Reference<Control> host;
     Reference<AppCUI::Application::Config> Cfg;
     uint32 width;
+    uint32 hoveredColumnIndex, sortColumnIndex;
     int32 x, y;
     bool sortable, sortAscendent;
     
