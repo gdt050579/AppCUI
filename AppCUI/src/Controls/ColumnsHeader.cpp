@@ -304,15 +304,17 @@ void InternalColumn::SetWidth(double percentage)
 
 InternalColumnsHeader::InternalColumnsHeader(Reference<Control> hostControl)
 {
-    this->x                  = 0;
-    this->y                  = 0;
-    this->width              = 0;
-    this->Cfg                = AppCUI::Application::GetAppConfig();
-    this->sortable           = false;
-    this->sortAscendent      = true;
-    this->host               = hostControl;
-    this->sortColumnIndex    = INVALID_COLUMN_INDEX;
-    this->hoveredColumnIndex = INVALID_COLUMN_INDEX;
+    this->x                    = 0;
+    this->y                    = 0;
+    this->width                = 0;
+    this->Cfg                  = AppCUI::Application::GetAppConfig();
+    this->sortable             = false;
+    this->sortAscendent        = true;
+    this->showColumnSeparators = true;
+    this->sizeableColumns      = true;
+    this->host                 = hostControl;
+    this->sortColumnIndex      = INVALID_COLUMN_INDEX;
+    this->hoveredColumnIndex   = INVALID_COLUMN_INDEX;
 }
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
@@ -536,7 +538,7 @@ void InternalColumnsHeader::Paint(Graphics::Renderer& renderer)
             renderer.WriteText(col.name, params);
         }
         const auto separatorX = col.x + (int32) col.width;
-        if ((state == ControlState::Focused) && (colIndex == SortParams.ColumnIndex))
+        if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
         {
             renderer.WriteSpecialCharacter(
                   separatorX - 1,
@@ -545,9 +547,11 @@ void InternalColumnsHeader::Paint(Graphics::Renderer& renderer)
                   Cfg->Header.HotKey.PressedOrSelected);
         }
 
-        if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
+        if (this->showColumnSeparators)
         {
-            renderer.DrawVerticalLine(separatorX, this->y, Layout.Height, Cfg->Lines.GetColor(state));
+            //renderer.DrawVerticalLine(separatorX, this->y, this->y, Cfg->Lines.GetColor(state));
+            renderer.WriteSpecialCharacter(
+                  separatorX, this->y, SpecialChars::BoxVerticalSingleLine, Cfg->Lines.GetColor(state));
         }
         colIndex++;
     }

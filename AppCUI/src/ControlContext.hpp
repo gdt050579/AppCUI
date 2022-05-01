@@ -512,7 +512,7 @@ struct InternalColumnsHeader
     uint32 width;
     uint32 hoveredColumnIndex, sortColumnIndex;
     int32 x, y;
-    bool sortable, sortAscendent;
+    bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
     
 
     InternalColumnsHeader(Reference<Control> hostControl);
