@@ -549,13 +549,40 @@ void InternalColumnsHeader::Paint(Graphics::Renderer& renderer)
 
         if (this->showColumnSeparators)
         {
-            //renderer.DrawVerticalLine(separatorX, this->y, this->y, Cfg->Lines.GetColor(state));
+            // renderer.DrawVerticalLine(separatorX, this->y, this->y, Cfg->Lines.GetColor(state));
             renderer.WriteSpecialCharacter(
                   separatorX, this->y, SpecialChars::BoxVerticalSingleLine, Cfg->Lines.GetColor(state));
         }
         colIndex++;
     }
 }
+void InternalColumnsHeader::MouseToColumn(int mouse_x, int mouse_y, uint32& columnID, uint32& columnSeparatorID)
+{
+    columnID          = INVALID_COLUMN_INDEX;
+    columnSeparatorID = INVALID_COLUMN_INDEX;
+    if (mouse_y != this->y)
+        return; // mouse not on the column
+    if ((!sortable) && (!sizeableColumns))
+        return; // there is no need to search for a column or separator as you can not do anything with it
+
+    auto idx = 0U;
+    for (auto& col : this->columns)
+    {
+        auto sepX = col.x + (int32) col.width;
+        if ((mouse_x >= col.x) && (mouse_x < sepX) && (sortable))
+        {
+            columnID = idx;
+            return;
+        }
+        if ((mouse_x == sepX) && (sizeableColumns))
+        {
+            columnSeparatorID = idx;
+            return;
+        }
+        idx++;
+    }
+}
+
 } // namespace AppCUI
 
 namespace AppCUI::Controls
