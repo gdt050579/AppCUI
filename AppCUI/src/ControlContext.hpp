@@ -520,6 +520,7 @@ struct InternalColumnsHeader
     void RecomputeColumnsSizes();
     void Paint(Graphics::Renderer& renderer);
     void MouseToColumn(int x, int y, uint32& columnID, uint32& columnSeparatorID);
+    void SetPosition(int x, int y, uint32 width);
 };
 struct InternalListViewColumn
 {

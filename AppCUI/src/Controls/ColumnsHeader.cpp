@@ -582,7 +582,13 @@ void InternalColumnsHeader::MouseToColumn(int mouse_x, int mouse_y, uint32& colu
         idx++;
     }
 }
-
+void InternalColumnsHeader::SetPosition(int _x, int _y, uint32 _width)
+{
+    this->x     = _x;
+    this->y     = _y;
+    this->width = _width;
+    this->RecomputeColumnsSizes();
+}
 } // namespace AppCUI
 
 namespace AppCUI::Controls
