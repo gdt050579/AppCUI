@@ -315,6 +315,7 @@ InternalColumnsHeader::InternalColumnsHeader(Reference<Control> hostControl)
     this->host                 = hostControl;
     this->sortColumnIndex      = INVALID_COLUMN_INDEX;
     this->hoveredColumnIndex   = INVALID_COLUMN_INDEX;
+    this->resizeColumnIndex    = INVALID_COLUMN_INDEX;
 }
 bool InternalColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
@@ -589,6 +590,39 @@ void InternalColumnsHeader::SetPosition(int _x, int _y, uint32 _width)
     this->width = _width;
     this->RecomputeColumnsSizes();
 }
+bool InternalColumnsHeader::OnKeyEvent(Key key, char16 character)
+{
+    if (this->resizeColumnIndex != INVALID_COLUMN_INDEX)
+    {
+        // sanity check
+        if (this->columns.size()==0)
+        {
+            this->resizeColumnIndex = INVALID_COLUMN_INDEX;
+            return false;
+        }
+        switch (key)
+        {
+        case Key::Left:
+            // decrease size
+            return true;
+        case Key::Right:
+            // increase size
+            return true;
+        case Key::Ctrl | Key::Left:
+            this->resizeColumnIndex =
+                  this->resizeColumnIndex > 0 ? this->resizeColumnIndex - 1 : (uint32) (this->columns.size() - 1);
+            return true;
+        case Key::Ctrl | Key::Right:
+            this->resizeColumnIndex++;
+            if (this->resizeColumnIndex >= this->columns.size())
+                this->resizeColumnIndex = 0;
+            return true;
+        }
+        // for any other key --> exit resize column mode and tranfer the key to its host
+        this->resizeColumnIndex = INVALID_COLUMN_INDEX;
+        return false;
+    }
+}
 } // namespace AppCUI
 
 namespace AppCUI::Controls
@@ -641,6 +675,10 @@ bool ColumnsHeader::Add(std::initializer_list<ConstString> list)
 void ColumnsHeader::Paint(Graphics::Renderer& renderer)
 {
     ICH->Paint(renderer);
+}
+bool ColumnsHeader::ProcessKeyEvent(Key key, char16 character)
+{
+    return ICH->OnKeyEvent(key, character);
 }
 #undef ICH
 } // namespace AppCUI::Controls

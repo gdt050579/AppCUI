@@ -3477,6 +3477,8 @@ namespace Controls
         bool Add(std::initializer_list<ConstString> list);
         bool Add(const ConstString columnFormat);
         void Paint(Graphics::Renderer& renderer);
+
+        bool ProcessKeyEvent(Input::Key key, char16 character);
     };
 
     class EXPORT Control

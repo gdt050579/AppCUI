@@ -510,7 +510,7 @@ struct InternalColumnsHeader
     Reference<Control> host;
     Reference<AppCUI::Application::Config> Cfg;
     uint32 width;
-    uint32 hoveredColumnIndex, sortColumnIndex;
+    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
     int32 x, y;
     bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
     
@@ -521,6 +521,7 @@ struct InternalColumnsHeader
     void Paint(Graphics::Renderer& renderer);
     void MouseToColumn(int x, int y, uint32& columnID, uint32& columnSeparatorID);
     void SetPosition(int x, int y, uint32 width);
+    bool OnKeyEvent(Key key, char16 character);
 };
 struct InternalListViewColumn
 {
