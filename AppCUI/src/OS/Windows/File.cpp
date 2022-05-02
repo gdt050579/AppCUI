@@ -25,9 +25,13 @@ bool File::OpenWrite(const std::filesystem::path& filePath)
 {
     Close();
 
+    // sanitize -> https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
+    auto path = filePath.u16string();
+    std::replace(path.begin(), path.end(), L'/', L'\\');
+
     LocalUnicodeStringBuilder<1024> longPath;
     CHECK(longPath.Add(longPathPrefix), false, "");
-    CHECK(longPath.Add(filePath.u16string()), false, "");
+    CHECK(longPath.Add(path), false, "");
     CHECK(longPath.AddChar(u'\0'), false, "");
 
     HANDLE hFile = CreateFileW(
@@ -57,9 +61,13 @@ bool File::OpenRead(const std::filesystem::path& filePath)
 {
     Close();
 
+    // sanitize -> https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
+    auto path = filePath.u16string();
+    std::replace(path.begin(), path.end(), L'/', L'\\');
+
     LocalUnicodeStringBuilder<1024> longPath;
     CHECK(longPath.Add(longPathPrefix), false, "");
-    CHECK(longPath.Add(filePath.u16string()), false, "");
+    CHECK(longPath.Add(path), false, "");
     CHECK(longPath.AddChar(u'\0'), false, "");
 
     HANDLE hFile = CreateFileW(
@@ -70,6 +78,7 @@ bool File::OpenRead(const std::filesystem::path& filePath)
           OPEN_EXISTING,
           0,
           NULL);
+
     CHECK(hFile != INVALID_HANDLE_VALUE,
           false,
           "Fail to create: %s ==> Error code: %d",
@@ -85,9 +94,13 @@ bool File::Create(const std::filesystem::path& filePath, bool overwriteExisting)
 {
     Close();
 
+    // sanitize -> https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
+    auto path = filePath.u16string();
+    std::replace(path.begin(), path.end(), L'/', L'\\');
+
     LocalUnicodeStringBuilder<1024> longPath;
     CHECK(longPath.Add(longPathPrefix), false, "");
-    CHECK(longPath.Add(filePath.u16string()), false, "");
+    CHECK(longPath.Add(path), false, "");
     CHECK(longPath.AddChar(u'\0'), false, "");
 
     HANDLE hFile = CreateFileW(
