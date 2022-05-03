@@ -504,18 +504,20 @@ struct InternalColumn
     void SetWidth(double percentage);
 
 };
-struct InternalColumnsHeader
+struct ColumnsHeaderViewControlContext: public ControlContext
 {
     std::vector<InternalColumn> columns;
-    Reference<Control> host;
-    Reference<AppCUI::Application::Config> Cfg;
-    uint32 width;
-    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
-    int32 x, y;
-    bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
+    Reference<ColumnsHeaderView> host;
+    struct
+    {
+        uint32 width;
+        uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
+        int32 x, y;
+        bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
+    } Header;
     
 
-    InternalColumnsHeader(Reference<Control> hostControl);
+    ColumnsHeaderViewControlContext(Reference<ColumnsHeaderView> hostControl);
     bool Add(KeyValueParser& parser, bool unicodeText);
     void RecomputeColumnsSizes();
     void Paint(Graphics::Renderer& renderer);
