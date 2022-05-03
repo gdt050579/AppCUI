@@ -622,6 +622,7 @@ bool InternalColumnsHeader::OnKeyEvent(Key key, char16 character)
         this->resizeColumnIndex = INVALID_COLUMN_INDEX;
         return false;
     }
+    return false;
 }
 } // namespace AppCUI
 

@@ -3467,19 +3467,7 @@ namespace Controls
         }
     };
 
-    class EXPORT ColumnsHeader
-    {
-        void* data;
 
-      public:
-        ColumnsHeader(Reference<Control> hostControl);
-        ~ColumnsHeader();
-        bool Add(std::initializer_list<ConstString> list);
-        bool Add(const ConstString columnFormat);
-        void Paint(Graphics::Renderer& renderer);
-
-        bool ProcessKeyEvent(Input::Key key, char16 character);
-    };
 
     class EXPORT Control
     {
@@ -3734,7 +3722,6 @@ namespace Controls
         friend Factory::Label;
         friend Control;
     };
-
     enum class ButtonFlags : uint32
     {
         None = 0,
@@ -3925,7 +3912,6 @@ namespace Controls
         SyntaxHighlighting       = 0x002000,
         DisableAutoSelectOnFocus = 0x004000,
     };
-
     class EXPORT TextArea : public Control
     {
       protected:
@@ -3956,7 +3942,6 @@ namespace Controls
         friend Factory::TextArea;
         friend Control;
     };
-
     enum class TabFlags : uint32
     {
         TopTabs               = 0x000000, // default mode
@@ -4059,6 +4044,22 @@ namespace Controls
         friend Factory::ImageView;
         friend Control;
     };
+    
+    class EXPORT ColumnsHeaderView: public Control
+    {
+      protected:
+        ColumnsHeaderView(string_view layout, std::initializer_list<ConstString> columnsList);
+      public:
+        bool AddColumns(std::initializer_list<ConstString> list);
+        bool AddColumn(const ConstString columnFormat);
+
+        virtual void OnColumnClicked(uint32 columnIndex) = 0;
+
+        virtual ~ColumnsHeaderView();
+        friend Control;
+    };   
+    
+    
     enum class ListViewFlags : uint32
     {
         None                          = 0,
