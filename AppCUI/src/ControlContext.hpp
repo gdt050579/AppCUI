@@ -468,7 +468,7 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
-enum class InternalColumnWidthType: uint8
+enum class InternalColumnWidthType : uint8
 {
     Value,
     Percentage,
@@ -485,7 +485,6 @@ struct InternalColumn
     Key hotKeyCode;
     TextAlignament align;
     InternalColumnWidthType widthType;
-    
 
     // copy & move operator
     void CopyObject(const InternalColumn& obj);
@@ -502,28 +501,28 @@ struct InternalColumn
     void SetWidth(uint32 width);
     void SetWidth(float percentage);
     void SetWidth(double percentage);
-
 };
-struct ColumnsHeaderViewControlContext: public ControlContext
+class ColumnsHeader
 {
     std::vector<InternalColumn> columns;
     Reference<ColumnsHeaderView> host;
-    struct
-    {
-        uint32 width;
-        uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
-        int32 x, y;
-        bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
-    } Header;
-    
 
-    ColumnsHeaderViewControlContext(Reference<ColumnsHeaderView> hostControl);
+    uint32 width;
+    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
+    int32 x, y;
+    bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
+
+    ColumnsHeader();
     bool Add(KeyValueParser& parser, bool unicodeText);
     void RecomputeColumnsSizes();
     void Paint(Graphics::Renderer& renderer);
     void MouseToColumn(int x, int y, uint32& columnID, uint32& columnSeparatorID);
     void SetPosition(int x, int y, uint32 width);
     bool OnKeyEvent(Key key, char16 character);
+};
+struct ColumnsHeaderViewControlContext : public ControlContext
+{
+    ColumnsHeader Header;
 };
 struct InternalListViewColumn
 {
