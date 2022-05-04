@@ -6,21 +6,21 @@ namespace AppCUI::Controls
 {
 
 //============================================================================================
-#define ICH ((InternalColumnsHeader*) (this->data))
+#define ICH ((ColumnsHeaderViewControlContext*) (this->Context))
 ;
 ColumnsHeaderView::ColumnsHeaderView(string_view layout, std::initializer_list<ConstString> columnsList)
-    : Control(new ColumnsHeaderViewControlContext(), "", layout, false)
+    : Control(new ColumnsHeaderViewControlContext(this), "", layout, false)
 {
     auto Members                           = (ColumnsHeaderViewControlContext*) this->Context;
 
 }
 ColumnsHeaderView::~ColumnsHeaderView()
 {
-    if (this->data)
-        delete (InternalColumnsHeader*) (this->data);
-    this->data = nullptr;
+    if (this->Context)
+        delete (ColumnsHeaderViewControlContext*) (this->Context);
+    this->Context = nullptr;
 }
-bool ColumnsHeaderView::Add(const ConstString columnFormat)
+bool ColumnsHeaderView::AddColumn(const ConstString columnFormat)
 {
     ConstStringObject obj(columnFormat);
     KeyValueParser parser;
@@ -41,7 +41,7 @@ bool ColumnsHeaderView::Add(const ConstString columnFormat)
         RETURNERROR(false, "Current string formate (%d) is not supported", obj.Encoding);
     }
 }
-bool ColumnsHeaderView::Add(std::initializer_list<ConstString> list)
+bool ColumnsHeaderView::AddColumns(std::initializer_list<ConstString> list)
 {
     const auto newReservedCapacity = ((list.size() + ICH->columns.size()) | 7) + 1; // align to 8 columns
     ICH->columns.reserve(newReservedCapacity);

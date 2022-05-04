@@ -512,7 +512,8 @@ class ColumnsHeader
     int32 x, y;
     bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
 
-    ColumnsHeader();
+  public:
+    ColumnsHeader(Reference<ColumnsHeaderView> host);
     bool Add(KeyValueParser& parser, bool unicodeText);
     void RecomputeColumnsSizes();
     void Paint(Graphics::Renderer& renderer);
@@ -523,6 +524,9 @@ class ColumnsHeader
 struct ColumnsHeaderViewControlContext : public ControlContext
 {
     ColumnsHeader Header;
+    ColumnsHeaderViewControlContext(Reference<ColumnsHeaderView> host) : Header(host)
+    {
+    }
 };
 struct InternalListViewColumn
 {

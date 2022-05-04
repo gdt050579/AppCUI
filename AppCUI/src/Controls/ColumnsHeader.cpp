@@ -302,7 +302,7 @@ void InternalColumn::SetWidth(double percentage)
     this->widthType      = InternalColumnWidthType::Percentage;
 }
 
-ColumnsHeader::ColumnsHeader()
+ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl)
 {
     this->x                    = 0;
     this->y                    = 0;
@@ -311,7 +311,7 @@ ColumnsHeader::ColumnsHeader()
     this->sortAscendent        = true;
     this->showColumnSeparators = true;
     this->sizeableColumns      = true;
-    this->host                 = nullptr;
+    this->host                 = hostControl;
     this->sortColumnIndex      = INVALID_COLUMN_INDEX;
     this->hoveredColumnIndex   = INVALID_COLUMN_INDEX;
     this->resizeColumnIndex    = INVALID_COLUMN_INDEX;
@@ -621,6 +621,25 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
         // for any other key --> exit resize column mode and tranfer the key to its host
         this->resizeColumnIndex = INVALID_COLUMN_INDEX;
         return false;
+    }
+    else
+    {
+        if ((key == (Key::Ctrl | Key::Left)) || (key == (Key::Ctrl | Key::Right)))
+        {
+            this->resizeColumnIndex = 0;
+            return true;
+        }
+        // check for Hot Key
+        auto idx = 0U;
+        for (auto& col : this->columns)
+        {
+            if (col.hotKeyCode == key)
+            {
+                this->host->OnColumnClicked(idx);
+                return true;
+            }
+            idx++;
+        }
     }
     return false;
 }
