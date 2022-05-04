@@ -507,19 +507,28 @@ class ColumnsHeader
     std::vector<InternalColumn> columns;
     Reference<ColumnsHeaderView> host;
 
-    uint32 width;
+    struct
+    {
+        int32 x, y;
+        uint32 width;
+    } Location;
     uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
-    int32 x, y;
-    bool sortable, sortAscendent, showColumnSeparators, sizeableColumns;
+    bool sortable, sortAscendent, showColumnSeparators, sizeableColumns, hasMouseCaption;
 
+    void ClearKeyboardAndMouseLocks();
   public:
     ColumnsHeader(Reference<ColumnsHeaderView> host);
     bool Add(KeyValueParser& parser, bool unicodeText);
     void RecomputeColumnsSizes();
     void Paint(Graphics::Renderer& renderer);
-    void MouseToColumn(int x, int y, uint32& columnID, uint32& columnSeparatorID);
+    uint32 MouseToColumn(int x, int y);
+    uint32 MouseToColumnSepartor(int x, int y);
     void SetPosition(int x, int y, uint32 width);
     bool OnKeyEvent(Key key, char16 character);
+    inline bool HasMouseCaption() const
+    {
+        return hasMouseCaption;
+    }
 
     // mouse related methods
     void OnMouseReleased(int x, int y, Input::MouseButton button);

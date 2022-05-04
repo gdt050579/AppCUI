@@ -304,17 +304,24 @@ void InternalColumn::SetWidth(double percentage)
 
 ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl)
 {
-    this->x                    = 0;
-    this->y                    = 0;
-    this->width                = 0;
+    this->Location.x           = 0;
+    this->Location.y           = 0;
+    this->Location.width       = 0;
     this->sortable             = false;
     this->sortAscendent        = true;
     this->showColumnSeparators = true;
     this->sizeableColumns      = true;
+    this->hasMouseCaption      = false;
     this->host                 = hostControl;
     this->sortColumnIndex      = INVALID_COLUMN_INDEX;
     this->hoveredColumnIndex   = INVALID_COLUMN_INDEX;
     this->resizeColumnIndex    = INVALID_COLUMN_INDEX;
+}
+void ColumnsHeader::ClearKeyboardAndMouseLocks()
+{
+    this->hasMouseCaption    = false;
+    this->hoveredColumnIndex = INVALID_COLUMN_INDEX;
+    this->resizeColumnIndex  = INVALID_COLUMN_INDEX;
 }
 bool ColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
@@ -423,7 +430,7 @@ void ColumnsHeader::RecomputeColumnsSizes()
             col.width = AdjustedColumnWidth(col.name.Len() + 3);
             break;
         case InternalColumnWidthType::Percentage:
-            col.width = AdjustedColumnWidth(this->width * ((uint32) col.widthTypeValue) / 10000U);
+            col.width = AdjustedColumnWidth(this->Location.width * ((uint32) col.widthTypeValue) / 10000U);
             break;
         case InternalColumnWidthType::Fill:
             columnsWithFill++;
@@ -440,7 +447,9 @@ void ColumnsHeader::RecomputeColumnsSizes()
     {
         // add columns.size()-1 as the number of vertical separator (except for the last one)
         auto totalRequiredSpace = columnsTotalSize + (uint32) columns.size() - 1;
-        auto fillValue = totalRequiredSpace < this->width ? ((this->width - totalRequiredSpace) / columnsWithFill) : 0;
+        auto fillValue          = totalRequiredSpace < this->Location.width
+                                        ? ((this->Location.width - totalRequiredSpace) / columnsWithFill)
+                                        : 0;
         for (auto& col : columns)
         {
             if (col.widthType == InternalColumnWidthType::Fill)
@@ -449,8 +458,8 @@ void ColumnsHeader::RecomputeColumnsSizes()
                 if (columnsWithFill == 0)
                 {
                     // last one --> make sure that we fill the entire space
-                    if (totalRequiredSpace < this->width)
-                        col.width = AdjustedColumnWidth(this->width - totalRequiredSpace);
+                    if (totalRequiredSpace < this->Location.width)
+                        col.width = AdjustedColumnWidth(this->Location.width - totalRequiredSpace);
                     else
                         col.width = AdjustedColumnWidth(fillValue);
                 }
@@ -463,7 +472,7 @@ void ColumnsHeader::RecomputeColumnsSizes()
         }
     }
     // compute the positions
-    auto xPoz = this->x;
+    auto xPoz = this->Location.x;
     for (auto& col : columns)
     {
         col.x = xPoz;
@@ -477,20 +486,20 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
     const auto Cfg         = Members->Cfg;
     const auto defaultCol  = Cfg->Header.Text.GetColor(state);
     const auto defaultHK   = Cfg->Header.HotKey.GetColor(state);
-    const auto rightMargin = this->x + (int32) this->width;
+    const auto rightMargin = this->Location.x + (int32) this->Location.width;
     auto colIndex          = 0U;
 
-    renderer.FillHorizontalLine(this->x, this->y, this->width, ' ', defaultCol);
+    renderer.FillHorizontalLine(this->Location.x, this->Location.y, this->Location.width, ' ', defaultCol);
 
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
-    params.Y           = this->y;
+    params.Y           = this->Location.y;
     params.Color       = defaultCol;
     params.HotKeyColor = defaultHK;
 
     for (auto& col : this->columns)
     {
         // check if the column is outside visible range
-        if (((col.x + (int32) col.width) < this->x) || (col.x >= rightMargin))
+        if (((col.x + (int32) col.width) < this->Location.x) || (col.x >= rightMargin))
         {
             colIndex++;
             continue;
@@ -500,12 +509,14 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
             if (colIndex == this->sortColumnIndex)
             {
                 params.Color = Cfg->Header.Text.PressedOrSelected;
-                renderer.FillHorizontalLineSize(col.x, this->y, col.width, ' ', params.Color); // highlight the column
+                renderer.FillHorizontalLineSize(
+                      col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
             }
             else if (colIndex == this->hoveredColumnIndex)
             {
                 params.Color = Cfg->Header.Text.Hovered;
-                renderer.FillHorizontalLineSize(col.x, this->y, col.width, ' ', params.Color); // highlight the column
+                renderer.FillHorizontalLineSize(
+                      col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
             }
             else
                 params.Color = defaultCol;
@@ -543,51 +554,59 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
         {
             renderer.WriteSpecialCharacter(
                   separatorX - 1,
-                  this->y,
+                  this->Location.y,
                   this->sortAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
                   Cfg->Header.HotKey.PressedOrSelected);
         }
 
         if (this->showColumnSeparators)
         {
-            // renderer.DrawVerticalLine(separatorX, this->y, this->y, Cfg->Lines.GetColor(state));
+            // renderer.DrawVerticalLine(separatorX, this->Location.y, this->Location.y, Cfg->Lines.GetColor(state));
             renderer.WriteSpecialCharacter(
-                  separatorX, this->y, SpecialChars::BoxVerticalSingleLine, Cfg->Lines.GetColor(state));
+                  separatorX, this->Location.y, SpecialChars::BoxVerticalSingleLine, Cfg->Lines.GetColor(state));
         }
         colIndex++;
     }
 }
-void ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y, uint32& columnID, uint32& columnSeparatorID)
+uint32 ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y)
 {
-    columnID          = INVALID_COLUMN_INDEX;
-    columnSeparatorID = INVALID_COLUMN_INDEX;
-    if (mouse_y != this->y)
-        return; // mouse not on the column
-    if ((!sortable) && (!sizeableColumns))
-        return; // there is no need to search for a column or separator as you can not do anything with it
+    if (mouse_y != this->Location.y)
+        return INVALID_COLUMN_INDEX; // mouse not on the column
+    if (!sortable)
+        return INVALID_COLUMN_INDEX; // there is no need to search for a column if not sortable (clickable)
 
     auto idx = 0U;
     for (auto& col : this->columns)
     {
         auto sepX = col.x + (int32) col.width;
-        if ((mouse_x >= col.x) && (mouse_x < sepX) && (sortable))
-        {
-            columnID = idx;
-            return;
-        }
-        if ((mouse_x == sepX) && (sizeableColumns))
-        {
-            columnSeparatorID = idx;
-            return;
-        }
+        if ((mouse_x >= col.x) && (mouse_x < sepX))
+            return idx;
         idx++;
     }
+    return INVALID_COLUMN_INDEX;
+}
+uint32 ColumnsHeader::MouseToColumnSepartor(int mouse_x, int mouse_y)
+{
+    if (mouse_y < this->Location.y)
+        return INVALID_COLUMN_INDEX; // mouse not on the column
+    if (!sizeableColumns)
+        return INVALID_COLUMN_INDEX; // there is no need to search for a column if is not sizeable
+
+    auto idx = 0U;
+    for (auto& col : this->columns)
+    {
+        auto sepX = col.x + (int32) col.width;
+        if (mouse_x == sepX)
+            return idx;
+        idx++;
+    }
+    return INVALID_COLUMN_INDEX;
 }
 void ColumnsHeader::SetPosition(int _x, int _y, uint32 _width)
 {
-    this->x     = _x;
-    this->y     = _y;
-    this->width = _width;
+    this->Location.x     = _x;
+    this->Location.y     = _y;
+    this->Location.width = _width;
     this->RecomputeColumnsSizes();
 }
 bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
@@ -648,25 +667,39 @@ void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 }
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
 {
-
 }
 bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
+    return OnMouseOver(x, y);
 }
 bool ColumnsHeader::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
     return false; // left-right scroll ? should it be treated ?
-
 }
 bool ColumnsHeader::OnMouseOver(int x, int y)
 {
+    auto colIdx = MouseToColumn(x, y);
+    auto sepIdx = MouseToColumnSepartor(x, y);
+
+    if ((colIdx != this->hoveredColumnIndex) || (sepIdx != this->resizeColumnIndex))
+    {
+        this->hoveredColumnIndex = colIdx;
+        this->resizeColumnIndex  = sepIdx;
+        return true;
+    }
+    return false;
 }
 bool ColumnsHeader::OnMouseLeave()
 {
+    if ((this->hasMouseCaption) || (this->hoveredColumnIndex == INVALID_COLUMN_INDEX))
+    {
+        this->ClearKeyboardAndMouseLocks();
+        return true;
+    }
+    return false;
 }
 void ColumnsHeader::OnLoseFocus()
 {
-    this->hoveredColumnIndex = INVALID_COLUMN_INDEX;
-    this->resizeColumnIndex  = INVALID_COLUMN_INDEX;
+    this->ClearKeyboardAndMouseLocks();
 }
 } // namespace AppCUI
