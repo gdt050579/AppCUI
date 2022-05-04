@@ -3467,8 +3467,6 @@ namespace Controls
         }
     };
 
-
-
     class EXPORT Control
     {
       public:
@@ -4044,22 +4042,32 @@ namespace Controls
         friend Factory::ImageView;
         friend Control;
     };
-    
-    class EXPORT ColumnsHeaderView: public Control
+
+    class EXPORT ColumnsHeaderView : public Control
     {
       protected:
         ColumnsHeaderView(string_view layout, std::initializer_list<ConstString> columnsList);
+
       public:
         bool AddColumns(std::initializer_list<ConstString> list);
         bool AddColumn(const ConstString columnFormat);
 
         virtual void OnColumnClicked(uint32 columnIndex) = 0;
 
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseLeave() override;
+        void OnLoseFocus() override;
+
         virtual ~ColumnsHeaderView();
         friend Control;
-    };   
-    
-    
+    };
+
     enum class ListViewFlags : uint32
     {
         None                          = 0,

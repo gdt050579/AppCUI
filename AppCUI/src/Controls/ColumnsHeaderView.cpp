@@ -27,13 +27,13 @@ bool ColumnsHeaderView::AddColumn(const ConstString columnFormat)
     if ((obj.Encoding == StringEncoding::Ascii) || (obj.Encoding == StringEncoding::UTF8))
     {
         CHECK(parser.Parse(string_view((const char*) obj.Data, obj.Length)), false, "");
-        CHECK(ICH->Add(parser, false), false, "");
+        CHECK(ICH->Header.Add(parser, false), false, "");
         return true;
     }
     else if (obj.Encoding == StringEncoding::Unicode16)
     {
         CHECK(parser.Parse(u16string_view((const char16*) obj.Data, obj.Length)), false, "");
-        CHECK(ICH->Add(parser, true), false, "");
+        CHECK(ICH->Header.Add(parser, true), false, "");
         return true;
     }
     else
@@ -43,21 +43,48 @@ bool ColumnsHeaderView::AddColumn(const ConstString columnFormat)
 }
 bool ColumnsHeaderView::AddColumns(std::initializer_list<ConstString> list)
 {
-    const auto newReservedCapacity = ((list.size() + ICH->columns.size()) | 7) + 1; // align to 8 columns
-    ICH->columns.reserve(newReservedCapacity);
+    const auto newReservedCapacity = ((list.size() + ICH->Header.GetColumnsCount()) | 7) + 1; // align to 8 columns
+    ICH->Header.Reserve(newReservedCapacity);
     for (auto& col : list)
     {
-        CHECK(Add(col), false, "");
+        CHECK(AddColumn(col), false, "");
     }
     return true;
 }
+
 void ColumnsHeaderView::Paint(Graphics::Renderer& renderer)
 {
-    ICH->Paint(renderer);
+    ICH->Header.Paint(renderer);
 }
-bool ColumnsHeaderView::ProcessKeyEvent(Key key, char16 character)
+bool ColumnsHeaderView::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
-    return ICH->OnKeyEvent(key, character);
+    return ICH->Header.OnKeyEvent(keyCode, UnicodeChar);
 }
+void ColumnsHeaderView::OnMouseReleased(int x, int y, Input::MouseButton button)
+{
+}
+void ColumnsHeaderView::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+}
+bool ColumnsHeaderView::OnMouseDrag(int x, int y, Input::MouseButton button)
+{
+    return ICH->Header.OnMouseDrag(x, y, button);
+}
+bool ColumnsHeaderView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+}
+bool ColumnsHeaderView::OnMouseOver(int x, int y)
+{
+    return ICH->Header.OnMouseOver(x,y);
+}
+bool ColumnsHeaderView::OnMouseLeave()
+{
+    return ICH->Header.OnMouseLeave();
+}
+void ColumnsHeaderView::OnLoseFocus()
+{
+    ICH->Header.OnLoseFocus();
+}
+
 #undef ICH
 } // namespace AppCUI::Controls

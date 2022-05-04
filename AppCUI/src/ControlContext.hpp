@@ -520,6 +520,25 @@ class ColumnsHeader
     void MouseToColumn(int x, int y, uint32& columnID, uint32& columnSeparatorID);
     void SetPosition(int x, int y, uint32 width);
     bool OnKeyEvent(Key key, char16 character);
+
+    // mouse related methods
+    void OnMouseReleased(int x, int y, Input::MouseButton button);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseDrag(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
+    bool OnMouseOver(int x, int y);
+    bool OnMouseLeave();
+    void OnLoseFocus();
+
+
+    inline uint32 GetColumnsCount() const
+    {
+        return (uint32) columns.size();
+    }
+    inline void Reserve(uint32 count)
+    {
+        columns.reserve(count);
+    }
 };
 struct ColumnsHeaderViewControlContext : public ControlContext
 {

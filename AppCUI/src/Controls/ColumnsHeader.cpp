@@ -643,4 +643,30 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
     }
     return false;
 }
+void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
+{
+}
+void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
+{
+
+}
+bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
+{
+}
+bool ColumnsHeader::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+{
+    return false; // left-right scroll ? should it be treated ?
+
+}
+bool ColumnsHeader::OnMouseOver(int x, int y)
+{
+}
+bool ColumnsHeader::OnMouseLeave()
+{
+}
+void ColumnsHeader::OnLoseFocus()
+{
+    this->hoveredColumnIndex = INVALID_COLUMN_INDEX;
+    this->resizeColumnIndex  = INVALID_COLUMN_INDEX;
+}
 } // namespace AppCUI
