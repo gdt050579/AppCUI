@@ -4060,9 +4060,7 @@ namespace Controls
         bool SetWidth(float percentage);
         bool SetWidth(double percentage);
         uint32 GetWidth() const;
-        bool SetClipboardCopyState(bool allowCopy);
-        bool GetClipboardCopyState() const;
-        bool SetFilterMode(bool allowFilterForThisColumn);
+
         friend class ColumnsHeaderView;
     };
 

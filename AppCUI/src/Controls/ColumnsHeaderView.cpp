@@ -114,7 +114,12 @@ bool Column::IsValid() const
 bool Column::SetText(const ConstString& text)
 {
     VALIDATE_COLUMN(false);
-    return COLUMNREF.SetName(text);
+    if (COLUMNREF.SetName(text))
+    {
+        HEADERREF.RecomputeColumnsSizes();
+        return true;
+    }
+    return false;
 }
 const Graphics::CharacterBuffer& Column::GetText() const
 {
@@ -153,21 +158,7 @@ uint32 Column::GetWidth() const
     VALIDATE_COLUMN(0);
     return COLUMNREF.width;
 }
-bool Column::SetClipboardCopyState(bool allowCopy)
-{
-    VALIDATE_COLUMN(false);
-    return LVCC->SetColumnClipboardCopyState(index, allowCopy);
-}
-bool Column::GetClipboardCopyState() const
-{
-    VALIDATE_COLUMN(false);
-    return (LVCC->Columns.List[index].Flags & COLUMN_DONT_COPY) == 0;
-}
-bool Column::SetFilterMode(bool allowFilterForThisColumn)
-{
-    VALIDATE_COLUMN(false);
-    return LVCC->SetColumnFilterMode(index, allowFilterForThisColumn);
-}
+
 #undef COLUMNREF
 #undef HEADERREF
 #undef VALIDATE_COLUMN
