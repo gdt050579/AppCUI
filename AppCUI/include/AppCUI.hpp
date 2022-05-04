@@ -4042,6 +4042,29 @@ namespace Controls
         friend Factory::ImageView;
         friend Control;
     };
+    
+    class EXPORT Column
+    {
+        void* context;
+        uint32 index;
+        Column(void* _context, uint32 _index) : context(_context), index(_index)
+        {
+        }
+
+      public:
+        bool IsValid() const;
+        bool SetText(const ConstString& text);
+        const Graphics::CharacterBuffer& GetText() const;
+        bool SetAlignament(Graphics::TextAlignament Align);
+        bool SetWidth(uint32 width);
+        bool SetWidth(float percentage);
+        bool SetWidth(double percentage);
+        uint32 GetWidth() const;
+        bool SetClipboardCopyState(bool allowCopy);
+        bool GetClipboardCopyState() const;
+        bool SetFilterMode(bool allowFilterForThisColumn);
+        friend class ColumnsHeaderView;
+    };
 
     class EXPORT ColumnsHeaderView : public Control
     {
@@ -4050,7 +4073,9 @@ namespace Controls
 
       public:
         bool AddColumns(std::initializer_list<ConstString> list);
-        bool AddColumn(const ConstString columnFormat);
+        Column AddColumn(const ConstString columnFormat);
+        Column GetColumn(uint32 index);
+        uint32 GetColumnCount() const;
 
         virtual void OnColumnClicked(uint32 columnIndex) = 0;
 
@@ -4105,6 +4130,8 @@ namespace Controls
         bool SetFilterMode(bool allowFilterForThisColumn);
         friend class ListView;
     };
+
+
 
     class EXPORT ListView : public Control
     {

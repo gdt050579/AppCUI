@@ -548,6 +548,10 @@ class ColumnsHeader
     {
         columns.reserve(count);
     }
+    inline InternalColumn& operator[](uint32 index)
+    {
+        return this->columns[index];
+    }
 };
 struct ColumnsHeaderViewControlContext : public ControlContext
 {

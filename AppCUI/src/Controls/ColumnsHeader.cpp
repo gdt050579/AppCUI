@@ -664,13 +664,14 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
 }
 void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
+    this->ClearKeyboardAndMouseLocks();
 }
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
 {
+    auto colIdx = MouseToColumn(x, y);
 }
 bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
-    return OnMouseOver(x, y);
 }
 bool ColumnsHeader::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
