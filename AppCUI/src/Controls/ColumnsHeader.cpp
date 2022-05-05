@@ -415,6 +415,17 @@ bool ColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 
     return true;
 }
+void ColumnsHeader::DeleteAllColumns()
+{
+    this->columns.clear();
+}
+void ColumnsHeader::DeleteColumn(uint32 columnIndex)
+{
+    if (columnIndex >= this->columns.size())
+        return; // nothing to delete
+    this->columns.erase(this->columns.begin() + columnIndex);
+    this->RecomputeColumnsSizes();
+}
 void ColumnsHeader::RecomputeColumnsSizes()
 {
     uint32 columnsWithFill  = 0;

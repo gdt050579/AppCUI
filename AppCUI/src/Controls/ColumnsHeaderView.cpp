@@ -60,6 +60,14 @@ uint32 ColumnsHeaderView::GetColumnCount() const
 {
     return ICH->Header.GetColumnsCount();
 }
+void ColumnsHeaderView::DeleteAllColumns()
+{
+    ICH->Header.DeleteAllColumns();
+}
+bool ColumnsHeaderView::DeleteColumn(uint32 columnIndex)
+{
+    ICH->Header.DeleteColumn(columnIndex);
+}
 void ColumnsHeaderView::Paint(Graphics::Renderer& renderer)
 {
     ICH->Header.Paint(renderer);

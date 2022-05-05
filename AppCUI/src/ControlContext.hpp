@@ -519,6 +519,8 @@ class ColumnsHeader
   public:
     ColumnsHeader(Reference<ColumnsHeaderView> host);
     bool Add(KeyValueParser& parser, bool unicodeText);
+    void DeleteAllColumns();
+    void DeleteColumn(uint32 columnIndex);
     void RecomputeColumnsSizes();
     void Paint(Graphics::Renderer& renderer);
     uint32 MouseToColumn(int x, int y);

@@ -4074,6 +4074,8 @@ namespace Controls
         Column AddColumn(const ConstString columnFormat);
         Column GetColumn(uint32 index);
         uint32 GetColumnCount() const;
+        void DeleteAllColumns();
+        bool DeleteColumn(uint32 columnIndex);
 
         virtual void OnColumnClicked(uint32 columnIndex) = 0;
 
