@@ -44,7 +44,7 @@ Column ColumnsHeaderView::AddColumn(const ConstString columnFormat)
 bool ColumnsHeaderView::AddColumns(std::initializer_list<ConstString> list)
 {
     const auto newReservedCapacity = ((list.size() + ICH->Header.GetColumnsCount()) | 7) + 1; // align to 8 columns
-    ICH->Header.Reserve(newReservedCapacity);
+    ICH->Header.Reserve((uint32)newReservedCapacity);
     for (auto& col : list)
     {
         CHECK(AddColumn(col).IsValid(), false, "");
@@ -77,9 +77,6 @@ void ColumnsHeaderView::OnMousePressed(int x, int y, Input::MouseButton button)
 bool ColumnsHeaderView::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
     return ICH->Header.OnMouseDrag(x, y, button);
-}
-bool ColumnsHeaderView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
-{
 }
 bool ColumnsHeaderView::OnMouseOver(int x, int y)
 {

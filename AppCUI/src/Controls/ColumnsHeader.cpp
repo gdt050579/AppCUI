@@ -669,9 +669,25 @@ void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     auto colIdx = MouseToColumn(x, y);
+    if ((colIdx != this->sortColumnIndex) && (this->sortable))
+    {
+        this->sortColumnIndex = colIdx;
+        this->hasMouseCaption = true;
+    }
 }
 bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
+    if (this->resizeColumnIndex != INVALID_COLUMN_INDEX)
+    {
+        auto colX = this->columns[this->resizeColumnIndex].x;
+        if (colX < x)
+        {
+            this->columns[this->resizeColumnIndex].SetWidth((uint32) (x - colX));
+            this->RecomputeColumnsSizes();
+            return true;
+        }
+    }
+    return false;
 }
 bool ColumnsHeader::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 {
