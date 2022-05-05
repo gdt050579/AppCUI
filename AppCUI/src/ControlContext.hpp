@@ -502,6 +502,14 @@ struct InternalColumn
     void SetWidth(float percentage);
     void SetWidth(double percentage);
 };
+/*
+Properties:
+- sortable (click on column means a sort)
+- fixedSizes (means that size can not changed via mouse/key interaction)
+- showSeparators
+- visible 
+- clickable (means that a click can be performed) but not neccesary a sort and after the click the column will not remain selected
+*/
 class ColumnsHeader
 {
     std::vector<InternalColumn> columns;
