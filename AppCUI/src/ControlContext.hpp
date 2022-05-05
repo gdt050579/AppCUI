@@ -511,6 +511,7 @@ class ColumnsHeader
     {
         int32 x, y;
         uint32 width;
+        uint32 totalWidth;
     } Location;
     uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
     bool sortable, sortAscendent, showColumnSeparators, sizeableColumns, hasMouseCaption;
@@ -549,6 +550,10 @@ class ColumnsHeader
     inline void Reserve(uint32 count)
     {
         columns.reserve(count);
+    }
+    inline uint32 GetColumnsWidth() const
+    {
+        return Location.totalWidth;
     }
     inline InternalColumn& operator[](uint32 index)
     {

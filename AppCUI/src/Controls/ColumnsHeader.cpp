@@ -307,6 +307,7 @@ ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl)
     this->Location.x           = 0;
     this->Location.y           = 0;
     this->Location.width       = 0;
+    this->Location.totalWidth  = 0;
     this->sortable             = false;
     this->sortAscendent        = true;
     this->showColumnSeparators = true;
@@ -482,12 +483,14 @@ void ColumnsHeader::RecomputeColumnsSizes()
             }
         }
     }
-    // compute the positions
-    auto xPoz = this->Location.x;
+    // compute the positions and total width
+    auto xPoz                 = this->Location.x;
+    this->Location.totalWidth = 0;
     for (auto& col : columns)
     {
         col.x = xPoz;
         xPoz += ((int32) (col.width)) + 1;
+        this->Location.totalWidth += (col.width + 1);
     }
 }
 void ColumnsHeader::Paint(Graphics::Renderer& renderer)
