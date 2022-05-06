@@ -302,7 +302,9 @@ void InternalColumn::SetWidth(double percentage)
     this->widthType      = InternalColumnWidthType::Percentage;
 }
 
-ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl, ColumnsHeaderViewFlags headerFlags)
+ColumnsHeader::ColumnsHeader(
+      Reference<ColumnsHeaderView> hostControl,
+      std::initializer_list<ConstString> list, ColumnsHeaderViewFlags headerFlags)
 {
     this->Location.x             = 0;
     this->Location.y             = 0;
@@ -320,6 +322,8 @@ ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl, ColumnsHe
     // 1. if it is sortable it is alsa clickable
     if (this->flags && ColumnsHeaderViewFlags::Sortable)
         this->flags |= static_cast<uint32>(ColumnsHeaderViewFlags::Clickable);
+    // finally --> add columns
+    AddColumns(list);
 }
 void ColumnsHeader::ClearKeyboardAndMouseLocks()
 {
@@ -417,6 +421,37 @@ bool ColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
     col.widthType      = widthType;
     col.x              = 0;
 
+    return true;
+}
+bool ColumnsHeader::AddColumn(const ConstString columnFormat)
+{
+    ConstStringObject obj(columnFormat);
+    KeyValueParser parser;
+    if ((obj.Encoding == StringEncoding::Ascii) || (obj.Encoding == StringEncoding::UTF8))
+    {
+        CHECK(parser.Parse(string_view((const char*) obj.Data, obj.Length)), false, "");
+        CHECK(this->Add(parser, false), false, "");
+        return true;
+    }
+    else if (obj.Encoding == StringEncoding::Unicode16)
+    {
+        CHECK(parser.Parse(u16string_view((const char16*) obj.Data, obj.Length)), false, "");
+        CHECK(this->Add(parser, true), false, "");
+        return true;
+    }
+    else
+    {
+        RETURNERROR(false, "Current string formate (%d) is not supported", obj.Encoding);
+    }
+}
+bool ColumnsHeader::AddColumns(std::initializer_list<ConstString> list)
+{
+    const auto newReservedCapacity = ((list.size() + this->columns.size()) | 7) + 1; // align to 8 columns
+    this->columns.reserve(newReservedCapacity);
+    for (auto& col : list)
+    {
+        CHECK(AddColumn(col), false, "");
+    }
     return true;
 }
 void ColumnsHeader::DeleteAllColumns()

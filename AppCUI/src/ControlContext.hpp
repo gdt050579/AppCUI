@@ -520,9 +520,13 @@ class ColumnsHeader
     bool sortDirectionAscendent, hasMouseCaption;
 
     void ClearKeyboardAndMouseLocks();
-  public:
-    ColumnsHeader(Reference<ColumnsHeaderView> host, ColumnsHeaderViewFlags flags);
     bool Add(KeyValueParser& parser, bool unicodeText);
+
+  public:
+    ColumnsHeader(
+          Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> list, ColumnsHeaderViewFlags flags);
+    bool AddColumn(const ConstString columnFormat);
+    bool AddColumns(std::initializer_list<ConstString> list);
     void DeleteAllColumns();
     void DeleteColumn(uint32 columnIndex);
     void RecomputeColumnsSizes();
@@ -572,9 +576,8 @@ struct ColumnsHeaderViewControlContext : public ControlContext
     ColumnsHeader Header;
     ColumnsHeaderViewControlContext(
           Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
-        : Header(host, flags)
+        : Header(host, columnsList, flags)
     {
-        
     }
 };
 struct InternalListViewColumn

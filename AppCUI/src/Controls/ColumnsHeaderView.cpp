@@ -17,7 +17,6 @@ ColumnsHeaderView::ColumnsHeaderView(
 // context MUST be a derivate of ColumnsHeaderViewControlContext
 ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Control(context, "", layout, false)
 {
-    auto Members = (ColumnsHeaderViewControlContext*) this->Context;
 }
 
 ColumnsHeaderView::~ColumnsHeaderView()
@@ -28,34 +27,12 @@ ColumnsHeaderView::~ColumnsHeaderView()
 }
 Column ColumnsHeaderView::AddColumn(const ConstString columnFormat)
 {
-    ConstStringObject obj(columnFormat);
-    KeyValueParser parser;
-    if ((obj.Encoding == StringEncoding::Ascii) || (obj.Encoding == StringEncoding::UTF8))
-    {
-        CHECK(parser.Parse(string_view((const char*) obj.Data, obj.Length)), NULL_COLUMN, "");
-        CHECK(ICH->Header.Add(parser, false), NULL_COLUMN, "");
-        return { this->Context, ICH->Header.GetColumnsCount() - 1 };
-    }
-    else if (obj.Encoding == StringEncoding::Unicode16)
-    {
-        CHECK(parser.Parse(u16string_view((const char16*) obj.Data, obj.Length)), NULL_COLUMN, "");
-        CHECK(ICH->Header.Add(parser, true), NULL_COLUMN, "");
-        return { this->Context, ICH->Header.GetColumnsCount() - 1 };
-    }
-    else
-    {
-        RETURNERROR(NULL_COLUMN, "Current string formate (%d) is not supported", obj.Encoding);
-    }
+    CHECK(ICH->Header.AddColumn(columnFormat), NULL_COLUMN, "");
+    return { this->Context, ICH->Header.GetColumnsCount() - 1 };
 }
 bool ColumnsHeaderView::AddColumns(std::initializer_list<ConstString> list)
 {
-    const auto newReservedCapacity = ((list.size() + ICH->Header.GetColumnsCount()) | 7) + 1; // align to 8 columns
-    ICH->Header.Reserve((uint32) newReservedCapacity);
-    for (auto& col : list)
-    {
-        CHECK(AddColumn(col).IsValid(), false, "");
-    }
-    return true;
+    return ICH->Header.AddColumns(list);
 }
 Column ColumnsHeaderView::GetColumn(uint32 index)
 {
