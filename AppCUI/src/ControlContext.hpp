@@ -513,6 +513,7 @@ class ColumnsHeader
         int32 x, y;
         uint32 width;
         uint32 totalWidth;
+        uint32 listHeight;
     } Location;
     uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
     uint32 flags;
@@ -528,7 +529,7 @@ class ColumnsHeader
     void Paint(Graphics::Renderer& renderer);
     uint32 MouseToColumn(int x, int y);
     uint32 MouseToColumnSepartor(int x, int y);
-    void SetPosition(int x, int y, uint32 width);
+    void SetPosition(int x, int y, uint32 width, uint32 listHeight);
     bool OnKeyEvent(Key key, char16 character);
     inline bool HasMouseCaption() const
     {

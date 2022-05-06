@@ -308,6 +308,7 @@ ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl, ColumnsHe
     this->Location.y             = 0;
     this->Location.width         = 0;
     this->Location.totalWidth    = 0;
+    this->Location.listHeight    = 0;
     this->sortDirectionAscendent = true;
     this->hasMouseCaption        = false;
     this->host                   = hostControl;
@@ -577,9 +578,11 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
 
         if (!(this->flags && ColumnsHeaderViewFlags::HideSeparators))
         {
-            // renderer.DrawVerticalLine(separatorX, this->Location.y, this->Location.y, Cfg->Lines.GetColor(state));
-            renderer.WriteSpecialCharacter(
-                  separatorX, this->Location.y, SpecialChars::BoxVerticalSingleLine, Cfg->Lines.GetColor(state));
+            renderer.DrawVerticalLine(
+                  separatorX,
+                  this->Location.y,
+                  this->Location.y + this->Location.listHeight,
+                  Cfg->Lines.GetColor(state));
         }
         colIndex++;
     }
@@ -618,11 +621,12 @@ uint32 ColumnsHeader::MouseToColumnSepartor(int mouse_x, int mouse_y)
     }
     return INVALID_COLUMN_INDEX;
 }
-void ColumnsHeader::SetPosition(int _x, int _y, uint32 _width)
+void ColumnsHeader::SetPosition(int x, int y, uint32 width, uint32 listHeight)
 {
-    this->Location.x     = _x;
-    this->Location.y     = _y;
-    this->Location.width = _width;
+    this->Location.x          = x;
+    this->Location.y          = y;
+    this->Location.width      = width;
+    this->Location.listHeight = listHeight;
     this->RecomputeColumnsSizes();
 }
 bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
