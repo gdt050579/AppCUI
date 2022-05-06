@@ -502,14 +502,7 @@ struct InternalColumn
     void SetWidth(float percentage);
     void SetWidth(double percentage);
 };
-/*
-Properties:
-- sortable (click on column means a sort)
-- fixedSizes (means that size can not changed via mouse/key interaction)
-- showSeparators
-- visible 
-- clickable (means that a click can be performed) but not neccesary a sort and after the click the column will not remain selected
-*/
+
 class ColumnsHeader
 {
     std::vector<InternalColumn> columns;
@@ -522,11 +515,12 @@ class ColumnsHeader
         uint32 totalWidth;
     } Location;
     uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
-    bool sortable, sortAscendent, showColumnSeparators, sizeableColumns, hasMouseCaption;
+    uint32 flags;
+    bool sortDirectionAscendent, hasMouseCaption;
 
     void ClearKeyboardAndMouseLocks();
   public:
-    ColumnsHeader(Reference<ColumnsHeaderView> host);
+    ColumnsHeader(Reference<ColumnsHeaderView> host, ColumnsHeaderViewFlags flags);
     bool Add(KeyValueParser& parser, bool unicodeText);
     void DeleteAllColumns();
     void DeleteColumn(uint32 columnIndex);
@@ -539,6 +533,10 @@ class ColumnsHeader
     inline bool HasMouseCaption() const
     {
         return hasMouseCaption;
+    }
+    inline bool IsClickable() const
+    {
+        return flags && ColumnsHeaderViewFlags::Clickable;
     }
 
     // mouse related methods
@@ -571,7 +569,7 @@ class ColumnsHeader
 struct ColumnsHeaderViewControlContext : public ControlContext
 {
     ColumnsHeader Header;
-    ColumnsHeaderViewControlContext(Reference<ColumnsHeaderView> host) : Header(host)
+    ColumnsHeaderViewControlContext(Reference<ColumnsHeaderView> host, ColumnsHeaderViewFlags flags) : Header(host, flags)
     {
     }
 };

@@ -9,8 +9,8 @@ Graphics::CharacterBuffer null_column_reference; // use this as std::option<cons
 #define ICH         ((ColumnsHeaderViewControlContext*) (this->Context))
 #define NULL_COLUMN Column(nullptr, 0)
 
-ColumnsHeaderView::ColumnsHeaderView(string_view layout, std::initializer_list<ConstString> columnsList)
-    : Control(new ColumnsHeaderViewControlContext(this), "", layout, false)
+ColumnsHeaderView::ColumnsHeaderView(string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+    : Control(new ColumnsHeaderViewControlContext(this, flags), "", layout, false)
 {
     auto Members = (ColumnsHeaderViewControlContext*) this->Context;
 }

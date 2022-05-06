@@ -4042,7 +4042,7 @@ namespace Controls
         friend Factory::ImageView;
         friend Control;
     };
-    
+
     class EXPORT Column
     {
         void* context;
@@ -4063,11 +4063,20 @@ namespace Controls
 
         friend class ColumnsHeaderView;
     };
-
+    enum class ColumnsHeaderViewFlags : uint32
+    {
+        None           = 0,
+        Clickable      = 0x00001,
+        Sortable       = 0x00002,
+        HideSeparators = 0x00004,
+        FixedSized     = 0x00008,
+        HideHeader     = 0x00010,
+    };
     class EXPORT ColumnsHeaderView : public Control
     {
       protected:
-        ColumnsHeaderView(string_view layout, std::initializer_list<ConstString> columnsList);
+        ColumnsHeaderView(
+              string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
 
       public:
         bool AddColumns(std::initializer_list<ConstString> list);
@@ -4129,8 +4138,6 @@ namespace Controls
         bool SetFilterMode(bool allowFilterForThisColumn);
         friend class ListView;
     };
-
-
 
     class EXPORT ListView : public Control
     {
@@ -5627,6 +5634,7 @@ ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::ProgressStatus::Flags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ColumnsHeaderViewFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)

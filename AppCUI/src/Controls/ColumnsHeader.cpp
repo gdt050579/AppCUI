@@ -302,21 +302,23 @@ void InternalColumn::SetWidth(double percentage)
     this->widthType      = InternalColumnWidthType::Percentage;
 }
 
-ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl)
+ColumnsHeader::ColumnsHeader(Reference<ColumnsHeaderView> hostControl, ColumnsHeaderViewFlags headerFlags)
 {
-    this->Location.x           = 0;
-    this->Location.y           = 0;
-    this->Location.width       = 0;
-    this->Location.totalWidth  = 0;
-    this->sortable             = false;
-    this->sortAscendent        = true;
-    this->showColumnSeparators = true;
-    this->sizeableColumns      = true;
-    this->hasMouseCaption      = false;
-    this->host                 = hostControl;
-    this->sortColumnIndex      = INVALID_COLUMN_INDEX;
-    this->hoveredColumnIndex   = INVALID_COLUMN_INDEX;
-    this->resizeColumnIndex    = INVALID_COLUMN_INDEX;
+    this->Location.x             = 0;
+    this->Location.y             = 0;
+    this->Location.width         = 0;
+    this->Location.totalWidth    = 0;
+    this->sortDirectionAscendent = true;
+    this->hasMouseCaption        = false;
+    this->host                   = hostControl;
+    this->flags                  = static_cast<uint32>(headerFlags);
+    this->sortColumnIndex        = INVALID_COLUMN_INDEX;
+    this->hoveredColumnIndex     = INVALID_COLUMN_INDEX;
+    this->resizeColumnIndex      = INVALID_COLUMN_INDEX;
+    // some check up
+    // 1. if it is sortable it is alsa clickable
+    if (this->flags && ColumnsHeaderViewFlags::Sortable)
+        this->flags |= static_cast<uint32>(ColumnsHeaderViewFlags::Clickable);
 }
 void ColumnsHeader::ClearKeyboardAndMouseLocks()
 {
@@ -538,7 +540,7 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
         params.X     = col.x + 1;
         params.Width = col.width >= 2 ? col.width - 2 : 0;
         params.Align = col.align;
-        if ((col.hotKeyOffset == CharacterBuffer::INVALID_HOTKEY_OFFSET) || (!this->sortable))
+        if ((col.hotKeyOffset == CharacterBuffer::INVALID_HOTKEY_OFFSET) || (!this->IsClickable()))
         {
             params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors;
             renderer.WriteText(col.name, params);
@@ -569,11 +571,11 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(
                   separatorX - 1,
                   this->Location.y,
-                  this->sortAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
+                  this->sortDirectionAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
                   Cfg->Header.HotKey.PressedOrSelected);
         }
 
-        if (this->showColumnSeparators)
+        if (!(this->flags && ColumnsHeaderViewFlags::HideSeparators))
         {
             // renderer.DrawVerticalLine(separatorX, this->Location.y, this->Location.y, Cfg->Lines.GetColor(state));
             renderer.WriteSpecialCharacter(
@@ -586,7 +588,7 @@ uint32 ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y)
 {
     if (mouse_y != this->Location.y)
         return INVALID_COLUMN_INDEX; // mouse not on the column
-    if (!sortable)
+    if (!this->IsClickable())
         return INVALID_COLUMN_INDEX; // there is no need to search for a column if not sortable (clickable)
 
     auto idx = 0U;
@@ -603,7 +605,7 @@ uint32 ColumnsHeader::MouseToColumnSepartor(int mouse_x, int mouse_y)
 {
     if (mouse_y < this->Location.y)
         return INVALID_COLUMN_INDEX; // mouse not on the column
-    if (!sizeableColumns)
+    if (!(this->flags && ColumnsHeaderViewFlags::FixedSized))
         return INVALID_COLUMN_INDEX; // there is no need to search for a column if is not sizeable
 
     auto idx = 0U;
@@ -683,7 +685,7 @@ void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     auto colIdx = MouseToColumn(x, y);
-    if ((colIdx != this->sortColumnIndex) && (this->sortable))
+    if ((colIdx != this->sortColumnIndex) && (this->IsClickable()))
     {
         this->sortColumnIndex = colIdx;
         this->hasMouseCaption = true;
