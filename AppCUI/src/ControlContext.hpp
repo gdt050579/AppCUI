@@ -595,7 +595,7 @@ struct InternalListViewColumn
     void SetWidth(uint32 width);
 };
 
-class ListViewControlContext : public ControlContext
+class ListViewControlContext : public ColumnsHeaderViewControlContext
 {
   public:
     struct
@@ -640,6 +640,15 @@ class ListViewControlContext : public ControlContext
     Controls::ListView* Host;
 
     InternalListViewItem* GetFilteredItem(uint32 index);
+
+    ListViewControlContext(
+          Reference<ListView> host,
+          std::initializer_list<ConstString> columnsList,
+          ColumnsHeaderViewFlags flags)
+        : ColumnsHeaderViewControlContext(host.ToBase<ColumnsHeaderView>(), columnsList, flags)
+    {
+    }
+
 
     int SearchItem(uint32 startPoz);
     void UpdateSearch(int startPoz);

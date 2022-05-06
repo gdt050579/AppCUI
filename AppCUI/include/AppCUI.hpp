@@ -4143,7 +4143,7 @@ namespace Controls
     class EXPORT ListView : public ColumnsHeaderView
     {
       protected:
-        ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags);
+        ListView(string_view layout, std::initializer_list<ConstString> columns, ListViewFlags flags);
 
       public:
         bool Reserve(uint32 itemsCount);
