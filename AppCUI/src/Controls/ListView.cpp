@@ -1514,7 +1514,7 @@ ListView::~ListView()
     DELETE_CONTROL_CONTEXT(ListViewControlContext);
 }
 ListView::ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags)
-    : Control(new ListViewControlContext(), "", layout, false)
+    : ColumnsHeaderView(new ListViewControlContext(), "", layout, false)
 {
     auto Members              = reinterpret_cast<ListViewControlContext*>(this->Context);
     Members->Layout.MinWidth  = 5;
@@ -1586,6 +1586,7 @@ void ListView::OnUpdateScrollBars()
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
 }
 
+/*
 ListViewColumn ListView::GetColumn(uint32 index)
 {
     if (index < WRAPPER->Columns.Count)
@@ -1620,6 +1621,7 @@ uint32 ListView::GetColumnsCount()
 {
     return WRAPPER->GetNrColumns();
 }
+//*/
 
 ListViewItem ListView::AddItem(const ConstString& text)
 {
@@ -1781,10 +1783,10 @@ Handlers::ListView* ListView::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::ListView);
 }
-uint32 ListView::GetSortColumnIndex()
-{
-    return WRAPPER->SortParams.ColumnIndex;
-}
+//uint32 ListView::GetSortColumnIndex()
+//{
+//    return WRAPPER->SortParams.ColumnIndex;
+//}
 
 // ================================================================== [ListViewItem] ==========================
 #define LVIC ((ListViewControlContext*) this->context)
@@ -1915,50 +1917,50 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
           "Invalid column index:%d (should be smaller than %d)",                                                       \
           index,                                                                                                       \
           LVCC->Columns.Count);
-
-bool ListViewColumn::SetText(const ConstString& text)
-{
-    LVCCHECK(false);
-    return LVCC->Columns.List[index].SetName(text);
-}
-const Graphics::CharacterBuffer& ListViewColumn::GetText() const
-{
-    __temp_listviewitem_reference_object__.Destroy();
-    LVCCHECK(__temp_listviewitem_reference_object__);
-    return LVCC->Columns.List[index].Name;
-}
-bool ListViewColumn::SetAlignament(TextAlignament Align)
-{
-    LVCCHECK(false);
-    return LVCC->Columns.List[index].SetAlign(Align);
-}
-bool ListViewColumn::SetWidth(uint32 width)
-{
-    LVCCHECK(false);
-    LVCC->Columns.List[index].SetWidth(width);
-    LVCC->UpdateColumnsWidth();
-    return true;
-}
-uint32 ListViewColumn::GetWidth() const
-{
-    LVCCHECK(0);
-    return LVCC->Columns.List[index].Width;
-}
-bool ListViewColumn::SetClipboardCopyState(bool allowCopy)
-{
-    LVCCHECK(false);
-    return LVCC->SetColumnClipboardCopyState(index, allowCopy);
-}
-bool ListViewColumn::GetClipboardCopyState() const
-{
-    LVCCHECK(false);
-    return (LVCC->Columns.List[index].Flags & COLUMN_DONT_COPY) == 0;
-}
-bool ListViewColumn::SetFilterMode(bool allowFilterForThisColumn)
-{
-    LVCCHECK(false);
-    return LVCC->SetColumnFilterMode(index, allowFilterForThisColumn);
-}
+//
+//bool ListViewColumn::SetText(const ConstString& text)
+//{
+//    LVCCHECK(false);
+//    return LVCC->Columns.List[index].SetName(text);
+//}
+//const Graphics::CharacterBuffer& ListViewColumn::GetText() const
+//{
+//    __temp_listviewitem_reference_object__.Destroy();
+//    LVCCHECK(__temp_listviewitem_reference_object__);
+//    return LVCC->Columns.List[index].Name;
+//}
+//bool ListViewColumn::SetAlignament(TextAlignament Align)
+//{
+//    LVCCHECK(false);
+//    return LVCC->Columns.List[index].SetAlign(Align);
+//}
+//bool ListViewColumn::SetWidth(uint32 width)
+//{
+//    LVCCHECK(false);
+//    LVCC->Columns.List[index].SetWidth(width);
+//    LVCC->UpdateColumnsWidth();
+//    return true;
+//}
+//uint32 ListViewColumn::GetWidth() const
+//{
+//    LVCCHECK(0);
+//    return LVCC->Columns.List[index].Width;
+//}
+//bool ListViewColumn::SetClipboardCopyState(bool allowCopy)
+//{
+//    LVCCHECK(false);
+//    return LVCC->SetColumnClipboardCopyState(index, allowCopy);
+//}
+//bool ListViewColumn::GetClipboardCopyState() const
+//{
+//    LVCCHECK(false);
+//    return (LVCC->Columns.List[index].Flags & COLUMN_DONT_COPY) == 0;
+//}
+//bool ListViewColumn::SetFilterMode(bool allowFilterForThisColumn)
+//{
+//    LVCCHECK(false);
+//    return LVCC->SetColumnFilterMode(index, allowFilterForThisColumn);
+//}
 #undef LVICHECK
 #undef LVCCHECK
 #undef LVIC
