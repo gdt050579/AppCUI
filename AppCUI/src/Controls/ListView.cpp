@@ -25,45 +25,6 @@ constexpr uint32 LISTVIEW_SEARCH_BAR_WIDTH = 12;
 Graphics::CharacterBuffer
       __temp_listviewitem_reference_object__; // use this as std::option<const T&> is not available yet
 
-void InternalListViewColumn::Reset()
-{
-    this->HotKeyCode   = Key::None;
-    this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
-    this->Flags        = 0;
-    this->Align        = TextAlignament::Left;
-    this->Width        = 10;
-    this->Name.Clear();
-}
-bool InternalListViewColumn::SetName(const ConstString& text)
-{
-    this->HotKeyCode   = Key::None;
-    this->HotKeyOffset = NO_HOTKEY_FOR_COLUMN;
-
-    CHECK(Name.SetWithHotKey(text, this->HotKeyOffset, this->HotKeyCode, Key::Ctrl),
-          false,
-          "Fail to set name to column !");
-
-    return true;
-}
-bool InternalListViewColumn::SetAlign(TextAlignament align)
-{
-    if ((align == TextAlignament::Left) || (align == TextAlignament::Right) || (align == TextAlignament::Center))
-    {
-        this->Align = align;
-        return true;
-    }
-    RETURNERROR(
-          false,
-          "align parameter can only be one of the following: TextAlignament::Left, TextAlignament::Right or "
-          "TextAlignament::Center");
-}
-void InternalListViewColumn::SetWidth(uint32 width)
-{
-    width       = std::max<>(width, MINIM_COLUMN_WIDTH);
-    width       = std::min<>(width, MAXIM_COLUMN_WIDTH);
-    this->Width = (uint8) width;
-}
-
 InternalListViewItem::InternalListViewItem() : Data(nullptr)
 {
     this->Flags     = 0;
@@ -105,105 +66,11 @@ InternalListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
     return &Items.List[idx];
 }
 
-void ListViewControlContext::DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer)
-{
-    int x                          = this->GetLeftPos();
-    InternalListViewColumn* column = this->Columns.List;
-    for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
-    {
-        x += column->Width;
-        if (((Columns.ResizeModeEnabled) && (tr == Columns.ResizeColumnIndex)) ||
-            (tr == Columns.HoverSeparatorColumnIndex))
-            renderer.DrawVerticalLine(x, 1, Layout.Height, Cfg->Lines.Hovered);
-        x++;
-    }
-}
-void ListViewControlContext::DrawColumn(Graphics::Renderer& renderer)
-{
-    const auto not_sortable = (Flags & ListViewFlags::Sortable) == ListViewFlags::None;
-    const auto enabled      = (this->Flags & GATTR_ENABLE) != 0;
-    const auto state        = GetControlState(ControlStateFlags::None);
-    const auto defaultCol   = Cfg->Header.Text.GetColor(state);
-    const auto defaultHK    = Cfg->Header.HotKey.GetColor(state);
-    const auto y            = (this->Flags && ListViewFlags::HideBorder) ? 0 : 1;
-    int x                   = y; // either (0,0) or (1,1)
-
-    renderer.FillHorizontalLine(x, y, Layout.Width, ' ', defaultCol);
-
-    x -= Columns.XOffset;
-
-    InternalListViewColumn* column = this->Columns.List;
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
-    params.Y           = y;
-    params.Color       = defaultCol;
-    params.HotKeyColor = defaultHK;
-
-    for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
-    {
-        if (this->Focused)
-        {
-            if (tr == SortParams.ColumnIndex)
-            {
-                params.Color = enabled ? Cfg->Header.Text.PressedOrSelected : Cfg->Header.Text.Inactive;
-                renderer.FillHorizontalLineSize(x, y, column->Width, ' ', params.Color); // highlight the column
-            }
-            else if (tr == Columns.HoverColumnIndex)
-            {
-                params.Color = enabled ? Cfg->Header.Text.Hovered : Cfg->Header.Text.Inactive;
-                renderer.FillHorizontalLineSize(x, y, column->Width, ' ', params.Color); // highlight the column
-            }
-            else
-                params.Color = defaultCol;
-        }
-        params.X     = x + 1;
-        params.Width = column->Width - 2;
-        params.Align = column->Align;
-        if ((column->HotKeyOffset == NO_HOTKEY_FOR_COLUMN) || (not_sortable))
-        {
-            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors;
-            renderer.WriteText(column->Name, params);
-        }
-        else
-        {
-            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors |
-                           WriteTextFlags::HighlightHotKey;
-            if (this->Focused)
-            {
-                if (tr == SortParams.ColumnIndex)
-                {
-                    params.HotKeyColor = enabled ? Cfg->Header.HotKey.PressedOrSelected : Cfg->Header.HotKey.Inactive;
-                }
-                else if (tr == Columns.HoverColumnIndex)
-                {
-                    params.HotKeyColor = enabled ? Cfg->Header.HotKey.Hovered : Cfg->Header.HotKey.Inactive;
-                }
-                else
-                    params.HotKeyColor = defaultHK;
-            }
-            params.HotKeyPosition = column->HotKeyOffset;
-            renderer.WriteText(column->Name, params);
-        }
-        x += column->Width;
-        if ((this->Focused) && (tr == SortParams.ColumnIndex))
-        {
-            renderer.WriteSpecialCharacter(
-                  x - 1,
-                  y,
-                  this->SortParams.Ascendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
-                  Cfg->Header.HotKey.PressedOrSelected);
-        }
-
-        if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
-        {
-            renderer.DrawVerticalLine(x, y, Layout.Height, Cfg->Lines.GetColor(state));
-        }
-        x++;
-    }
-}
 void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem)
 {
     int x = GetLeftPos();
     int itemStarts;
+    auto columnsCount              = Header.GetColumnsCount();
     InternalListViewColumn* column = this->Columns.List;
     CharacterBuffer* subitem       = item->SubItem;
     ColorPair itemCol              = Cfg->Text.Normal;
@@ -315,7 +182,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     x = end_first_column + 1;
     subitem++;
     column++;
-    for (uint32 tr = 1; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
+    for (uint32 tr = 1; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++, column++)
     {
         params.Width = column->Width;
         params.X     = x;
@@ -370,7 +237,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         {
             x                              = GetLeftPos();
             InternalListViewColumn* column = this->Columns.List;
-            for (uint32 tr = 0; (tr < Columns.Count) && (x < (int) this->Layout.Width); tr++, column++)
+            for (uint32 tr = 0; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++, column++)
             {
                 x += column->Width;
                 renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxCrossSingleLine, col);
@@ -469,44 +336,6 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
                   Cfg->Text.Highlighted);
         }
     }
-}
-// coloane
-bool ListViewControlContext::AddColumn(const ConstString& text, TextAlignament Align, uint32 width)
-{
-    CHECK(Columns.Count < MAX_LISTVIEW_COLUMNS, false, "");
-    Columns.List[Columns.Count].Reset();
-    CHECK(Columns.List[Columns.Count].SetName(text), false, "Fail to set column name: %s", text);
-    CHECK(Columns.List[Columns.Count].SetAlign(Align), false, "Fail to set alignament to: %d", Align);
-    if (width == ColumnBuilder::AUTO_SIZE)
-        width = Columns.List[Columns.Count].Name.Len() + 3;
-    Columns.List[Columns.Count].SetWidth(width);
-    Columns.Count++;
-    UpdateColumnsWidth();
-    return true;
-}
-void ListViewControlContext::UpdateColumnsWidth()
-{
-    this->Columns.TotalWidth = 0;
-    for (uint32 tr = 0; tr < this->Columns.Count; tr++)
-        this->Columns.TotalWidth += ((uint32) (this->Columns.List[tr].Width)) + 1;
-}
-bool ListViewControlContext::DeleteColumn(uint32 index)
-{
-    CHECK(index < Columns.Count, false, "Invalid column index: %d (should be smaller than %d)", index, Columns.Count);
-    for (uint32 tr = index; tr < Columns.Count; tr++)
-        Columns.List[tr] = Columns.List[tr + 1];
-    Columns.Count--;
-    UpdateColumnsWidth();
-    return true;
-}
-void ListViewControlContext::DeleteAllColumns()
-{
-    Columns.Count = 0;
-    UpdateColumnsWidth();
-}
-int ListViewControlContext::GetNrColumns()
-{
-    return Columns.Count;
 }
 
 ItemHandle ListViewControlContext::AddItem(const ConstString& text)
@@ -1538,20 +1367,11 @@ ListView::ListView(string_view layout, std::initializer_list<ConstString> column
     Members->Items.List.reserve(32);
 
     // initialize
-    Members->Columns.Count                     = 0;
-    Members->Columns.XOffset                   = 0;
     Members->Items.FirstVisibleIndex           = 0;
     Members->Items.CurentItemIndex             = 0;
-    Members->SortParams.ColumnIndex            = INVALID_COLUMN_INDEX;
-    Members->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
-    Members->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
-    Members->SortParams.Ascendent              = true;
-    Members->Columns.ResizeModeEnabled         = false;
     Members->Filter.FilterModeEnabled          = false;
     Members->Filter.LastFoundItem              = -1;
-    Members->Columns.ResizeColumnIndex         = INVALID_COLUMN_INDEX;
     Members->clipboardSeparator                = '\t';
-    Members->Columns.TotalWidth                = 0;
     Members->Host                              = this;
     Members->ScrollBars.OutsideControl         = Members->Flags && ListViewFlags::HideBorder;
     Members->Filter.SearchText.Clear();

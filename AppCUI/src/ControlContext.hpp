@@ -580,42 +580,10 @@ struct ColumnsHeaderViewControlContext : public ControlContext
     {
     }
 };
-struct InternalListViewColumn
-{
-    CharacterBuffer Name;
-    uint32 HotKeyOffset;
-    uint32 Flags;
-    Key HotKeyCode;
-    uint16 Width;
-    TextAlignament Align;
-
-    void Reset();
-    bool SetName(const ConstString& text);
-    bool SetAlign(TextAlignament align);
-    void SetWidth(uint32 width);
-};
 
 class ListViewControlContext : public ColumnsHeaderViewControlContext
 {
   public:
-    struct
-    {
-        InternalListViewColumn List[MAX_LISTVIEW_COLUMNS];
-        uint32 Count;
-        uint32 TotalWidth;
-        uint32 ResizeColumnIndex;
-        uint32 HoverColumnIndex;
-        uint32 HoverSeparatorColumnIndex;
-        int XOffset;
-        bool ResizeModeEnabled;
-    } Columns;
-
-    struct
-    {
-        uint32 ColumnIndex;
-        bool Ascendent;
-    } SortParams;
-
     struct
     {
         vector<InternalListViewItem> List;
@@ -653,8 +621,6 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     int SearchItem(uint32 startPoz);
     void UpdateSearch(int startPoz);
     void UpdateSelectionInfo();
-    void DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer);
-    void DrawColumn(Graphics::Renderer& renderer);
     void DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem);
     bool DrawSearchBar(Graphics::Renderer& renderer);
 
@@ -662,13 +628,6 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     void UpdateSelection(int start, int end, bool select);
     void MoveTo(int newItem);
     void ColumnSort(uint32 columnIndex);
-
-    // columns
-    void UpdateColumnsWidth();
-    bool AddColumn(const ConstString& text, TextAlignament Align, uint32 width = 10);
-    bool DeleteColumn(uint32 index);
-    void DeleteAllColumns();
-    int GetNrColumns();
 
     // itemuri
     ItemHandle AddItem(const ConstString& text);
