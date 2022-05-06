@@ -9,11 +9,17 @@ Graphics::CharacterBuffer null_column_reference; // use this as std::option<cons
 #define ICH         ((ColumnsHeaderViewControlContext*) (this->Context))
 #define NULL_COLUMN Column(nullptr, 0)
 
-ColumnsHeaderView::ColumnsHeaderView(string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
-    : Control(new ColumnsHeaderViewControlContext(this, flags), "", layout, false)
+ColumnsHeaderView::ColumnsHeaderView(
+      string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+    : ColumnsHeaderView(new ColumnsHeaderViewControlContext(this, columnsList, flags), layout)
+{
+}
+// context MUST be a derivate of ColumnsHeaderViewControlContext
+ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Control(context, "", layout, false)
 {
     auto Members = (ColumnsHeaderViewControlContext*) this->Context;
 }
+
 ColumnsHeaderView::~ColumnsHeaderView()
 {
     if (this->Context)
@@ -44,7 +50,7 @@ Column ColumnsHeaderView::AddColumn(const ConstString columnFormat)
 bool ColumnsHeaderView::AddColumns(std::initializer_list<ConstString> list)
 {
     const auto newReservedCapacity = ((list.size() + ICH->Header.GetColumnsCount()) | 7) + 1; // align to 8 columns
-    ICH->Header.Reserve((uint32)newReservedCapacity);
+    ICH->Header.Reserve((uint32) newReservedCapacity);
     for (auto& col : list)
     {
         CHECK(AddColumn(col).IsValid(), false, "");
@@ -64,7 +70,7 @@ void ColumnsHeaderView::DeleteAllColumns()
 {
     ICH->Header.DeleteAllColumns();
 }
-bool ColumnsHeaderView::DeleteColumn(uint32 columnIndex)
+void ColumnsHeaderView::DeleteColumn(uint32 columnIndex)
 {
     ICH->Header.DeleteColumn(columnIndex);
 }

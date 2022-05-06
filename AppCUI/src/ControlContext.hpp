@@ -570,8 +570,11 @@ class ColumnsHeader
 struct ColumnsHeaderViewControlContext : public ControlContext
 {
     ColumnsHeader Header;
-    ColumnsHeaderViewControlContext(Reference<ColumnsHeaderView> host, ColumnsHeaderViewFlags flags) : Header(host, flags)
+    ColumnsHeaderViewControlContext(
+          Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+        : Header(host, flags)
     {
+        
     }
 };
 struct InternalListViewColumn

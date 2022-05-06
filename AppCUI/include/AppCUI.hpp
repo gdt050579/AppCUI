@@ -4077,6 +4077,7 @@ namespace Controls
       protected:
         ColumnsHeaderView(
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
+        ColumnsHeaderView(void* context, string_view layout);
 
       public:
         bool AddColumns(std::initializer_list<ConstString> list);
@@ -4084,7 +4085,7 @@ namespace Controls
         Column GetColumn(uint32 index);
         uint32 GetColumnCount() const;
         void DeleteAllColumns();
-        bool DeleteColumn(uint32 columnIndex);
+        void DeleteColumn(uint32 columnIndex);
 
         virtual void OnColumnClicked(uint32 columnIndex) = 0;
 
@@ -4118,10 +4119,10 @@ namespace Controls
         PopupSearchBar                = 0x080000
     };
 
-    //class EXPORT ListViewColumn
+    // class EXPORT ListViewColumn
     //{
-    //    void* context;
-    //    uint32 index;
+    //     void* context;
+    //     uint32 index;
 
     //    ListViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
     //    {
@@ -4158,24 +4159,24 @@ namespace Controls
         void OnUpdateScrollBars() override;
 
         // coloane
-        //ListViewColumn GetColumn(uint32 index);
-        //ListViewColumn AddColumn(
+        // ListViewColumn GetColumn(uint32 index);
+        // ListViewColumn AddColumn(
         //      const ConstString& text,
         //      Graphics::TextAlignament align = Graphics::TextAlignament::Left,
         //      uint32 width                   = ColumnBuilder::AUTO_SIZE);
-        //inline ListViewColumn AddColumn(ColumnBuilder column)
+        // inline ListViewColumn AddColumn(ColumnBuilder column)
         //{
         //    return AddColumn(column.name, column.align, column.width);
         //}
-        //void AddColumns(std::initializer_list<ColumnBuilder> columns);
-        //uint32 GetColumnsCount();
-        //uint32 GetSortColumnIndex();
-        //inline ListViewColumn GetSortColumn()
+        // void AddColumns(std::initializer_list<ColumnBuilder> columns);
+        // uint32 GetColumnsCount();
+        // uint32 GetSortColumnIndex();
+        // inline ListViewColumn GetSortColumn()
         //{
         //    return GetColumn(GetSortColumnIndex());
         //}
-        //void DeleteAllColumns();
-        //bool DeleteColumn(uint32 columnIndex);
+        // void DeleteAllColumns();
+        // bool DeleteColumn(uint32 columnIndex);
 
         // Items
         ListViewItem AddItem(const ConstString& text);
