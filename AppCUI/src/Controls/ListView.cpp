@@ -452,11 +452,11 @@ void ListViewControlContext::SetClipboardSeparator(char ch)
 }
 bool ListViewControlContext::SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy)
 {
-    CHECK(columnIndex < Columns.Count,
+    CHECK(columnIndex < Header.GetColumnsCount(),
           false,
           "Invalid column index: %d (should be smaller than %d)",
           columnIndex,
-          Columns.Count);
+          Header.GetColumnsCount());
     if (allowCopy)
         Columns.List[columnIndex].Flags -= Columns.List[columnIndex].Flags & COLUMN_DONT_COPY;
     else
@@ -465,11 +465,11 @@ bool ListViewControlContext::SetColumnClipboardCopyState(uint32 columnIndex, boo
 }
 bool ListViewControlContext::SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn)
 {
-    CHECK(columnIndex < Columns.Count,
+    CHECK(columnIndex < Header.GetColumnsCount(),
           false,
           "Invalid column index (%d), should be smaller than %d",
           columnIndex,
-          Columns.Count);
+          Header.GetColumnsCount());
     if (allowFilterForThisColumn)
         Columns.List[columnIndex].Flags -= Columns.List[columnIndex].Flags & COLUMN_DONT_FILTER;
     else
@@ -826,7 +826,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         case Key::Ctrl | Key::Insert:
             if (Items.Indexes.Len() > 0)
             {
-                for (uint32 tr = 0; tr < Columns.Count; tr++)
+                for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
                 {
                     if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
                     {
@@ -841,7 +841,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         case Key::Ctrl | Key::Alt | Key::Insert:
             for (uint32 gr = 0; gr < Items.Indexes.Len(); gr++)
             {
-                for (uint32 tr = 0; tr < Columns.Count; tr++)
+                for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
                 {
                     if ((Columns.List[tr].Flags & COLUMN_DONT_COPY) == 0)
                     {
@@ -860,7 +860,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         {
             if (Filter.FilterModeEnabled == false)
             {
-                for (uint32 tr = 0; tr < Columns.Count; tr++)
+                for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
                 {
                     if (Columns.List[tr].HotKeyCode == keyCode)
                     {
@@ -1058,10 +1058,11 @@ int ListViewControlContext::SearchItem(uint32 startPoz)
 }
 bool ListViewControlContext::FilterItem(InternalListViewItem& lvi, bool clearColorForAll)
 {
-    uint32 columnID = 0;
-    int index       = -1;
+    uint32 columnID         = 0;
+    int index               = -1;
+    const auto columnsCount = Header.GetColumnsCount();
 
-    for (uint32 gr = 0; gr < Columns.Count; gr++)
+    for (uint32 gr = 0; gr < columnsCount; gr++)
     {
         if ((Columns.List[gr].Flags & COLUMN_DONT_FILTER) != 0)
             continue;
@@ -1075,7 +1076,7 @@ bool ListViewControlContext::FilterItem(InternalListViewItem& lvi, bool clearCol
     if ((clearColorForAll) || (index >= 0))
     {
         // clear all colors
-        for (uint32 gr = 0; gr < Columns.Count; gr++)
+        for (uint32 gr = 0; gr < columnsCount; gr++)
         {
             lvi.SubItem[gr].SetColor(this->Cfg->Text.Inactive);
         }
@@ -1556,15 +1557,7 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 }
 // ================================================================== [InternalListViewColumn]
 // ==========================
-#define LVCC ((ListViewControlContext*) this->context)
-#define LVCCHECK(result)                                                                                               \
-    if (this->context == nullptr)                                                                                      \
-        return result;                                                                                                 \
-    CHECK(index < LVCC->Columns.Count,                                                                                 \
-          result,                                                                                                      \
-          "Invalid column index:%d (should be smaller than %d)",                                                       \
-          index,                                                                                                       \
-          LVCC->Columns.Count);
+
 //
 // bool ListViewColumn::SetText(const ConstString& text)
 //{
@@ -1610,7 +1603,5 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 //    return LVCC->SetColumnFilterMode(index, allowFilterForThisColumn);
 //}
 #undef LVICHECK
-#undef LVCCHECK
 #undef LVIC
-#undef LVCC
 } // namespace AppCUI
