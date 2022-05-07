@@ -511,7 +511,7 @@ class ColumnsHeader
 
     struct
     {
-        int32 x, y;
+        int32 x, y, scrollX;
         uint32 width;
         uint32 totalWidth;
         uint32 listHeight;
@@ -566,6 +566,25 @@ class ColumnsHeader
     void OnLoseFocus();
 
 
+    inline int32 GetScrollX() const
+    {
+        return Location.scrollX;
+    }
+    inline void SetScrollX(int32 value)
+    {
+        if (Location.totalWidth>Location.width)
+        {
+            if (value > (int32) (Location.totalWidth - (Location.width + 1)))
+                value = (int32) (Location.totalWidth - (Location.width + 1));
+            if (value < 0)
+                value = 0;
+            Location.scrollX = value;
+        }
+        else
+        {
+            Location.scrollX = 0;
+        }
+    }
     inline uint32 GetColumnsCount() const
     {
         return (uint32) columns.size();

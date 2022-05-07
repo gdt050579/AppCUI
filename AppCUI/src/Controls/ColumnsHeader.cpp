@@ -311,6 +311,7 @@ ColumnsHeader::ColumnsHeader(
     this->Location.width      = 0;
     this->Location.totalWidth = 0;
     this->Location.listHeight = 0;
+    this->Location.scrollX    = 0;
     this->sortDirection       = SortDirection::Ascendent;
     this->hasMouseCaption     = false;
     this->host                = hostControl;
