@@ -556,7 +556,6 @@ void ListViewControlContext::DeleteAllItems()
 {
     Items.List.clear();
     Items.Indexes.Clear();
-    Columns.XOffset          = 0;
     Items.FirstVisibleIndex  = 0;
     Items.CurentItemIndex    = 0;
     Filter.FilterModeEnabled = false;
@@ -720,16 +719,6 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
             return true;
         case Key::PageDown:
             MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
-            Filter.FilterModeEnabled = false;
-            return true;
-        case Key::Left:
-            if (Columns.XOffset > 0)
-                Columns.XOffset--;
-            Filter.FilterModeEnabled = false;
-            return true;
-        case Key::Right:
-            UpdateColumnsWidth();
-            Columns.XOffset          = std::min<>(Columns.XOffset + 1, (int) Columns.TotalWidth);
             Filter.FilterModeEnabled = false;
             return true;
         case Key::Home:

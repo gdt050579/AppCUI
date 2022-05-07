@@ -724,11 +724,21 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
     }
     else
     {
-        if ((key == (Key::Ctrl | Key::Left)) || (key == (Key::Ctrl | Key::Right)))
+        switch (key)
         {
+        case Key::Ctrl | Key::Left:
+        case Key::Ctrl | Key::Right:
             this->resizeColumnIndex = 0;
             return true;
+        case Key::Left:
+            SetScrollX(Location.scrollX - 1);
+            return true;
+        case Key::Right:
+            this->RecomputeColumnsSizes();
+            SetScrollX(Location.scrollX + 1);
+            return true;
         }
+
         // check for Hot Key
         auto idx = 0U;
         for (auto& col : this->columns)
