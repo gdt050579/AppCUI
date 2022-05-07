@@ -306,18 +306,18 @@ ColumnsHeader::ColumnsHeader(
       std::initializer_list<ConstString> list,
       ColumnsHeaderViewFlags headerFlags)
 {
-    this->Location.x             = 0;
-    this->Location.y             = 0;
-    this->Location.width         = 0;
-    this->Location.totalWidth    = 0;
-    this->Location.listHeight    = 0;
-    this->sortDirectionAscendent = true;
-    this->hasMouseCaption        = false;
-    this->host                   = hostControl;
-    this->flags                  = static_cast<uint32>(headerFlags);
-    this->sortColumnIndex        = INVALID_COLUMN_INDEX;
-    this->hoveredColumnIndex     = INVALID_COLUMN_INDEX;
-    this->resizeColumnIndex      = INVALID_COLUMN_INDEX;
+    this->Location.x          = 0;
+    this->Location.y          = 0;
+    this->Location.width      = 0;
+    this->Location.totalWidth = 0;
+    this->Location.listHeight = 0;
+    this->sortDirection       = SortDirection::Ascendent;
+    this->hasMouseCaption     = false;
+    this->host                = hostControl;
+    this->flags               = static_cast<uint32>(headerFlags);
+    this->sortColumnIndex     = INVALID_COLUMN_INDEX;
+    this->hoveredColumnIndex  = INVALID_COLUMN_INDEX;
+    this->resizeColumnIndex   = INVALID_COLUMN_INDEX;
     // some check up
     // 1. if it is sortable it is alsa clickable
     if (this->flags && ColumnsHeaderViewFlags::Sortable)
@@ -607,7 +607,8 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
             renderer.WriteSpecialCharacter(
                   separatorX - 1,
                   this->Location.y,
-                  this->sortDirectionAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
+                  (this->sortDirection == SortDirection::Ascendent) ? SpecialChars::TriangleUp
+                                                                    : SpecialChars::TriangleDown,
                   Cfg->Header.HotKey.PressedOrSelected);
         }
 
@@ -666,29 +667,26 @@ void ColumnsHeader::SetPosition(int x, int y, uint32 width, uint32 listHeight)
 }
 bool ColumnsHeader::SetSortColumn(uint32 index)
 {
-    CHECK(this->IsSortable(),
-          false,
-          "Header is not sortable. Have you added ColumnsHeaderViewFlags::Sortable flag");
+    CHECK(this->IsSortable(), false, "Header is not sortable. Have you added ColumnsHeaderViewFlags::Sortable flag");
     CHECK(index < columns.size(), false, "");
     if (index == this->sortColumnIndex)
     {
-        this->sortDirectionAscendent = !this->sortDirectionAscendent;
+        this->sortDirection =
+              this->sortDirection == SortDirection::Ascendent ? SortDirection::Descendent : SortDirection::Ascendent;
     }
     else
     {
-        this->sortColumnIndex        = index;
-        this->sortDirectionAscendent = true;
+        this->sortColumnIndex = index;
+        this->sortDirection   = SortDirection::Ascendent;
     }
     return true;
 }
-bool ColumnsHeader::SetSortColumn(uint32 index, bool ascendent)
+bool ColumnsHeader::SetSortColumn(uint32 index, SortDirection direction)
 {
-    CHECK(this->IsSortable(),
-          false,
-          "Header is not sortable. Have you added ColumnsHeaderViewFlags::Sortable flag");
+    CHECK(this->IsSortable(), false, "Header is not sortable. Have you added ColumnsHeaderViewFlags::Sortable flag");
     CHECK(index < columns.size(), false, "");
-    this->sortColumnIndex        = index;
-    this->sortDirectionAscendent = ascendent;
+    this->sortColumnIndex = index;
+    this->sortDirection   = direction;
     return true;
 }
 bool ColumnsHeader::OnKeyEvent(Key key, char16 character)

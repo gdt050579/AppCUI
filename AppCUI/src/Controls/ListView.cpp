@@ -1022,12 +1022,12 @@ bool ListViewControlContext::Sort()
 {
     // sanity check
     CHECK(Header.GetSortColumnIndex().has_value(), false, "");
-    Items.Indexes.Sort(SortIndexesCompareFunction, SortParams.Ascendent, this);
+    Items.Indexes.Sort(SortIndexesCompareFunction, Header.GetSortDirection(), this);
     return true;
 }
-bool ListViewControlContext::Sort(uint32 columnIndex, bool ascendent)
+bool ListViewControlContext::Sort(uint32 columnIndex, SortDirection direction)
 {
-    CHECK(Header.SetSortColumn(columnIndex, ascendent), false, "");
+    CHECK(Header.SetSortColumn(columnIndex, direction), false, "");
     Sort();
 }
 int ListViewControlContext::SearchItem(uint32 startPoz)
@@ -1426,9 +1426,9 @@ bool ListView::Sort()
 {
     return WRAPPER->Sort();
 }
-bool ListView::Sort(uint32 columnIndex, bool ascendent)
+bool ListView::Sort(uint32 columnIndex, SortDirection direction)
 {
-    return WRAPPER->Sort(columnIndex, ascendent);
+    return WRAPPER->Sort(columnIndex, direction);
 }
 bool ListView::Reserve(uint32 itemsCount)
 {
@@ -1480,8 +1480,8 @@ bool ListViewItem::SetText(uint32 subItem, const ConstString& text)
 bool ListViewItem::SetValues(std::initializer_list<ConstString> values)
 {
     LVICHECK(false);
-    auto idx        = 0U;
-    auto maxColumns = LVIC->Columns.Count;
+    auto idx              = 0U;
+    const auto maxColumns = LVIC->Header.GetColumnsCount();
     for (auto& value : values)
     {
         if (idx >= maxColumns)

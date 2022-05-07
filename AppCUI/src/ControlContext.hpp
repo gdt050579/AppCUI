@@ -518,7 +518,8 @@ class ColumnsHeader
     } Location;
     uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
     uint32 flags;
-    bool sortDirectionAscendent, hasMouseCaption;
+    AppCUI::Utils::SortDirection sortDirection;
+    bool  hasMouseCaption;
 
     void ClearKeyboardAndMouseLocks();
     bool Add(KeyValueParser& parser, bool unicodeText);
@@ -536,7 +537,7 @@ class ColumnsHeader
     uint32 MouseToColumnSepartor(int x, int y);
     void SetPosition(int x, int y, uint32 width, uint32 listHeight);
     bool SetSortColumn(uint32 colIndex);
-    bool SetSortColumn(uint32 colIndex, bool ascendent);
+    bool SetSortColumn(uint32 colIndex, SortDirection direction);
     bool OnKeyEvent(Key key, char16 character);
     inline bool HasMouseCaption() const
     {
@@ -550,7 +551,10 @@ class ColumnsHeader
     {
         return flags && ColumnsHeaderViewFlags::Sortable;
     }
-
+    inline AppCUI::Utils::SortDirection GetSortDirection() const
+    {
+        return sortDirection;
+    }
 
     // mouse related methods
     void OnMouseReleased(int x, int y, Input::MouseButton button);
@@ -572,7 +576,9 @@ class ColumnsHeader
     }
     inline std::optional<uint32> GetSortColumnIndex() const
     {
-        return (this->sortColumnIndex != INVALID_COLUMN_INDEX) ? this->sortColumnIndex : std::nullopt;
+        if (this->sortColumnIndex == INVALID_COLUMN_INDEX)
+            return std::nullopt;
+        return this->sortColumnIndex;
     }
     inline InternalColumn& operator[](uint32 index)
     {
@@ -682,7 +688,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     void TriggerListViewItemPressedEvent();
     void TriggerListViewItemCheckedEvent();
     bool Sort();
-    bool Sort(uint32 columnIndex, bool ascendent);
+    bool Sort(uint32 columnIndex, SortDirection direction);
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
     void FilterItems();

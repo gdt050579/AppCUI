@@ -819,6 +819,11 @@ namespace Dialogs
 }
 namespace Utils
 {
+    enum class SortDirection : uint8
+    {
+        Ascendent  = 1,
+        Descendent = 0
+    };
     class EXPORT Array32
     {
         uint32* Data;
@@ -866,8 +871,14 @@ namespace Utils
         bool Get(uint32 index, uint32& value);
         bool Get(uint32 index, int32& value);
 
-        bool Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context = nullptr);
-        bool Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), bool ascendent, void* Context = nullptr);
+        bool Sort(
+              int32 (*compare)(int32 elem1, int32 elem2, void* Context),
+              SortDirection direction,
+              void* Context = nullptr);
+        bool Sort(
+              int32 (*compare)(uint32 elem1, uint32 elem2, void* Context),
+              SortDirection direction,
+              void* Context = nullptr);
     };
 
     class BufferView
@@ -4195,7 +4206,7 @@ namespace Controls
 
         // sort
         bool Sort();
-        bool Sort(uint32 columnIndex, bool ascendent);
+        bool Sort(uint32 columnIndex, SortDirection direction);
 
         // handlers covariant
         Handlers::ListView* Handlers() override;
