@@ -195,7 +195,7 @@ FileDialogWindow::FileDialogWindow(
         const auto& s2 = item2.GetText(cindex);
         return s1.CompareWith(s2, true);
     };
-    files->Sort(0, true); // sort after the first column, ascendent
+    files->Sort(0, SortDirection::Ascendent); // sort after the first column, ascendent
 
     lbName = Factory::Label::Create(this, "File &Name", "x:2,y:17,w:11");
     txName = Factory::TextField::Create(this, fileName, "x:15,y:17,w:45", TextFieldFlags::ProcessEnter);
