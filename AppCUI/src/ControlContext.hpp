@@ -603,6 +603,10 @@ class ColumnsHeader
     {
         return this->columns[index];
     }
+    inline const InternalColumn& operator[](uint32 index) const
+    {
+        return this->columns[index];
+    }
 };
 struct ColumnsHeaderViewControlContext : public ControlContext
 {

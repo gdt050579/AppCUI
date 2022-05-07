@@ -70,8 +70,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
 {
     int x = GetLeftPos();
     int itemStarts;
-    auto columnsCount = Header.GetColumnsCount();
-    // InternalListViewColumn* column = this->Columns.List;
+    auto columnsCount        = Header.GetColumnsCount();
     CharacterBuffer* subitem = item->SubItem;
     ColorPair itemCol        = Cfg->Text.Normal;
     ColorPair checkCol, uncheckCol;
@@ -157,7 +156,8 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
                        WriteTextFlags::FitTextToWidth | WriteTextFlags::ClipToWidth;
     }
     // first column
-    int end_first_column = x + ((int) column->Width);
+    const auto& firstColumn = this->Header[0];
+    int end_first_column    = x + ((int) firstColumn.width);
     x += (int) item->XOffset;
     if ((Flags & ListViewFlags::CheckBoxes) != ListViewFlags::None)
     {
@@ -175,22 +175,20 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     {
         params.Width = end_first_column - x;
         params.X     = x;
-        params.Align = column->Align;
+        params.Align = firstColumn.align;
         renderer.WriteText(*subitem, params);
     }
     // rest of the columns
     x = end_first_column + 1;
     subitem++;
-    column++;
-    for (uint32 tr = 1; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++, column++)
-    {
-        params.Width = column->Width;
-        params.X     = x;
-        params.Align = column->Align;
-        renderer.WriteText(*subitem, params);
 
-        x += column->Width;
-        x++;
+    for (uint32 tr = 1; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++)
+    {
+        const auto& column = this->Header[tr];
+        params.Width       = column.width;
+        params.X           = column.x;
+        params.Align       = column.align;
+        renderer.WriteText(*subitem, params);
         subitem++;
     }
     if (Focused)
@@ -236,10 +234,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
             x                              = GetLeftPos();
-            InternalListViewColumn* column = this->Columns.List;
-            for (uint32 tr = 0; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++, column++)
+            for (uint32 tr = 0; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++)
             {
-                x += column->Width;
+                x += this->Header[tr].width;
                 renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxCrossSingleLine, col);
                 x++;
             }
@@ -806,11 +803,6 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
             }
             return false;
 
-        case Key::Ctrl | Key::Right:
-        case Key::Ctrl | Key::Left:
-            Columns.ResizeColumnIndex = 0;
-            Columns.ResizeModeEnabled = true;
-            return true;
         case Key::Ctrl | Key::C:
         case Key::Ctrl | Key::Insert:
             if (Items.Indexes.Len() > 0)
