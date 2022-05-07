@@ -4162,7 +4162,7 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
-        bool OnMouseLeave() override;
+
         void OnFocus() override;
         void OnUpdateScrollBars() override;
 

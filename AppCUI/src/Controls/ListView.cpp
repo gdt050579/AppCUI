@@ -341,22 +341,24 @@ ItemHandle ListViewControlContext::AddItem(const ConstString& text)
 bool ListViewControlContext::SetItemText(ItemHandle item, uint32 subItem, const ConstString& text)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
-    CHECK(subItem < Columns.Count,
+    CHECK(subItem < Header.GetColumnsCount(),
           false,
           "Invalid column index (%d), should be smaller than %d",
           subItem,
-          Columns.Count);
+          Header.GetColumnsCount());
+    CHECK(subItem < MAX_LISTVIEW_COLUMNS, false, "Subitem must be smaller than 64");
     CHECK(i.SubItem[subItem].Set(text), false, "Fail to set text to a sub-item: %s", text);
     return true;
 }
 Graphics::CharacterBuffer* ListViewControlContext::GetItemText(ItemHandle item, uint32 subItem)
 {
     PREPARE_LISTVIEW_ITEM(item, nullptr);
-    CHECK(subItem < Columns.Count,
+    CHECK(subItem < Header.GetColumnsCount(),
           nullptr,
           "Invalid column index (%d), should be smaller than %d",
           subItem,
-          Columns.Count);
+          Header.GetColumnsCount());
+    CHECK(subItem < MAX_LISTVIEW_COLUMNS, false, "Subitem must be smaller than 64");
     return &i.SubItem[subItem];
 }
 bool ListViewControlContext::SetItemCheck(ItemHandle item, bool check)
@@ -1254,7 +1256,7 @@ void ListView::OnUpdateScrollBars()
         left_margin += (Members->Selection.StatusLength + 1);
 
     Members->ScrollBars.LeftMargin = left_margin;
-    UpdateHScrollBar(Members->Columns.XOffset, Members->Columns.TotalWidth);
+    UpdateHScrollBar(Members->Columns.XOffset, Members->Header.GetColumnsWidth());
     uint32 count = Members->Items.Indexes.Len();
     if (count > 0)
         count--;
@@ -1407,12 +1409,6 @@ bool ListView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
     return WRAPPER->OnMouseWheel(x, y, direction);
 }
 
-bool ListView::OnMouseLeave()
-{
-    WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
-    WRAPPER->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
-    return true;
-}
 void ListView::OnFocus()
 {
     WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
