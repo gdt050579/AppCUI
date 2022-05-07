@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Internal.hpp"
-
+#include <optional>
 #include <set>
 
 namespace AppCUI
@@ -505,6 +505,7 @@ struct InternalColumn
 
 class ColumnsHeader
 {
+    constexpr static uint32 INVALID_COLUMN_INDEX = 0xFFFFFFFF;
     std::vector<InternalColumn> columns;
     Reference<ColumnsHeaderView> host;
 
@@ -522,7 +523,7 @@ class ColumnsHeader
     void ClearKeyboardAndMouseLocks();
     bool Add(KeyValueParser& parser, bool unicodeText);
 
-  public:
+  public:  
     ColumnsHeader(
           Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> list, ColumnsHeaderViewFlags flags);
     bool AddColumn(const ConstString columnFormat);
@@ -534,6 +535,8 @@ class ColumnsHeader
     uint32 MouseToColumn(int x, int y);
     uint32 MouseToColumnSepartor(int x, int y);
     void SetPosition(int x, int y, uint32 width, uint32 listHeight);
+    bool SetSortColumn(uint32 colIndex);
+    bool SetSortColumn(uint32 colIndex, bool ascendent);
     bool OnKeyEvent(Key key, char16 character);
     inline bool HasMouseCaption() const
     {
@@ -543,6 +546,11 @@ class ColumnsHeader
     {
         return flags && ColumnsHeaderViewFlags::Clickable;
     }
+    inline bool IsSortable() const
+    {
+        return flags && ColumnsHeaderViewFlags::Sortable;
+    }
+
 
     // mouse related methods
     void OnMouseReleased(int x, int y, Input::MouseButton button);
@@ -558,13 +566,13 @@ class ColumnsHeader
     {
         return (uint32) columns.size();
     }
-    inline void Reserve(uint32 count)
-    {
-        columns.reserve(count);
-    }
     inline uint32 GetColumnsWidth() const
     {
         return Location.totalWidth;
+    }
+    inline std::optional<uint32> GetSortColumnIndex() const
+    {
+        return (this->sortColumnIndex != INVALID_COLUMN_INDEX) ? this->sortColumnIndex : std::nullopt;
     }
     inline InternalColumn& operator[](uint32 index)
     {
@@ -627,7 +635,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     // movement
     void UpdateSelection(int start, int end, bool select);
     void MoveTo(int newItem);
-    void ColumnSort(uint32 columnIndex);
+    void Sort(uint32 columnIndex);
 
     // itemuri
     ItemHandle AddItem(const ConstString& text);
@@ -665,13 +673,8 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     uint32 GetItemHeight(ItemHandle item);
 
     void Paint(Graphics::Renderer& renderer);
-    void OnMouseReleased(int x, int y, Input::MouseButton button);
-    bool MouseToHeader(int x, int y, uint32& HeaderIndex, uint32& HeaderColumnIndex);
     void OnMousePressed(int x, int y, Input::MouseButton button);
-    bool OnMouseDrag(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
-    bool OnMouseOver(int x, int y);
-    void SetSortColumn(uint32 colIndex);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void SendMsg(Event eventType);
     void TriggerSelectionChangeEvent(uint32 itemIndex);
@@ -679,6 +682,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     void TriggerListViewItemPressedEvent();
     void TriggerListViewItemCheckedEvent();
     bool Sort();
+    bool Sort(uint32 columnIndex, bool ascendent);
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
     void FilterItems();

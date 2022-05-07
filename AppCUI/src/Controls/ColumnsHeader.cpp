@@ -3,9 +3,8 @@ using namespace AppCUI::Utils;
 
 namespace AppCUI
 {
-constexpr uint32 MINIM_COLUMN_WIDTH   = 3;
-constexpr uint32 MAXIM_COLUMN_WIDTH   = 255;
-constexpr uint32 INVALID_COLUMN_INDEX = 0xFFFFFFFF;
+constexpr uint32 MINIM_COLUMN_WIDTH = 3;
+constexpr uint32 MAXIM_COLUMN_WIDTH = 255;
 
 namespace ColumnParser
 {
@@ -304,7 +303,8 @@ void InternalColumn::SetWidth(double percentage)
 
 ColumnsHeader::ColumnsHeader(
       Reference<ColumnsHeaderView> hostControl,
-      std::initializer_list<ConstString> list, ColumnsHeaderViewFlags headerFlags)
+      std::initializer_list<ConstString> list,
+      ColumnsHeaderViewFlags headerFlags)
 {
     this->Location.x             = 0;
     this->Location.y             = 0;
@@ -663,6 +663,33 @@ void ColumnsHeader::SetPosition(int x, int y, uint32 width, uint32 listHeight)
     this->Location.width      = width;
     this->Location.listHeight = listHeight;
     this->RecomputeColumnsSizes();
+}
+bool ColumnsHeader::SetSortColumn(uint32 index)
+{
+    CHECK(this->IsSortable(),
+          false,
+          "Header is not sortable. Have you added ColumnsHeaderViewFlags::Sortable flag");
+    CHECK(index < columns.size(), false, "");
+    if (index == this->sortColumnIndex)
+    {
+        this->sortDirectionAscendent = !this->sortDirectionAscendent;
+    }
+    else
+    {
+        this->sortColumnIndex        = index;
+        this->sortDirectionAscendent = true;
+    }
+    return true;
+}
+bool ColumnsHeader::SetSortColumn(uint32 index, bool ascendent)
+{
+    CHECK(this->IsSortable(),
+          false,
+          "Header is not sortable. Have you added ColumnsHeaderViewFlags::Sortable flag");
+    CHECK(index < columns.size(), false, "");
+    this->sortColumnIndex        = index;
+    this->sortDirectionAscendent = ascendent;
+    return true;
 }
 bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
 {
