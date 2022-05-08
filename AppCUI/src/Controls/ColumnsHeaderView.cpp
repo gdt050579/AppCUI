@@ -43,6 +43,10 @@ uint32 ColumnsHeaderView::GetColumnCount() const
 {
     return ICH->Header.GetColumnsCount();
 }
+std::optional<uint32> ColumnsHeaderView::GetSortColumnIndex() const
+{
+    return ICH->Header.GetSortColumnIndex();
+}
 void ColumnsHeaderView::DeleteAllColumns()
 {
     ICH->Header.DeleteAllColumns();

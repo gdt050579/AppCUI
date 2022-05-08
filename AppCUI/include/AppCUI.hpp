@@ -4101,7 +4101,11 @@ namespace Controls
         uint32 GetColumnCount() const;
         void DeleteAllColumns();
         void DeleteColumn(uint32 columnIndex);
-
+        std::optional<uint32> GetSortColumnIndex() const;
+        inline Column GetSortColumn()
+        {
+            return GetColumn(GetSortColumnIndex());
+        }
         virtual void OnColumnClicked(uint32 columnIndex) = 0;
 
         void Paint(Graphics::Renderer& renderer) override;
@@ -5662,4 +5666,3 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TreeViewFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
-
