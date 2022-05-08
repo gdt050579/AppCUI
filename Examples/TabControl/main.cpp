@@ -29,7 +29,7 @@ class TabNoFocusExample : public Window
         {
             tmp.SetFormat("Tab: &%d", tr + 1);
             auto pg = Factory::TabPage::Create(tb, tmp.GetText());
-            auto lv = Factory::ListView::Create(pg, "d:c", { { "Values", TextAlignament::Left, 20 } });
+            auto lv = Factory::ListView::Create(pg, "d:c", { "n:Values,a:l,w:20" });
 
             lv->AddItem(tmp.Format("Field: %d -> Dragos", tr + 1));
             lv->AddItem(tmp.Format("Field: %d -> Ghiorghita", tr + 1));
@@ -78,11 +78,11 @@ class TabExampleWin2 : public Window
         {
             tmp.SetFormat("VTab: &%d", tr + 1);
             auto pg = Factory::TabPage::Create(tb_v, tmp.GetText());
-            auto lv = Factory::ListView::Create(pg, "d:c", { { "Name", TextAlignament::Left, 20 } });
+            auto lv = Factory::ListView::Create(pg, "d:c", { "n:Name,a:l,w:20" });
 
             tmp[0] = 'H';
             pg     = Factory::TabPage::Create(tb_h, tmp.GetText());
-            lv     = Factory::ListView::Create(pg, "d:c", { { "Name", TextAlignament::Left, 20 } });
+            lv     = Factory::ListView::Create(pg, "d:c", { "n:Name,a:l,w:20" });
 
         }
     }
@@ -93,10 +93,10 @@ class TabExampleWin2 : public Window
         if ((eventType == Event::ButtonClicked) && (controlID == 1234))
         {
             auto pg = Factory::TabPage::Create(tb_v, "New page");
-            auto lv = Factory::ListView::Create(pg, "d:c", { { "Name", TextAlignament::Left, 20 } });
+            auto lv = Factory::ListView::Create(pg, "d:c", { "n:Name,a:l,w:20" });
 
             pg = Factory::TabPage::Create(tb_h, "New page");
-            lv = Factory::ListView::Create(pg, "d:c", { { "Name", TextAlignament::Left, 20 } });
+            lv = Factory::ListView::Create(pg, "d:c", { "n:Name,a:l,w:20" });
 
             return true;
         }
@@ -124,7 +124,7 @@ class TabExampleWin : public Window
         if (tabsCount >= 1)
         {
             auto pg1 = Factory::TabPage::Create(tb, "&RadioBox");
-            auto lv  = Factory::ListView::Create(pg1, "l:20,t:0,r:0,b:0", { { "Names", TextAlignament::Left, 50 } });
+            auto lv  = Factory::ListView::Create(pg1, "l:20,t:0,r:0,b:0", { "n:Names,a:l,w:50" });
 
             lv->AddItem("Andrei");
             lv->AddItem("Denis");
