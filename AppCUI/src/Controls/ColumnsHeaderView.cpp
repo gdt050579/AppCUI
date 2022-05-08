@@ -149,12 +149,30 @@ uint32 Column::GetWidth() const
 bool Column::IsColumnValueSearchable() const
 {
     VALIDATE_COLUMN(false);
-    return ((COLUMNREF.flags) & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None;
+    return ((COLUMNREF.flags) & InternalColumnFlags::SearcheableValue) != InternalColumnFlags::None;
+}
+bool Column::SetSearchable(bool searchable)
+{
+    VALIDATE_COLUMN(false);
+    if (searchable)
+        COLUMNREF.AddFlags(InternalColumnFlags::SearcheableValue);
+    else
+        COLUMNREF.RemoveFlags(InternalColumnFlags::SearcheableValue);
+    return true;
 }
 bool Column::IsColumnValueCopyable() const
 {
     VALIDATE_COLUMN(false);
-    return ((COLUMNREF.flags) & InternalColumnFlags::SearcheableValue) != InternalColumnFlags::None;
+    return ((COLUMNREF.flags) & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None;
+}
+bool Column::SetClipboardCopyable(bool clipboardCopyable)
+{
+    VALIDATE_COLUMN(false);
+    if (clipboardCopyable)
+        COLUMNREF.AddFlags(InternalColumnFlags::AllowValueCopy);
+    else
+        COLUMNREF.RemoveFlags(InternalColumnFlags::AllowValueCopy);
+    return true;
 }
 
 #undef COLUMNREF

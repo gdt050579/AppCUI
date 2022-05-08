@@ -4070,6 +4070,8 @@ namespace Controls
         bool SetWidth(uint32 width);
         bool SetWidth(float percentage);
         bool SetWidth(double percentage);
+        bool SetSearchable(bool searchable);
+        bool SetClipboardCopyable(bool clipboardCopyable);
         bool IsColumnValueSearchable() const;
         bool IsColumnValueCopyable() const;
         uint32 GetWidth() const;

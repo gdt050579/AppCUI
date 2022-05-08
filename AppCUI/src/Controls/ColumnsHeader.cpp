@@ -301,7 +301,14 @@ void InternalColumn::SetWidth(double percentage)
     this->widthTypeValue = (uint16) (percentage * 10000);
     this->widthType      = InternalColumnWidthType::Percentage;
 }
-
+void InternalColumn::AddFlags(InternalColumnFlags flagsToAdd)
+{
+    this->flags = this->flags | flagsToAdd;
+}
+void InternalColumn::RemoveFlags(InternalColumnFlags flagsToRemove)
+{
+    this->flags = static_cast<InternalColumnFlags>(((uint32) this->flags) & (~((uint32) flagsToRemove)));
+}
 ColumnsHeader::ColumnsHeader(
       Reference<ColumnsHeaderView> hostControl,
       std::initializer_list<ConstString> list,
