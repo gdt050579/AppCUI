@@ -47,6 +47,13 @@ std::optional<uint32> ColumnsHeaderView::GetSortColumnIndex() const
 {
     return ICH->Header.GetSortColumnIndex();
 }
+Column ColumnsHeaderView::GetSortColumn()
+{
+    auto colIndex = ICH->Header.GetSortColumnIndex();
+    if (colIndex.has_value())
+        return { this->Context, colIndex.value() };
+    return NULL_COLUMN;
+}
 void ColumnsHeaderView::DeleteAllColumns()
 {
     ICH->Header.DeleteAllColumns();

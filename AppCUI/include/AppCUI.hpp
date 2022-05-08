@@ -4102,10 +4102,7 @@ namespace Controls
         void DeleteAllColumns();
         void DeleteColumn(uint32 columnIndex);
         std::optional<uint32> GetSortColumnIndex() const;
-        inline Column GetSortColumn()
-        {
-            return GetColumn(GetSortColumnIndex());
-        }
+        Column GetSortColumn();
         virtual void OnColumnClicked(uint32 columnIndex) = 0;
 
         void Paint(Graphics::Renderer& renderer) override;

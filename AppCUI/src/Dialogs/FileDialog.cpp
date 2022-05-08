@@ -189,9 +189,14 @@ FileDialogWindow::FileDialogWindow(
         if (v1 > v2)
             return 1;
         auto cindex    = control->GetSortColumnIndex();
-        const auto& s1 = item1.GetText(cindex);
-        const auto& s2 = item2.GetText(cindex);
-        return s1.CompareWith(s2, true);
+        if (cindex.has_value())
+        {
+            const auto& s1 = item1.GetText(cindex.value());
+            const auto& s2 = item2.GetText(cindex.value());
+            return s1.CompareWith(s2, true);
+        }
+        // else --> no sortable column
+        return 0;
     };
     files->Sort(0, SortDirection::Ascendent); // sort after the first column, ascendent
 
