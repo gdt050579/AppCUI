@@ -4991,17 +4991,17 @@ namespace Controls
           public:
             static Pointer<Controls::ListView> Create(
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control* parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control& parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
         };
         class EXPORT ComboBox

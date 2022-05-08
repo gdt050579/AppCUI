@@ -294,14 +294,14 @@ REFERENCE<ImageView> Factory::ImageView::Create(
 
 //======[LISTVIEW]===================================================================================
 POINTER<Controls::ListView> Factory::ListView::Create(
-      string_view layout, std::initializer_list<ColumnBuilder> columns, Controls::ListViewFlags flags)
+      string_view layout, std::initializer_list<ConstString> columns, Controls::ListViewFlags flags)
 {
     return POINTER<Controls::ListView>(new Controls::ListView(layout, columns, flags));
 }
 REFERENCE<ListView> Factory::ListView::Create(
       Controls::Control* parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       Controls::ListViewFlags flags)
 {
     VALIDATE_PARENT;
@@ -310,7 +310,7 @@ REFERENCE<ListView> Factory::ListView::Create(
 REFERENCE<ListView> Factory::ListView::Create(
       Controls::Control& parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       Controls::ListViewFlags flags)
 {
     return parent.AddControl<Controls::ListView>(Factory::ListView::Create(layout, columns, flags));
