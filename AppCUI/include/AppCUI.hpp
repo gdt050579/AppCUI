@@ -4162,6 +4162,7 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnColumnClicked(uint32 columnIndex) override;
 
         void OnFocus() override;
         void OnUpdateScrollBars() override;
@@ -5658,4 +5659,3 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
 
-#undef ADD_FLAG_OPERATORS

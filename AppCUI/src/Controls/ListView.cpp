@@ -1408,6 +1408,10 @@ bool ListView::Sort(uint32 columnIndex, SortDirection direction)
 {
     return WRAPPER->Sort(columnIndex, direction);
 }
+void ListView::OnColumnClicked(uint32 columnIndex) 
+{
+    this->Sort();
+}
 bool ListView::Reserve(uint32 itemsCount)
 {
     WRAPPER->Items.List.reserve(itemsCount);

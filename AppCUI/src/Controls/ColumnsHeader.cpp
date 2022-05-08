@@ -229,6 +229,7 @@ void InternalColumn::Reset()
     this->widthType      = InternalColumnWidthType::Value;
     this->widthTypeValue = MINIM_COLUMN_WIDTH;
     this->x              = 0;
+    this->flags          = InternalColumnFlags::AllowValueCopy | InternalColumnFlags::SearcheableValue;
     this->name.Clear();
 }
 void InternalColumn::CopyObject(const InternalColumn& obj)

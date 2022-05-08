@@ -475,10 +475,18 @@ enum class InternalColumnWidthType : uint8
     MatchName,
     Fill
 };
+enum class InternalColumnFlags : uint32
+{
+    None             = 0,
+    AllowValueCopy   = 0x00000001,
+    SearcheableValue = 0x00000002,
+    Hidden           = 0x00000004,
+};
 struct InternalColumn
 {
     CharacterBuffer name;
     uint32 hotKeyOffset;
+    InternalColumnFlags flags;
     int32 x;
     uint16 width;
     uint16 widthTypeValue;
@@ -519,12 +527,12 @@ class ColumnsHeader
     uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
     uint32 flags;
     AppCUI::Utils::SortDirection sortDirection;
-    bool  hasMouseCaption;
+    bool hasMouseCaption;
 
     void ClearKeyboardAndMouseLocks();
     bool Add(KeyValueParser& parser, bool unicodeText);
 
-  public:  
+  public:
     ColumnsHeader(
           Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> list, ColumnsHeaderViewFlags flags);
     bool AddColumn(const ConstString columnFormat);
@@ -565,14 +573,13 @@ class ColumnsHeader
     bool OnMouseLeave();
     void OnLoseFocus();
 
-
     inline int32 GetScrollX() const
     {
         return Location.scrollX;
     }
     inline void SetScrollX(int32 value)
     {
-        if (Location.totalWidth>Location.width)
+        if (Location.totalWidth > Location.width)
         {
             if (value > (int32) (Location.totalWidth - (Location.width + 1)))
                 value = (int32) (Location.totalWidth - (Location.width + 1));
@@ -612,7 +619,9 @@ struct ColumnsHeaderViewControlContext : public ControlContext
 {
     ColumnsHeader Header;
     ColumnsHeaderViewControlContext(
-          Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+          Reference<ColumnsHeaderView> host,
+          std::initializer_list<ConstString> columnsList,
+          ColumnsHeaderViewFlags flags)
         : Header(host, columnsList, flags)
     {
     }
@@ -647,13 +656,10 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     InternalListViewItem* GetFilteredItem(uint32 index);
 
     ListViewControlContext(
-          Reference<ListView> host,
-          std::initializer_list<ConstString> columnsList,
-          ColumnsHeaderViewFlags flags)
+          Reference<ListView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
         : ColumnsHeaderViewControlContext(host.ToBase<ColumnsHeaderView>(), columnsList, flags)
     {
     }
-
 
     int SearchItem(uint32 startPoz);
     void UpdateSearch(int startPoz);
@@ -1291,3 +1297,5 @@ struct CharacterTableContext : public ControlContext
         Context = nullptr;                                                                                             \
     }
 } // namespace AppCUI
+
+ADD_FLAG_OPERATORS(AppCUI::InternalColumnFlags, AppCUI::uint32);
