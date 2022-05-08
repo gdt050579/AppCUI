@@ -160,7 +160,7 @@ FileDialogWindow::FileDialogWindow(
     ListViewFlags specialPathsFlags =
           ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
     lSpecialPaths = Factory::ListView::Create(
-          splitPanelLeft, "x:0,y:0,w:100%,h:100%", { { "Special", TextAlignament::Left, 20 } }, specialPathsFlags);
+          splitPanelLeft, "x:0,y:0,w:100%,h:100%", { "n:Special,a:l,w:20" }, specialPathsFlags);
 
     // TODO: Future option for back and front
     // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
@@ -177,9 +177,7 @@ FileDialogWindow::FileDialogWindow(
     files = Factory::ListView::Create(
           splitPanelRight,
           "x:0,y:0,w:100%,h:100%",
-          { { "&Name", TextAlignament::Left, 26 },
-            { "&Size", TextAlignament::Right, 14 },
-            { "&Modified", TextAlignament::Center, 19 } },
+          { "n:&Name,w:26,a:l", "n:&Size,w:14,a:r", "n:&Modified,w:19,a:c" },
           ListViewFlags::Sortable);
     files->Handlers()->ComparereItem =
           [](Reference<ListView> control, const ListViewItem& item1, const ListViewItem& item2) -> int
