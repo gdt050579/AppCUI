@@ -692,8 +692,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     uint32 GetCheckedItemsCount();
 
     void DeleteAllItems();
-    bool SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy);
-    bool SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn);
+
 
     bool SetCurrentIndex(ItemHandle item);
     int GetFirstVisibleLine();
@@ -726,7 +725,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
 
     constexpr inline int GetLeftPos() const
     {
-        return (this->Flags && ListViewFlags::HideBorder) ? -Columns.XOffset : 1 - Columns.XOffset;
+        return (this->Flags && ListViewFlags::HideBorder) ? -Header.GetScrollX() : 1 - Header.GetScrollX();
     }
     constexpr inline int GetColumnY() const
     {
