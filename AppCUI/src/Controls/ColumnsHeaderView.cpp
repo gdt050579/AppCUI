@@ -146,6 +146,16 @@ uint32 Column::GetWidth() const
     VALIDATE_COLUMN(0);
     return COLUMNREF.width;
 }
+bool Column::IsColumnValueSearchable() const
+{
+    VALIDATE_COLUMN(false);
+    return ((COLUMNREF.flags) & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None;
+}
+bool Column::IsColumnValueCopyable() const
+{
+    VALIDATE_COLUMN(false);
+    return ((COLUMNREF.flags) & InternalColumnFlags::SearcheableValue) != InternalColumnFlags::None;
+}
 
 #undef COLUMNREF
 #undef HEADERREF
