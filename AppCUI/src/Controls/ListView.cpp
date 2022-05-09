@@ -1217,43 +1217,6 @@ void ListView::OnUpdateScrollBars()
     UpdateVScrollBar(Members->Items.CurentItemIndex, count);
 }
 
-/*
-ListViewColumn ListView::GetColumn(uint32 index)
-{
-    if (index < WRAPPER->Columns.Count)
-        return { nullptr, 0U };
-    return { this->Context, index };
-}
-ListViewColumn ListView::AddColumn(const ConstString& text, TextAlignament align, uint32 width)
-{
-    if (!WRAPPER->AddColumn(text, align, width))
-        return { nullptr, 0 };
-    return { this->Context, WRAPPER->Columns.Count - 1 };
-}
-void ListView::AddColumns(std::initializer_list<ColumnBuilder> columns)
-{
-    for (auto& column : columns)
-    {
-        WRAPPER->AddColumn(column.name, column.align, column.width);
-    }
-}
-bool ListView::DeleteColumn(uint32 columnIndex)
-{
-    return WRAPPER->DeleteColumn(columnIndex);
-}
-void ListView::DeleteAllColumns()
-{
-    if (Context != nullptr)
-    {
-        WRAPPER->DeleteAllColumns();
-    }
-}
-uint32 ListView::GetColumnsCount()
-{
-    return WRAPPER->GetNrColumns();
-}
-//*/
-
 ListViewItem ListView::AddItem(const ConstString& text)
 {
     return { this->Context, WRAPPER->AddItem(text) };
