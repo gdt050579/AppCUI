@@ -3083,13 +3083,13 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface
         lv = Factory::ListView::Create(
               this,
               "x:1,y:1,w:66,h:16",
-              { { "&State", TextAlignament::Left, 15 },
-                { "&Abrv", TextAlignament::Center, 4 },
-                { "&Capital", TextAlignament::Left, 10 },
-                { "&Largest City", TextAlignament::Left, 15 },
-                { "&Population", TextAlignament::Right, 12 },
-                { "&Surface (km)", TextAlignament::Right, 12 },
-                { "&Repr", TextAlignament::Center, 6 } },
+              { "n:&State,a:l,w:15",
+                "n:&Abrv,a:c,w:4",
+                "n:&Capital,a:l,w:10",
+                "n:&Largest City,a:l,w:15",
+                "n:&Population,a:r,w:12",
+                "n:Surface (km),a:r,w:12",
+                "n:&Repr,a:c,w:6" },
               flags);
         // add items
         lv->Reserve(100); // to populate the list faster
@@ -3104,7 +3104,7 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface
                           us_states[tr].NrOfReps });
         }
         // sort them after the name (first column)
-        lv->Sort(0, true);
+        lv->Sort(0, SortDirection::Ascendent);
         // Add a checkbox for Enable/Disable feature
         auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:30");
         cb->SetChecked(true);
@@ -3124,7 +3124,7 @@ class SimpleListExample : public Window
         auto lv = Factory::ListView::Create(
               this,
               "x:1,y:1,w:26,h:10",
-              { { "", TextAlignament::Left, 30 } },
+              { "a:3,w:30" },
               hasCheckboxes ? (ListViewFlags::CheckBoxes | ListViewFlags::HideColumns | ListViewFlags::HideSearchBar)
                             : (ListViewFlags::HideColumns | ListViewFlags::HideSearchBar));
         lv->AddItem("Apple");
@@ -3142,9 +3142,7 @@ class ColumnsExample : public Window
         auto lv = Factory::ListView::Create(
               this,
               "x:1,y:7,w:66,h:8",
-              { { "&Name", TextAlignament::Left, 30 },
-                { "Cl&ass", TextAlignament::Left, 20 },
-                { "&Grade", TextAlignament::Right, 7 } },
+              { "n:&Name,a:l,w:30", "n:Cl&ass,a:l,w:20", "n:&Grade,a:r,w:7" },
               ListViewFlags::Sortable);
 
         // items
@@ -3169,10 +3167,7 @@ class ListViewWithColors : public Window
     ListViewWithColors() : Window("ListView with colors", "d:c,w:30,h:14", WindowFlags::None)
     {
         auto lv = Factory::ListView::Create(
-              this,
-              "x:1,y:1,w:26,h:10",
-              { { "Color", TextAlignament::Left, 10 }, { "RGB", TextAlignament::Center, 10 } },
-              ListViewFlags::None);
+              this, "x:1,y:1,w:26,h:10", { "n:Color,a:l,w:10", "n:RGB,a:c,w:10" }, ListViewFlags::None);
 
         lv->AddItem({ "Red", "FF0000" }).SetColor(ColorPair{ Color::Red, Color::Transparent });
         lv->AddItem({ "Green", "00FF00" }).SetColor(ColorPair{ Color::Green, Color::Transparent });
@@ -3191,9 +3186,7 @@ class ListViewWithTreeItems : public Window
         auto lv = Factory::ListView::Create(
               this,
               "x:1,y:1,w:56,h:10",
-              { { "Application", TextAlignament::Left, 20 },
-                { "PID", TextAlignament::Right, 10 },
-                { "Modules", TextAlignament::Right, 10 } },
+              { "n:Application,a:l,w:20", "n:PID,a:r,w:10", "n:Modules,a:r,w:10" },
               ListViewFlags::None);
 
         ListViewItem item;
@@ -3258,10 +3251,9 @@ class SearchAndFilter : public Window
               "Type a text to search first item that contains that text.\nPress Ctrl+Enter to find the next item that "
               "contains that text.",
               "x:0,y:0,w:100%,h:100%");
-        auto lv1 = Factory::ListView::Create(
-              this, "x:1,y:7,w:34,h:10", { { "&Name", TextAlignament::Left, 30 } }, ListViewFlags::None);
-        auto lv2 = Factory::ListView::Create(
-              this, "x:37,y:7,w:34,h:10", { { "&Name", TextAlignament::Left, 30 } }, ListViewFlags::SearchMode);
+        auto lv1 = Factory::ListView::Create(this, "x:1,y:7,w:34,h:10", { "n:&Name,a:l,w:30" }, ListViewFlags::None);
+        auto lv2 =
+              Factory::ListView::Create(this, "x:37,y:7,w:34,h:10", { "n:&Name,a:l,w:30" }, ListViewFlags::SearchMode);
 
         // items
         lv1->AddItem("Mike");
@@ -3288,10 +3280,7 @@ class SelectionDemo : public Window
     SelectionDemo() : Window("Selection Example", "d:c,w:70,h:18", WindowFlags::None)
     {
         auto lv = Factory::ListView::Create(
-              this,
-              "x:1,y:4,w:66,h:11",
-              { { "&Word", TextAlignament::Left, 60 } },
-              ListViewFlags::AllowMultipleItemsSelection);
+              this, "x:1,y:4,w:66,h:11", { "n:&Word,a:l,w:60" }, ListViewFlags::AllowMultipleItemsSelection);
         lv->Reserve(3000);
         // items
         for (uint32 tr = 0; tr < sizeof(english_words) / sizeof(const char*); tr++)
@@ -3312,8 +3301,7 @@ class ItemTypesDemo : public Window
   public:
     ItemTypesDemo() : Window("Item Types Example", "d:c,w:70,h:18", WindowFlags::None)
     {
-        auto lv = Factory::ListView::Create(
-              this, "x:1,y:4,w:66,h:11", { { "", TextAlignament::Left, 60 } }, ListViewFlags::HideColumns);
+        auto lv = Factory::ListView::Create(this, "x:1,y:4,w:66,h:11", { "a:l,w:60" }, ListViewFlags::HideColumns);
 
         // items
         lv->AddItem("Normal item").SetType(ListViewItem::Type::Normal);
@@ -3339,10 +3327,7 @@ class CategoryDemo : public Window
     CategoryDemo() : Window("Category Example", "d:c,w:70,h:18", WindowFlags::None)
     {
         auto lv = Factory::ListView::Create(
-              this,
-              "x:1,y:1,w:66,h:13",
-              { { "", TextAlignament::Left, 55 }, { "", TextAlignament::Right, 4 } },
-              ListViewFlags::HideColumns);
+              this, "x:1,y:1,w:66,h:13", { "a:l,w:55", "a:r,w:4" }, ListViewFlags::HideColumns);
 
         // items
         lv->AddItem("First chapter").SetType(ListViewItem::Type::Category);
@@ -3373,7 +3358,7 @@ class HandlersDemo : public Window,
         auto lv = Factory::ListView::Create(
               this,
               "x:1,y:9,w:66,h:6",
-              { { "", TextAlignament::Left, 55 } },
+              { "a:l,w:55" },
               ListViewFlags::HideColumns | ListViewFlags::CheckBoxes | ListViewFlags::AllowMultipleItemsSelection);
 
         // items
@@ -3383,8 +3368,7 @@ class HandlersDemo : public Window,
         lv->Handlers()->OnItemSelected       = this;
         lv->Handlers()->OnItemChecked        = this;
         lv->Handlers()->OnItemPressed        = this;
-        log = Factory::ListView::Create(
-              this, "x:30,y:1,w:36,h:8", { { "", TextAlignament::Left, 55 } }, ListViewFlags::HideColumns);
+        log = Factory::ListView::Create(this, "x:30,y:1,w:36,h:8", { "w:55" }, ListViewFlags::HideColumns);
         Factory::Label::Create(
               this,
               "Use:\n- Arrows to change current\n  item\n- Space to check or uncheck\n- Shift+arrows to select or\n  "
@@ -3402,7 +3386,7 @@ class HandlersDemo : public Window,
     }
     virtual void OnListViewCurrentItemChanged(Reference<ListView>, ListViewItem item) override
     {
-        log->SetCurrentItem(log->AddItem(GetEventAndName("Current item = ", item)));        
+        log->SetCurrentItem(log->AddItem(GetEventAndName("Current item = ", item)));
     }
     virtual void OnListViewItemPressed(Reference<ListView>, ListViewItem item) override
     {
@@ -3430,8 +3414,8 @@ class NoBorderDemo : public Window
         auto lv = Factory::ListView::Create(
               this,
               "d:c",
-              { { "Name", TextAlignament::Left, 55 }, { "Grade", TextAlignament::Right, 8 } },
-              ListViewFlags::HideBorder|ListViewFlags::SearchMode);
+              { "n:Name,a:l,w:55", "n:Grade,a:r,w:8" },
+              ListViewFlags::HideBorder | ListViewFlags::SearchMode);
 
         // items
         lv->AddItem("Math").SetType(ListViewItem::Type::Category);
@@ -3466,10 +3450,8 @@ class ItemHeightDemo : public Window
         auto lv = Factory::ListView::Create(
               this,
               "l:1,t:1,r:1,b:3",
-              { { "Name", TextAlignament::Left, 45 },
-                { "Grade", TextAlignament::Right, 6 },
-                { "Cat", TextAlignament::Center, 8 } },
-              ListViewFlags::AllowMultipleItemsSelection|ListViewFlags::CheckBoxes);
+              { "n:Name,w:45", "n:Grade,w:6,a:r", "n:Cat,a:c,w:8" },
+              ListViewFlags::AllowMultipleItemsSelection | ListViewFlags::CheckBoxes);
 
         // items
         lv->AddItem({ "Georgescu\nMarian", "9", "ABC\nX" }).SetHeight(2);
@@ -3516,7 +3498,7 @@ class MyWin : public Window
         cbHideSearchBar  = Factory::CheckBox::Create(p, "Hide search &bar (disable search)", "x:1,y:6,w:50");
         cbHideBorder     = Factory::CheckBox::Create(p, "Hide border", "x:1,y:7,w:50");
         cbHideScrollBar  = Factory::CheckBox::Create(p, "Hide scroll bar", "x:1,y:8,w:50");
-        cbPopupSearch  = Factory::CheckBox::Create(p, "Pupup scroll bar", "x:1,y:9,w:50");
+        cbPopupSearch    = Factory::CheckBox::Create(p, "Pupup scroll bar", "x:1,y:9,w:50");
 
         rbSimpleList = Factory::RadioBox::Create(this, "A very simple list with items", "x:1,y:12,w:56", MY_GROUP);
         cbSimpleListCheckboxes = Factory::CheckBox::Create(this, "Has checkboxes", "x:5,y:13,w:30");
@@ -3533,9 +3515,9 @@ class MyWin : public Window
         rbCategory  = Factory::RadioBox::Create(this, "Draw items as a category", "x:1,y:20,w:56", MY_GROUP);
         rbHandlers  = Factory::RadioBox::Create(
               this, "Usage of handlers to intercept ListView events", "x:1,y:21,w:56", MY_GROUP);
-        rbNoBorder = Factory::RadioBox::Create(
-              this, "Build a list view without border", "x:1,y:22,w:56", MY_GROUP);
-        rbItemHeight = Factory::RadioBox::Create(this, "Build a list view with items of different heights", "x:1,y:23,w:56", MY_GROUP);
+        rbNoBorder   = Factory::RadioBox::Create(this, "Build a list view without border", "x:1,y:22,w:56", MY_GROUP);
+        rbItemHeight = Factory::RadioBox::Create(
+              this, "Build a list view with items of different heights", "x:1,y:23,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:24", SHOW_DEFAULT_EXAMPLE);
 
