@@ -1359,9 +1359,9 @@ bool ListView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 void ListView::OnFocus()
 {
     WRAPPER->Header.RecomputeColumnsSizes();
-    //WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
-    //WRAPPER->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
-    WRAPPER->Filter.FilterModeEnabled          = false;
+    // WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
+    // WRAPPER->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
+    WRAPPER->Filter.FilterModeEnabled = false;
     if ((WRAPPER->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         WRAPPER->UpdateSelectionInfo();
 }
@@ -1377,6 +1377,26 @@ bool ListView::Sort(uint32 columnIndex, SortDirection direction)
 void ListView::OnColumnClicked(uint32 columnIndex)
 {
     this->Sort();
+}
+Rect ListView::GetHeaderLayout()
+{
+    auto sz          = GetSize();
+    auto has_margins = !(WRAPPER->Flags && ListViewFlags::HideBorder);
+    if (has_margins)
+    {
+        if ((sz.Width > 0) && (sz.Height > 0))
+        {
+            return Graphics::Rect({ 1, 1 }, { sz.Width - 1, sz.Height - 1 });
+        }
+        else
+        {
+            return Graphics::Rect();
+        }
+    }
+    else
+    {
+        return Graphics::Rect({ 0, 0 }, sz);
+    }
 }
 bool ListView::Reserve(uint32 itemsCount)
 {

@@ -4104,6 +4104,7 @@ namespace Controls
         std::optional<uint32> GetSortColumnIndex() const;
         Column GetSortColumn();
         virtual void OnColumnClicked(uint32 columnIndex) = 0;
+        virtual Graphics::Rect GetHeaderLayout()         = 0;
 
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
@@ -4113,6 +4114,7 @@ namespace Controls
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnLoseFocus() override;
+        void OnAfterResize(int newWidth, int newHeight) override;
 
         virtual ~ColumnsHeaderView();
         friend Control;
@@ -4168,6 +4170,7 @@ namespace Controls
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
         void OnColumnClicked(uint32 columnIndex) override;
+        Graphics::Rect GetHeaderLayout() override;
 
         void OnFocus() override;
         void OnUpdateScrollBars() override;

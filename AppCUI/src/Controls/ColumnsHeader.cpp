@@ -639,6 +639,7 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
         }
         colIndex++;
     }
+    renderer.ResetClip();
 }
 uint32 ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y)
 {

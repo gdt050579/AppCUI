@@ -92,6 +92,11 @@ void ColumnsHeaderView::OnLoseFocus()
 {
     ICH->Header.OnLoseFocus();
 }
+void ColumnsHeaderView::OnAfterResize(int newWidth, int newHeight)
+{
+    const auto r = this->GetHeaderLayout();
+    ICH->Header.SetPosition(r.GetLeft(), r.GetTop(), r.GetWidth(), r.GetHeight());
+}
 #undef ICH
 
 #define HEADERREF ((ColumnsHeaderViewControlContext*) this->context)->Header
