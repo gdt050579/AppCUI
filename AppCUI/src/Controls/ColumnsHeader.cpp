@@ -550,6 +550,14 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
     const auto rightMargin = this->Location.x + (int32) this->Location.width;
     auto colIndex          = 0U;
 
+    // first reset the view
+    renderer.ResetClip();
+    renderer.SetClipMargins(
+          this->Location.x,
+          this->Location.y,
+          this->Location.x - 1 + (int32) this->Location.width,
+          this->Location.y - 1 + (int32) this->Location.listHeight);
+
     renderer.FillHorizontalLine(this->Location.x, this->Location.y, this->Location.width, ' ', defaultCol);
 
     WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
