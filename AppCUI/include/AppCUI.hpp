@@ -4094,7 +4094,7 @@ namespace Controls
         ColumnsHeaderView(
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
         ColumnsHeaderView(void* context, string_view layout);
-
+        bool HeaderHasMouseCaption() const;
       public:
         bool AddColumns(std::initializer_list<ConstString> list);
         Column AddColumn(const ConstString columnFormat);

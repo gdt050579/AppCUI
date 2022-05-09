@@ -544,7 +544,7 @@ class ColumnsHeader
     void RecomputeColumnsSizes();
     void Paint(Graphics::Renderer& renderer);
     uint32 MouseToColumn(int x, int y);
-    uint32 MouseToColumnSepartor(int x, int y);
+    uint32 MouseToColumnSeparator(int x, int y);
     void SetPosition(int x, int y, uint32 width, uint32 listHeight);
     bool SetSortColumn(uint32 colIndex);
     bool SetSortColumn(uint32 colIndex, SortDirection direction);

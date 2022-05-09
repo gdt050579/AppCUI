@@ -18,7 +18,10 @@ ColumnsHeaderView::ColumnsHeaderView(
 ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Control(context, "", layout, false)
 {
 }
-
+bool ColumnsHeaderView::HeaderHasMouseCaption() const
+{
+    return ICH->Header.HasMouseCaption();
+}
 ColumnsHeaderView::~ColumnsHeaderView()
 {
     if (this->Context)
@@ -72,9 +75,11 @@ bool ColumnsHeaderView::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 }
 void ColumnsHeaderView::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
+    ICH->Header.OnMouseReleased(x, y, button);
 }
 void ColumnsHeaderView::OnMousePressed(int x, int y, Input::MouseButton button)
 {
+    ICH->Header.OnMousePressed(x, y, button);
 }
 bool ColumnsHeaderView::OnMouseDrag(int x, int y, Input::MouseButton button)
 {

@@ -628,11 +628,17 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
 
         if (!(this->flags && ColumnsHeaderViewFlags::HideSeparators))
         {
+            auto sepState = state;
+            if (this->resizeColumnIndex == colIndex)
+            {
+                sepState = this->hasMouseCaption ? ControlState::PressedOrSelected : ControlState::Hovered;
+            }
+
             renderer.DrawVerticalLine(
                   separatorX,
                   this->Location.y,
                   this->Location.y + this->Location.listHeight,
-                  Cfg->Lines.GetColor(state));
+                  Cfg->Lines.GetColor(sepState));
         }
         colIndex++;
     }
@@ -655,11 +661,11 @@ uint32 ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y)
     }
     return INVALID_COLUMN_INDEX;
 }
-uint32 ColumnsHeader::MouseToColumnSepartor(int mouse_x, int mouse_y)
+uint32 ColumnsHeader::MouseToColumnSeparator(int mouse_x, int mouse_y)
 {
     if (mouse_y < this->Location.y)
         return INVALID_COLUMN_INDEX; // mouse not on the column
-    if (!(this->flags && ColumnsHeaderViewFlags::FixedSized))
+    if (this->flags && ColumnsHeaderViewFlags::FixedSized)
         return INVALID_COLUMN_INDEX; // there is no need to search for a column if is not sizeable
 
     auto idx = 0U;
@@ -779,6 +785,12 @@ void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
         this->sortColumnIndex = colIdx;
         this->hasMouseCaption = true;
     }
+    auto sepIdx = MouseToColumnSeparator(x, y);
+    if (sepIdx != INVALID_COLUMN_INDEX)
+    {
+        this->resizeColumnIndex = sepIdx;
+        this->hasMouseCaption   = true;
+    }
 }
 bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
 {
@@ -801,7 +813,7 @@ bool ColumnsHeader::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 bool ColumnsHeader::OnMouseOver(int x, int y)
 {
     auto colIdx = MouseToColumn(x, y);
-    auto sepIdx = MouseToColumnSepartor(x, y);
+    auto sepIdx = MouseToColumnSeparator(x, y);
 
     if ((colIdx != this->hoveredColumnIndex) || (sepIdx != this->resizeColumnIndex))
     {

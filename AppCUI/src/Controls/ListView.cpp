@@ -1318,7 +1318,9 @@ void ListView::SetClipboardSeparator(char ch)
 
 void ListView::OnMousePressed(int x, int y, Input::MouseButton button)
 {
-    WRAPPER->OnMousePressed(x, y, button);
+    ColumnsHeaderView::OnMousePressed(x, y, button);
+    if (!this->HeaderHasMouseCaption())
+        WRAPPER->OnMousePressed(x, y, button);
 }
 
 bool ListView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
