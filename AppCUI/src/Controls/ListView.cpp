@@ -1391,9 +1391,9 @@ Rect ListView::GetHeaderLayout()
     auto has_margins = !(WRAPPER->Flags && ListViewFlags::HideBorder);
     if (has_margins)
     {
-        if ((sz.Width > 0) && (sz.Height > 0))
+        if ((sz.Width > 2) && (sz.Height > 2))
         {
-            return Graphics::Rect({ 1, 1 }, { sz.Width - 1, sz.Height - 1 });
+            return Graphics::Rect({ 1, 1 }, { sz.Width - 2, sz.Height - 2 });
         }
         else
         {

@@ -975,8 +975,8 @@ bool Renderer::SetClipRect(const Rect& r)
         return false;
     Clip.Left          = ClipCopy.Left + std::max<>(r.GetLeft(), 0);
     Clip.Top           = ClipCopy.Top + std::max<>(r.GetTop(), 0);
-    Clip.Right         = std::max<>(Clip.Right, ClipCopy.Left + r.GetRight());
-    Clip.Bottom        = std::max<>(Clip.Bottom, ClipCopy.Top + r.GetBottom());
+    Clip.Right         = std::min<>(ClipCopy.Right, ClipCopy.Left + r.GetRight());
+    Clip.Bottom        = std::min<>(ClipCopy.Bottom, ClipCopy.Top + r.GetBottom());
     this->Clip.Visible = (Clip.Left <= Clip.Right) && (Clip.Top <= Clip.Bottom);
     return this->Clip.Visible;
 }
