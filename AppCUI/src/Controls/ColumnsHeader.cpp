@@ -552,11 +552,8 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
 
     // first reset the view
     renderer.ResetClip();
-    renderer.SetClipMargins(
-          this->Location.x,
-          this->Location.y,
-          this->Location.x - 1 + (int32) this->Location.width,
-          this->Location.y - 1 + (int32) this->Location.listHeight);
+    renderer.SetClipRect(
+          { { this->Location.x, this->Location.y }, { this->Location.width, this->Location.listHeight } });
 
     renderer.FillHorizontalLine(this->Location.x, this->Location.y, this->Location.width, ' ', defaultCol);
 

@@ -292,7 +292,7 @@ void ListViewControlContext::Paint(Graphics::Renderer& renderer)
     {
         renderer.DrawRectSize(0, 0, this->Layout.Width, this->Layout.Height, colB, LineType::Single);
         renderer.SetClipMargins(1, 1, 1, 1);
-        y = 1;
+        y++;
     }
 
     uint32 index = this->Items.FirstVisibleIndex;
@@ -1139,7 +1139,14 @@ void ListViewControlContext::TriggerListViewItemCheckedEvent()
 //=====================================================================================================
 ColumnsHeaderViewFlags ListViewFlagsToColumnsHeaderViewFlags(ListViewFlags flags)
 {
-    return ColumnsHeaderViewFlags::None;
+    ColumnsHeaderViewFlags f = ColumnsHeaderViewFlags::None;
+    if ((flags & ListViewFlags::HideColumnsSeparator) != ListViewFlags::None)
+        f |= ColumnsHeaderViewFlags::HideSeparators;
+    if ((flags & ListViewFlags::Sortable) != ListViewFlags::None)
+        f |= ColumnsHeaderViewFlags::Sortable;
+    if ((flags & ListViewFlags::HideColumns) != ListViewFlags::None)
+        f |= ColumnsHeaderViewFlags::HideHeader;
+    return f;
 }
 ListView::~ListView()
 {

@@ -2836,6 +2836,7 @@ namespace Graphics
 
         // Clipping
         bool SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin);
+        bool SetClipRect(const Rect& r);
         bool ResetClip();
 
         // Cursor
