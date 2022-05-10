@@ -3498,7 +3498,7 @@ class MyWin : public Window
         cbHideSearchBar  = Factory::CheckBox::Create(p, "Hide search &bar (disable search)", "x:1,y:6,w:50");
         cbHideBorder     = Factory::CheckBox::Create(p, "Hide border", "x:1,y:7,w:50");
         cbHideScrollBar  = Factory::CheckBox::Create(p, "Hide scroll bar", "x:1,y:8,w:50");
-        cbPopupSearch    = Factory::CheckBox::Create(p, "Pupup scroll bar", "x:1,y:9,w:50");
+        cbPopupSearch    = Factory::CheckBox::Create(p, "Popup search/filter bar", "x:1,y:9,w:50");
 
         rbSimpleList = Factory::RadioBox::Create(this, "A very simple list with items", "x:1,y:12,w:56", MY_GROUP);
         cbSimpleListCheckboxes = Factory::CheckBox::Create(this, "Has checkboxes", "x:5,y:13,w:30");
