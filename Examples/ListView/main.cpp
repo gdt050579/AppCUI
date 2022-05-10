@@ -3124,7 +3124,7 @@ class SimpleListExample : public Window
         auto lv = Factory::ListView::Create(
               this,
               "x:1,y:1,w:26,h:10",
-              { "a:3,w:30" },
+              { "a:l,w:30" },
               hasCheckboxes ? (ListViewFlags::CheckBoxes | ListViewFlags::HideColumns | ListViewFlags::HideSearchBar)
                             : (ListViewFlags::HideColumns | ListViewFlags::HideSearchBar));
         lv->AddItem("Apple");
