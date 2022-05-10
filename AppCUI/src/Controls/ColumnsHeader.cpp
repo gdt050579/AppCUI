@@ -570,23 +570,26 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
             colIndex++;
             continue;
         }
-        if (state == ControlState::Focused)
+        if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
         {
-            if (colIndex == this->sortColumnIndex)
-            {
-                params.Color = Cfg->Header.Text.PressedOrSelected;
-                renderer.FillHorizontalLineSize(
-                      col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
-            }
-            else if (colIndex == this->hoveredColumnIndex)
-            {
-                params.Color = Cfg->Header.Text.Hovered;
-                renderer.FillHorizontalLineSize(
-                      col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
-            }
-            else
-                params.Color = defaultCol;
+            params.Color       = Cfg->Header.Text.PressedOrSelected;
+            params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected;
+            renderer.FillHorizontalLineSize(
+                  col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
         }
+        else if ((colIndex == this->hoveredColumnIndex) && (state != ControlState::Inactive))
+        {
+            params.Color       = Cfg->Header.Text.Hovered;
+            params.HotKeyColor = Cfg->Header.HotKey.Hovered;
+            renderer.FillHorizontalLineSize(
+                  col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
+        }
+        else
+        {
+            params.Color       = defaultCol;
+            params.HotKeyColor = defaultHK;
+        }
+
         params.X     = col.x + 1;
         params.Width = col.width >= 2 ? col.width - 2 : 0;
         params.Align = col.align;
@@ -631,7 +634,7 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
             auto sepState = state;
             if (this->resizeColumnIndex == colIndex)
             {
-                sepState = this->hasMouseCaption ? ControlState::PressedOrSelected : ControlState::Hovered;
+                sepState = this->hasMouseCaption ? ControlState::Hovered : ControlState::Hovered;
             }
 
             renderer.DrawVerticalLine(
