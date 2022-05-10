@@ -717,8 +717,27 @@ void ColumnsHeader::ProcessColumnClickRequest(uint32 index)
     if (this->IsSortable())
     {
         this->SetSortColumn(index);
-    } 
+    }
     this->host->OnColumnClicked(index);
+}
+void ColumnsHeader::ResizeColumn(bool increase)
+{
+    if (this->flags && ColumnsHeaderViewFlags::FixedSized)
+        return; // nothing to resize
+    if (this->resizeColumnIndex >= this->columns.size())
+        return; // safety check
+    auto& col = this->columns[this->resizeColumnIndex];
+    if (increase)
+    {
+        if (col.width < MAXIM_COLUMN_WIDTH)
+            col.SetWidth((uint32) col.width + 1U);
+    }
+    else
+    {
+        if (col.width > 0)
+            col.SetWidth((uint32) col.width - 1U);
+    }
+    this->RecomputeColumnsSizes();
 }
 bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
 {
@@ -733,10 +752,10 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
         switch (key)
         {
         case Key::Left:
-            // decrease size
+            ResizeColumn(false);
             return true;
         case Key::Right:
-            // increase size
+            ResizeColumn(true);
             return true;
         case Key::Ctrl | Key::Left:
             this->resizeColumnIndex =
@@ -785,7 +804,7 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
 }
 void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
-    this->ClearKeyboardAndMouseLocks();    
+    this->ClearKeyboardAndMouseLocks();
     this->ProcessColumnClickRequest(MouseToColumn(x, y));
 }
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)

@@ -534,6 +534,7 @@ class ColumnsHeader
     void ClearKeyboardAndMouseLocks();
     bool Add(KeyValueParser& parser, bool unicodeText);
     void ProcessColumnClickRequest(uint32 index);
+    void ResizeColumn(bool increase);
   public:
     ColumnsHeader(
           Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> list, ColumnsHeaderViewFlags flags);
