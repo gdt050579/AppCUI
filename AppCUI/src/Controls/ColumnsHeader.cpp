@@ -710,6 +710,16 @@ bool ColumnsHeader::SetSortColumn(uint32 index, SortDirection direction)
     this->sortDirection   = direction;
     return true;
 }
+void ColumnsHeader::ProcessColumnClickRequest(uint32 index)
+{
+    if (index >= this->columns.size())
+        return;
+    if (this->IsSortable())
+    {
+        this->SetSortColumn(index);
+    } 
+    this->host->OnColumnClicked(index);
+}
 bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
 {
     if (this->resizeColumnIndex != INVALID_COLUMN_INDEX)
@@ -765,7 +775,7 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
         {
             if (col.hotKeyCode == key)
             {
-                this->host->OnColumnClicked(idx);
+                this->ProcessColumnClickRequest(idx);
                 return true;
             }
             idx++;
@@ -775,7 +785,8 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
 }
 void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 {
-    this->ClearKeyboardAndMouseLocks();
+    this->ClearKeyboardAndMouseLocks();    
+    this->ProcessColumnClickRequest(MouseToColumn(x, y));
 }
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
 {
