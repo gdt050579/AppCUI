@@ -537,8 +537,10 @@ void ListViewControlContext::DeleteAllItems()
 int ListViewControlContext::GetVisibleItemsCount()
 {
     int vis = Layout.Height - 3;
-    if ((Flags & ListViewFlags::HideColumns) != ListViewFlags::None)
+    if (Flags && ListViewFlags::HideColumns)
         vis++;
+    if (Flags && ListViewFlags::HideBorder)
+        vis += 2;
     int dim = 0, poz = Items.FirstVisibleIndex, nrItems = 0;
     int sz = (int) Items.Indexes.Len();
     while ((dim < vis) && (poz < sz))
