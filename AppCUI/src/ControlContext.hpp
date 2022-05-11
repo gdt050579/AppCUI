@@ -564,6 +564,10 @@ class ColumnsHeader
     {
         return flags && ColumnsHeaderViewFlags::Sortable;
     }
+    inline bool IsVisible() const
+    {
+        return !(flags && ColumnsHeaderViewFlags::HideHeader);
+    }
     inline AppCUI::Utils::SortDirection GetSortDirection() const
     {
         return sortDirection;

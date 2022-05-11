@@ -558,83 +558,95 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
     renderer.SetClipRect(
           { { this->Location.x, this->Location.y }, { this->Location.width, this->Location.listHeight } });
 
-    renderer.FillHorizontalLine(this->Location.x, this->Location.y, this->Location.width, ' ', defaultCol);
-
-    WriteTextParams params(WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
-    params.Y           = this->Location.y;
-    params.Color       = defaultCol;
-    params.HotKeyColor = defaultHK;
-
-    for (auto& col : this->columns)
+    if (this->IsVisible())
     {
-        // check if the column is outside visible range
-        if (((col.x + (int32) col.width) < this->Location.x) || (col.x >= rightMargin))
-        {
-            colIndex++;
-            continue;
-        }
-        if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
-        {
-            params.Color       = Cfg->Header.Text.PressedOrSelected;
-            params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected;
-            renderer.FillHorizontalLineSize(
-                  col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
-        }
-        else if ((colIndex == this->hoveredColumnIndex) && (state != ControlState::Inactive))
-        {
-            params.Color       = Cfg->Header.Text.Hovered;
-            params.HotKeyColor = Cfg->Header.HotKey.Hovered;
-            renderer.FillHorizontalLineSize(
-                  col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
-        }
-        else
-        {
-            params.Color       = defaultCol;
-            params.HotKeyColor = defaultHK;
-        }
+        renderer.FillHorizontalLine(this->Location.x, this->Location.y, this->Location.width, ' ', defaultCol);
 
-        params.X     = col.x + 1;
-        params.Width = col.width >= 2 ? col.width - 2 : 0;
-        params.Align = col.align;
-        if ((col.hotKeyOffset == CharacterBuffer::INVALID_HOTKEY_OFFSET) || (!this->IsClickable()))
+        WriteTextParams params(
+              WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors);
+        params.Y           = this->Location.y;
+        params.Color       = defaultCol;
+        params.HotKeyColor = defaultHK;
+
+        for (auto& col : this->columns)
         {
-            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors;
-            renderer.WriteText(col.name, params);
-        }
-        else
-        {
-            params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors |
-                           WriteTextFlags::HighlightHotKey;
-            if (state == ControlState::Focused)
+            // check if the column is outside visible range
+            if (((col.x + (int32) col.width) < this->Location.x) || (col.x >= rightMargin))
             {
-                if (colIndex == this->sortColumnIndex)
-                {
-                    params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected;
-                }
-                else if (colIndex == this->hoveredColumnIndex)
-                {
-                    params.HotKeyColor = Cfg->Header.HotKey.Hovered;
-                }
-                else
-                    params.HotKeyColor = defaultHK;
+                colIndex++;
+                continue;
             }
-            params.HotKeyPosition = col.hotKeyOffset;
-            renderer.WriteText(col.name, params);
-        }
-        const auto separatorX = col.x + (int32) col.width;
-        if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
-        {
-            renderer.WriteSpecialCharacter(
-                  separatorX - 1,
-                  this->Location.y,
-                  (this->sortDirection == SortDirection::Ascendent) ? SpecialChars::TriangleUp
-                                                                    : SpecialChars::TriangleDown,
-                  Cfg->Header.HotKey.PressedOrSelected);
-        }
+            if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
+            {
+                params.Color       = Cfg->Header.Text.PressedOrSelected;
+                params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected;
+                renderer.FillHorizontalLineSize(
+                      col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
+            }
+            else if ((colIndex == this->hoveredColumnIndex) && (state != ControlState::Inactive))
+            {
+                params.Color       = Cfg->Header.Text.Hovered;
+                params.HotKeyColor = Cfg->Header.HotKey.Hovered;
+                renderer.FillHorizontalLineSize(
+                      col.x, this->Location.y, col.width, ' ', params.Color); // highlight the column
+            }
+            else
+            {
+                params.Color       = defaultCol;
+                params.HotKeyColor = defaultHK;
+            }
 
-        if (!(this->flags && ColumnsHeaderViewFlags::HideSeparators))
+            params.X     = col.x + 1;
+            params.Width = col.width >= 2 ? col.width - 2 : 0;
+            params.Align = col.align;
+            if ((col.hotKeyOffset == CharacterBuffer::INVALID_HOTKEY_OFFSET) || (!this->IsClickable()))
+            {
+                params.Flags =
+                      WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::OverwriteColors;
+                renderer.WriteText(col.name, params);
+            }
+            else
+            {
+                params.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth |
+                               WriteTextFlags::OverwriteColors | WriteTextFlags::HighlightHotKey;
+                if (state == ControlState::Focused)
+                {
+                    if (colIndex == this->sortColumnIndex)
+                    {
+                        params.HotKeyColor = Cfg->Header.HotKey.PressedOrSelected;
+                    }
+                    else if (colIndex == this->hoveredColumnIndex)
+                    {
+                        params.HotKeyColor = Cfg->Header.HotKey.Hovered;
+                    }
+                    else
+                        params.HotKeyColor = defaultHK;
+                }
+                params.HotKeyPosition = col.hotKeyOffset;
+                renderer.WriteText(col.name, params);
+            }
+            const auto separatorX = col.x + (int32) col.width;
+            if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
+            {
+                renderer.WriteSpecialCharacter(
+                      separatorX - 1,
+                      this->Location.y,
+                      (this->sortDirection == SortDirection::Ascendent) ? SpecialChars::TriangleUp
+                                                                        : SpecialChars::TriangleDown,
+                      Cfg->Header.HotKey.PressedOrSelected);
+            }
+
+            colIndex++;
+        }
+    }
+    // draw column lines
+    if (!(this->flags && ColumnsHeaderViewFlags::HideSeparators))
+    {
+        colIndex = 0;
+        for (auto& col : this->columns)
         {
-            auto sepState = state;
+            const auto separatorX = col.x + (int32) col.width;
+            auto sepState         = state;
             if (this->resizeColumnIndex == colIndex)
             {
                 sepState = this->hasMouseCaption ? ControlState::Hovered : ControlState::Hovered;
@@ -645,9 +657,10 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
                   this->Location.y,
                   this->Location.y + this->Location.listHeight,
                   Cfg->Lines.GetColor(sepState));
+            colIndex++;
         }
-        colIndex++;
     }
+
     renderer.ResetClip();
 }
 uint32 ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y)
