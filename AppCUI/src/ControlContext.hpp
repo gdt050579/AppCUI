@@ -596,6 +596,7 @@ class ColumnsHeader
         {
             Location.scrollX = 0;
         }
+        RecomputeColumnsSizes();
     }
     inline uint32 GetColumnsCount() const
     {
@@ -604,6 +605,18 @@ class ColumnsHeader
     inline uint32 GetColumnsWidth() const
     {
         return Location.totalWidth;
+    }
+    inline int32 GetX() const
+    {
+        return Location.x;
+    }
+    inline int32 GetY() const
+    {
+        return Location.y;
+    }
+    inline int32 GetHeaderWidth() const
+    {
+        return Location.width;
     }
     inline std::optional<uint32> GetSortColumnIndex() const
     {

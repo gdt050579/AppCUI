@@ -534,7 +534,7 @@ void ColumnsHeader::RecomputeColumnsSizes()
         }
     }
     // compute the positions and total width
-    auto xPoz                 = this->Location.x;
+    auto xPoz                 = this->Location.x - this->Location.scrollX;
     this->Location.totalWidth = 0;
     for (auto& col : columns)
     {
