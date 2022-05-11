@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.91.0"
+#define APPCUI_VERSION "1.94.0"
 
 #include <filesystem>
 #include <map>
@@ -2199,6 +2199,7 @@ namespace OS
         bool CreateFrom(const std::filesystem::directory_entry& entry);
         bool CreateFromFileTime(const uint32 low, const uint32 high);
         bool CreateFromFileTime(const uint64 entry);
+        bool CreateFromFATUTC(const uint32 entry);
         std::string_view GetStringRepresentation();
         inline uint32 GetYear() const
         {

@@ -1709,6 +1709,8 @@ bool TreeControlContext::SearchItems()
         item.Toggle();
     }
 
+    JumpToCurrent();
+
     if (toBeExpanded.size() > 0 || filter.mode == TreeControlContext::FilterMode::Filter)
     {
         ProcessItemsToBeDrawn(InvalidItemHandle);
@@ -2030,6 +2032,25 @@ bool TreeControlContext::MoveDown()
         {
             offsetBotToDraw++;
             offsetTopToDraw++;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool TreeControlContext::JumpToCurrent()
+{
+    if (itemsToDrew.size() > 0)
+    {
+        const auto it    = std::find(itemsToDrew.begin(), itemsToDrew.end(), currentItemHandle);
+        const auto index = static_cast<uint32>(it - itemsToDrew.begin());
+
+        if (index < offsetTopToDraw || offsetBotToDraw < index)
+        {
+            offsetTopToDraw = std::max<>(0, (int32) ((int32) index - (maxItemsToDraw / 2)));
+            offsetBotToDraw = offsetTopToDraw + maxItemsToDraw;
         }
 
         return true;

@@ -912,6 +912,7 @@ class TreeControlContext : public ControlContext
     bool PaintColumnSeparators(Graphics::Renderer& renderer);
     bool MoveUp();
     bool MoveDown();
+    bool JumpToCurrent();
     bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
     bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child);
     bool IsMouseOnToggleSymbol(int x, int y) const;
