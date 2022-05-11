@@ -627,205 +627,200 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     InternalListViewItem* lvi;
     bool selected;
 
+    if ((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
     {
-        if ((Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
-        {
-            lvi                   = GetFilteredItem(Items.CurentItemIndex);
-            auto currentItemIndex = Items.CurentItemIndex;
-            if (lvi != nullptr)
-                selected = ((lvi->Flags & ITEM_FLAG_SELECTED) != 0);
-            else
-                selected = false;
-            switch (keyCode)
-            {
-            case Key::Shift | Key::Up:
-                UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - 1, !selected);
-                MoveTo(Items.CurentItemIndex - 1);
-                Filter.FilterModeEnabled = false;
-                TriggerSelectionChangeEvent(currentItemIndex);
-                return true;
-            case Key::Insert:
-            case Key::Down | Key::Shift:
-                UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + 1, !selected);
-                MoveTo(Items.CurentItemIndex + 1);
-                Filter.FilterModeEnabled = false;
-                TriggerSelectionChangeEvent(currentItemIndex);
-                return true;
-            case Key::PageUp | Key::Shift:
-                UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - GetVisibleItemsCount(), !selected);
-                MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
-                Filter.FilterModeEnabled = false;
-                TriggerSelectionChangeEvent(currentItemIndex);
-                return true;
-            case Key::PageDown | Key::Shift:
-                UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + GetVisibleItemsCount(), !selected);
-                MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
-                Filter.FilterModeEnabled = false;
-                TriggerSelectionChangeEvent(currentItemIndex);
-                return true;
-            case Key::Home | Key::Shift:
-                UpdateSelection(Items.CurentItemIndex, 0, !selected);
-                MoveTo(0);
-                Filter.FilterModeEnabled = false;
-                TriggerSelectionChangeEvent(currentItemIndex);
-                return true;
-            case Key::End | Key::Shift:
-                UpdateSelection(Items.CurentItemIndex, Items.Indexes.Len(), !selected);
-                MoveTo(Items.Indexes.Len());
-                Filter.FilterModeEnabled = false;
-                TriggerSelectionChangeEvent(currentItemIndex);
-                return true;
-            };
-        }
+        lvi                   = GetFilteredItem(Items.CurentItemIndex);
+        auto currentItemIndex = Items.CurentItemIndex;
+        if (lvi != nullptr)
+            selected = ((lvi->Flags & ITEM_FLAG_SELECTED) != 0);
+        else
+            selected = false;
         switch (keyCode)
         {
-        case Key::Up:
+        case Key::Shift | Key::Up:
+            UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - 1, !selected);
             MoveTo(Items.CurentItemIndex - 1);
             Filter.FilterModeEnabled = false;
+            TriggerSelectionChangeEvent(currentItemIndex);
             return true;
-        case Key::Down:
+        case Key::Insert:
+        case Key::Down | Key::Shift:
+            UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + 1, !selected);
             MoveTo(Items.CurentItemIndex + 1);
             Filter.FilterModeEnabled = false;
+            TriggerSelectionChangeEvent(currentItemIndex);
             return true;
-        case Key::PageUp:
+        case Key::PageUp | Key::Shift:
+            UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - GetVisibleItemsCount(), !selected);
             MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
             Filter.FilterModeEnabled = false;
+            TriggerSelectionChangeEvent(currentItemIndex);
             return true;
-        case Key::PageDown:
+        case Key::PageDown | Key::Shift:
+            UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + GetVisibleItemsCount(), !selected);
             MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
             Filter.FilterModeEnabled = false;
+            TriggerSelectionChangeEvent(currentItemIndex);
             return true;
-        case Key::Home:
+        case Key::Home | Key::Shift:
+            UpdateSelection(Items.CurentItemIndex, 0, !selected);
             MoveTo(0);
             Filter.FilterModeEnabled = false;
+            TriggerSelectionChangeEvent(currentItemIndex);
             return true;
-        case Key::End:
-            MoveTo(((int) Items.Indexes.Len()) - 1);
+        case Key::End | Key::Shift:
+            UpdateSelection(Items.CurentItemIndex, Items.Indexes.Len(), !selected);
+            MoveTo(Items.Indexes.Len());
             Filter.FilterModeEnabled = false;
-            return true;
-        case Key::Backspace:
-            if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
-            {
-                Filter.FilterModeEnabled = true;
-                if (Filter.SearchText.Len() > 0)
-                {
-                    Filter.SearchText.Truncate(Filter.SearchText.Len() - 1);
-                    UpdateSearch(0);
-                }
-            }
-            return true;
-        case Key::Space:
-            if (!Filter.FilterModeEnabled)
-            {
-                if ((Flags & ListViewFlags::CheckBoxes) == ListViewFlags::None)
-                    return false;
-                lvi = GetFilteredItem(Items.CurentItemIndex);
-                if (lvi != nullptr)
-                {
-                    if ((lvi->Flags & ITEM_FLAG_CHECKED) != 0)
-                        lvi->Flags -= ITEM_FLAG_CHECKED;
-                    else
-                        lvi->Flags |= ITEM_FLAG_CHECKED;
-                }
-                TriggerListViewItemCheckedEvent();
-            }
-            else
-            {
-                if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
-                {
-                    Filter.SearchText.AddChar(' ');
-                    UpdateSearch(0);
-                }
-            }
-            return true;
-        case Key::Enter | Key::Ctrl:
-            if (((Flags & ListViewFlags::SearchMode) != ListViewFlags::None) &&
-                ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None) && (Filter.SearchText.Len() > 0))
-            {
-                if (Filter.LastFoundItem >= 0)
-                    UpdateSearch(Filter.LastFoundItem + 1);
-                else
-                    UpdateSearch(0);
-                return true; // de vazut daca are send
-            }
-            return false;
-        case Key::Enter:
-            TriggerListViewItemPressedEvent();
-            return true;
-        case Key::Escape:
-            if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
-            {
-                if (Filter.FilterModeEnabled)
-                {
-                    if (Filter.SearchText.Len() > 0)
-                    {
-                        Filter.SearchText.Clear();
-                        UpdateSearch(0);
-                    }
-                    else
-                    {
-                        Filter.FilterModeEnabled = false;
-                    }
-                    return true;
-                }
-                if ((Flags & ListViewFlags::SearchMode) == ListViewFlags::None)
-                {
-                    if (Filter.SearchText.Len() > 0)
-                    {
-                        Filter.SearchText.Clear();
-                        UpdateSearch(0);
-                        return true;
-                    }
-                }
-            }
-            return false;
-
-        case Key::Ctrl | Key::C:
-        case Key::Ctrl | Key::Insert:
-            if (Items.Indexes.Len() > 0)
-            {
-                for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
-                {
-                    if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
-                    {
-                        temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
-                        if (clipboardSeparator != 0)
-                            temp.Add(string_view{ &clipboardSeparator, 1 });
-                    }
-                }
-                OS::Clipboard::SetText(temp);
-            }
-            return true;
-        case Key::Ctrl | Key::Alt | Key::Insert:
-            for (uint32 gr = 0; gr < Items.Indexes.Len(); gr++)
-            {
-                for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
-                {
-                    if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
-                    {
-                        temp.Add(GetFilteredItem(gr)->SubItem[tr]);
-                        if (clipboardSeparator != 0)
-                            temp.Add(string_view{ &clipboardSeparator, 1 });
-                    }
-                }
-                temp.Add("\n");
-            }
-            OS::Clipboard::SetText(temp);
+            TriggerSelectionChangeEvent(currentItemIndex);
             return true;
         };
-        // caut sort
+    }
+    switch (keyCode)
+    {
+    case Key::Up:
+        MoveTo(Items.CurentItemIndex - 1);
+        Filter.FilterModeEnabled = false;
+        return true;
+    case Key::Down:
+        MoveTo(Items.CurentItemIndex + 1);
+        Filter.FilterModeEnabled = false;
+        return true;
+    case Key::PageUp:
+        MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
+        Filter.FilterModeEnabled = false;
+        return true;
+    case Key::PageDown:
+        MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
+        Filter.FilterModeEnabled = false;
+        return true;
+    case Key::Home:
+        MoveTo(0);
+        Filter.FilterModeEnabled = false;
+        return true;
+    case Key::End:
+        MoveTo(((int) Items.Indexes.Len()) - 1);
+        Filter.FilterModeEnabled = false;
+        return true;
+    case Key::Backspace:
         if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
         {
-            // search mode
-            if (UnicodeChar > 0)
+            Filter.FilterModeEnabled = true;
+            if (Filter.SearchText.Len() > 0)
             {
-                Filter.FilterModeEnabled = true;
-                Filter.SearchText.AddChar(UnicodeChar);
+                Filter.SearchText.Truncate(Filter.SearchText.Len() - 1);
                 UpdateSearch(0);
-                return true;
             }
         }
+        return true;
+    case Key::Space:
+        if (!Filter.FilterModeEnabled)
+        {
+            if ((Flags & ListViewFlags::CheckBoxes) == ListViewFlags::None)
+                return false;
+            lvi = GetFilteredItem(Items.CurentItemIndex);
+            if (lvi != nullptr)
+            {
+                if ((lvi->Flags & ITEM_FLAG_CHECKED) != 0)
+                    lvi->Flags -= ITEM_FLAG_CHECKED;
+                else
+                    lvi->Flags |= ITEM_FLAG_CHECKED;
+            }
+            TriggerListViewItemCheckedEvent();
+        }
+        else
+        {
+            if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
+            {
+                Filter.SearchText.AddChar(' ');
+                UpdateSearch(0);
+            }
+        }
+        return true;
+    case Key::Enter | Key::Ctrl:
+        if (((Flags & ListViewFlags::SearchMode) != ListViewFlags::None) &&
+            ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None) && (Filter.SearchText.Len() > 0))
+        {
+            if (Filter.LastFoundItem >= 0)
+                UpdateSearch(Filter.LastFoundItem + 1);
+            else
+                UpdateSearch(0);
+            return true; // de vazut daca are send
+        }
+        return false;
+    case Key::Enter:
+        TriggerListViewItemPressedEvent();
+        return true;
+    case Key::Escape:
+        if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
+        {
+            if (Filter.FilterModeEnabled)
+            {
+                if (Filter.SearchText.Len() > 0)
+                {
+                    Filter.SearchText.Clear();
+                    UpdateSearch(0);
+                }
+                else
+                {
+                    Filter.FilterModeEnabled = false;
+                }
+                return true;
+            }
+            if ((Flags & ListViewFlags::SearchMode) == ListViewFlags::None)
+            {
+                if (Filter.SearchText.Len() > 0)
+                {
+                    Filter.SearchText.Clear();
+                    UpdateSearch(0);
+                    return true;
+                }
+            }
+        }
+        return false;
+
+    case Key::Ctrl | Key::C:
+    case Key::Ctrl | Key::Insert:
+        if (Items.Indexes.Len() > 0)
+        {
+            for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
+            {
+                if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
+                {
+                    temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
+                    if (clipboardSeparator != 0)
+                        temp.Add(string_view{ &clipboardSeparator, 1 });
+                }
+            }
+            OS::Clipboard::SetText(temp);
+        }
+        return true;
+    case Key::Ctrl | Key::Alt | Key::Insert:
+        for (uint32 gr = 0; gr < Items.Indexes.Len(); gr++)
+        {
+            for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
+            {
+                if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
+                {
+                    temp.Add(GetFilteredItem(gr)->SubItem[tr]);
+                    if (clipboardSeparator != 0)
+                        temp.Add(string_view{ &clipboardSeparator, 1 });
+                }
+            }
+            temp.Add("\n");
+        }
+        OS::Clipboard::SetText(temp);
+        return true;
+    };
+    // search mode
+    if ((!(Flags && ListViewFlags::HideSearchBar)) && (UnicodeChar > 0))
+    {
+        Filter.FilterModeEnabled = true;
+        Filter.SearchText.AddChar(UnicodeChar);
+        UpdateSearch(0);
+        return true;
     }
+
     return false;
 }
 
