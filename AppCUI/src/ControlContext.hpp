@@ -743,7 +743,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
     void FilterItems();
 
-    constexpr inline int GetLeftPos() const
+    inline int GetLeftPos() const
     {
         return (this->Flags && ListViewFlags::HideBorder) ? -Header.GetScrollX() : 1 - Header.GetScrollX();
     }
