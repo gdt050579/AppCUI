@@ -1051,11 +1051,12 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     {
         if (Layout.Height >= (int) (ScrollBars.TopMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
         {
+            ControlState state = ScrollBars.MaxVerticalValue > 0 ? ControlState::Normal : ControlState::Inactive;
             renderer.FillVerticalLineWithSpecialChar(
-                  x, ScrollBars.TopMargin, y - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.Normal);
+                  x, ScrollBars.TopMargin, y - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.GetColor(state));
             renderer.WriteSpecialCharacter(
-                  x, ScrollBars.TopMargin, SpecialChars::TriangleUp, Cfg->ScrollBar.Arrows.Normal);
-            renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows.Normal);
+                  x, ScrollBars.TopMargin, SpecialChars::TriangleUp, Cfg->ScrollBar.Arrows.GetColor(state));
+            renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows.GetColor(state));
             if (ScrollBars.MaxVerticalValue)
             {
                 const auto sz  = static_cast<uint32>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
@@ -1069,11 +1070,13 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     {
         if (Layout.Width >= (int) (ScrollBars.LeftMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
         {
+            ControlState state = ScrollBars.MaxHorizontalValue > 0 ? ControlState::Normal : ControlState::Inactive;
             renderer.FillHorizontalLineWithSpecialChar(
-                  ScrollBars.LeftMargin, y, x - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.Normal);
+                  ScrollBars.LeftMargin, y, x - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.GetColor(state));
             renderer.WriteSpecialCharacter(
-                  ScrollBars.LeftMargin, y, SpecialChars::TriangleLeft, Cfg->ScrollBar.Arrows.Normal);
-            renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows.Normal);
+                  ScrollBars.LeftMargin, y, SpecialChars::TriangleLeft, Cfg->ScrollBar.Arrows.GetColor(state));
+            renderer.WriteSpecialCharacter(
+                  x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows.GetColor(state));
             if (ScrollBars.MaxHorizontalValue)
             {
                 const auto sz  = static_cast<uint32>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
