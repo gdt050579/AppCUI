@@ -1218,7 +1218,12 @@ void ListView::OnUpdateScrollBars()
         left_margin += (Members->Selection.StatusLength + 1);
 
     Members->ScrollBars.LeftMargin = left_margin;
-    UpdateHScrollBar(Members->Header.GetScrollX(), Members->Header.GetColumnsWidth());
+    const auto columnsWidth        = (uint32) Members->Header.GetColumnsWidth();
+    const auto headerWidth         = (uint32) (Members->Header.GetHeaderWidth() + 1);
+    if (columnsWidth > headerWidth)
+        UpdateHScrollBar(Members->Header.GetScrollX(), columnsWidth - headerWidth);
+    else
+        UpdateHScrollBar(Members->Header.GetScrollX(), 0);
     uint32 count = Members->Items.Indexes.Len();
     if (count > 0)
         count--;
