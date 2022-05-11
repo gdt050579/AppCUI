@@ -640,23 +640,29 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
         }
     }
     // draw column lines
-    if (!(this->flags && ColumnsHeaderViewFlags::HideSeparators))
+    const bool showSeparators = (!(this->flags && ColumnsHeaderViewFlags::HideSeparators)) || (this->hasMouseCaption);
+    if ((showSeparators) || (this->resizeColumnIndex != INVALID_COLUMN_INDEX))
     {
         colIndex = 0;
         for (auto& col : this->columns)
         {
             const auto separatorX = col.x + (int32) col.width;
             auto sepState         = state;
+            auto showSep          = showSeparators;
             if (this->resizeColumnIndex == colIndex)
             {
                 sepState = this->hasMouseCaption ? ControlState::Hovered : ControlState::Hovered;
+                showSep  = true;
             }
 
-            renderer.DrawVerticalLine(
-                  separatorX,
-                  this->Location.y,
-                  this->Location.y + this->Location.listHeight,
-                  Cfg->Lines.GetColor(sepState));
+            if (showSep)
+            {
+                renderer.DrawVerticalLine(
+                      separatorX,
+                      this->Location.y,
+                      this->Location.y + this->Location.listHeight,
+                      Cfg->Lines.GetColor(sepState));
+            }
             colIndex++;
         }
     }
@@ -866,7 +872,7 @@ bool ColumnsHeader::OnMouseOver(int x, int y)
     bool result = false;
 
     if (colIdx != this->toolTipColumnIndex)
-    {   
+    {
         this->toolTipColumnIndex = colIdx;
         result                   = true;
         if (this->toolTipColumnIndex == INVALID_COLUMN_INDEX)
