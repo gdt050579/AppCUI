@@ -518,6 +518,7 @@ class ColumnsHeader
     constexpr static uint32 INVALID_COLUMN_INDEX = 0xFFFFFFFF;
     std::vector<InternalColumn> columns;
     Reference<ColumnsHeaderView> host;
+    Reference<AppCUI::Internal::ApplicationImpl> currentApp;
 
     struct
     {
@@ -526,7 +527,7 @@ class ColumnsHeader
         uint32 totalWidth;
         uint32 listHeight;
     } Location;
-    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex;
+    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex, toolTipColumnIndex;
     uint32 flags;
     AppCUI::Utils::SortDirection sortDirection;
     bool hasMouseCaption;
@@ -535,6 +536,7 @@ class ColumnsHeader
     bool Add(KeyValueParser& parser, bool unicodeText);
     void ProcessColumnClickRequest(uint32 index);
     void ResizeColumn(bool increase);
+
   public:
     ColumnsHeader(
           Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> list, ColumnsHeaderViewFlags flags);

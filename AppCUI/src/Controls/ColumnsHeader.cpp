@@ -327,6 +327,8 @@ ColumnsHeader::ColumnsHeader(
     this->sortColumnIndex     = INVALID_COLUMN_INDEX;
     this->hoveredColumnIndex  = INVALID_COLUMN_INDEX;
     this->resizeColumnIndex   = INVALID_COLUMN_INDEX;
+    this->toolTipColumnIndex  = INVALID_COLUMN_INDEX;
+    this->currentApp          = Application::GetApplication();
     // some check up
     // 1. if it is sortable it is alsa clickable
     if (this->flags && ColumnsHeaderViewFlags::Sortable)
@@ -339,6 +341,7 @@ void ColumnsHeader::ClearKeyboardAndMouseLocks()
     this->hasMouseCaption    = false;
     this->hoveredColumnIndex = INVALID_COLUMN_INDEX;
     this->resizeColumnIndex  = INVALID_COLUMN_INDEX;
+    this->toolTipColumnIndex = INVALID_COLUMN_INDEX;
 }
 bool ColumnsHeader::Add(KeyValueParser& parser, bool unicodeText)
 {
@@ -651,8 +654,6 @@ uint32 ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y)
 {
     if (mouse_y != this->Location.y)
         return INVALID_COLUMN_INDEX; // mouse not on the column
-    if (!this->IsClickable())
-        return INVALID_COLUMN_INDEX; // there is no need to search for a column if not sortable (clickable)
 
     auto idx = 0U;
     for (auto& col : this->columns)
@@ -715,6 +716,8 @@ bool ColumnsHeader::SetSortColumn(uint32 index, SortDirection direction)
 }
 void ColumnsHeader::ProcessColumnClickRequest(uint32 index)
 {
+    if (!IsClickable())
+        return;
     if (index >= this->columns.size())
         return;
     if (this->IsSortable())
@@ -848,6 +851,24 @@ bool ColumnsHeader::OnMouseOver(int x, int y)
     auto colIdx = MouseToColumn(x, y);
     auto sepIdx = MouseToColumnSeparator(x, y);
 
+    if (colIdx != this->toolTipColumnIndex)
+    {
+        this->toolTipColumnIndex = colIdx;
+        if (this->toolTipColumnIndex == INVALID_COLUMN_INDEX)
+            this->currentApp->ToolTip.Hide();
+        else
+        {
+            const auto& col = this->columns[colIdx];
+            LocalUnicodeStringBuilder<128> temp(col.name);
+            this->currentApp->SetToolTip(
+                  this->host.ToBase<Control>(),
+                  temp.ToStringView(),
+                  this->Location.x + col.x + (int32) (col.width >> 1),
+                  this->Location.y);
+        }
+    }
+    if (!IsClickable())
+        colIdx = INVALID_COLUMN_INDEX;
     if ((colIdx != this->hoveredColumnIndex) || (sepIdx != this->resizeColumnIndex))
     {
         this->hoveredColumnIndex = colIdx;

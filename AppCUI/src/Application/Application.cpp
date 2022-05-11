@@ -1380,13 +1380,13 @@ void ApplicationImpl::RaiseEvent(
         control = control->GetParent();
     }
 }
-bool ApplicationImpl::SetToolTip(Controls::Control* control, const ConstString& text)
+bool ApplicationImpl::SetToolTip(Reference<Controls::Control> control, const ConstString& text)
 {
     return SetToolTip(control, text, -1, -1);
 }
-bool ApplicationImpl::SetToolTip(Controls::Control* control, const ConstString& text, int x, int y)
+bool ApplicationImpl::SetToolTip(Reference<Controls::Control> control, const ConstString& text, int x, int y)
 {
-    if (!control)
+    if (!control.IsValid())
         control = this->AppDesktop;
     CREATE_CONTROL_CONTEXT(control, Members, false);
     if (!(Members->Flags & GATTR_VISIBLE))
