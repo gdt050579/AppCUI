@@ -850,21 +850,30 @@ bool ColumnsHeader::OnMouseOver(int x, int y)
 {
     auto colIdx = MouseToColumn(x, y);
     auto sepIdx = MouseToColumnSeparator(x, y);
+    bool result = false;
 
     if (colIdx != this->toolTipColumnIndex)
-    {
+    {   
         this->toolTipColumnIndex = colIdx;
+        result                   = true;
         if (this->toolTipColumnIndex == INVALID_COLUMN_INDEX)
             this->currentApp->ToolTip.Hide();
         else
         {
             const auto& col = this->columns[colIdx];
-            LocalUnicodeStringBuilder<128> temp(col.name);
-            this->currentApp->SetToolTip(
-                  this->host.ToBase<Control>(),
-                  temp.ToStringView(),
-                  this->Location.x + col.x + (int32) (col.width >> 1),
-                  this->Location.y);
+            if (col.name.Len() + 3 > (uint32) col.width)
+            {
+                LocalUnicodeStringBuilder<128> temp(col.name);
+                this->currentApp->SetToolTip(
+                      this->host.ToBase<Control>(),
+                      temp.ToStringView(),
+                      col.x + (int32) (col.width >> 1),
+                      this->Location.y);
+            }
+            else
+            {
+                this->currentApp->ToolTip.Hide();
+            }
         }
     }
     if (!IsClickable())
@@ -873,12 +882,13 @@ bool ColumnsHeader::OnMouseOver(int x, int y)
     {
         this->hoveredColumnIndex = colIdx;
         this->resizeColumnIndex  = sepIdx;
-        return true;
+        result                   = true;
     }
-    return false;
+    return result;
 }
 bool ColumnsHeader::OnMouseLeave()
 {
+    this->currentApp->ToolTip.Hide();
     if ((this->hasMouseCaption) || (this->hoveredColumnIndex == INVALID_COLUMN_INDEX))
     {
         this->ClearKeyboardAndMouseLocks();
