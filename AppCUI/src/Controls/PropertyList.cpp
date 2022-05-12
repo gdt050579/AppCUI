@@ -392,7 +392,7 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
         lv = Factory::ListView::Create(
               this,
               "l:1,t:1,r:1,b:3",
-              { { "", TextAlignament::Left, 100 } },
+              { "w:100,a:l" },
               ListViewFlags::HideColumns | ListViewFlags::CheckBoxes | ListViewFlags::SearchMode);
 
         if (prop.listValues.size() > 0)
@@ -488,7 +488,7 @@ class PropertyListEditDialog : public PropertyEditDialog
         lv = Factory::ListView::Create(
               this,
               "l:1,t:1,r:1,b:3",
-              { { "", TextAlignament::Left, 100 } },
+              { "a:l,w:100" },
               ListViewFlags::HideColumns | ListViewFlags::SearchMode);
         if (prop.listValues.size() > 0)
         {
@@ -1866,7 +1866,7 @@ void PropertyListContext::Refilter()
     // sort the data
     if (this->showCategories)
     {
-        this->items.Sort(SortWithCategories, true, this);
+        this->items.Sort(SortWithCategories, SortDirection::Ascendent, this);
         // clear categories filtered items;
         for (auto& cat : this->categories)
             cat.filteredItems = 0;
@@ -1911,7 +1911,7 @@ void PropertyListContext::Refilter()
     }
     else
     {
-        this->items.Sort(SortWithoutCategories, true, this);
+        this->items.Sort(SortWithoutCategories, SortDirection::Ascendent, this);
     }
 }
 

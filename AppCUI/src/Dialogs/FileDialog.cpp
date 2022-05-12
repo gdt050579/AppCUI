@@ -160,7 +160,7 @@ FileDialogWindow::FileDialogWindow(
     ListViewFlags specialPathsFlags =
           ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
     lSpecialPaths = Factory::ListView::Create(
-          splitPanelLeft, "x:0,y:0,w:100%,h:100%", { { "Special", TextAlignament::Left, 20 } }, specialPathsFlags);
+          splitPanelLeft, "x:0,y:0,w:100%,h:100%", { "n:Special,a:l,w:20" }, specialPathsFlags);
 
     // TODO: Future option for back and front
     // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
@@ -177,9 +177,7 @@ FileDialogWindow::FileDialogWindow(
     files = Factory::ListView::Create(
           splitPanelRight,
           "x:0,y:0,w:100%,h:100%",
-          { { "&Name", TextAlignament::Left, 26 },
-            { "&Size", TextAlignament::Right, 14 },
-            { "&Modified", TextAlignament::Center, 19 } },
+          { "n:&Name,w:26,a:l", "n:&Size,w:14,a:r", "n:&Modified,w:19,a:c" },
           ListViewFlags::Sortable);
     files->Handlers()->ComparereItem =
           [](Reference<ListView> control, const ListViewItem& item1, const ListViewItem& item2) -> int
@@ -191,11 +189,16 @@ FileDialogWindow::FileDialogWindow(
         if (v1 > v2)
             return 1;
         auto cindex    = control->GetSortColumnIndex();
-        const auto& s1 = item1.GetText(cindex);
-        const auto& s2 = item2.GetText(cindex);
-        return s1.CompareWith(s2, true);
+        if (cindex.has_value())
+        {
+            const auto& s1 = item1.GetText(cindex.value());
+            const auto& s2 = item2.GetText(cindex.value());
+            return s1.CompareWith(s2, true);
+        }
+        // else --> no sortable column
+        return 0;
     };
-    files->Sort(0, true); // sort after the first column, ascendent
+    files->Sort(0, SortDirection::Ascendent); // sort after the first column, ascendent
 
     lbName = Factory::Label::Create(this, "File &Name", "x:2,y:17,w:11");
     txName = Factory::TextField::Create(this, fileName, "x:15,y:17,w:45", TextFieldFlags::ProcessEnter);

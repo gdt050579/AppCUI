@@ -69,10 +69,23 @@ class Parser
     }
     inline const T* ParseWord()
     {
-        while ((current < end) &&
-               ((((*current) < MAX_CHARS_IN_TABLE) && ((ParserCharacterTypes[*current]) == CHAR_TYPE_OTHER)) ||
-                ((*current) >= MAX_CHARS_IN_TABLE)))
-            current++;
+        bool repeatLoop;
+        do
+        {
+            repeatLoop = false;
+            while ((current < end) &&
+                   ((((*current) < MAX_CHARS_IN_TABLE) && ((ParserCharacterTypes[*current]) == CHAR_TYPE_OTHER)) ||
+                    ((*current) >= MAX_CHARS_IN_TABLE)))
+                current++;
+            if ((current < end) && ((ParserCharacterTypes[*current]) == CHAR_TYPE_SPACE))
+            {
+                const T* cpos = current;
+                SkipSpaces();
+                repeatLoop = IsWord();
+                if (!repeatLoop)
+                    current = cpos;
+            }
+        } while (repeatLoop);
         return current;
     }
     inline bool IsWord() const

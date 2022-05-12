@@ -964,6 +964,22 @@ bool Renderer::SetClipMargins(int leftMargin, int topMargin, int rightMargin, in
     this->Clip.Visible = (Clip.Left <= Clip.Right) && (Clip.Top <= Clip.Bottom);
     return this->Clip.Visible;
 }
+bool Renderer::SetClipRect(const Rect& r)
+{
+    if (!this->ClipHasBeenCopied)
+    {
+        this->ClipCopy          = this->Clip;
+        this->ClipHasBeenCopied = true;
+    }
+    if (!this->Clip.Visible)
+        return false;
+    Clip.Left          = ClipCopy.Left + std::max<>(r.GetLeft(), 0);
+    Clip.Top           = ClipCopy.Top + std::max<>(r.GetTop(), 0);
+    Clip.Right         = std::min<>(ClipCopy.Right, ClipCopy.Left + r.GetRight());
+    Clip.Bottom        = std::min<>(ClipCopy.Bottom, ClipCopy.Top + r.GetBottom());
+    this->Clip.Visible = (Clip.Left <= Clip.Right) && (Clip.Top <= Clip.Bottom);
+    return this->Clip.Visible;
+}
 bool Renderer::ResetClip()
 {
     CHECK(this->ClipHasBeenCopied, false, "Call to 'ResetClip' method wihout calling 'SetClip' first !");

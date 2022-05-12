@@ -819,6 +819,11 @@ namespace Dialogs
 }
 namespace Utils
 {
+    enum class SortDirection : uint8
+    {
+        Ascendent  = 1,
+        Descendent = 0
+    };
     class EXPORT Array32
     {
         uint32* Data;
@@ -866,8 +871,14 @@ namespace Utils
         bool Get(uint32 index, uint32& value);
         bool Get(uint32 index, int32& value);
 
-        bool Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context = nullptr);
-        bool Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), bool ascendent, void* Context = nullptr);
+        bool Sort(
+              int32 (*compare)(int32 elem1, int32 elem2, void* Context),
+              SortDirection direction,
+              void* Context = nullptr);
+        bool Sort(
+              int32 (*compare)(uint32 elem1, uint32 elem2, void* Context),
+              SortDirection direction,
+              void* Context = nullptr);
     };
 
     class BufferView
@@ -2826,6 +2837,7 @@ namespace Graphics
 
         // Clipping
         bool SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin);
+        bool SetClipRect(const Rect& r);
         bool ResetClip();
 
         // Cursor
@@ -3448,6 +3460,7 @@ namespace Controls
 
     } // namespace Handlers
 
+    //GDT: To be remove --> no longer useful after TreeView will be converted on the new format
     struct ColumnBuilder
     {
         ConstString name;
@@ -3466,17 +3479,6 @@ namespace Controls
             : name(Name), align(Align), width(Width)
         {
         }
-    };
-
-    class EXPORT ColumnsHeader
-    {
-        void* data;
-
-      public:
-        ColumnsHeader();
-        ~ColumnsHeader();
-        bool Add(std::initializer_list<ConstString> list);
-        bool Add(const ConstString columnFormat);
     };
 
     class EXPORT Control
@@ -3732,7 +3734,6 @@ namespace Controls
         friend Factory::Label;
         friend Control;
     };
-
     enum class ButtonFlags : uint32
     {
         None = 0,
@@ -3923,7 +3924,6 @@ namespace Controls
         SyntaxHighlighting       = 0x002000,
         DisableAutoSelectOnFocus = 0x004000,
     };
-
     class EXPORT TextArea : public Control
     {
       protected:
@@ -3954,7 +3954,6 @@ namespace Controls
         friend Factory::TextArea;
         friend Control;
     };
-
     enum class TabFlags : uint32
     {
         TopTabs               = 0x000000, // default mode
@@ -4057,6 +4056,73 @@ namespace Controls
         friend Factory::ImageView;
         friend Control;
     };
+
+    class EXPORT Column
+    {
+        void* context;
+        uint32 index;
+        Column(void* _context, uint32 _index) : context(_context), index(_index)
+        {
+        }
+
+      public:
+        bool IsValid() const;
+        bool SetText(const ConstString& text);
+        const Graphics::CharacterBuffer& GetText() const;
+        bool SetAlignament(Graphics::TextAlignament Align);
+        bool SetWidth(uint32 width);
+        bool SetWidth(float percentage);
+        bool SetWidth(double percentage);
+        bool SetSearchable(bool searchable);
+        bool SetClipboardCopyable(bool clipboardCopyable);
+        bool IsColumnValueSearchable() const;
+        bool IsColumnValueCopyable() const;
+        uint32 GetWidth() const;
+
+        friend class ColumnsHeaderView;
+    };
+    enum class ColumnsHeaderViewFlags : uint32
+    {
+        None           = 0,
+        Clickable      = 0x00001,
+        Sortable       = 0x00002,
+        HideSeparators = 0x00004,
+        FixedSized     = 0x00008,
+        HideHeader     = 0x00010,
+    };
+    class EXPORT ColumnsHeaderView : public Control
+    {
+      protected:
+        ColumnsHeaderView(
+              string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
+        ColumnsHeaderView(void* context, string_view layout);
+        bool HeaderHasMouseCaption() const;
+      public:
+        bool AddColumns(std::initializer_list<ConstString> list);
+        Column AddColumn(const ConstString columnFormat);
+        Column GetColumn(uint32 index);
+        uint32 GetColumnCount() const;
+        void DeleteAllColumns();
+        void DeleteColumn(uint32 columnIndex);
+        std::optional<uint32> GetSortColumnIndex() const;
+        Column GetSortColumn();
+        virtual void OnColumnClicked(uint32 columnIndex) = 0;
+        virtual Graphics::Rect GetHeaderLayout()         = 0;
+
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseLeave() override;
+        void OnLoseFocus() override;
+        void OnAfterResize(int newWidth, int newHeight) override;
+
+        virtual ~ColumnsHeaderView();
+        friend Control;
+    };
+
     enum class ListViewFlags : uint32
     {
         None                          = 0,
@@ -4074,64 +4140,22 @@ namespace Controls
         PopupSearchBar                = 0x080000
     };
 
-    class EXPORT ListViewColumn
-    {
-        void* context;
-        uint32 index;
-
-        ListViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
-        {
-        }
-
-      public:
-        bool SetText(const ConstString& text);
-        const Graphics::CharacterBuffer& GetText() const;
-        bool SetAlignament(Graphics::TextAlignament Align);
-        bool SetWidth(uint32 width);
-        uint32 GetWidth() const;
-        bool SetClipboardCopyState(bool allowCopy);
-        bool GetClipboardCopyState() const;
-        bool SetFilterMode(bool allowFilterForThisColumn);
-        friend class ListView;
-    };
-
-    class EXPORT ListView : public Control
+    class EXPORT ListView : public ColumnsHeaderView
     {
       protected:
-        ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags);
+        ListView(string_view layout, std::initializer_list<ConstString> columns, ListViewFlags flags);
 
       public:
         bool Reserve(uint32 itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
-        bool OnMouseOver(int x, int y) override;
-        bool OnMouseLeave() override;
+        void OnColumnClicked(uint32 columnIndex) override;
+        Graphics::Rect GetHeaderLayout() override;
+
         void OnFocus() override;
         void OnUpdateScrollBars() override;
-
-        // coloane
-        ListViewColumn GetColumn(uint32 index);
-        ListViewColumn AddColumn(
-              const ConstString& text,
-              Graphics::TextAlignament align = Graphics::TextAlignament::Left,
-              uint32 width                   = ColumnBuilder::AUTO_SIZE);
-        inline ListViewColumn AddColumn(ColumnBuilder column)
-        {
-            return AddColumn(column.name, column.align, column.width);
-        }
-        void AddColumns(std::initializer_list<ColumnBuilder> columns);
-        uint32 GetColumnsCount();
-        uint32 GetSortColumnIndex();
-        inline ListViewColumn GetSortColumn()
-        {
-            return GetColumn(GetSortColumnIndex());
-        }
-        void DeleteAllColumns();
-        bool DeleteColumn(uint32 columnIndex);
 
         // Items
         ListViewItem AddItem(const ConstString& text);
@@ -4153,7 +4177,7 @@ namespace Controls
 
         // sort
         bool Sort();
-        bool Sort(uint32 columnIndex, bool ascendent);
+        bool Sort(uint32 columnIndex, SortDirection direction);
 
         // handlers covariant
         Handlers::ListView* Handlers() override;
@@ -4933,17 +4957,17 @@ namespace Controls
           public:
             static Pointer<Controls::ListView> Create(
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control* parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control& parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
         };
         class EXPORT ComboBox
@@ -5590,6 +5614,7 @@ ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::ProgressStatus::Flags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ColumnsHeaderViewFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
@@ -5603,5 +5628,3 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TreeViewFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
-
-#undef ADD_FLAG_OPERATORS

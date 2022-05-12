@@ -224,16 +224,16 @@ bool Array32::Delete(uint32 start, uint32 size)
     return true;
 }
 
-bool Array32::Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context)
+bool Array32::Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), SortDirection direction, void* Context)
 {
     CHECK(compare, false, "Expecting a valid (non-null) compare function !");
-    __HeapSortContext<int32>((int32*) Data, compare, this->Count, ascendent, Context);
+    __HeapSortContext<int32>((int32*) Data, compare, this->Count, direction == SortDirection::Ascendent, Context);
     return true;
 }
-bool Array32::Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), bool ascendent, void* Context)
+bool Array32::Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), SortDirection direction, void* Context)
 {
     CHECK(compare, false, "Expecting a valid (non-null) compare function !");
-    __HeapSortContext<uint32>(Data, compare, this->Count, ascendent, Context);
+    __HeapSortContext<uint32>(Data, compare, this->Count, direction == SortDirection::Ascendent, Context);
     return true;
 }
 } // namespace AppCUI::Utils

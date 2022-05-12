@@ -306,8 +306,8 @@ namespace Internal
               Utils::Reference<Controls::Control> sourceControl,
               Controls::Event eventType,
               int controlID);
-        bool SetToolTip(Controls::Control* control, const ConstString& text);
-        bool SetToolTip(Controls::Control* control, const ConstString& text, int x, int y);
+        bool SetToolTip(Utils::Reference<Controls::Control> control, const ConstString& text);
+        bool SetToolTip(Utils::Reference<Controls::Control> control, const ConstString& text, int x, int y);
 
         void ArrangeWindows(Application::ArrangeWindowsMethod method);
     };
@@ -393,5 +393,10 @@ namespace Controls
 {
     void UninitTextFieldDefaultMenu();
     void UninitTextAreaDefaultMenu();
+    namespace ToolTip
+    {
+        void Hide();
+        bool Show(Reference<Control> host, const ConstString& caption, int x, int y);
+    }; // namespace ToolTip
 } // namespace Controls
 } // namespace AppCUI
