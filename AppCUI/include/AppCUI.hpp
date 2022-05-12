@@ -4140,27 +4140,6 @@ namespace Controls
         PopupSearchBar                = 0x080000
     };
 
-    // class EXPORT ListViewColumn
-    //{
-    //     void* context;
-    //     uint32 index;
-
-    //    ListViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
-    //    {
-    //    }
-
-    //  public:
-    //    bool SetText(const ConstString& text);
-    //    const Graphics::CharacterBuffer& GetText() const;
-    //    bool SetAlignament(Graphics::TextAlignament Align);
-    //    bool SetWidth(uint32 width);
-    //    uint32 GetWidth() const;
-    //    bool SetClipboardCopyState(bool allowCopy);
-    //    bool GetClipboardCopyState() const;
-    //    bool SetFilterMode(bool allowFilterForThisColumn);
-    //    friend class ListView;
-    //};
-
     class EXPORT ListView : public ColumnsHeaderView
     {
       protected:
@@ -4177,26 +4156,6 @@ namespace Controls
 
         void OnFocus() override;
         void OnUpdateScrollBars() override;
-
-        // coloane
-        // ListViewColumn GetColumn(uint32 index);
-        // ListViewColumn AddColumn(
-        //      const ConstString& text,
-        //      Graphics::TextAlignament align = Graphics::TextAlignament::Left,
-        //      uint32 width                   = ColumnBuilder::AUTO_SIZE);
-        // inline ListViewColumn AddColumn(ColumnBuilder column)
-        //{
-        //    return AddColumn(column.name, column.align, column.width);
-        //}
-        // void AddColumns(std::initializer_list<ColumnBuilder> columns);
-        // uint32 GetColumnsCount();
-        // uint32 GetSortColumnIndex();
-        // inline ListViewColumn GetSortColumn()
-        //{
-        //    return GetColumn(GetSortColumnIndex());
-        //}
-        // void DeleteAllColumns();
-        // bool DeleteColumn(uint32 columnIndex);
 
         // Items
         ListViewItem AddItem(const ConstString& text);
