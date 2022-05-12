@@ -2189,6 +2189,7 @@ namespace OS
         bool CreateFromFileTime(const uint32 low, const uint32 high);
         bool CreateFromFileTime(const uint64 entry);
         bool CreateFromFATUTC(const uint32 entry);
+        bool CreateFromTimestamp(const uint64 timestamp);
         std::string_view GetStringRepresentation();
         inline uint32 GetYear() const
         {

@@ -125,6 +125,34 @@ bool DateTime::CreateFromFATUTC(const uint32 entry)
     return true;
 }
 
+bool DateTime::CreateFromTimestamp(const uint64 timestamp)
+{
+    const auto time = (time_t) timestamp;
+    struct tm t;
+
+    try
+    {
+#if BUILD_FOR_WINDOWS
+        CHECK(localtime_s(&t, &time) == 0, false, "");
+#elif BUILD_FOR_OSX || BUILD_FOR_UNIX
+        localtime_r(&time, &t);
+#endif
+        this->year   = t.tm_year + 1900;
+        this->month  = t.tm_mon + 1;
+        this->day    = t.tm_mday;
+        this->hour   = t.tm_hour;
+        this->minute = t.tm_min;
+        this->second = t.tm_sec;
+    }
+    catch (...)
+    {
+        Reset();
+        RETURNERROR(false, "Exception triggered when reading time !");
+    }
+
+    return true;
+}
+
 std::string_view DateTime::GetStringRepresentation()
 {
     if (this->year == 0)
