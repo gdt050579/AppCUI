@@ -1440,7 +1440,7 @@ bool TreeControlContext::IsMouseOnToggleSymbol(int x, int y) const
         return false;
     }
 
-    const auto itemHandle = itemsToDrew[static_cast<size_t>(offsetTopToDraw) + index];
+    const auto itemHandle = itemsToDrew.at(static_cast<size_t>(offsetTopToDraw) + index);
     const auto it         = items.find(itemHandle);
 
     if (x > static_cast<int>(it->second.depth * ItemSymbolOffset + ItemSymbolOffset) &&
