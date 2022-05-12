@@ -3460,6 +3460,7 @@ namespace Controls
 
     } // namespace Handlers
 
+    //GDT: To be remove --> no longer useful after TreeView will be converted on the new format
     struct ColumnBuilder
     {
         ConstString name;
