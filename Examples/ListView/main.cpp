@@ -3474,16 +3474,34 @@ class ItemHeightDemo : public Window
     }
 };
 
+class ColumnSizeDemo : public Window
+{
+  public:
+    ColumnSizeDemo() : Window("Column size demo", "d:c,w:70,h:18", WindowFlags::Sizeable)
+    {
+        auto lv = Factory::ListView::Create(
+              this, "l:1,t:1,r:1,b:3", { "n:10 chars,w:10", "n:25%,w:25%", "n:fill,w:fill", "n:12 chars,w:12" });
+
+        // items
+        lv->AddItems({ { "Mike", "10", "It1", "8" },
+                       { "Raul", "7", "It2", "9" },
+                       { "Ionut", "5", "It3", "10" },
+                       { "Gheorghita", "It4", "7" },
+                       { "Andrei", "7", "It5", "9" },
+                       { "John", "8", "It6", "10" } });
+    }
+};
+
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
           cbHideSearchBar, cbHideBorder, cbHideScrollBar, cbPopupSearch;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
-          rbSelect, rbItemTypes, rbCategory, rbHandlers, rbNoBorder, rbItemHeight;
+          rbSelect, rbItemTypes, rbCategory, rbHandlers, rbNoBorder, rbItemHeight, rbColumnSize;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:29", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:30", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
@@ -3518,6 +3536,8 @@ class MyWin : public Window
         rbNoBorder   = Factory::RadioBox::Create(this, "Build a list view without border", "x:1,y:22,w:56", MY_GROUP);
         rbItemHeight = Factory::RadioBox::Create(
               this, "Build a list view with items of different heights", "x:1,y:23,w:56", MY_GROUP);
+        rbColumnSize =
+              Factory::RadioBox::Create(this, "Different type of size types for columns", "x:1,y:24,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:24", SHOW_DEFAULT_EXAMPLE);
 
@@ -3621,6 +3641,11 @@ class MyWin : public Window
         if (rbItemHeight->IsChecked())
         {
             ItemHeightDemo win;
+            win.Show();
+        }
+        if (rbColumnSize->IsChecked())
+        {
+            ColumnSizeDemo win;
             win.Show();
         }
     }
