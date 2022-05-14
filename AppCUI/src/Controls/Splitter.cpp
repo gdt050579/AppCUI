@@ -210,8 +210,10 @@ void Splitter::Paint(Graphics::Renderer& renderer)
         c2 = Members->Cfg->Symbol.Hovered;
         break;
     case SplitterMouseStatus::OnBar:
-    case SplitterMouseStatus::Drag:
         col = Members->Cfg->Lines.Hovered;
+        break;
+    case SplitterMouseStatus::Drag:
+        col = Members->Cfg->Lines.PressedOrSelected;
         break;
     }
 
