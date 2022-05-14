@@ -651,7 +651,7 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
             auto showSep          = showSeparators;
             if (this->resizeColumnIndex == colIndex)
             {
-                sepState = this->hasMouseCaption ? ControlState::Hovered : ControlState::Hovered;
+                sepState = this->hasMouseCaption ? ControlState::PressedOrSelected : ControlState::Hovered;
                 showSep  = true;
             }
 

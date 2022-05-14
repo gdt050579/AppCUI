@@ -27,8 +27,8 @@ void Config_SetDefaultTheme(Config& cfg)
           { Color::DarkGreen, Color::Transparent },
           { Color::DarkGreen, Color::Transparent },
           { Color::Gray, Color::Transparent },
-          { Color::Yellow, Color::Magenta },
-          { Color::Black, Color::White });
+          { Color::Gray, Color::Magenta },
+          { Color::Yellow, Color::Magenta });
 
     cfg.Editor.Set(
           { Color::White, Color::Black },
