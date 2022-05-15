@@ -152,13 +152,14 @@ FileDialogWindow::FileDialogWindow(
     lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10");
     lbPath     = Factory::Label::Create(this, "", "x:11,y:0,w:62");
 
-    splitListView = Factory::Splitter::Create(this, "x:0,y:1,w:76,h:15", SplitterFlags::Vertical);
-    splitListView->SetSecondPanelSize(60);
+    splitListView = Factory::Splitter::Create(this, "x:0,y:2,w:76,h:14", SplitterFlags::Vertical);
+    splitListView->SetSecondPanelSize(55);
     splitPanelLeft  = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
     splitPanelRight = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
 
-    ListViewFlags specialPathsFlags =
-          ListViewFlags::HideColumnsSeparator | ListViewFlags::HideCurrentItemWhenNotFocused;
+    ListViewFlags specialPathsFlags = ListViewFlags::HideColumnsSeparator |
+                                      ListViewFlags::HideCurrentItemWhenNotFocused | ListViewFlags::HideBorder |
+                                      ListViewFlags::PopupSearchBar;
     lSpecialPaths = Factory::ListView::Create(
           splitPanelLeft, "x:0,y:0,w:100%,h:100%", { "n:Special,a:l,w:20" }, specialPathsFlags);
 
@@ -178,7 +179,8 @@ FileDialogWindow::FileDialogWindow(
           splitPanelRight,
           "x:0,y:0,w:100%,h:100%",
           { "n:&Name,w:26,a:l", "n:&Size,w:14,a:r", "n:&Modified,w:19,a:c" },
-          ListViewFlags::Sortable);
+          ListViewFlags::Sortable | ListViewFlags::HideBorder | ListViewFlags::PopupSearchBar |
+                ListViewFlags::HideScrollBar);
     files->Handlers()->ComparereItem =
           [](Reference<ListView> control, const ListViewItem& item1, const ListViewItem& item2) -> int
     {
@@ -188,7 +190,7 @@ FileDialogWindow::FileDialogWindow(
             return -1;
         if (v1 > v2)
             return 1;
-        auto cindex    = control->GetSortColumnIndex();
+        auto cindex = control->GetSortColumnIndex();
         if (cindex.has_value())
         {
             const auto& s1 = item1.GetText(cindex.value());
