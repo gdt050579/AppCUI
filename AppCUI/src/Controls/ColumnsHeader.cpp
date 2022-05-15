@@ -835,7 +835,7 @@ void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     auto colIdx = MouseToColumn(x, y);
-    if ((colIdx != this->sortColumnIndex) && (this->IsClickable()))
+    if ((colIdx != this->sortColumnIndex) && (colIdx!=INVALID_COLUMN_INDEX) && (this->IsClickable()))
     {
         this->sortColumnIndex = colIdx;
         this->hasMouseCaption = true;
