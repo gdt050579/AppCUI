@@ -908,12 +908,8 @@ bool ColumnsHeader::OnMouseOver(int x, int y)
 bool ColumnsHeader::OnMouseLeave()
 {
     this->currentApp->ToolTip.Hide();
-    if ((this->hasMouseCaption) || (this->hoveredColumnIndex == INVALID_COLUMN_INDEX))
-    {
-        this->ClearKeyboardAndMouseLocks();
-        return true;
-    }
-    return false;
+    this->ClearKeyboardAndMouseLocks();
+    return true;
 }
 void ColumnsHeader::OnLoseFocus()
 {
