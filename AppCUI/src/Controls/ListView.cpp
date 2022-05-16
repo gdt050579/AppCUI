@@ -874,7 +874,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         InternalListViewItem* i = GetFilteredItem(idx);
         if (i == nullptr)
             break;
-        int next                = pozY + i->Height + itemSeparators;
+        int next = pozY + i->Height + itemSeparators;
         if ((y >= pozY) && (y < next))
         {
             // found an item
@@ -1146,6 +1146,11 @@ void ListViewControlContext::TriggerListViewItemCheckedEvent()
     }
     Host->RaiseEvent(Event::ListViewItemChecked);
 }
+
+uint32 ListViewControlContext::ComputeColumnsPreferedWidth(uint32 columnIndex)
+{
+    NOT_IMPLEMENTED(0);
+}
 //=====================================================================================================
 ColumnsHeaderViewFlags ListViewFlagsToColumnsHeaderViewFlags(ListViewFlags flags)
 {
@@ -1384,6 +1389,10 @@ Rect ListView::GetHeaderLayout()
     {
         return Graphics::Rect({ 0, 0 }, sz);
     }
+}
+uint32 ListView::ComputeColumnsPreferedWidth(uint32 columnIndex)
+{
+    return WRAPPER->ComputeColumnsPreferedWidth(columnIndex);
 }
 bool ListView::Reserve(uint32 itemsCount)
 {
