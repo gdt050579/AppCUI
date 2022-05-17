@@ -1149,7 +1149,14 @@ void ListViewControlContext::TriggerListViewItemCheckedEvent()
 
 uint32 ListViewControlContext::ComputeColumnsPreferedWidth(uint32 columnIndex)
 {
-    NOT_IMPLEMENTED(0);
+    if (columnIndex >= this->Header.GetColumnsCount())
+        return 0;
+    uint32 colSize = 0;
+    for (auto &itm: this->Items.List)
+    {
+        colSize = std::max<>(colSize, itm.SubItem[columnIndex].Len());
+    }
+    return colSize;
 }
 //=====================================================================================================
 ColumnsHeaderViewFlags ListViewFlagsToColumnsHeaderViewFlags(ListViewFlags flags)
