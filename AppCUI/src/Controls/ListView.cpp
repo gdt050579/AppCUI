@@ -1152,9 +1152,22 @@ uint32 ListViewControlContext::ComputeColumnsPreferedWidth(uint32 columnIndex)
     if (columnIndex >= this->Header.GetColumnsCount())
         return 0;
     uint32 colSize = 0;
-    for (auto &itm: this->Items.List)
+    uint32 extra   = 0;
+    if (columnIndex == 0) // first column
     {
-        colSize = std::max<>(colSize, itm.SubItem[columnIndex].Len());
+        if (this->Flags && ListViewFlags::CheckBoxes)
+            extra += 2;
+        for (auto& itm : this->Items.List)
+        {
+            colSize = std::max<>(colSize, itm.SubItem[columnIndex].Len() + extra + itm.XOffset);
+        }
+    }
+    else
+    {
+        for (auto& itm : this->Items.List)
+        {
+            colSize = std::max<>(colSize, itm.SubItem[columnIndex].Len());
+        }
     }
     return colSize;
 }
