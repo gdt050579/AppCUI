@@ -740,6 +740,8 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     bool Sort();
     bool Sort(uint32 columnIndex, SortDirection direction);
 
+    uint32 ComputeColumnsPreferedWidth(uint32 columnIndex);
+
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
     void FilterItems();
 

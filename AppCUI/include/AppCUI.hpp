@@ -3461,7 +3461,7 @@ namespace Controls
 
     } // namespace Handlers
 
-    //GDT: To be remove --> no longer useful after TreeView will be converted on the new format
+    // GDT: To be remove --> no longer useful after TreeView will be converted on the new format
     struct ColumnBuilder
     {
         ConstString name;
@@ -4098,6 +4098,13 @@ namespace Controls
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
         ColumnsHeaderView(void* context, string_view layout);
         bool HeaderHasMouseCaption() const;
+
+      public:
+        // virtual methods
+        virtual void OnColumnClicked(uint32 columnIndex)               = 0;
+        virtual Graphics::Rect GetHeaderLayout()                       = 0;
+        virtual uint32 ComputeColumnsPreferedWidth(uint32 columnIndex) = 0;
+
       public:
         bool AddColumns(std::initializer_list<ConstString> list);
         Column AddColumn(const ConstString columnFormat);
@@ -4107,8 +4114,6 @@ namespace Controls
         void DeleteColumn(uint32 columnIndex);
         std::optional<uint32> GetSortColumnIndex() const;
         Column GetSortColumn();
-        virtual void OnColumnClicked(uint32 columnIndex) = 0;
-        virtual Graphics::Rect GetHeaderLayout()         = 0;
 
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
@@ -4146,14 +4151,17 @@ namespace Controls
       protected:
         ListView(string_view layout, std::initializer_list<ConstString> columns, ListViewFlags flags);
 
+        // Columns header view interface
+        void OnColumnClicked(uint32 columnIndex) override;
+        Graphics::Rect GetHeaderLayout() override;
+        uint32 ComputeColumnsPreferedWidth(uint32 columnIndex) override;
+
       public:
         bool Reserve(uint32 itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnMousePressed(int x, int y, Input::MouseButton button) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
-        void OnColumnClicked(uint32 columnIndex) override;
-        Graphics::Rect GetHeaderLayout() override;
 
         void OnFocus() override;
         void OnUpdateScrollBars() override;

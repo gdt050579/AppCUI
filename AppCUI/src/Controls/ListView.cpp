@@ -874,7 +874,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         InternalListViewItem* i = GetFilteredItem(idx);
         if (i == nullptr)
             break;
-        int next                = pozY + i->Height + itemSeparators;
+        int next = pozY + i->Height + itemSeparators;
         if ((y >= pozY) && (y < next))
         {
             // found an item
@@ -1146,6 +1146,31 @@ void ListViewControlContext::TriggerListViewItemCheckedEvent()
     }
     Host->RaiseEvent(Event::ListViewItemChecked);
 }
+
+uint32 ListViewControlContext::ComputeColumnsPreferedWidth(uint32 columnIndex)
+{
+    if (columnIndex >= this->Header.GetColumnsCount())
+        return 0;
+    uint32 colSize = 0;
+    uint32 extra   = 0;
+    if (columnIndex == 0) // first column
+    {
+        if (this->Flags && ListViewFlags::CheckBoxes)
+            extra += 2;
+        for (auto& itm : this->Items.List)
+        {
+            colSize = std::max<>(colSize, itm.SubItem[columnIndex].Len() + extra + itm.XOffset);
+        }
+    }
+    else
+    {
+        for (auto& itm : this->Items.List)
+        {
+            colSize = std::max<>(colSize, itm.SubItem[columnIndex].Len());
+        }
+    }
+    return colSize;
+}
 //=====================================================================================================
 ColumnsHeaderViewFlags ListViewFlagsToColumnsHeaderViewFlags(ListViewFlags flags)
 {
@@ -1384,6 +1409,10 @@ Rect ListView::GetHeaderLayout()
     {
         return Graphics::Rect({ 0, 0 }, sz);
     }
+}
+uint32 ListView::ComputeColumnsPreferedWidth(uint32 columnIndex)
+{
+    return WRAPPER->ComputeColumnsPreferedWidth(columnIndex);
 }
 bool ListView::Reserve(uint32 itemsCount)
 {

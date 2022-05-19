@@ -835,7 +835,7 @@ void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
 void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
 {
     auto colIdx = MouseToColumn(x, y);
-    if ((colIdx != this->sortColumnIndex) && (colIdx!=INVALID_COLUMN_INDEX) && (this->IsClickable()))
+    if ((colIdx != this->sortColumnIndex) && (colIdx != INVALID_COLUMN_INDEX) && (this->IsClickable()))
     {
         this->sortColumnIndex = colIdx;
         this->hasMouseCaption = true;
@@ -845,6 +845,18 @@ void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
     {
         this->resizeColumnIndex = sepIdx;
         this->hasMouseCaption   = true;
+    }
+    if (!(this->flags && ColumnsHeaderViewFlags::FixedSized))
+    {
+        if (((button & MouseButton::DoubleClicked) == MouseButton::DoubleClicked) && (sepIdx != INVALID_COLUMN_INDEX))
+        {
+            uint32 newSZ = this->host->ComputeColumnsPreferedWidth(sepIdx);
+            if (newSZ > 0)
+            {
+                this->columns[sepIdx].SetWidth(newSZ);
+                this->RecomputeColumnsSizes();
+            }
+        }
     }
 }
 bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
