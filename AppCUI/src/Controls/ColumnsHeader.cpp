@@ -846,13 +846,16 @@ void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
         this->resizeColumnIndex = sepIdx;
         this->hasMouseCaption   = true;
     }
-    if (((button & MouseButton::DoubleClicked) == MouseButton::DoubleClicked) && (sepIdx != INVALID_COLUMN_INDEX))
+    if (!(this->flags && ColumnsHeaderViewFlags::FixedSized))
     {
-        uint32 newSZ = this->host->ComputeColumnsPreferedWidth(sepIdx);
-        if (newSZ > 0)
+        if (((button & MouseButton::DoubleClicked) == MouseButton::DoubleClicked) && (sepIdx != INVALID_COLUMN_INDEX))
         {
-            this->columns[sepIdx].SetWidth(newSZ);
-            this->RecomputeColumnsSizes();
+            uint32 newSZ = this->host->ComputeColumnsPreferedWidth(sepIdx);
+            if (newSZ > 0)
+            {
+                this->columns[sepIdx].SetWidth(newSZ);
+                this->RecomputeColumnsSizes();
+            }
         }
     }
 }
