@@ -81,11 +81,24 @@ endif()
 
 add_subdirectory(src)
 
-find_path (
-	LODE_PNG_PATH 
-	PATH_SUFFIXES src/3rdPartyLibs
-)
-target_include_directories(AppCUI PRIVATE LODE_PNG_PATH)
+macro(find_dir_deep RESULT_PATHS BASE_PATH CONTAINS)
+	file(GLOB results "${BASE_PATH}/*")
+	foreach(f ${results})
+		if(IS_DIRECTORY "${f}")
+			string(FIND ${f} "${CONTAINS}" position)
+			if (NOT position MATCHES "-1")
+				set(${RESULT_PATHS} ${${RESULT_PATHS}} ${f})
+				break()
+			endif()
+			find_dir_deep(${RESULT_PATHS} ${f} "${CONTAINS}")
+		endif()
+	endforeach()
+endmacro(find_dir_deep RESULT_PATHS BASE_PATH)
+
+set(LODE_PNG_PATH "")
+find_dir_deep(LODE_PNG_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "src/3rdPartyLibs/lodepng")
+message(STATUS "LODE_PNG_PATH: ${LODE_PNG_PATH}")
+target_include_directories(AppCUI PRIVATE "${LODE_PNG_PATH}")
 target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
 
 # lodepng defines
