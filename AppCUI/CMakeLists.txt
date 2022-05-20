@@ -80,7 +80,8 @@ if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
 endif()
 
 add_subdirectory(src)
-target_include_directories(AppCUI PRIVATE src/3rdPartyLibs/lodepng)
+
+target_include_directories(AppCUI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/3rdPartyLibs/lodepng")
 target_compile_definitions(AppCUI PRIVATE -DBUILD_AS_DYNAMIC_LIB)
 
 # lodepng defines
