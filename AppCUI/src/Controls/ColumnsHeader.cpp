@@ -328,6 +328,7 @@ ColumnsHeader::ColumnsHeader(
     this->hoveredColumnIndex  = INVALID_COLUMN_INDEX;
     this->resizeColumnIndex   = INVALID_COLUMN_INDEX;
     this->toolTipColumnIndex  = INVALID_COLUMN_INDEX;
+    this->frozenColumns       = 0; 
     this->currentApp          = Application::GetApplication();
     // some check up
     // 1. if it is sortable it is alsa clickable
@@ -926,5 +927,9 @@ bool ColumnsHeader::OnMouseLeave()
 void ColumnsHeader::OnLoseFocus()
 {
     this->ClearKeyboardAndMouseLocks();
+}
+void ColumnsHeader::SetFrozenColumnsCount(uint32 count)
+{
+    this->frozenColumns = std::min<>(count, static_cast<uint32>(this->columns.size()));
 }
 } // namespace AppCUI

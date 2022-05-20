@@ -527,7 +527,7 @@ class ColumnsHeader
         uint32 totalWidth;
         uint32 listHeight;
     } Location;
-    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex, toolTipColumnIndex;
+    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex, toolTipColumnIndex, frozenColumns;
     uint32 flags;
     AppCUI::Utils::SortDirection sortDirection;
     bool hasMouseCaption;
@@ -552,6 +552,7 @@ class ColumnsHeader
     bool SetSortColumn(uint32 colIndex);
     bool SetSortColumn(uint32 colIndex, SortDirection direction);
     bool OnKeyEvent(Key key, char16 character);
+    void SetFrozenColumnsCount(uint32 count);
     inline bool HasMouseCaption() const
     {
         return hasMouseCaption;
