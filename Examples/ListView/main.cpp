@@ -3109,6 +3109,16 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface
         auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:30");
         cb->SetChecked(true);
         cb->Handlers()->OnCheck = this;
+        // add suport for frozen columns
+        auto fc_label = Factory::Label::Create(this, "&Frozen columns", "x:33,y:18,w:14");
+        auto fc       = Factory::ComboBox::Create(this, "x:48,y:18,w:19");
+        fc->AddItem("None", 0);
+        fc->AddSeparator();
+        fc->AddItem("First column", 1);
+        fc->AddItem("First two columns",2);
+        fc->AddItem("First three columns", 3);
+        fc->SetCurentItemIndex(0);
+        fc->SetHotKey('F');
     }
     void OnCheck(Reference<Controls::Control> control, bool value) override
     {
