@@ -3073,7 +3073,7 @@ const char* english_words[] = { "a",
 #define SHOW_DEFAULT_EXAMPLE 1000
 #define MY_GROUP             123
 
-class MyListViewExample : public Window, Handlers::OnCheckInterface
+class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::OnComboBoxCurrentItemChangedInterface
 {
     Reference<ListView> lv;
 
@@ -3119,10 +3119,15 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface
         fc->AddItem("First three columns", 3);
         fc->SetCurentItemIndex(0);
         fc->SetHotKey('F');
+        fc->Handlers()->OnCurrentItemChanged = this;
     }
     void OnCheck(Reference<Controls::Control> control, bool value) override
     {
         lv->SetEnabled(value);
+    }
+    void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override
+    {
+        lv->SetFrozenColumns((uint32) cbox->GetCurrentItemUserData(0));
     }
 };
 
