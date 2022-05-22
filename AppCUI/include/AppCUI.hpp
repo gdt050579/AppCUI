@@ -3412,7 +3412,10 @@ namespace Controls
                   OnItemChecked;
             Wrapper<OnListViewItemPressedInterface, OnListViewItemPressedCallback, OnListViewItemPressedHandler>
                   OnItemPressed;
-            Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+            Wrapper<
+                  OnListViewCurrentItemChangedInterface,
+                  OnListViewCurrentItemChangedCallback,
+                  OnListViewCurrentItemChangedHandler>
                   OnCurrentItemChanged;
         };
 

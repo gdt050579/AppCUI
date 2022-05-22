@@ -1117,7 +1117,7 @@ void ListViewControlContext::TriggerListViewItemChangedEvent()
         auto lvh = (Handlers::ListView*) (this->handlers.get());
         if (lvh->OnCurrentItemChanged.obj)
         {
-            lvh->OnCurrentItemChanged.obj->OnListViewItemChecked(this->Host, this->Host->GetCurrentItem());
+            lvh->OnCurrentItemChanged.obj->OnListViewCurrentItemChanged(this->Host, this->Host->GetCurrentItem());
         }
     }
     Host->RaiseEvent(Event::ListViewCurrentItemChanged);
