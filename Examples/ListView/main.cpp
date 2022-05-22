@@ -3127,7 +3127,7 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
     }
     void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override
     {
-        lv->SetFrozenColumns((uint32) cbox->GetCurrentItemUserData(0));
+        lv->SetFrozenColumnsCount((uint32) cbox->GetCurrentItemUserData(0));
     }
 };
 

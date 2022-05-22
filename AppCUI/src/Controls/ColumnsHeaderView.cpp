@@ -65,6 +65,10 @@ void ColumnsHeaderView::DeleteColumn(uint32 columnIndex)
 {
     ICH->Header.DeleteColumn(columnIndex);
 }
+void ColumnsHeaderView::SetFrozenColumnsCount(uint32 count)
+{
+    ICH->Header.SetFrozenColumnsCount(count);
+}
 void ColumnsHeaderView::Paint(Graphics::Renderer& renderer)
 {
     ICH->Header.Paint(renderer);

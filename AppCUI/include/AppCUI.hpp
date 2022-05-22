@@ -4142,6 +4142,7 @@ namespace Controls
         uint32 GetColumnCount() const;
         void DeleteAllColumns();
         void DeleteColumn(uint32 columnIndex);
+        void SetFrozenColumnsCount(uint32 count = 0);
         std::optional<uint32> GetSortColumnIndex() const;
         Column GetSortColumn();
 
