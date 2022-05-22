@@ -3076,6 +3076,9 @@ namespace Controls
         using OnListViewCurrentItemChangedHandler =
               void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
 
+        // combobox
+        using OnComboBoxCurrentItemChangedHandler = void (*)(Reference<Controls::ComboBox> cbox);
+
         // TreeView
         using TreeViewItemCompareHandler = int (*)(
               Reference<Controls::TreeView> control,
@@ -3333,6 +3336,20 @@ namespace Controls
             };
         };
 
+        // OnListViewCurrentItemChangedHandler
+        struct OnComboBoxCurrentItemChangedInterface
+        {
+            virtual void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) = 0;
+        };
+        struct OnComboBoxCurrentItemChangedCallback : public OnComboBoxCurrentItemChangedInterface
+        {
+            OnComboBoxCurrentItemChangedHandler callback;
+            virtual void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override
+            {
+                callback(cbox);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -3395,6 +3412,15 @@ namespace Controls
             Wrapper<OnListViewItemPressedInterface, OnListViewItemPressedCallback, OnListViewItemPressedHandler>
                   OnItemPressed;
             Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+                  OnCurrentItemChanged;
+        };
+
+        struct ComboBox : public Control
+        {
+            Wrapper<
+                  OnComboBoxCurrentItemChangedInterface,
+                  OnComboBoxCurrentItemChangedCallback,
+                  OnComboBoxCurrentItemChangedHandler>
                   OnCurrentItemChanged;
         };
 
