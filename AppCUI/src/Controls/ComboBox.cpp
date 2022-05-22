@@ -586,4 +586,8 @@ void ComboBox::Paint(Graphics::Renderer& renderer)
         }
     }
 }
+Handlers::ComboBox* ComboBox::Handlers()
+{
+    GET_CONTROL_HANDLERS(Handlers::ComboBox);
+}
 } // namespace AppCUI

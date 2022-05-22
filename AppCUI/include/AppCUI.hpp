@@ -4292,6 +4292,10 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
+        
+        // handlers covariant
+        Handlers::ComboBox* Handlers() override;        
+        
         virtual ~ComboBox();
 
         friend Factory::ComboBox;
