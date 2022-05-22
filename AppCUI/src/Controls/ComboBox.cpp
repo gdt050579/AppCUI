@@ -137,7 +137,14 @@ void ComboBox_SetCurrentIndex(ComboBox* control, uint32 newIndex)
     }
     Members->CurentItemIndex = newIndex;
     if (old != newIndex)
+    {
         control->RaiseEvent(Event::ComboBoxSelectedItemChanged);
+        if (Members->handlers)
+        {
+            if (control->Handlers()->OnCurrentItemChanged.obj)
+                control->Handlers()->OnCurrentItemChanged.obj->OnComboBoxCurrentItemChanged(control);
+        }
+    }
 }
 //====================================================================================================
 template <typename T>
@@ -353,6 +360,11 @@ void ComboBox::SetNoIndexSelected()
     Members->CurentItemIndex  = ComboBox::NO_ITEM_SELECTED;
     Members->FirstVisibleItem = 0;
     RaiseEvent(Event::ComboBoxSelectedItemChanged);
+    if (Members->handlers)
+    {
+        if (this->Handlers()->OnCurrentItemChanged.obj)
+            this->Handlers()->OnCurrentItemChanged.obj->OnComboBoxCurrentItemChanged(this);
+    }
 }
 
 bool ComboBox::OnKeyEvent(Input::Key keyCode, char16)

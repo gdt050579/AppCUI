@@ -2969,6 +2969,7 @@ namespace Controls
     class EXPORT Button;
     class EXPORT TextField;
     class EXPORT ListViewItem;
+    class EXPORT ComboBox;
     class EXPORT ListView;
     class EXPORT TreeViewItem;
     class EXPORT TreeView;
