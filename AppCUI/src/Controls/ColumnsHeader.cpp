@@ -645,6 +645,7 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
     if ((showSeparators) || (this->resizeColumnIndex != INVALID_COLUMN_INDEX))
     {
         colIndex = 0;
+        const auto lastFrozenColumn = this->frozenColumns > 0 ? this->frozenColumns - 1 : INVALID_COLUMN_INDEX;
         for (auto& col : this->columns)
         {
             const auto separatorX = col.x + (int32) col.width;
@@ -662,7 +663,8 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
                       separatorX,
                       this->Location.y,
                       this->Location.y + this->Location.listHeight,
-                      Cfg->Lines.GetColor(sepState));
+                      Cfg->Lines.GetColor(sepState),
+                      colIndex != lastFrozenColumn);
             }
             colIndex++;
         }
