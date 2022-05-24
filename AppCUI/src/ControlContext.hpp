@@ -488,6 +488,7 @@ struct InternalColumn
     uint32 hotKeyOffset;
     InternalColumnFlags flags;
     int32 x;
+    int32 leftClip, rightClip;
     uint16 width;
     uint16 widthTypeValue;
     Key hotKeyCode;

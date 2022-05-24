@@ -229,6 +229,8 @@ void InternalColumn::Reset()
     this->widthType      = InternalColumnWidthType::Value;
     this->widthTypeValue = MINIM_COLUMN_WIDTH;
     this->x              = 0;
+    this->leftClip       = 0;
+    this->rightClip      = 0;
     this->flags          = InternalColumnFlags::AllowValueCopy | InternalColumnFlags::SearcheableValue;
     this->name.Clear();
 }
@@ -242,8 +244,10 @@ void InternalColumn::CopyObject(const InternalColumn& obj)
     this->name           = obj.name;
 
     // these values need to be recomputed
-    this->width = MINIM_COLUMN_WIDTH;
-    this->x     = 0;
+    this->width     = MINIM_COLUMN_WIDTH;
+    this->x         = 0;
+    this->leftClip  = 0;
+    this->rightClip = 0;
 }
 void InternalColumn::SwapObject(InternalColumn& obj)
 {
@@ -254,8 +258,10 @@ void InternalColumn::SwapObject(InternalColumn& obj)
     this->widthType      = obj.widthType;
     this->widthTypeValue = obj.widthTypeValue;
     // these values need to be recomputed
-    this->width = MINIM_COLUMN_WIDTH;
-    this->x     = 0;
+    this->width     = MINIM_COLUMN_WIDTH;
+    this->x         = 0;
+    this->leftClip  = 0;
+    this->rightClip = 0;
     // swap name
     this->name.Swap(obj.name);
 }
@@ -328,7 +334,7 @@ ColumnsHeader::ColumnsHeader(
     this->hoveredColumnIndex  = INVALID_COLUMN_INDEX;
     this->resizeColumnIndex   = INVALID_COLUMN_INDEX;
     this->toolTipColumnIndex  = INVALID_COLUMN_INDEX;
-    this->frozenColumns       = 0; 
+    this->frozenColumns       = 0;
     this->currentApp          = Application::GetApplication();
     // some check up
     // 1. if it is sortable it is alsa clickable
@@ -535,13 +541,28 @@ void ColumnsHeader::RecomputeColumnsSizes()
         }
     }
     // compute the positions and total width
-    auto xPoz                 = this->Location.x - this->Location.scrollX;
+    auto xPoz                 = this->Location.x;
+    auto index                = 0U;
+    const auto rightMaxClip   = (int32) this->Location.width + this->Location.x - 1;
+    auto leftMinClip          = this->Location.x;
     this->Location.totalWidth = 0;
     for (auto& col : columns)
     {
-        col.x = xPoz;
+        if (index < this->frozenColumns)
+        {
+            col.x = xPoz;
+        }
+        else
+        {
+            col.x = xPoz - this->Location.scrollX;
+        }
+        col.leftClip  = std::max<>(leftMinClip, col.x);
+        col.rightClip = std::min<>(rightMaxClip, col.x + ((int32) col.width));
         xPoz += ((int32) (col.width)) + 1;
         this->Location.totalWidth += (col.width + 1);
+        index++;
+        if (index == this->frozenColumns)
+            leftMinClip = xPoz;
     }
 }
 void ColumnsHeader::Paint(Graphics::Renderer& renderer)
@@ -553,11 +574,10 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
     const auto defaultHK   = Cfg->Header.HotKey.GetColor(state);
     const auto rightMargin = this->Location.x + (int32) this->Location.width;
     auto colIndex          = 0U;
+    Rect r;
 
     // first reset the view
     renderer.ResetClip();
-    renderer.SetClipRect(
-          { { this->Location.x, this->Location.y }, { this->Location.width, this->Location.listHeight } });
 
     if (this->IsVisible())
     {
@@ -572,11 +592,18 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
         for (auto& col : this->columns)
         {
             // check if the column is outside visible range
-            if (((col.x + (int32) col.width) < this->Location.x) || (col.x >= rightMargin))
+            if (col.leftClip > col.rightClip)
             {
                 colIndex++;
                 continue;
             }
+            r.Create(col.leftClip, this->Location.y, col.rightClip, this->Location.y);
+            renderer.SetClipRect(r);
+            // if (((col.x + (int32) col.width) < this->Location.x) || (col.x >= rightMargin))
+            //{
+            //    colIndex++;
+            //    continue;
+            //}
             if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
             {
                 params.Color       = Cfg->Header.Text.PressedOrSelected;
@@ -644,7 +671,10 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
     const bool showSeparators = (!(this->flags && ColumnsHeaderViewFlags::HideSeparators)) || (this->hasMouseCaption);
     if ((showSeparators) || (this->resizeColumnIndex != INVALID_COLUMN_INDEX))
     {
-        colIndex = 0;
+        renderer.SetClipRect(
+              { { this->Location.x, this->Location.y }, { this->Location.width, this->Location.listHeight } });
+
+        colIndex                    = 0;
         const auto lastFrozenColumn = this->frozenColumns > 0 ? this->frozenColumns - 1 : INVALID_COLUMN_INDEX;
         for (auto& col : this->columns)
         {
@@ -659,12 +689,15 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
 
             if (showSep)
             {
-                renderer.DrawVerticalLine(
-                      separatorX,
-                      this->Location.y,
-                      this->Location.y + this->Location.listHeight,
-                      Cfg->Lines.GetColor(sepState),
-                      colIndex != lastFrozenColumn);
+                if ((separatorX >= col.leftClip) && (separatorX <= col.rightClip + 1))
+                {
+                    renderer.DrawVerticalLine(
+                          separatorX,
+                          this->Location.y,
+                          this->Location.y + this->Location.listHeight,
+                          Cfg->Lines.GetColor(sepState),
+                          colIndex != lastFrozenColumn);
+                }
             }
             colIndex++;
         }
