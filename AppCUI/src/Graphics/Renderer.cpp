@@ -954,7 +954,7 @@ bool Renderer::SetClipMargins(int leftMargin, int topMargin, int rightMargin, in
         this->ClipCopy          = this->Clip;
         this->ClipHasBeenCopied = true;
     }
-    if (!this->Clip.Visible)
+    if (!this->ClipCopy.Visible)
         return false;
 
     Clip.Left          = ClipCopy.Left + std::max<>(leftMargin, 0);
@@ -971,7 +971,7 @@ bool Renderer::SetClipRect(const Rect& r)
         this->ClipCopy          = this->Clip;
         this->ClipHasBeenCopied = true;
     }
-    if (!this->Clip.Visible)
+    if (!this->ClipCopy.Visible)
         return false;
     Clip.Left          = ClipCopy.Left + std::max<>(r.GetLeft(), 0);
     Clip.Top           = ClipCopy.Top + std::max<>(r.GetTop(), 0);
