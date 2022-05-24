@@ -966,5 +966,17 @@ void ColumnsHeader::OnLoseFocus()
 void ColumnsHeader::SetFrozenColumnsCount(uint32 count)
 {
     this->frozenColumns = std::min<>(count, static_cast<uint32>(this->columns.size()));
+    this->RecomputeColumnsSizes();
+}
+bool ColumnsHeader::SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex)
+{
+    if (columnIndex >= this->columns.size())
+        return false;
+    const auto& col = this->columns[columnIndex];
+    if (col.leftClip > col.rightClip)
+        return false; // clipping is outside visible area
+    Rect r;
+    r.Create(col.leftClip, this->Location.y, col.rightClip, (this->Location.y-1)+(uint32)this->Location.listHeight);
+    return renderer.SetClipRect(r);
 }
 } // namespace AppCUI

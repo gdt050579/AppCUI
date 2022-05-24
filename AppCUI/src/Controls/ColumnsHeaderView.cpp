@@ -22,6 +22,10 @@ bool ColumnsHeaderView::HeaderHasMouseCaption() const
 {
     return ICH->Header.HasMouseCaption();
 }
+bool ColumnsHeaderView::SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex)
+{
+    return ICH->Header.SetColumnClipRect(renderer,columnIndex);
+}
 ColumnsHeaderView::~ColumnsHeaderView()
 {
     if (this->Context)

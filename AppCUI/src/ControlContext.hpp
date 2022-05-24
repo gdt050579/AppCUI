@@ -554,6 +554,7 @@ class ColumnsHeader
     bool SetSortColumn(uint32 colIndex, SortDirection direction);
     bool OnKeyEvent(Key key, char16 character);
     void SetFrozenColumnsCount(uint32 count);
+    bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
     inline bool HasMouseCaption() const
     {
         return hasMouseCaption;
