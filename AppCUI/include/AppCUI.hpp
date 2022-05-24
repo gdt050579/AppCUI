@@ -4128,7 +4128,7 @@ namespace Controls
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
         ColumnsHeaderView(void* context, string_view layout);
         bool HeaderHasMouseCaption() const;
-        bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
+        bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);       
 
       public:
         // virtual methods

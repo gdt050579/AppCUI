@@ -68,7 +68,7 @@ InternalListViewItem* ListViewControlContext::GetFilteredItem(uint32 index)
 
 void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem)
 {
-    int x = GetLeftPos();
+    int x = this->Header[0].x;
     int itemStart;
     auto columnsCount        = Header.GetColumnsCount();
     CharacterBuffer* subitem = item->SubItem;
@@ -159,6 +159,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     const auto& firstColumn = this->Header[0];
     int end_first_column    = x + ((int) firstColumn.width);
     x += (int) item->XOffset;
+    this->Header.SetColumnClipRect(renderer, 0);
     if ((Flags & ListViewFlags::CheckBoxes) != ListViewFlags::None)
     {
         if (x < end_first_column)
@@ -185,13 +186,17 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
 
     for (uint32 tr = 1; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++)
     {
-        const auto& column = this->Header[tr];
-        params.Width       = column.width;
-        params.X           = column.x;
-        params.Align       = column.align;
-        renderer.WriteText(*subitem, params);
+        if (this->Header.SetColumnClipRect(renderer, tr))
+        {
+            const auto& column = this->Header[tr];
+            params.Width       = column.width;
+            params.X           = column.x;
+            params.Align       = column.align;
+            renderer.WriteText(*subitem, params);
+        }
         subitem++;
     }
+    renderer.ResetClip();
     if (Focused)
     {
         if (currentItem)
