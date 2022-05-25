@@ -639,6 +639,10 @@ class ColumnsHeader
     {
         return this->columns[index];
     }
+    inline uint32 GetFrozenColumnsCount() const
+    {
+        return this->frozenColumns;
+    }
 };
 struct ColumnsHeaderViewControlContext : public ControlContext
 {

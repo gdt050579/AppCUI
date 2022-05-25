@@ -245,16 +245,25 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
             col = this->Cfg->Lines.Inactive;
         else if (Focused)
             col = this->Cfg->Lines.Focused;
+        if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
+            renderer.SetClipMargins(1, 1, 1, 1);
+        else
+            renderer.ResetClip();
         renderer.DrawHorizontalLine(0, y, Layout.Width, col);
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
         {
-            x = GetLeftPos();
             for (uint32 tr = 0; (tr < columnsCount) && (x < (int) this->Layout.Width); tr++)
             {
-                x += this->Header[tr].width;
-                renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxCrossSingleLine, col);
-                x++;
+                const auto& column = this->Header[tr];
+                x                  = column.x + (int32) column.width;
+                if (column.leftClip <= column.rightClip)
+                    renderer.WriteSpecialCharacter(
+                          x,
+                          y,
+                          (tr + 1) == this->Header.GetFrozenColumnsCount() ? SpecialChars::BoxVerticalDoubleLine
+                                                                           : SpecialChars::BoxCrossSingleLine,
+                          col);
             }
         }
     }
