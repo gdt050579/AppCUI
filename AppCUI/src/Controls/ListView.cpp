@@ -196,7 +196,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         }
         subitem++;
     }
-    renderer.ResetClip();
+    // set the viewing clip
+    if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
+        renderer.SetClipMargins(1, 1, 1, 1);
+    else
+        renderer.ResetClip();
     if (Focused)
     {
         if (currentItem)
@@ -245,10 +249,6 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
             col = this->Cfg->Lines.Inactive;
         else if (Focused)
             col = this->Cfg->Lines.Focused;
-        if (((((uint32) Flags) & ((uint32) ListViewFlags::HideBorder)) == 0))
-            renderer.SetClipMargins(1, 1, 1, 1);
-        else
-            renderer.ResetClip();
         renderer.DrawHorizontalLine(0, y, Layout.Width, col);
         // draw crosses
         if ((Flags & ListViewFlags::HideColumnsSeparator) == ListViewFlags::None)
