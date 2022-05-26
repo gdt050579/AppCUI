@@ -2969,6 +2969,7 @@ namespace Controls
     class EXPORT Button;
     class EXPORT TextField;
     class EXPORT ListViewItem;
+    class EXPORT ComboBox;
     class EXPORT ListView;
     class EXPORT TreeViewItem;
     class EXPORT TreeView;
@@ -3075,6 +3076,9 @@ namespace Controls
         using OnListViewItemPressedHandler  = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
         using OnListViewCurrentItemChangedHandler =
               void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+
+        // combobox
+        using OnComboBoxCurrentItemChangedHandler = void (*)(Reference<Controls::ComboBox> cbox);
 
         // TreeView
         using TreeViewItemCompareHandler = int (*)(
@@ -3333,6 +3337,20 @@ namespace Controls
             };
         };
 
+        // OnListViewCurrentItemChangedHandler
+        struct OnComboBoxCurrentItemChangedInterface
+        {
+            virtual void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) = 0;
+        };
+        struct OnComboBoxCurrentItemChangedCallback : public OnComboBoxCurrentItemChangedInterface
+        {
+            OnComboBoxCurrentItemChangedHandler callback;
+            virtual void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override
+            {
+                callback(cbox);
+            };
+        };
+
         template <typename I, typename C, typename H>
         class Wrapper
         {
@@ -3394,7 +3412,19 @@ namespace Controls
                   OnItemChecked;
             Wrapper<OnListViewItemPressedInterface, OnListViewItemPressedCallback, OnListViewItemPressedHandler>
                   OnItemPressed;
-            Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+            Wrapper<
+                  OnListViewCurrentItemChangedInterface,
+                  OnListViewCurrentItemChangedCallback,
+                  OnListViewCurrentItemChangedHandler>
+                  OnCurrentItemChanged;
+        };
+
+        struct ComboBox : public Control
+        {
+            Wrapper<
+                  OnComboBoxCurrentItemChangedInterface,
+                  OnComboBoxCurrentItemChangedCallback,
+                  OnComboBoxCurrentItemChangedHandler>
                   OnCurrentItemChanged;
         };
 
@@ -4098,6 +4128,7 @@ namespace Controls
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
         ColumnsHeaderView(void* context, string_view layout);
         bool HeaderHasMouseCaption() const;
+        bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);       
 
       public:
         // virtual methods
@@ -4112,6 +4143,7 @@ namespace Controls
         uint32 GetColumnCount() const;
         void DeleteAllColumns();
         void DeleteColumn(uint32 columnIndex);
+        void SetFrozenColumnsCount(uint32 count = 0);
         std::optional<uint32> GetSortColumnIndex() const;
         Column GetSortColumn();
 
@@ -4266,6 +4298,10 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
+        
+        // handlers covariant
+        Handlers::ComboBox* Handlers() override;        
+        
         virtual ~ComboBox();
 
         friend Factory::ComboBox;

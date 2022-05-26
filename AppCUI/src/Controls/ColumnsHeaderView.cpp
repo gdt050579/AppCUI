@@ -22,6 +22,10 @@ bool ColumnsHeaderView::HeaderHasMouseCaption() const
 {
     return ICH->Header.HasMouseCaption();
 }
+bool ColumnsHeaderView::SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex)
+{
+    return ICH->Header.SetColumnClipRect(renderer,columnIndex);
+}
 ColumnsHeaderView::~ColumnsHeaderView()
 {
     if (this->Context)
@@ -64,6 +68,10 @@ void ColumnsHeaderView::DeleteAllColumns()
 void ColumnsHeaderView::DeleteColumn(uint32 columnIndex)
 {
     ICH->Header.DeleteColumn(columnIndex);
+}
+void ColumnsHeaderView::SetFrozenColumnsCount(uint32 count)
+{
+    ICH->Header.SetFrozenColumnsCount(count);
 }
 void ColumnsHeaderView::Paint(Graphics::Renderer& renderer)
 {

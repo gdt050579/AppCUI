@@ -488,6 +488,7 @@ struct InternalColumn
     uint32 hotKeyOffset;
     InternalColumnFlags flags;
     int32 x;
+    int32 leftClip, rightClip;
     uint16 width;
     uint16 widthTypeValue;
     Key hotKeyCode;
@@ -527,7 +528,7 @@ class ColumnsHeader
         uint32 totalWidth;
         uint32 listHeight;
     } Location;
-    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex, toolTipColumnIndex;
+    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex, toolTipColumnIndex, frozenColumns;
     uint32 flags;
     AppCUI::Utils::SortDirection sortDirection;
     bool hasMouseCaption;
@@ -552,6 +553,8 @@ class ColumnsHeader
     bool SetSortColumn(uint32 colIndex);
     bool SetSortColumn(uint32 colIndex, SortDirection direction);
     bool OnKeyEvent(Key key, char16 character);
+    void SetFrozenColumnsCount(uint32 count);
+    bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
     inline bool HasMouseCaption() const
     {
         return hasMouseCaption;
@@ -635,6 +638,10 @@ class ColumnsHeader
     inline const InternalColumn& operator[](uint32 index) const
     {
         return this->columns[index];
+    }
+    inline uint32 GetFrozenColumnsCount() const
+    {
+        return this->frozenColumns;
     }
 };
 struct ColumnsHeaderViewControlContext : public ControlContext
