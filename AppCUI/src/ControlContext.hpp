@@ -720,7 +720,6 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
 
     void DeleteAllItems();
 
-
     bool SetCurrentIndex(ItemHandle item);
     int GetFirstVisibleLine();
     bool SetFirstVisibleLine(ItemHandle item);
@@ -855,7 +854,7 @@ struct TreeItem
     uint32 priority = 0;
 };
 
-class TreeControlContext : public ControlContext
+class TreeControlContext : public ColumnsHeaderViewControlContext
 {
   private:
     ItemHandle currentItemHandle{ InvalidItemHandle };
@@ -906,6 +905,14 @@ class TreeControlContext : public ControlContext
     uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
     uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
 
+  public:
+    TreeControlContext(
+          Reference<TreeView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+        : ColumnsHeaderViewControlContext(host.ToBase<ColumnsHeaderView>(), columnsList, flags)
+    {
+    }
+
+  public:
     void SetCurrentItemHandle(ItemHandle handle);
     ItemHandle GetCurrentItemHandle() const;
 

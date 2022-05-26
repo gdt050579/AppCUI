@@ -13,8 +13,20 @@ constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
 const static Utils::UnicodeStringBuilder cb{};
 
-TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> columns, TreeViewFlags flags)
-    : Control(new TreeControlContext(), "", layout, true)
+ColumnsHeaderViewFlags TreeViewFlagsToColumnsHeaderViewFlags(TreeViewFlags flags)
+{
+    ColumnsHeaderViewFlags f = ColumnsHeaderViewFlags::None;
+    if ((flags & TreeViewFlags::HideColumnsSeparator) != TreeViewFlags::None)
+        f |= ColumnsHeaderViewFlags::HideSeparators;
+    if ((flags & TreeViewFlags::Sortable) != TreeViewFlags::None)
+        f |= ColumnsHeaderViewFlags::Sortable;
+    if ((flags & TreeViewFlags::HideColumns) != TreeViewFlags::None)
+        f |= ColumnsHeaderViewFlags::HideHeader;
+    return f;
+}
+
+TreeView::TreeView(string_view layout, std::initializer_list<ConstString> columns, TreeViewFlags flags)
+    : ColumnsHeaderView(new TreeControlContext(this, columns, TreeViewFlagsToColumnsHeaderViewFlags(flags)), layout)
 {
     const auto cc        = reinterpret_cast<TreeControlContext*>(Context);
     cc->Layout.MinHeight = 1;
@@ -63,7 +75,7 @@ TreeView::TreeView(string_view layout, std::initializer_list<ColumnBuilder> colu
 
     for (const auto& column : columns)
     {
-        AddColumn(column.name, column.align, column.width);
+        // AddColumn(column.name, column.align, column.width);
     }
 
     cc->separatorIndexSelected = InvalidIndex;
@@ -739,6 +751,37 @@ void TreeView::OnAfterResize(int newWidth, int newHeight)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     CHECKRET(cc->AdjustElementsOnResize(newWidth, newHeight), "");
+}
+
+void TreeView::OnColumnClicked(uint32 columnIndex)
+{
+    this->Sort();
+}
+
+Graphics::Rect TreeView::GetHeaderLayout()
+{
+    CHECK(Context != nullptr, Graphics::Rect(), "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+
+    auto sz         = GetSize();
+    auto hasMargins = !(cc->Flags && TreeViewFlags::HideBorder);
+    if (hasMargins)
+    {
+        if ((sz.Width > 2) && (sz.Height > 2))
+        {
+            return Graphics::Rect({ 1, 1 }, { sz.Width - 2, sz.Height - 2 });
+        }
+        return Graphics::Rect();
+    }
+    return Graphics::Rect({ 0, 0 }, sz);
+}
+
+uint32 TreeView::ComputeColumnsPreferedWidth(uint32 columnIndex)
+{
+    CHECK(Context != nullptr, 0, "");
+    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    // TODO: implement this
+    throw std::runtime_error("Not implemented!");
 }
 
 Handlers::TreeView* TreeView::Handlers()

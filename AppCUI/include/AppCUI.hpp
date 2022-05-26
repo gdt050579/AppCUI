@@ -4128,7 +4128,7 @@ namespace Controls
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
         ColumnsHeaderView(void* context, string_view layout);
         bool HeaderHasMouseCaption() const;
-        bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);       
+        bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
 
       public:
         // virtual methods
@@ -4298,10 +4298,10 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
-        
+
         // handlers covariant
-        Handlers::ComboBox* Handlers() override;        
-        
+        Handlers::ComboBox* Handlers() override;
+
         virtual ~ComboBox();
 
         friend Factory::ComboBox;
@@ -4507,7 +4507,7 @@ namespace Controls
         friend TreeView;
     };
 
-    class EXPORT TreeView : public Control
+    class EXPORT TreeView : public ColumnsHeaderView
     {
       public:
         const static auto RootHandle = InvalidItemHandle;
@@ -4515,7 +4515,7 @@ namespace Controls
       protected:
         TreeView(
               string_view layout,
-              std::initializer_list<ColumnBuilder> columns,
+              std::initializer_list<ConstString> columns,
               TreeViewFlags flags = TreeViewFlags::None);
 
       public:
@@ -4528,6 +4528,11 @@ namespace Controls
         bool OnMouseDrag(int x, int, Input::MouseButton button) override;
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
+
+        // columns header view
+        void OnColumnClicked(uint32 columnIndex) override;
+        Graphics::Rect GetHeaderLayout() override;
+        uint32 ComputeColumnsPreferedWidth(uint32 columnIndex) override;
 
         // handlers covariant
         Handlers::TreeView* Handlers() override;
@@ -5078,17 +5083,17 @@ namespace Controls
           public:
             static Pointer<Controls::TreeView> Create(
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control* parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control& parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
         };
         class EXPORT Grid

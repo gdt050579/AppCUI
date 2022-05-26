@@ -38,12 +38,11 @@ class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterfac
         horizontal = Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%");
         currentFolder =
               Factory::TextField::Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
+
         tree = Factory::TreeView::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              { { u"&Path", TextAlignament::Left, 100 },
-                { u"&Last Write Time", TextAlignament::Right, 25 },
-                { u"&Size (bytes)", TextAlignament::Right, 25 } },
+              { "n:&Path,a:l,w:100", "n:&Last Write Time,a:r,w:25", "n:&Size (bytes),a:r,w:25" },
               (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable));
 
         tree->Handlers()->OnItemToggle = this;
