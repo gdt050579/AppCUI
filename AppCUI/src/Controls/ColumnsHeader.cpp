@@ -713,8 +713,7 @@ uint32 ColumnsHeader::MouseToColumn(int mouse_x, int mouse_y)
     auto idx = 0U;
     for (auto& col : this->columns)
     {
-        auto sepX = col.x + (int32) col.width;
-        if ((mouse_x >= col.x) && (mouse_x < sepX))
+        if ((mouse_x >= col.leftClip) && (mouse_x <= col.rightClip))
             return idx;
         idx++;
     }
@@ -731,7 +730,7 @@ uint32 ColumnsHeader::MouseToColumnSeparator(int mouse_x, int mouse_y)
     for (auto& col : this->columns)
     {
         auto sepX = col.x + (int32) col.width;
-        if (mouse_x == sepX)
+        if ((mouse_x == sepX) && (col.leftClip <= col.rightClip))
             return idx;
         idx++;
     }
@@ -976,7 +975,8 @@ bool ColumnsHeader::SetColumnClipRect(Graphics::Renderer& renderer, uint32 colum
     if (col.leftClip > col.rightClip)
         return false; // clipping is outside visible area
     Rect r;
-    r.Create(col.leftClip, this->Location.y, col.rightClip, (this->Location.y-1)+(uint32)this->Location.listHeight);
+    r.Create(
+          col.leftClip, this->Location.y, col.rightClip, (this->Location.y - 1) + (uint32) this->Location.listHeight);
     return renderer.SetClipRect(r);
 }
 } // namespace AppCUI
