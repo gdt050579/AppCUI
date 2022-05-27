@@ -924,8 +924,6 @@ class TreeControlContext : public ColumnsHeaderViewControlContext
     bool SortByColumn(const ItemHandle handle);
 
     bool PaintItems(Graphics::Renderer& renderer);
-    bool PaintColumnHeaders(Graphics::Renderer& renderer);
-    bool PaintColumnSeparators(Graphics::Renderer& renderer);
     bool MoveUp();
     bool MoveDown();
     bool JumpToCurrent();

@@ -88,7 +88,7 @@ void TreeView::Paint(Graphics::Renderer& renderer)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
-    cc->PaintColumnHeaders(renderer);
+    ColumnsHeaderView::Paint(renderer);
 
     if (cc->notProcessed)
     {
@@ -96,26 +96,7 @@ void TreeView::Paint(Graphics::Renderer& renderer)
         cc->notProcessed = false;
     }
 
-    if ((cc->treeFlags & TreeViewFlags::HideScrollBar) == TreeViewFlags::None)
-    {
-        if (cc->itemsToDrew.size() > cc->maxItemsToDraw)
-        {
-            if ((cc->Flags & GATTR_VSCROLL) == 0)
-            {
-                cc->Flags |= GATTR_VSCROLL;
-            }
-        }
-        else
-        {
-            if ((cc->Flags & GATTR_VSCROLL) == GATTR_VSCROLL)
-            {
-                cc->Flags ^= GATTR_VSCROLL;
-            }
-        }
-    }
-
     cc->PaintItems(renderer);
-    cc->PaintColumnSeparators(renderer);
 
     if ((cc->treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None)
     {
@@ -548,6 +529,8 @@ void TreeView::OnFocus()
             cc->SetCurrentItemHandle(cc->itemsToDrew[cc->offsetTopToDraw]);
         }
     }
+
+    cc->Header.RecomputeColumnsSizes();
 }
 
 void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
@@ -751,6 +734,7 @@ void TreeView::OnAfterResize(int newWidth, int newHeight)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     CHECKRET(cc->AdjustElementsOnResize(newWidth, newHeight), "");
+    ColumnsHeaderView::OnAfterResize(newWidth, newHeight);
 }
 
 void TreeView::OnColumnClicked(uint32 columnIndex)
@@ -1268,7 +1252,6 @@ bool TreeView::Sort(uint32 columnIndex, bool ascendent)
 
     return cc->Sort();
 }
-
 } // namespace AppCUI::Controls
 
 namespace AppCUI
@@ -1931,104 +1914,6 @@ bool TreeControlContext::PaintItems(Graphics::Renderer& renderer)
     return true;
 }
 
-bool TreeControlContext::PaintColumnHeaders(Graphics::Renderer& renderer)
-{
-    CHECK(columns.size() > 0, true, "");
-
-    const auto addX         = ((treeFlags && TreeViewFlags::HideBorder) ? 0 : 1);
-    const auto controlWidth = Layout.Width - 2 * addX;
-
-    renderer.FillHorizontalLineSize(Layout.X + addX, 1, controlWidth - Layout.X, ' ', Cfg->Header.Text.Focused);
-
-    const auto enabled  = (Flags & GATTR_ENABLE) != 0;
-    const auto sortable = (treeFlags && TreeViewFlags::Sortable);
-
-    WriteTextParams wtp{ WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth };
-    wtp.Y     = 1; // 0  is for border
-    wtp.Color = Cfg->Text.Normal;
-
-    uint32 i = 0;
-    for (const auto& col : columns)
-    {
-        wtp.Align = col.alignment;
-        wtp.X     = col.x;
-        wtp.Width = col.width - ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
-
-        if (wtp.X >= controlWidth)
-        {
-            continue;
-        }
-
-        if (wtp.X + static_cast<int32>(wtp.Width) >= controlWidth)
-        {
-            wtp.Width = controlWidth - wtp.X - addX;
-        }
-
-        if (i != columnIndexToSortBy) // skip triangle / sort sign
-        {
-            wtp.Width++;
-        }
-
-        wtp.Color = enabled ? ((sortable && i == columnIndexToSortBy) ? Cfg->Header.Text.PressedOrSelected
-                                                                      : Cfg->Header.Text.Focused)
-                            : Cfg->Header.Text.Inactive;
-
-        if (enabled && Focused && i == mouseOverColumnIndex && i != columnIndexToSortBy && sortable)
-        {
-            wtp.Color = Cfg->Header.Text.Hovered;
-        }
-
-        renderer.FillHorizontalLineSize(col.x, 1, wtp.Width, ' ', wtp.Color);
-
-        renderer.WriteText(*const_cast<CharacterBuffer*>(&col.title), wtp);
-
-        if (sortable && i == columnIndexToSortBy)
-        {
-            renderer.WriteSpecialCharacter(
-                  static_cast<int32>(wtp.X + wtp.Width),
-                  1,
-                  sortAscendent ? SpecialChars::TriangleUp : SpecialChars::TriangleDown,
-                  Cfg->Header.HotKey.PressedOrSelected);
-        }
-
-        i++;
-    }
-
-    return true;
-}
-
-bool TreeControlContext::PaintColumnSeparators(Graphics::Renderer& renderer)
-{
-    CHECK(columns.size() > 0, true, "");
-
-    if (separatorIndexSelected != InvalidIndex)
-    {
-        CHECK(separatorIndexSelected <= columns.size(), // # columns + 1 separators
-              false,
-              "%u %u",
-              separatorIndexSelected,
-              columns.size());
-    }
-
-    for (auto i = 0U; i < columns.size(); i++)
-    {
-        const auto& col = columns[i];
-        if (static_cast<int32>(col.x + col.width) <=
-            Layout.Width - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None))
-        {
-            const auto& color = (separatorIndexSelected == i || mouseOverColumnSeparatorIndex == i) ? Cfg->Lines.Hovered
-                                                                                                    : Cfg->Lines.Normal;
-            renderer.DrawVerticalLine(
-                  col.x + col.width,
-                  1,
-                  Layout.Height - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None),
-                  color);
-        }
-    }
-
-    return true;
-}
-
 bool TreeControlContext::MoveUp()
 {
     if (itemsToDrew.size() > 0)
@@ -2425,6 +2310,8 @@ bool TreeViewColumn::SetText(const ConstString& text)
           index,
           cc->columns.size());
 
+    cc->Header.RecomputeColumnsSizes();
+
     return cc->columns[index].title.Set(text);
 }
 
@@ -2457,6 +2344,8 @@ bool TreeViewColumn::SetWidth(uint32 width)
 
     cc->columns[index].width       = width;
     cc->columns[index].customWidth = true;
+
+    cc->Header.RecomputeColumnsSizes();
 
     return true;
 }
