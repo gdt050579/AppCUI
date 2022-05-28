@@ -315,6 +315,13 @@ void InternalColumn::RemoveFlags(InternalColumnFlags flagsToRemove)
 {
     this->flags = static_cast<InternalColumnFlags>(((uint32) this->flags) & (~((uint32) flagsToRemove)));
 }
+void InternalColumn::SetVisible(bool value)
+{
+    if (value)
+        RemoveFlags(InternalColumnFlags::Hidden);
+    else
+        AddFlags(InternalColumnFlags::Hidden);
+}
 ColumnsHeader::ColumnsHeader(
       Reference<ColumnsHeaderView> hostControl,
       std::initializer_list<ConstString> list,

@@ -4108,6 +4108,7 @@ namespace Controls
         bool SetClipboardCopyable(bool clipboardCopyable);
         bool IsColumnValueSearchable() const;
         bool IsColumnValueCopyable() const;
+        bool SetVisible(bool value);
         uint32 GetWidth() const;
 
         friend class ColumnsHeaderView;
