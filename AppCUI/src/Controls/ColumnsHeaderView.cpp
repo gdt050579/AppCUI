@@ -24,7 +24,7 @@ bool ColumnsHeaderView::HeaderHasMouseCaption() const
 }
 bool ColumnsHeaderView::SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex)
 {
-    return ICH->Header.SetColumnClipRect(renderer,columnIndex);
+    return ICH->Header.SetColumnClipRect(renderer, columnIndex);
 }
 ColumnsHeaderView::~ColumnsHeaderView()
 {

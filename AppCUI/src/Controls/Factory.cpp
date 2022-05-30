@@ -369,7 +369,7 @@ POINTER<Controls::Desktop> Factory::Desktop::Create()
 
 //======[TREE]=======================================================================================
 POINTER<Controls::TreeView> Factory::TreeView::Create(
-      string_view layout, std::initializer_list<ColumnBuilder> columns, TreeViewFlags flags)
+      string_view layout, std::initializer_list<ConstString> columns, TreeViewFlags flags)
 {
     return POINTER<Controls::TreeView>(new Controls::TreeView(layout, columns, flags));
 }
@@ -377,7 +377,7 @@ POINTER<Controls::TreeView> Factory::TreeView::Create(
 REFERENCE<TreeView> Factory::TreeView::Create(
       Controls::Control* parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       const TreeViewFlags flags)
 {
     VALIDATE_PARENT;
@@ -387,7 +387,7 @@ REFERENCE<TreeView> Factory::TreeView::Create(
 REFERENCE<TreeView> Factory::TreeView::Create(
       Controls::Control& parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       const TreeViewFlags flags)
 {
     return parent.AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, columns, flags));
