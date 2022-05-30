@@ -41,6 +41,7 @@ TreeView::TreeView(string_view layout, std::initializer_list<ConstString> column
     if ((cc->treeFlags & TreeViewFlags::HideScrollBar) == TreeViewFlags::None)
     {
         cc->Flags |= GATTR_VSCROLL;
+        cc->Flags |= GATTR_HSCROLL;
         cc->ScrollBars.LeftMargin     = TreeScrollbarLeftOffset; // search field
         cc->ScrollBars.TopMargin      = BorderOffset + 1;        // border + column header
         cc->ScrollBars.OutsideControl = false;
@@ -72,8 +73,6 @@ TreeView::TreeView(string_view layout, std::initializer_list<ConstString> column
     }
 
     cc->AdjustItemsBoundsOnResize();
-
-    cc->separatorIndexSelected = InvalidIndex;
 
     cc->SetColorForItems(cc->Cfg->Text.Normal);
 }
@@ -132,6 +131,11 @@ void TreeView::Paint(Graphics::Renderer& renderer)
 
 bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
 {
+    if (ColumnsHeaderView::OnKeyEvent(keyCode, character))
+    {
+        return true;
+    }
+
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
@@ -140,15 +144,7 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
     case Key::Up:
         return cc->MoveUp();
     case Key::Down:
-        if (cc->separatorIndexSelected != InvalidIndex)
-        {
-            cc->separatorIndexSelected = InvalidIndex;
-            return true;
-        }
-        else
-        {
-            return cc->MoveDown();
-        }
+        return cc->MoveDown();
     case Key::Ctrl | Key::Up:
         if (cc->itemsToDrew.size() > 0)
         {
@@ -280,17 +276,14 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
     }
     case Key::Shift | Key::Space:
     case Key::Shift | Key::Enter:
-
         if (cc->Focused)
         {
             cc->TriggerOnItemPressed();
         }
-
         return true;
 
     case Key::Space:
     case Key::Enter:
-
         if (cc->GetCurrentItemHandle() != InvalidItemHandle)
         {
             if (GetCurrentItem().IsExpandable())
@@ -311,14 +304,6 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                 }
             }
         }
-
-        return true;
-
-    case Key::Ctrl | Key::Left:
-        cc->SelectColumnSeparator(-1);
-        return true;
-    case Key::Ctrl | Key::Right:
-        cc->SelectColumnSeparator(1);
         return true;
     case Key::Escape:
         if (cc->filter.mode == TreeControlContext::FilterMode::Search)
@@ -340,26 +325,9 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                 return true;
             }
         }
-
-        if (cc->separatorIndexSelected != InvalidIndex)
-        {
-            cc->separatorIndexSelected = InvalidIndex;
-            return true;
-        }
         break;
 
-    case Key::Left:
-    case Key::Right:
-        if (cc->separatorIndexSelected != InvalidIndex)
-        {
-            if (cc->AddToColumnWidth(cc->separatorIndexSelected, keyCode == Key::Left ? -1 : 1))
-            {
-                return true;
-            }
-        }
-        break;
-
-    case Key::Ctrl | Key::C:
+    case Key::Ctrl | Key::Insert:
         if (const auto it = cc->items.find(cc->GetCurrentItemHandle()); it != cc->items.end())
         {
             LocalUnicodeStringBuilder<1024> lusb;
@@ -368,8 +336,8 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
                 if (lusb.Len() > 0)
                 {
                     lusb.Add(" ");
-                    lusb.Add(value);
                 }
+                lusb.Add(value);
             }
             if (OS::Clipboard::SetText(lusb) == false)
             {
@@ -518,31 +486,50 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
 
+    cc->isMouseOn = TreeControlContext::IsMouseOn::None;
+
+    if (cc->IsMouseOnBorder(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::Border;
+    }
+    else if (cc->IsMouseOnColumnSeparator(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnSeparator;
+    }
+    else if (cc->IsMouseOnToggleSymbol(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::ToggleSymbol;
+    }
+    else if (cc->IsMouseOnColumnHeader(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnHeader;
+    }
+    else if (cc->IsMouseOnItem(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::Item;
+    }
+    else if (cc->IsMouseOnSearchField(x, y))
+    {
+        cc->isMouseOn = TreeControlContext::IsMouseOn::SearchField;
+    }
+
     switch (button)
     {
     case Input::MouseButton::None:
-        break;
+        return ColumnsHeaderView::OnMousePressed(x, y, button);
     case Input::MouseButton::Left:
         switch (cc->isMouseOn)
         {
         case TreeControlContext::IsMouseOn::Border:
-            break;
+            return ColumnsHeaderView::OnMousePressed(x, y, button);
         case TreeControlContext::IsMouseOn::ColumnHeader:
-            if (cc->treeFlags && TreeViewFlags::Sortable)
-            {
-                if (cc->mouseOverColumnIndex != InvalidIndex)
-                {
-                    cc->Header.ToggleSortDirection();
-                    cc->ColumnSort(cc->mouseOverColumnIndex);
-                }
-            }
-            break;
+            return ColumnsHeaderView::OnMousePressed(x, y, button);
         case TreeControlContext::IsMouseOn::ColumnSeparator:
-            break;
+            return ColumnsHeaderView::OnMousePressed(x, y, button);
         case TreeControlContext::IsMouseOn::ToggleSymbol:
         {
             const uint32 index    = y - 2;
-            const auto itemHandle = cc->itemsToDrew[static_cast<size_t>(cc->offsetTopToDraw) + index];
+            const auto itemHandle = cc->itemsToDrew.at(static_cast<size_t>(cc->offsetTopToDraw) + index);
             const auto it         = cc->items.find(itemHandle);
             auto item             = TreeViewItem{ this->Context, it->second.handle };
             item.Toggle();
@@ -576,54 +563,18 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
         }
         break;
         default:
-            break;
+            return ColumnsHeaderView::OnMousePressed(x, y, button);
         }
         break;
     case Input::MouseButton::Center:
-        break;
+        return ColumnsHeaderView::OnMousePressed(x, y, button);
     case Input::MouseButton::Right:
-        break;
+        return ColumnsHeaderView::OnMousePressed(x, y, button);
     case Input::MouseButton::DoubleClicked:
-        break;
+        return ColumnsHeaderView::OnMousePressed(x, y, button);
     default:
-        break;
+        return ColumnsHeaderView::OnMousePressed(x, y, button);
     }
-}
-
-bool TreeView::OnMouseOver(int x, int y)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc            = reinterpret_cast<TreeControlContext*>(Context);
-    cc->mouseOverColumnIndex = 0xFFFFFFFF;
-
-    cc->isMouseOn = TreeControlContext::IsMouseOn::None;
-
-    if (cc->IsMouseOnBorder(x, y))
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::Border;
-    }
-    else if (cc->IsMouseOnColumnSeparator(x, y))
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnSeparator;
-    }
-    else if (cc->IsMouseOnToggleSymbol(x, y))
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::ToggleSymbol;
-    }
-    else if (cc->IsMouseOnColumnHeader(x, y))
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::ColumnHeader;
-    }
-    else if (cc->IsMouseOnItem(x, y))
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::Item;
-    }
-    else if (cc->IsMouseOnSearchField(x, y))
-    {
-        cc->isMouseOn = TreeControlContext::IsMouseOn::SearchField;
-    }
-
-    return cc->isMouseOn != TreeControlContext::IsMouseOn::None;
 }
 
 bool TreeView::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
@@ -640,59 +591,9 @@ bool TreeView::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
     case Input::MouseWheel::Down:
         return cc->MoveDown();
     case Input::MouseWheel::Left:
-        break;
+        return OnKeyEvent(Key::Left, 0);
     case Input::MouseWheel::Right:
-        break;
-    default:
-        break;
-    }
-
-    return false;
-}
-
-bool TreeView::OnMouseDrag(int x, int, Input::MouseButton button)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    switch (button)
-    {
-    case Input::MouseButton::None:
-        break;
-    case Input::MouseButton::Left:
-        switch (cc->isMouseOn)
-        {
-        case TreeControlContext::IsMouseOn::Border:
-            break;
-        case TreeControlContext::IsMouseOn::ColumnHeader:
-            break;
-        case TreeControlContext::IsMouseOn::ColumnSeparator:
-            if (cc->mouseOverColumnSeparatorIndex != InvalidIndex)
-            {
-                auto chvcc       = (ColumnsHeaderView*) this;
-                const auto xs    = this->GetColumn(cc->mouseOverColumnSeparatorIndex).GetX();
-                const auto w     = this->GetColumn(cc->mouseOverColumnSeparatorIndex).GetWidth();
-                const auto delta = -(static_cast<int32>((xs + w)) - x);
-                if (cc->AddToColumnWidth(cc->mouseOverColumnSeparatorIndex, delta))
-                {
-                    return true;
-                }
-            }
-            break;
-        case TreeControlContext::IsMouseOn::ToggleSymbol:
-            break;
-        case TreeControlContext::IsMouseOn::Item:
-            break;
-        default:
-            break;
-        }
-        break;
-    case Input::MouseButton::Center:
-        break;
-    case Input::MouseButton::Right:
-        break;
-    case Input::MouseButton::DoubleClicked:
-        break;
+        return OnKeyEvent(Key::Right, 0);
     default:
         break;
     }
@@ -708,6 +609,22 @@ void TreeView::OnUpdateScrollBars()
     const auto it     = find(cc->itemsToDrew.begin(), cc->itemsToDrew.end(), cc->GetCurrentItemHandle());
     const int64 index = it - cc->itemsToDrew.begin();
     UpdateVScrollBar(index, std::max<size_t>(cc->itemsToDrew.size() - 1, 0));
+
+    uint32 leftMargin = 2;
+    if ((cc->Flags & TreeViewFlags::HideSearchBar) == TreeViewFlags::None)
+        leftMargin = TreeScrollbarLeftOffset;
+
+    cc->ScrollBars.LeftMargin = leftMargin;
+    const auto columnsWidth   = (uint32) cc->Header.GetColumnsWidth();
+    const auto headerWidth    = (uint32) (cc->Header.GetHeaderWidth() + 1);
+    if (columnsWidth > headerWidth)
+    {
+        UpdateHScrollBar(cc->Header.GetScrollX(), (uint64) columnsWidth - headerWidth);
+    }
+    else
+    {
+        UpdateHScrollBar(cc->Header.GetScrollX(), 0);
+    }
 }
 
 void TreeView::OnAfterResize(int newWidth, int newHeight)
@@ -1187,26 +1104,6 @@ void TreeControlContext::ColumnSort(uint32 columnIndex)
     }
 }
 
-void TreeControlContext::SelectColumnSeparator(int32 offset)
-{
-    if (separatorIndexSelected == InvalidIndex)
-    {
-        separatorIndexSelected = 0;
-        return;
-    }
-
-    const auto columnsSize = this->Header.GetColumnsCount();
-    separatorIndexSelected += offset;
-    if (separatorIndexSelected < 0)
-    {
-        separatorIndexSelected = static_cast<int32>(columnsSize - 1);
-    }
-    else if (separatorIndexSelected >= (int32) columnsSize)
-    {
-        separatorIndexSelected = 0;
-    }
-}
-
 bool TreeControlContext::Sort()
 {
     const auto result = SortByColumn(InvalidItemHandle);
@@ -1234,8 +1131,11 @@ struct ItemComparator
             return result;
         }
 
-        const auto aInvalidColumnIndex = *tcc->Header.GetSortColumnIndex() >= a.values.size();
-        const auto bInvalidColumnIndex = *tcc->Header.GetSortColumnIndex() >= b.values.size();
+        const auto& index = tcc->Header.GetSortColumnIndex();
+        CHECK(index.has_value(), true, "");
+
+        const auto aInvalidColumnIndex = *index >= a.values.size();
+        const auto bInvalidColumnIndex = *index >= b.values.size();
 
         if (aInvalidColumnIndex && bInvalidColumnIndex)
         {
@@ -2010,7 +1910,7 @@ bool TreeControlContext::RemoveItem(const ItemHandle handle)
 
         if (const auto it = items.find(handle); it != items.end())
         {
-            for (const auto& handle : items[current].children)
+            for (const auto& handle : items.at(current).children)
             {
                 ancestorRelated.push(handle);
             }

@@ -43,7 +43,7 @@ class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterfac
               this,
               "x:1%, y:20%, w:99%, h:80%",
               { "n:&Path,a:l,w:100", "n:&Last Write Time,a:r,w:25", "n:&Size (bytes),a:r,w:25" },
-              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable));
+              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable | TreeViewFlags::Searchable));
 
         tree->Handlers()->OnItemToggle = this;
 

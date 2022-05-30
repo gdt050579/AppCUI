@@ -870,7 +870,6 @@ class TreeControlContext : public ColumnsHeaderViewControlContext
     bool notProcessed      = true;
     vector<ItemHandle> roots;
     uint32 treeFlags              = 0;
-    int32 separatorIndexSelected  = 0xFFFFFFFF;
     ItemHandle firstFoundInSearch = InvalidItemHandle;
     bool hidSearchBarOnResize     = false;
 
@@ -913,7 +912,6 @@ class TreeControlContext : public ColumnsHeaderViewControlContext
     ItemHandle GetCurrentItemHandle() const;
 
     void ColumnSort(uint32 columnIndex);
-    void SelectColumnSeparator(int32 offset);
     bool Sort();
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
     bool SortByColumn(const ItemHandle handle);
