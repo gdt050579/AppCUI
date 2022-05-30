@@ -555,18 +555,27 @@ void ColumnsHeader::RecomputeColumnsSizes()
     this->Location.totalWidth = 0;
     for (auto& col : columns)
     {
-        if (index < this->frozenColumns)
+        if ((col.flags & InternalColumnFlags::Hidden) == InternalColumnFlags::Hidden)
         {
-            col.x = xPoz;
+            col.leftClip  = -1;
+            col.rightClip = -2;
+            col.x         = -1;
         }
         else
         {
-            col.x = xPoz - this->Location.scrollX;
+            if (index < this->frozenColumns)
+            {
+                col.x = xPoz;
+            }
+            else
+            {
+                col.x = xPoz - this->Location.scrollX;
+            }
+            col.leftClip  = std::max<>(leftMinClip, col.x);
+            col.rightClip = std::min<>(rightMaxClip, col.x + ((int32) col.width));
+            xPoz += ((int32) (col.width)) + 1;
+            this->Location.totalWidth += (col.width + 1);
         }
-        col.leftClip  = std::max<>(leftMinClip, col.x);
-        col.rightClip = std::min<>(rightMaxClip, col.x + ((int32) col.width));
-        xPoz += ((int32) (col.width)) + 1;
-        this->Location.totalWidth += (col.width + 1);
         index++;
         if (index == this->frozenColumns)
             leftMinClip = xPoz;
