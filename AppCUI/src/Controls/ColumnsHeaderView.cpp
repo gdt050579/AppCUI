@@ -24,7 +24,7 @@ bool ColumnsHeaderView::HeaderHasMouseCaption() const
 }
 bool ColumnsHeaderView::SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex)
 {
-    return ICH->Header.SetColumnClipRect(renderer,columnIndex);
+    return ICH->Header.SetColumnClipRect(renderer, columnIndex);
 }
 ColumnsHeaderView::~ColumnsHeaderView()
 {
@@ -174,6 +174,11 @@ uint32 Column::GetWidth() const
 {
     VALIDATE_COLUMN(0);
     return COLUMNREF.width;
+}
+int32 Column::GetX() const
+{
+    VALIDATE_COLUMN(0);
+    return COLUMNREF.x;
 }
 bool Column::IsColumnValueSearchable() const
 {

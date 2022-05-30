@@ -3491,27 +3491,6 @@ namespace Controls
 
     } // namespace Handlers
 
-    // GDT: To be remove --> no longer useful after TreeView will be converted on the new format
-    struct ColumnBuilder
-    {
-        ConstString name;
-        Graphics::TextAlignament align;
-        uint32 width;
-
-        static constexpr uint32 AUTO_SIZE = 0xFFFFFFFF;
-
-        ColumnBuilder(ConstString Name) : name(Name), align(Graphics::TextAlignament::Left), width(AUTO_SIZE)
-        {
-        }
-        ColumnBuilder(ConstString Name, Graphics::TextAlignament Align) : name(Name), align(Align), width(AUTO_SIZE)
-        {
-        }
-        ColumnBuilder(ConstString Name, Graphics::TextAlignament Align, uint32 Width)
-            : name(Name), align(Align), width(Width)
-        {
-        }
-    };
-
     class EXPORT Control
     {
       public:
@@ -4109,6 +4088,7 @@ namespace Controls
         bool IsColumnValueSearchable() const;
         bool IsColumnValueCopyable() const;
         uint32 GetWidth() const;
+        int32 GetX() const;
 
         friend class ColumnsHeaderView;
     };
@@ -4401,23 +4381,6 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
-    class EXPORT TreeViewColumn
-    {
-        void* context;
-        uint32 index;
-
-        TreeViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
-        {
-        }
-
-      public:
-        bool SetText(const ConstString& text);
-        bool SetAlignament(Graphics::TextAlignament Align);
-        bool SetWidth(uint32 width);
-
-        friend class TreeView;
-    };
-
     class EXPORT TreeViewItem
     {
       private:
@@ -4546,28 +4509,8 @@ namespace Controls
         TreeViewItem GetItemByHandle(ItemHandle handle);
         TreeViewItem AddItem(ConstString name, bool isExpandable = false);
 
-        // columns
-        TreeViewColumn GetColumn(uint32 index);
-        TreeViewColumn AddColumn(
-              const ConstString& title,
-              Graphics::TextAlignament align = Graphics::TextAlignament::Left,
-              uint32 width                   = ColumnBuilder::AUTO_SIZE);
-        inline TreeViewColumn AddColumn(ColumnBuilder column)
-        {
-            return AddColumn(column.name, column.align, column.width);
-        }
-        bool AddColumns(std::initializer_list<ColumnBuilder> columns);
-        uint32 GetColumnsCount();
-        uint32 GetSortColumnIndex();
-        inline TreeViewColumn GetSortColumn()
-        {
-            return GetColumn(GetSortColumnIndex());
-        }
-        bool DeleteAllColumns();
-        bool DeleteColumn(uint32 index);
-
         bool Sort();
-        bool Sort(uint32 columnIndex, bool ascendent);
+        bool Sort(uint32 columnIndex, SortDirection direction);
 
       private:
         friend Factory::TreeView;

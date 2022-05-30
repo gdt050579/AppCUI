@@ -67,16 +67,11 @@ TreeView::TreeView(string_view layout, std::initializer_list<ConstString> column
 
     if (cc->treeFlags && TreeViewFlags::Sortable)
     {
-        cc->columnIndexToSortBy = 0;
+        cc->Header.SetSortColumn(InvalidIndex);
         cc->Sort();
     }
 
     cc->AdjustItemsBoundsOnResize();
-
-    for (const auto& column : columns)
-    {
-        // AddColumn(column.name, column.align, column.width);
-    }
 
     cc->separatorIndexSelected = InvalidIndex;
 
@@ -499,21 +494,6 @@ bool TreeView::OnKeyEvent(Input::Key keyCode, char16 character)
         }
     }
 
-    if ((cc->treeFlags & TreeViewFlags::Sortable) != TreeViewFlags::None)
-    {
-        if (cc->filter.mode != TreeControlContext::FilterMode::Filter)
-        {
-            for (uint32 i = 0; i < cc->columns.size(); i++)
-            {
-                if (cc->columns[i].hotKeyCode == keyCode)
-                {
-                    cc->ColumnSort(i);
-                    return true;
-                }
-            }
-        }
-    }
-
     return false;
 }
 
@@ -552,7 +532,7 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
             {
                 if (cc->mouseOverColumnIndex != InvalidIndex)
                 {
-                    cc->sortAscendent = !cc->sortAscendent;
+                    cc->Header.ToggleSortDirection();
                     cc->ColumnSort(cc->mouseOverColumnIndex);
                 }
             }
@@ -689,8 +669,9 @@ bool TreeView::OnMouseDrag(int x, int, Input::MouseButton button)
         case TreeControlContext::IsMouseOn::ColumnSeparator:
             if (cc->mouseOverColumnSeparatorIndex != InvalidIndex)
             {
-                const auto xs    = cc->columns[cc->mouseOverColumnSeparatorIndex].x;
-                const auto w     = cc->columns[cc->mouseOverColumnSeparatorIndex].width;
+                auto chvcc       = (ColumnsHeaderView*) this;
+                const auto xs    = this->GetColumn(cc->mouseOverColumnSeparatorIndex).GetX();
+                const auto w     = this->GetColumn(cc->mouseOverColumnSeparatorIndex).GetWidth();
                 const auto delta = -(static_cast<int32>((xs + w)) - x);
                 if (cc->AddToColumnWidth(cc->mouseOverColumnSeparatorIndex, delta))
                 {
@@ -1050,7 +1031,7 @@ bool TreeViewItem::SetValues(const std::initializer_list<ConstString> values)
 bool TreeViewItem::SetText(uint32 subItemIndex, const ConstString& text)
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(false);
-    CHECK(subItemIndex < cc->columns.size(), false, "");
+    CHECK(subItemIndex < cc->Header.GetColumnsCount(), false, "");
 
     auto& item = cc->items.at(handle);
     if (item.values.size() <= subItemIndex)
@@ -1165,75 +1146,6 @@ TreeViewItem TreeView::AddItem(ConstString name, bool isExpandable)
     return { this->Context, cc->AddItem(InvalidItemHandle, { name }, isExpandable) };
 }
 
-TreeViewColumn TreeView::GetColumn(uint32 index)
-{
-    CHECK(Context != nullptr, (TreeViewColumn{ nullptr, 0 }), "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(index < cc->columns.size(), (TreeViewColumn{ nullptr, 0 }), "");
-
-    return { Context, index };
-}
-
-TreeViewColumn TreeView::AddColumn(const ConstString& title, Graphics::TextAlignament align, uint32 width)
-{
-    CHECK(Context != nullptr, (TreeViewColumn{ nullptr, 0 }), "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(cc->AddColumn(title, align, width), (TreeViewColumn{ nullptr, 0 }), "");
-
-    return { Context, static_cast<uint32>(cc->columns.size() - 1ULL) };
-}
-
-bool TreeView::AddColumns(std::initializer_list<ColumnBuilder> columns)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    for (auto& column : columns)
-    {
-        CHECK(cc->AddColumn(column.name, column.align, column.width), false, "");
-    }
-
-    return true;
-}
-
-uint32 TreeView::GetColumnsCount()
-{
-    CHECK(Context != nullptr, 0, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    return static_cast<uint32>(cc->columns.size());
-}
-
-uint32 TreeView::GetSortColumnIndex()
-{
-    CHECK(Context != nullptr, 0xFFFFFFFF, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    return cc->columnIndexToSortBy;
-}
-
-bool TreeView::DeleteAllColumns()
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-
-    cc->columns.clear();
-    cc->items.clear();
-
-    return true;
-}
-
-bool TreeView::DeleteColumn(uint32 index)
-{
-    CHECK(Context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(index < cc->columns.size(), false, "");
-
-    cc->columns.erase(cc->columns.begin() + index);
-
-    return true;
-}
-
 bool TreeView::Sort()
 {
     CHECK(Context != nullptr, false, "");
@@ -1241,14 +1153,13 @@ bool TreeView::Sort()
     return cc->Sort();
 }
 
-bool TreeView::Sort(uint32 columnIndex, bool ascendent)
+bool TreeView::Sort(uint32 columnIndex, SortDirection direction)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
-    CHECK(columnIndex < cc->columns.size(), false, "");
+    CHECK(columnIndex < cc->Header.GetColumnsCount(), false, "");
 
-    cc->sortAscendent       = ascendent;
-    cc->columnIndexToSortBy = columnIndex;
+    CHECK(cc->Header.SetSortColumn(columnIndex, direction), false, "");
 
     return cc->Sort();
 }
@@ -1271,19 +1182,9 @@ void TreeControlContext::ColumnSort(uint32 columnIndex)
 {
     if (treeFlags && TreeViewFlags::Sortable)
     {
-        SetSortColumn(columnIndex);
+        this->Header.SetSortColumn(columnIndex);
         Sort();
     }
-}
-
-void TreeControlContext::SetSortColumn(uint32 columnIndex)
-{
-    if ((treeFlags && TreeViewFlags::Sortable) == false || columnIndexToSortBy >= columns.size())
-    {
-        columnIndexToSortBy = InvalidIndex;
-    }
-
-    columnIndexToSortBy = columnIndex;
 }
 
 void TreeControlContext::SelectColumnSeparator(int32 offset)
@@ -1294,12 +1195,13 @@ void TreeControlContext::SelectColumnSeparator(int32 offset)
         return;
     }
 
+    const auto columnsSize = this->Header.GetColumnsCount();
     separatorIndexSelected += offset;
     if (separatorIndexSelected < 0)
     {
-        separatorIndexSelected = static_cast<int32>(columns.size() - 1);
+        separatorIndexSelected = static_cast<int32>(columnsSize - 1);
     }
-    else if (separatorIndexSelected >= columns.size())
+    else if (separatorIndexSelected >= (int32) columnsSize)
     {
         separatorIndexSelected = 0;
     }
@@ -1332,8 +1234,8 @@ struct ItemComparator
             return result;
         }
 
-        const auto aInvalidColumnIndex = tcc->columnIndexToSortBy >= a.values.size();
-        const auto bInvalidColumnIndex = tcc->columnIndexToSortBy >= b.values.size();
+        const auto aInvalidColumnIndex = *tcc->Header.GetSortColumnIndex() >= a.values.size();
+        const auto bInvalidColumnIndex = *tcc->Header.GetSortColumnIndex() >= b.values.size();
 
         if (aInvalidColumnIndex && bInvalidColumnIndex)
         {
@@ -1355,7 +1257,7 @@ struct ItemComparator
             {
                 result = handler->CompareItems.obj->CompareItems(tv, tv->GetItemByHandle(i1), tv->GetItemByHandle(i2));
 
-                if (tcc->sortAscendent)
+                if (tcc->Header.GetSortDirection() == SortDirection::Ascendent)
                 {
                     result = !result;
                 }
@@ -1364,8 +1266,8 @@ struct ItemComparator
             }
         }
 
-        const auto& aVal = a.values.at(tcc->columnIndexToSortBy);
-        const auto& bVal = b.values.at(tcc->columnIndexToSortBy);
+        const auto& aVal = a.values.at(*tcc->Header.GetSortColumnIndex());
+        const auto& bVal = b.values.at(*tcc->Header.GetSortColumnIndex());
 
         const auto cResult = aVal.CompareWith(bVal, true);
 
@@ -1376,7 +1278,7 @@ struct ItemComparator
         else
         {
             result = cResult < 0;
-            if (!tcc->sortAscendent)
+            if (tcc->Header.GetSortDirection() != SortDirection::Ascendent)
             {
                 result = !result;
             }
@@ -1392,7 +1294,7 @@ struct ItemComparator
 
 bool TreeControlContext::SortByColumn(const ItemHandle handle)
 {
-    CHECK(columnIndexToSortBy != InvalidIndex, false, "");
+    CHECK(this->Header.GetSortColumnIndex().has_value(), false, "");
     CHECK(items.size() > 0, false, "");
 
     if (handle == InvalidItemHandle)
@@ -1513,10 +1415,10 @@ bool TreeControlContext::IsMouseOnColumnHeader(int x, int y)
 
     CHECK((treeFlags && TreeViewFlags::HideColumns) == false, false, "");
 
-    auto i = 0U;
-    for (auto& col : columns)
+    for (auto i = 0U; i < this->Header.GetColumnsCount(); i++)
     {
-        if (static_cast<uint32>(x) >= col.x && static_cast<uint32>(x) <= col.x + col.width)
+        const auto& col = this->Header[i];
+        if (x >= col.x && x <= col.x + (int32) col.width)
         {
             mouseOverColumnIndex = i;
             return true;
@@ -1530,11 +1432,13 @@ bool TreeControlContext::IsMouseOnColumnHeader(int x, int y)
 bool TreeControlContext::IsMouseOnColumnSeparator(int x, int y)
 {
     mouseOverColumnSeparatorIndex = InvalidIndex;
-    for (auto i = 0U; i < columns.size(); i++)
-    {
-        const auto& col = columns[i];
-        const auto xs   = col.x + col.width;
+    auto chvvc                    = (ColumnsHeaderViewControlContext*) this;
 
+    const auto count = chvvc->Header.GetColumnsCount();
+    for (auto i = 0U; i < count; i++)
+    {
+        const auto& col = chvvc->Header[i];
+        const auto xs   = col.x + col.width;
         if (xs == x)
         {
             mouseOverColumnSeparatorIndex = i;
@@ -1564,21 +1468,15 @@ bool TreeControlContext::IsMouseOnSearchField(int x, int y) const
 bool TreeControlContext::AdjustElementsOnResize(const int /*newWidth*/, const int /*newHeight*/)
 {
     CHECK(AdjustItemsBoundsOnResize(), false, "");
-
-    const uint32 width =
-          (static_cast<uint32>(Layout.Width)) / static_cast<uint32>(std::max<>(columns.size(), size_t(1U)));
+    const auto columnsSize = this->Header.GetColumnsCount();
+    const uint32 width = (static_cast<uint32>(Layout.Width)) / static_cast<uint32>(std::max<uint32>(columnsSize, 1U));
 
     uint32 xPreviousColumn       = 0;
     uint32 widthOfPreviousColumn = 0;
-    for (auto i = 0U; i < columns.size(); i++)
+    for (auto i = 0U; i < columnsSize; i++)
     {
-        auto& col  = columns[i];
-        col.height = static_cast<uint32>(Layout.Height - 2);
-        col.x      = static_cast<uint32>(xPreviousColumn + widthOfPreviousColumn + BorderOffset);
-        if (col.customWidth == false)
-        {
-            col.width = std::max<>(width, MinColumnWidth);
-        }
+        auto& col             = this->Header[i];
+        col.x                 = static_cast<uint32>(xPreviousColumn + widthOfPreviousColumn + BorderOffset);
         xPreviousColumn       = col.x;
         widthOfPreviousColumn = col.width;
     }
@@ -1620,29 +1518,6 @@ bool TreeControlContext::AdjustItemsBoundsOnResize()
 {
     maxItemsToDraw  = Layout.Height - 1 - 1 - 1; // 0 - border top | 1 - column header | 2 - border bottom
     offsetBotToDraw = offsetTopToDraw + maxItemsToDraw;
-
-    return true;
-}
-
-bool TreeControlContext::AddToColumnWidth(const uint32 columnIndex, const int32 value)
-{
-    auto& currentColumn = columns[columnIndex];
-    if (value < 0 && currentColumn.width == MinColumnWidth)
-    {
-        return true;
-    }
-
-    const auto newWidth = static_cast<int32>(currentColumn.width) + value;
-    currentColumn.width = std::max<>(newWidth, static_cast<int32>(MinColumnWidth));
-
-    auto previousX = currentColumn.x + currentColumn.width +
-                     ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None);
-    for (auto i = columnIndex + 1; i < columns.size(); i++)
-    {
-        auto& column = columns[i];
-        column.x     = previousX;
-        previousX += (column.width + ((treeFlags & TreeViewFlags::HideColumnsSeparator) == TreeViewFlags::None));
-    }
 
     return true;
 }
@@ -1795,11 +1670,13 @@ bool TreeControlContext::PaintItems(Graphics::Renderer& renderer)
     {
         auto& item = items[itemsToDrew[i]];
 
-        uint32 j = 0; // column index
-        for (const auto& col : columns)
+        uint32 j   = 0; // column index
+        auto chvvc = (ColumnsHeaderViewControlContext*) this;
+        for (auto i = 0U; i < chvvc->Header.GetColumnsCount(); i++)
         {
-            wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
-            wtp.Align = col.alignment;
+            const auto& col = chvvc->Header[i];
+            wtp.Flags       = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
+            wtp.Align       = col.align;
             if (j == 0)
             {
                 wtp.X     = col.x + item.depth * ItemSymbolOffset - 1;
@@ -2151,51 +2028,6 @@ bool TreeControlContext::RemoveItem(const ItemHandle handle)
     return true;
 }
 
-bool TreeControlContext::AddColumn(
-      const ConstString title, const Graphics::TextAlignament alignment, const uint32 width)
-{
-    auto x = 0U + ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
-
-    for (const auto& column : columns)
-    {
-        x += column.width;
-    }
-
-    auto& column     = columns.emplace_back();
-    const auto index = columns.size() - 1;
-
-    column.height = Layout.Height - 2 * ((treeFlags & TreeViewFlags::HideBorder) == TreeViewFlags::None);
-
-    CHECK(column.title.SetWithHotKey(title, column.hotKeyOffset, column.hotKeyCode, Key::Ctrl), false, "");
-    column.alignment = alignment;
-    if (width != 0xFFFFFFFF)
-    {
-        column.width       = std::max<>(width, MinColumnWidth);
-        column.customWidth = true;
-
-        // shifts columns
-        uint32 currentX = column.x + column.width;
-        for (auto i = index + 1; i < columns.size(); i++)
-        {
-            auto& col       = columns[i];
-            col.customWidth = true;
-            if (currentX < col.x)
-            {
-                const auto diff = col.x - currentX;
-                col.x -= diff;
-            }
-            else
-            {
-                const auto diff = currentX - col.x;
-                col.x += diff;
-            }
-            currentX = col.x + col.width + 1;
-        }
-    }
-
-    return true;
-}
-
 GenericRef TreeControlContext::GetItemDataAsPointer(ItemHandle handle) const
 {
     const auto it = items.find(handle);
@@ -2293,59 +2125,6 @@ bool TreeControlContext::TriggerOnItemToggled(TreeViewItem& item, bool recursive
             return handler->OnItemToggle.obj->OnTreeViewItemToggle(host, item, recursiveCall);
         }
     }
-
-    return true;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-
-bool TreeViewColumn::SetText(const ConstString& text)
-{
-    CHECK(context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(context);
-
-    CHECK(index < cc->columns.size(),
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          cc->columns.size());
-
-    cc->Header.RecomputeColumnsSizes();
-
-    return cc->columns[index].title.Set(text);
-}
-
-bool TreeViewColumn::SetAlignament(TextAlignament Align)
-{
-    CHECK(context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(context);
-
-    CHECK(index < cc->columns.size(),
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          cc->columns.size());
-
-    cc->columns[index].alignment = Align;
-
-    return true;
-}
-
-bool TreeViewColumn::SetWidth(uint32 width)
-{
-    CHECK(context != nullptr, false, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(context);
-
-    CHECK(index < cc->columns.size(),
-          false,
-          "Invalid column index:%d (should be smaller than %d)",
-          index,
-          cc->columns.size());
-
-    cc->columns[index].width       = width;
-    cc->columns[index].customWidth = true;
-
-    cc->Header.RecomputeColumnsSizes();
 
     return true;
 }
