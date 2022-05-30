@@ -575,17 +575,6 @@ class ColumnsHeader
     {
         return sortDirection;
     }
-    inline void ToggleSortDirection()
-    {
-        if (sortDirection == SortDirection::Ascendent)
-        {
-            sortDirection = SortDirection::Descendent;
-        }
-        else
-        {
-            sortDirection = SortDirection::Ascendent;
-        }
-    }
 
     // mouse related methods
     void OnMouseReleased(int x, int y, Input::MouseButton button);
