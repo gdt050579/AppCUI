@@ -1332,12 +1332,11 @@ bool TreeControlContext::IsMouseOnColumnHeader(int x, int y)
 bool TreeControlContext::IsMouseOnColumnSeparator(int x, int y)
 {
     mouseOverColumnSeparatorIndex = InvalidIndex;
-    auto chvvc                    = (ColumnsHeaderViewControlContext*) this;
 
-    const auto count = chvvc->Header.GetColumnsCount();
+    const auto count = this->Header.GetColumnsCount();
     for (auto i = 0U; i < count; i++)
     {
-        const auto& col = chvvc->Header[i];
+        const auto& col = this->Header[i];
         const auto xs   = col.x + col.width;
         if (xs == x)
         {
@@ -1570,11 +1569,10 @@ bool TreeControlContext::PaintItems(Graphics::Renderer& renderer)
     {
         auto& item = items[itemsToDrew[i]];
 
-        uint32 j   = 0; // column index
-        auto chvvc = (ColumnsHeaderViewControlContext*) this;
-        for (auto i = 0U; i < chvvc->Header.GetColumnsCount(); i++)
+        uint32 j = 0; // column index
+        for (auto i = 0U; i < this->Header.GetColumnsCount(); i++)
         {
-            const auto& col = chvvc->Header[i];
+            const auto& col = this->Header[i];
             wtp.Flags       = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth;
             wtp.Align       = col.align;
             if (j == 0)
