@@ -175,11 +175,6 @@ uint32 Column::GetWidth() const
     VALIDATE_COLUMN(0);
     return COLUMNREF.width;
 }
-int32 Column::GetX() const
-{
-    VALIDATE_COLUMN(0);
-    return COLUMNREF.x;
-}
 bool Column::IsColumnValueSearchable() const
 {
     VALIDATE_COLUMN(false);

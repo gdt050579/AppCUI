@@ -4088,7 +4088,6 @@ namespace Controls
         bool IsColumnValueSearchable() const;
         bool IsColumnValueCopyable() const;
         uint32 GetWidth() const;
-        int32 GetX() const;
 
         friend class ColumnsHeaderView;
     };
