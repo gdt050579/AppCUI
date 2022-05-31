@@ -815,7 +815,7 @@ void ColumnsHeader::ResizeColumn(bool increase)
     }
     this->RecomputeColumnsSizes();
 }
-bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
+bool ColumnsHeader::OnKeyEvent(Key key, char16)
 {
     if (this->resizeColumnIndex != INVALID_COLUMN_INDEX)
     {
@@ -878,7 +878,7 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
     }
     return false;
 }
-void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
+void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     this->ClearKeyboardAndMouseLocks();
     this->ProcessColumnClickRequest(MouseToColumn(x, y));
@@ -910,7 +910,7 @@ void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
         }
     }
 }
-bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool ColumnsHeader::OnMouseDrag(int x, int , Input::MouseButton )
 {
     if (this->resizeColumnIndex != INVALID_COLUMN_INDEX)
     {
@@ -924,7 +924,7 @@ bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
     }
     return false;
 }
-bool ColumnsHeader::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool ColumnsHeader::OnMouseWheel(int , int , Input::MouseWheel)
 {
     return false; // left-right scroll ? should it be treated ?
 }
