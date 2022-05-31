@@ -3072,13 +3072,17 @@ const char* english_words[] = { "a",
 
 #define SHOW_DEFAULT_EXAMPLE 1000
 #define MY_GROUP             123
+#define CB_SHOW_CAPITAL      1000
+#define LV_ENABLE_DISABLE    999
+#define CB_SHOW_POPULATION   1001
+#define CB_SHOW_LARGEST_CITY 1002
 
 class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::OnComboBoxCurrentItemChangedInterface
 {
     Reference<ListView> lv;
 
   public:
-    MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:22", WindowFlags::None)
+    MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:26", WindowFlags::None)
     {
         lv = Factory::ListView::Create(
               this,
@@ -3106,16 +3110,27 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         // sort them after the name (first column)
         lv->Sort(0, SortDirection::Ascendent);
         // Add a checkbox for Enable/Disable feature
-        auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:30");
+        auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:30", LV_ENABLE_DISABLE);
         cb->SetChecked(true);
         cb->Handlers()->OnCheck = this;
+        // columns
+        auto show_capital = Factory::CheckBox::Create(this, "Show capital", "x:33,y:20,w:30", CB_SHOW_CAPITAL);
+        show_capital->SetChecked(true);
+        show_capital->Handlers()->OnCheck = this;
+        auto show_largets_city =
+              Factory::CheckBox::Create(this, "Show largest city", "x:33,y:21,w:30", CB_SHOW_LARGEST_CITY);
+        show_largets_city->SetChecked(true);
+        show_largets_city->Handlers()->OnCheck = this;
+        auto show_population = Factory::CheckBox::Create(this, "Show population", "x:33,y:22,w:30", CB_SHOW_POPULATION);
+        show_population->SetChecked(true);
+        show_population->Handlers()->OnCheck = this;
         // add suport for frozen columns
         auto fc_label = Factory::Label::Create(this, "&Frozen columns", "x:33,y:18,w:14");
         auto fc       = Factory::ComboBox::Create(this, "x:48,y:18,w:19");
         fc->AddItem("None", 0);
         fc->AddSeparator();
         fc->AddItem("First column", 1);
-        fc->AddItem("First two columns",2);
+        fc->AddItem("First two columns", 2);
         fc->AddItem("First three columns", 3);
         fc->SetCurentItemIndex(0);
         fc->SetHotKey('F');
@@ -3123,7 +3138,22 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
     }
     void OnCheck(Reference<Controls::Control> control, bool value) override
     {
-        lv->SetEnabled(value);
+        switch (control->GetControlID())
+        {
+        case LV_ENABLE_DISABLE:
+            lv->SetEnabled(value);
+            break;
+        case CB_SHOW_CAPITAL:
+            lv->GetColumn(2).SetVisible(value);
+            break;
+        case CB_SHOW_POPULATION:
+            lv->GetColumn(4).SetVisible(value);
+            break;
+        case CB_SHOW_LARGEST_CITY:
+            lv->GetColumn(3).SetVisible(value);
+            break;
+        }
+        
     }
     void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override
     {

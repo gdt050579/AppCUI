@@ -358,7 +358,7 @@ namespace Utils
         uint32 count;
 
       public:
-        KeyValueParser() : count(0), errorPos(NO_ERRORS)
+        KeyValueParser() : errorPos(NO_ERRORS), count(0)
         {
         }
         bool Parse(std::string_view text);

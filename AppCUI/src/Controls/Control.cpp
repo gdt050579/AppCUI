@@ -6,26 +6,15 @@ namespace AppCUI
 {
 #define CTRLC ((ControlContext*) Context)
 
-constexpr uint8 LAYOUT_KEY_NONE     = 0;
-constexpr uint16 LAYOUT_KEY_X       = 1;
 constexpr uint16 LAYOUT_FLAG_X      = 0x0001;
-constexpr uint16 LAYOUT_KEY_Y       = 2;
 constexpr uint16 LAYOUT_FLAG_Y      = 0x0002;
-constexpr uint16 LAYOUT_KEY_LEFT    = 3;
 constexpr uint16 LAYOUT_FLAG_LEFT   = 0x0004;
-constexpr uint16 LAYOUT_KEY_RIGHT   = 4;
 constexpr uint16 LAYOUT_FLAG_RIGHT  = 0x0008;
-constexpr uint16 LAYOUT_KEY_TOP     = 5;
 constexpr uint16 LAYOUT_FLAG_TOP    = 0x0010;
-constexpr uint16 LAYOUT_KEY_BOTTOM  = 6;
 constexpr uint16 LAYOUT_FLAG_BOTTOM = 0x0020;
-constexpr uint16 LAYOUT_KEY_WIDTH   = 7;
 constexpr uint16 LAYOUT_FLAG_WIDTH  = 0x0040;
-constexpr uint16 LAYOUT_KEY_HEIGHT  = 8;
 constexpr uint16 LAYOUT_FLAG_HEIGHT = 0x0080;
-constexpr uint16 LAYOUT_KEY_ALIGN   = 9;
 constexpr uint16 LAYOUT_FLAG_ALIGN  = 0x0100;
-constexpr uint16 LAYOUT_KEY_DOCK    = 10;
 constexpr uint16 LAYOUT_FLAG_DOCK   = 0x0200;
 
 Control* currentControlBeingFocused = nullptr;
@@ -173,7 +162,7 @@ namespace ControlLayout
         resultedType = static_cast<Type>(res);
         return true;
     }
-};
+}; // namespace ControlLayout
 namespace ControlAlignament
 {
 
@@ -382,7 +371,7 @@ namespace ControlAlignament
         resultedType = static_cast<Alignament>(res);
         return true;
     }
-};
+}; // namespace ControlAlignament
 
 bool AnalyzeLayout(string_view layout, LayoutInformation& inf, Application::Config* Cfg)
 {

@@ -512,6 +512,7 @@ struct InternalColumn
     void SetWidth(double percentage);
     void AddFlags(InternalColumnFlags flags);
     void RemoveFlags(InternalColumnFlags flags);
+    void SetVisible(bool value);
 };
 
 class ColumnsHeader

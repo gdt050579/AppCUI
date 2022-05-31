@@ -315,6 +315,13 @@ void InternalColumn::RemoveFlags(InternalColumnFlags flagsToRemove)
 {
     this->flags = static_cast<InternalColumnFlags>(((uint32) this->flags) & (~((uint32) flagsToRemove)));
 }
+void InternalColumn::SetVisible(bool value)
+{
+    if (value)
+        RemoveFlags(InternalColumnFlags::Hidden);
+    else
+        AddFlags(InternalColumnFlags::Hidden);
+}
 ColumnsHeader::ColumnsHeader(
       Reference<ColumnsHeaderView> hostControl,
       std::initializer_list<ConstString> list,
@@ -548,18 +555,27 @@ void ColumnsHeader::RecomputeColumnsSizes()
     this->Location.totalWidth = 0;
     for (auto& col : columns)
     {
-        if (index < this->frozenColumns)
+        if ((col.flags & InternalColumnFlags::Hidden) == InternalColumnFlags::Hidden)
         {
-            col.x = xPoz;
+            col.leftClip  = -1;
+            col.rightClip = -2;
+            col.x         = -1;
         }
         else
         {
-            col.x = xPoz - this->Location.scrollX;
+            if (index < this->frozenColumns)
+            {
+                col.x = xPoz;
+            }
+            else
+            {
+                col.x = xPoz - this->Location.scrollX;
+            }
+            col.leftClip  = std::max<>(leftMinClip, col.x);
+            col.rightClip = std::min<>(rightMaxClip, col.x + ((int32) col.width));
+            xPoz += ((int32) (col.width)) + 1;
+            this->Location.totalWidth += (col.width + 1);
         }
-        col.leftClip  = std::max<>(leftMinClip, col.x);
-        col.rightClip = std::min<>(rightMaxClip, col.x + ((int32) col.width));
-        xPoz += ((int32) (col.width)) + 1;
-        this->Location.totalWidth += (col.width + 1);
         index++;
         if (index == this->frozenColumns)
             leftMinClip = xPoz;
@@ -799,7 +815,7 @@ void ColumnsHeader::ResizeColumn(bool increase)
     }
     this->RecomputeColumnsSizes();
 }
-bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
+bool ColumnsHeader::OnKeyEvent(Key key, char16)
 {
     if (this->resizeColumnIndex != INVALID_COLUMN_INDEX)
     {
@@ -862,7 +878,7 @@ bool ColumnsHeader::OnKeyEvent(Key key, char16 character)
     }
     return false;
 }
-void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton button)
+void ColumnsHeader::OnMouseReleased(int x, int y, Input::MouseButton)
 {
     this->ClearKeyboardAndMouseLocks();
     this->ProcessColumnClickRequest(MouseToColumn(x, y));
@@ -894,7 +910,7 @@ void ColumnsHeader::OnMousePressed(int x, int y, Input::MouseButton button)
         }
     }
 }
-bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool ColumnsHeader::OnMouseDrag(int x, int , Input::MouseButton )
 {
     if (this->resizeColumnIndex != INVALID_COLUMN_INDEX)
     {
@@ -908,7 +924,7 @@ bool ColumnsHeader::OnMouseDrag(int x, int y, Input::MouseButton button)
     }
     return false;
 }
-bool ColumnsHeader::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool ColumnsHeader::OnMouseWheel(int , int , Input::MouseWheel)
 {
     return false; // left-right scroll ? should it be treated ?
 }
