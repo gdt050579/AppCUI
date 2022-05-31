@@ -721,7 +721,6 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
 
     void DeleteAllItems();
 
-
     bool SetCurrentIndex(ItemHandle item);
     int GetFirstVisibleLine();
     bool SetFirstVisibleLine(ItemHandle item);
@@ -827,18 +826,6 @@ class NumericSelectorControlContext : public ControlContext
     bool PaintValue(Renderer& renderer);
 };
 
-struct TreeColumnData
-{
-    uint32 x      = 0;
-    uint32 width  = 0;
-    uint32 height = 0;
-    CharacterBuffer title;
-    TextAlignament alignment = TextAlignament::Left;
-    bool customWidth         = false;
-    uint32 hotKeyOffset      = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    Key hotKeyCode           = Key::None;
-};
-
 struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
@@ -856,7 +843,7 @@ struct TreeItem
     uint32 priority = 0;
 };
 
-class TreeControlContext : public ControlContext
+class TreeControlContext : public ColumnsHeaderViewControlContext
 {
   private:
     ItemHandle currentItemHandle{ InvalidItemHandle };
@@ -872,9 +859,7 @@ class TreeControlContext : public ControlContext
     uint32 offsetBotToDraw = 0;
     bool notProcessed      = true;
     vector<ItemHandle> roots;
-    vector<TreeColumnData> columns;
     uint32 treeFlags              = 0;
-    int32 separatorIndexSelected  = 0xFFFFFFFF;
     ItemHandle firstFoundInSearch = InvalidItemHandle;
     bool hidSearchBarOnResize     = false;
 
@@ -902,24 +887,26 @@ class TreeControlContext : public ControlContext
         FilterMode mode{ FilterMode::None };
     } filter{};
 
-    uint32 columnIndexToSortBy           = 0xFFFFFFFF;
-    bool sortAscendent                   = true;
     uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
     uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
 
+  public:
+    TreeControlContext(
+          Reference<TreeView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+        : ColumnsHeaderViewControlContext(host.ToBase<ColumnsHeaderView>(), columnsList, flags)
+    {
+    }
+
+  public:
     void SetCurrentItemHandle(ItemHandle handle);
     ItemHandle GetCurrentItemHandle() const;
 
     void ColumnSort(uint32 columnIndex);
-    void SetSortColumn(uint32 columnIndex);
-    void SelectColumnSeparator(int32 offset);
     bool Sort();
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
     bool SortByColumn(const ItemHandle handle);
 
     bool PaintItems(Graphics::Renderer& renderer);
-    bool PaintColumnHeaders(Graphics::Renderer& renderer);
-    bool PaintColumnSeparators(Graphics::Renderer& renderer);
     bool MoveUp();
     bool MoveDown();
     bool JumpToCurrent();
@@ -933,14 +920,11 @@ class TreeControlContext : public ControlContext
     bool IsMouseOnSearchField(int x, int y) const;
     bool AdjustElementsOnResize(const int newWidth, const int newHeight);
     bool AdjustItemsBoundsOnResize();
-    bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
     bool SetColorForItems(const Graphics::ColorPair& color);
     bool SearchItems();
     bool MarkAllItemsAsNotFound();
     bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
     bool RemoveItem(const ItemHandle handle);
-
-    bool AddColumn(const ConstString title, const Graphics::TextAlignament alignment, const uint32 width = 10);
 
     GenericRef GetItemDataAsPointer(ItemHandle handle) const;
     bool SetItemDataAsPointer(ItemHandle item, GenericRef value);
