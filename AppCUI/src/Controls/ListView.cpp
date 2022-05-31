@@ -4,12 +4,6 @@ namespace AppCUI
 {
 constexpr uint32 ITEM_FLAG_CHECKED         = 0x0001;
 constexpr uint32 ITEM_FLAG_SELECTED        = 0x0002;
-constexpr uint32 COLUMN_DONT_COPY          = 1;
-constexpr uint32 COLUMN_DONT_FILTER        = 2;
-constexpr uint32 INVALID_COLUMN_INDEX      = 0xFFFFFFFF;
-constexpr uint32 MINIM_COLUMN_WIDTH        = 3;
-constexpr uint32 MAXIM_COLUMN_WIDTH        = 256;
-constexpr uint32 NO_HOTKEY_FOR_COLUMN      = 0xFFFFFFFF;
 constexpr uint32 LISTVIEW_SEARCH_BAR_WIDTH = 12;
 
 #define PREPARE_LISTVIEW_ITEM(index, returnValue)                                                                      \
@@ -272,7 +266,7 @@ bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
 {
     if (Flags && ListViewFlags::HideSearchBar)
         return false; // search bar will not be drawn
-    if (this->Layout.Width < (LISTVIEW_SEARCH_BAR_WIDTH + 6))
+    if (this->Layout.Width < ((int)LISTVIEW_SEARCH_BAR_WIDTH + 6))
         return false; // width is too small to render the seach bar
     int x, y;
     if (Flags && ListViewFlags::PopupSearchBar)
@@ -1400,7 +1394,7 @@ bool ListView::Sort(uint32 columnIndex, SortDirection direction)
 {
     return WRAPPER->Sort(columnIndex, direction);
 }
-void ListView::OnColumnClicked(uint32 columnIndex)
+void ListView::OnColumnClicked(uint32 /*columnIndex*/)
 {
     this->Sort();
 }
