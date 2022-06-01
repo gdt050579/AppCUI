@@ -373,7 +373,7 @@ namespace ControlAlignament
     }
 }; // namespace ControlAlignament
 
-bool AnalyzeLayout(string_view layout, LayoutInformation& inf, Application::Config* Cfg)
+bool AnalyzeLayout(string_view layout, LayoutInformation& inf)
 {
     AppCUI::Utils::KeyValueParser parser;
     ControlLayout::Type layoutType;
@@ -770,7 +770,7 @@ bool ControlContext::ProcessLTRBAnchors(LayoutInformation& inf)
 bool ControlContext::UpdateLayoutFormat(string_view format)
 {
     LayoutInformation inf;
-    CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
+    CHECK(AnalyzeLayout(format, inf), false, "Fail to load format data !");
 
     // check if layout params are OK
     // Step 1 ==> if dock option is present
@@ -1694,7 +1694,7 @@ bool Controls::Control::OnKeyEvent(Input::Key, char16)
 {
     return false;
 }
-void Controls::Control::OnFocusRequested(Reference<Control> control)
+void Controls::Control::OnFocusRequested(Reference<Control>)
 {
 }
 void Controls::Control::OnFocus()

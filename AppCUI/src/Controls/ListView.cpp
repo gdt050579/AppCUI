@@ -850,7 +850,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
     {
         if ((this->Layout.Width > 20) && (y == (this->Layout.Height - 1)))
         {
-            if ((x >= 2) && (x <= (3 + LISTVIEW_SEARCH_BAR_WIDTH)))
+            if ((x >= 2) && (x <= (3 + (int32)LISTVIEW_SEARCH_BAR_WIDTH)))
             {
                 this->Filter.FilterModeEnabled = true;
                 return;

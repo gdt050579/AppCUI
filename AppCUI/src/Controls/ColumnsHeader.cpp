@@ -588,7 +588,6 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
     const auto Cfg         = Members->Cfg;
     const auto defaultCol  = Cfg->Header.Text.GetColor(state);
     const auto defaultHK   = Cfg->Header.HotKey.GetColor(state);
-    const auto rightMargin = this->Location.x + (int32) this->Location.width;
     auto colIndex          = 0U;
     Rect r;
 
@@ -614,12 +613,11 @@ void ColumnsHeader::Paint(Graphics::Renderer& renderer)
                 continue;
             }
             r.Create(col.leftClip, this->Location.y, col.rightClip, this->Location.y);
-            renderer.SetClipRect(r);
-            // if (((col.x + (int32) col.width) < this->Location.x) || (col.x >= rightMargin))
-            //{
-            //    colIndex++;
-            //    continue;
-            //}
+            if (!renderer.SetClipRect(r))
+            {
+                colIndex++;
+                continue;
+            }
             if ((state == ControlState::Focused) && (colIndex == this->sortColumnIndex))
             {
                 params.Color       = Cfg->Header.Text.PressedOrSelected;
