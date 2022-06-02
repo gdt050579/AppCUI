@@ -935,7 +935,7 @@ void TextAreaControlContext::MousePosToFilePos(int x, int y, uint32& lineIndex, 
         return;
     }
 }
-void TextAreaControlContext::OnMouseReleased(int x, int y, Input::MouseButton button)
+void TextAreaControlContext::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton /*button*/)
 {
 }
 void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton button)
@@ -981,7 +981,7 @@ bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button
     }
     return true;
 }
-bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool TextAreaControlContext::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
 {
     switch (direction)
     {
@@ -994,7 +994,7 @@ bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direct
     }
     return false;
 }
-bool TextAreaControlContext::OnMouseOver(int x, int y)
+bool TextAreaControlContext::OnMouseOver(int /*x*/, int /*y*/)
 {
     NOT_IMPLEMENTED(false);
 }
