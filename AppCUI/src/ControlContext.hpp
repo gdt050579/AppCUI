@@ -309,7 +309,7 @@ enum class SplitterMouseStatus : unsigned char
     ClickOnButton2,
     Drag
 };
-constexpr uint32 SPLITTER_BAR_SIZE = 1;
+constexpr int32 SPLITTER_BAR_SIZE = 1;
 class SplitterControlContext : public ControlContext
 {
   public:

@@ -25,7 +25,7 @@ SplitterMouseStatus MousePozToSplitterMouseStatus(SplitterControlContext* Member
     int v = 0;
     if (Members->Flags && SplitterFlags::Vertical)
     {
-        if (x != (Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE)))
+        if (x != (Members->Layout.Width - (Members->SecondPanelSize + (int)SPLITTER_BAR_SIZE)))
             return SplitterMouseStatus::None;
         if (Members->Layout.Height > MIN_SPLITTER_SIZE)
             v = ((y == 1) || (y == 2)) ? y : 0;
