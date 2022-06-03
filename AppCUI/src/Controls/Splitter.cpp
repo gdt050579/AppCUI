@@ -12,7 +12,7 @@ constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
 
-constexpr uint32 SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET = 0xFFFFFFFF;
+constexpr int32 SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET = -1;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
                                                  "Click to maximize right panel",
@@ -154,7 +154,7 @@ bool Splitter::SetSecondPanelSize(uint32 newSize)
     }
     // set the new value
     Members->SecondPanelSize = newSize;
-    if (newSize != Members->DefaultSecondPanelSize)
+    if ((int)newSize != Members->DefaultSecondPanelSize)
     {
         if ((Members->Flags && SplitterFlags::AutoCollapsePanel2) && (newSize > Members->Panel2.minSize))
             Members->DefaultSecondPanelSize = newSize;
