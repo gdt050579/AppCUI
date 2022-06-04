@@ -3125,8 +3125,8 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         show_population->SetChecked(true);
         show_population->Handlers()->OnCheck = this;
         // add suport for frozen columns
-        auto fc_label = Factory::Label::Create(this, "&Frozen columns", "x:33,y:18,w:14");
-        auto fc       = Factory::ComboBox::Create(this, "x:48,y:18,w:19");
+        Factory::Label::Create(this, "&Frozen columns", "x:33,y:18,w:14");
+        auto fc = Factory::ComboBox::Create(this, "x:48,y:18,w:19");
         fc->AddItem("None", 0);
         fc->AddSeparator();
         fc->AddItem("First column", 1);
@@ -3153,7 +3153,6 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
             lv->GetColumn(3).SetVisible(value);
             break;
         }
-        
     }
     void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override
     {
@@ -3286,12 +3285,12 @@ class SearchAndFilter : public Window
     SearchAndFilter() : Window("Search/Filter Example", "d:c,w:74,h:20", WindowFlags::None)
     {
         auto pn1 = Factory::Panel::Create(this, "Filter", "x:1,y:1,w:34,h:6");
-        auto lb1 = Factory::Label::Create(
+        Factory::Label::Create(
               pn1,
               "Type a text that will be used to filter all items that contain that text.",
               "x:0,y:0,w:100%,h:100%");
         auto pn2 = Factory::Panel::Create(this, "Search", "x:37,y:1,w:34,h:6");
-        auto lb2 = Factory::Label::Create(
+        Factory::Label::Create(
               pn2,
               "Type a text to search first item that contains that text.\nPress Ctrl+Enter to find the next item that "
               "contains that text.",
@@ -3312,7 +3311,7 @@ class SearchAndFilter : public Window
         lv1->AddItem("Willian");
         lv2->AddItem("Willian");
 
-        auto lb3 = Factory::Label::Create(
+        Factory::Label::Create(
               this, "Press 'Esc' (when in edit mode) to clear current search pattern", "x:1,y:17,w:72,h:1");
 
         lv1->SetFocus();
