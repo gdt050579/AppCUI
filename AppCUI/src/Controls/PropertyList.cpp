@@ -285,7 +285,7 @@ class PropertyColorPairEditDialog : public PropertyEditDialog, public AppCUI::Co
         if (!isReadOnly)
             colFore->SetFocus();
     }
-    void PaintControl(Reference<Control>, AppCUI::Graphics::Renderer& r)
+    void PaintControl(Reference<Control>, AppCUI::Graphics::Renderer& r) override
     {
         r.Clear(' ', { Color::Transparent, colBack->GetColor() });
         r.WriteSingleLineText(1, 1, "Preview", { colFore->GetColor(), colBack->GetColor() });
