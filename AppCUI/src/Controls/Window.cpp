@@ -845,7 +845,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             else
                 state = ControlState::Inactive;
         }
-        bool hoverOrPressed = (state == ControlState::Hovered) || (state == ControlState::PressedOrSelected);
+        //bool hoverOrPressed = (state == ControlState::Hovered) || (state == ControlState::PressedOrSelected);
         bool drawSeparators = false;
         switch (btn->Type)
         {
