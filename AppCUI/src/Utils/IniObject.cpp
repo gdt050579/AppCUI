@@ -1084,7 +1084,7 @@ uint32 IniValue::GetArrayCount() const
 IniValueArray IniValue::operator[](int32 index) const
 {
     VALIDATE_VALUE(IniValueArray());
-    if ((index < 0) || (index >= value->KeyValues.size()))
+    if ((index < 0) || (index >= (int32)value->KeyValues.size()))
         return IniValueArray();
 
     return IniValueArray((string_view) value->KeyValues[index]);
