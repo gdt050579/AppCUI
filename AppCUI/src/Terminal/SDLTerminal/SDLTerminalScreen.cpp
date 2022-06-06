@@ -265,7 +265,7 @@ void SDLTerminal::OnFlushToScreen()
     }
     SDL_RenderPresent(renderer);
 }
-void SDLTerminal::OnFlushToScreen(const Graphics::Rect& r)
+void SDLTerminal::OnFlushToScreen(const Graphics::Rect& /*r*/)
 {
     // No implementation for the moment, copy the entire screem
     OnFlushToScreen();
@@ -280,7 +280,7 @@ bool SDLTerminal::OnUpdateCursor()
     // Currently no cursor for sdl
     return true;
 }
-bool SDLTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
+bool SDLTerminal::HasSupportFor(Application::SpecialCharacterSetType /*type*/)
 {
     // SDL based terminal supports all special character set types
     return true;
