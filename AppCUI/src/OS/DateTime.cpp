@@ -85,7 +85,9 @@ bool DateTime::CreateFromFileTime(const uint32 low, const uint32 high)
             uint32 low;
         } pieces;
         uint64 value{};
-    } ft{ high, low };
+    } ft;
+    ft.pieces.high = high;
+    ft.pieces.low  = low;
 
     const auto time = FiletimeToUnix(ft.value);
     struct tm t;
