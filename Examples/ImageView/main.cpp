@@ -6548,7 +6548,7 @@ class ImageWinViewer : public Window, public Handlers::OnCheckInterface
         img->SetImage(_img, method, scale);
         Factory::CheckBox::Create(this, "Disable image view", "x:1,y:0,w:30")->Handlers()->OnCheck = this;
     }
-    void OnCheck(Reference<Controls::Control> control, bool value) override
+    void OnCheck(Reference<Controls::Control> control, bool /*value*/) override
     {
         img->SetEnabled(!control->IsChecked());
     }
