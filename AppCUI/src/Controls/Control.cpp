@@ -1578,7 +1578,7 @@ int Controls::Control::GetControlID()
 
 Reference<Control> Controls::Control::GetFocusedChild()
 {
-    CHECK(CTRLC->CurrentControlIndex >= 0, nullptr, "");
+    //CHECK(CTRLC->CurrentControlIndex >= 0, nullptr, ""); // not necesary as CurrentControlIndex is unsigned int
     CHECK(CTRLC->CurrentControlIndex < CTRLC->ControlsCount, nullptr, "");
     auto child = CTRLC->Controls[CTRLC->CurrentControlIndex];
     if ((CTRLC->Focused) && (child->HasFocus()))

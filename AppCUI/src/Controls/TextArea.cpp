@@ -967,7 +967,7 @@ void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton but
             {
                 textAreaContexMenu = new Internal::TextControlDefaultMenu();
             }
-            textAreaContexMenu->Show(this->Host, x, y + 1, this->Selection.Start >= 0);
+            textAreaContexMenu->Show(this->Host, x, y + 1, true /*this->Selection.Start >= 0 (always true as .Start is uint32*/);
         }
     }
 }
