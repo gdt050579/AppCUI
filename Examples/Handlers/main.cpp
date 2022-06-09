@@ -35,7 +35,7 @@ int main()
         r.Clear('X', ColorPair{ Color::Red, Color::Black });
     };
 
-    auto btn_exit = Factory::Button::Create(wnd, "Exit", "x:1,y:4,w:10", 1000);
+    Factory::Button::Create(wnd, "Exit", "x:1,y:4,w:10", 1000);
     // a handler to handle OnEvent messages
     wnd->Handlers()->OnEvent = [](Reference<Control> c, Event eventType, int ID)
     {
