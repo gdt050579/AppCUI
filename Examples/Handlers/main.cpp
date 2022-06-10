@@ -41,7 +41,7 @@ int main()
     {
         if (c->OnEvent(c, eventType, ID))
             return true;
-        if ((eventType == Event::ButtonClicked) && (ID == 1000))
+        if ((eventType == Event::ButtonClicked) && (ID == 1000)) 
         {
             Application::Close();
             return true;

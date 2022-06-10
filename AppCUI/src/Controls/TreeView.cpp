@@ -7,7 +7,6 @@ namespace AppCUI::Controls
 constexpr auto TreeSearchBarWidth      = 23U;
 constexpr auto TreeScrollbarLeftOffset = 25U;
 constexpr auto ItemSymbolOffset        = 2U;
-constexpr auto MinColumnWidth          = 10U;
 constexpr auto BorderOffset            = 1U;
 constexpr auto InvalidIndex            = 0xFFFFFFFFU;
 
@@ -99,7 +98,7 @@ void TreeView::Paint(Graphics::Renderer& renderer)
 
     if (cc->Focused)
     {
-        if (cc->Layout.Width > TreeSearchBarWidth && cc->filter.mode != TreeControlContext::FilterMode::None)
+        if ((cc->Layout.Width > (int)TreeSearchBarWidth) && (cc->filter.mode != TreeControlContext::FilterMode::None))
         {
             renderer.FillHorizontalLine(1, cc->Layout.Height - 1, TreeSearchBarWidth, ' ', cc->Cfg->SearchBar.Normal);
 
@@ -658,10 +657,10 @@ Graphics::Rect TreeView::GetHeaderLayout()
     return Graphics::Rect({ 0, 0 }, sz);
 }
 
-uint32 TreeView::ComputeColumnsPreferedWidth(uint32 columnIndex)
+uint32 TreeView::ComputeColumnsPreferedWidth(uint32 /*columnIndex*/)
 {
     CHECK(Context != nullptr, 0, "");
-    const auto cc = reinterpret_cast<TreeControlContext*>(Context);
+    // const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     // TODO: implement this
     throw std::runtime_error("Not implemented!");
 }
@@ -1304,7 +1303,7 @@ bool TreeControlContext::IsMouseOnItem(int x, int y) const
 
 bool TreeControlContext::IsMouseOnBorder(int x, int y) const
 {
-    return (x == 0 || x == Layout.Width - BorderOffset) || (y == 0 || y == Layout.Width - BorderOffset);
+    return ((x == 0) || (x == Layout.Width - (int)BorderOffset) || (y == 0) || (y == Layout.Width - (int)BorderOffset));
 }
 
 bool TreeControlContext::IsMouseOnColumnHeader(int x, int y)
@@ -1323,13 +1322,12 @@ bool TreeControlContext::IsMouseOnColumnHeader(int x, int y)
             mouseOverColumnIndex = i;
             return true;
         }
-        i++;
     }
 
     return false;
 }
 
-bool TreeControlContext::IsMouseOnColumnSeparator(int x, int y)
+bool TreeControlContext::IsMouseOnColumnSeparator(int x, int /*y*/)
 {
     mouseOverColumnSeparatorIndex = InvalidIndex;
 
@@ -1354,7 +1352,7 @@ bool TreeControlContext::IsMouseOnSearchField(int x, int y) const
     {
         if (y == Layout.Height - 1)
         {
-            if (x > 0 && x < TreeSearchBarWidth)
+            if ((x > 0) && (x < (int)TreeSearchBarWidth))
             {
                 return true;
             }
@@ -1368,7 +1366,7 @@ bool TreeControlContext::AdjustElementsOnResize(const int /*newWidth*/, const in
 {
     CHECK(AdjustItemsBoundsOnResize(), false, "");
     const auto columnsSize = this->Header.GetColumnsCount();
-    const uint32 width = (static_cast<uint32>(Layout.Width)) / static_cast<uint32>(std::max<uint32>(columnsSize, 1U));
+    //const uint32 width = (static_cast<uint32>(Layout.Width)) / static_cast<uint32>(std::max<uint32>(columnsSize, 1U));
 
     uint32 xPreviousColumn       = 0;
     uint32 widthOfPreviousColumn = 0;
@@ -1380,7 +1378,7 @@ bool TreeControlContext::AdjustElementsOnResize(const int /*newWidth*/, const in
         widthOfPreviousColumn = col.width;
     }
 
-    if (Layout.Width <= TreeScrollbarLeftOffset)
+    if (Layout.Width <= (int)TreeScrollbarLeftOffset)
     {
         if (hidSearchBarOnResize == false)
         {
