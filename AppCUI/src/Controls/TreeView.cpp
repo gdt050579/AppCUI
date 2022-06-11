@@ -634,7 +634,7 @@ void TreeView::OnAfterResize(int newWidth, int newHeight)
     ColumnsHeaderView::OnAfterResize(newWidth, newHeight);
 }
 
-void TreeView::OnColumnClicked(uint32 columnIndex)
+void TreeView::OnColumnClicked(uint32 /*columnIndex*/)
 {
     this->Sort();
 }

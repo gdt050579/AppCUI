@@ -352,7 +352,7 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
     return false;
 }
 
-bool Controls::Grid::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool Controls::Grid::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -411,7 +411,7 @@ void Grid::OnLoseFocus()
     context->selectedCellsIndexes.clear();
 }
 
-bool Grid::OnEvent(Controls::Reference<Control>, Event eventType, int controlID)
+bool Grid::OnEvent(Controls::Reference<Control>, Event eventType, int /*controlID*/)
 {
     switch (eventType)
     {
@@ -1584,7 +1584,7 @@ void GridControlContext::ToggleSorting(int x, int y)
         const auto yHeader    = offsetY - GetHeaderHeight() / 2;
         const auto endXHeader = xHeader + cWidth - 2;
 
-        if (x == endXHeader && y == yHeader)
+        if ((x == (int)endXHeader) && (y == (int)yHeader))
         {
             columnsSort[i] = !columnsSort[i];
             SortColumn(i);
