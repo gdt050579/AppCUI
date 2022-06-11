@@ -95,7 +95,7 @@ class BadApple : public AppCUI::Controls::Window
 
     void ReadAllFrames()
     {
-        uint32 bytesRead            = 0;
+        uint32 bytesRead                  = 0;
         char videoBuffer[VIDEO_WIDTH + 1] = { 0 };
         do
         {
@@ -143,7 +143,9 @@ class BadApple : public AppCUI::Controls::Window
 
 int main()
 {
-    if (!Application::Init(InitializationFlags::Maximized | InitializationFlags::EnableFPSMode))
+    if (!Application::Init(
+              InitializationFlags::Maximized | InitializationFlags::EnableFPSMode |
+              InitializationFlags::DisableAutoCloseDesktop))
         return 1;
     Application::AddWindow(std::make_unique<BadApple>());
     Application::Run();

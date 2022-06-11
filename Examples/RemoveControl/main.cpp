@@ -15,7 +15,7 @@ class RemoveControlExample : public Window
     {
         bt = this->CreateChildControl<Button>("Remove controls", "l:1,t:1,r:1", 123, ButtonFlags::None);
         lb = this->CreateChildControl<Label>("This is a label !", "l:1,t:3,r:1");
-        cb = this->CreateChildControl<CheckBox>("This is a checkbos", "l:1,t:5,r:1", 100);
+        cb = this->CreateChildControl<CheckBox>("This is a checkbox", "l:1,t:5,r:1", 100);
     }
     bool OnEvent(Reference<Control> ctrl, Event eventType, int controlID) override
     {
