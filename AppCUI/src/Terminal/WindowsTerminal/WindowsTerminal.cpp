@@ -504,8 +504,6 @@ void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& rect)
 
     COORD winSize = { (SHORT) ((r + 1) - l), (SHORT) ((b + 1) - t) };
     SMALL_RECT sr = { (SHORT) l, (SHORT) t, (SHORT)r, (SHORT)b };
-
-
     WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
 bool WindowsTerminal::OnUpdateCursor()
