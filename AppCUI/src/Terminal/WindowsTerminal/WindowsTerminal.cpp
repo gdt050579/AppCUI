@@ -471,20 +471,25 @@ void WindowsTerminal::OnFlushToScreen()
     }
     WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
-void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& r)
+void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& rect)
 {
-    const uint32 w         = r.GetWidth();
-    const uint32 h         = r.GetHeight();
     const auto screenWidth = this->ScreenCanvas.GetWidth();
-    COORD winSize          = { (SHORT) w, (SHORT) h };
-    SMALL_RECT sr          = { (SHORT) r.GetLeft(), (SHORT) r.GetTop(), winSize.X, winSize.Y };
+    const int32 l          = std::max<>(0, rect.GetLeft());
+    const int32 r          = std::min<>((int32) screenWidth - 1, rect.GetRight());
+    const int32 t          = std::max<>(0, rect.GetTop());
+    const int32 b          = std::min<>((int32) this->ScreenCanvas.GetHeight() - 1, rect.GetBottom());
+    const auto szW         = (r + 1) - l;
 
-    Graphics::Character* start = this->ScreenCanvas.GetCharactersBuffer() + screenWidth * r.GetTop();
+    if ((l > r) || (t > b))
+        return;
+
     CHAR_INFO* d               = this->ConsoleBuffer.get();
-    for (auto y = 0U; y < h; y++, start += screenWidth)
+    Graphics::Character* start = this->ScreenCanvas.GetCharactersBuffer() + screenWidth * t + l;
+    auto y                     = t;
+    while (y<=b)
     {
-        Graphics::Character* c = start + r.GetLeft();
-        Graphics::Character* e = c + w;
+        Graphics::Character* c = start;
+        Graphics::Character* e = c + szW;
         while (c < e)
         {
             d->Char.UnicodeChar = c->Code;
@@ -492,7 +497,15 @@ void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& r)
             d++;
             c++;
         }
+        y++;
+        start += screenWidth;
     }
+
+
+    COORD winSize = { (SHORT) ((r + 1) - l), (SHORT) ((b + 1) - t) };
+    SMALL_RECT sr = { (SHORT) l, (SHORT) t, (SHORT)r, (SHORT)b };
+
+
     WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
 bool WindowsTerminal::OnUpdateCursor()
