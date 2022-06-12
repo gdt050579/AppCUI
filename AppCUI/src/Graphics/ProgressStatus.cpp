@@ -65,7 +65,7 @@ void ProgressStatus_Paint_Panel()
     params.Width = PROGRESS_STATUS_PANEL_WIDTH - 10;
     canvas->WriteText(PSData.Title, params);
 
-    canvas->WriteSingleLineText(18,6, "Press `ESC` to cancel ...", PSData.App->config.Text.Inactive);
+    canvas->WriteSingleLineText(18, 6, "Press `ESC` to cancel ...", PSData.App->config.Text.Inactive);
 
     PSData.Showed = true;
     PSData.App->terminal->Update();
@@ -177,10 +177,10 @@ void ProgressStatus::Init(const ConstString& Title, uint64 maxValue, ProgressSta
     progress_inited           = true;
 
     PSData.AbsolutePosition.Create(
-          std::min<>(0, PSData.WindowClip.ClipRect.X),
-          std::min<>(0, PSData.WindowClip.ClipRect.Y),
-          std::max<>(PSData.WindowClip.ClipRect.X + PSData.WindowClip.ClipRect.Width, (int32) appSize.Width),
-          std::max<>(PSData.WindowClip.ClipRect.Y + PSData.WindowClip.ClipRect.Height, (int32) appSize.Height));
+          std::max<>(0, PSData.WindowClip.ClipRect.X),
+          std::max<>(0, PSData.WindowClip.ClipRect.Y),
+          std::min<>(PSData.WindowClip.ClipRect.X + PSData.WindowClip.ClipRect.Width - 1, ((int) appSize.Width) - 1),
+          std::min<>(PSData.WindowClip.ClipRect.Y + PSData.WindowClip.ClipRect.Height - 1, ((int) appSize.Height)) - 1);
 }
 bool __ProgressStatus_Update(uint64 value, const ConstString* content)
 {
