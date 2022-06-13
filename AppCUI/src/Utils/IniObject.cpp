@@ -676,7 +676,7 @@ IniSection::Iterator::~Iterator()
 }
 bool IniSection::Iterator::operator!=(const Iterator& it)
 {
-    return (*((IniSectionIterator*) &this->data)) != (*((IniSectionIterator*) &it.data));
+    return (*((const IniSectionIterator*) &this->data)) != (*((const IniSectionIterator*) &it.data));
 }
 IniValue IniSection::Iterator::operator*()
 {
