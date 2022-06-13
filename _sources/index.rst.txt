@@ -6,8 +6,6 @@
 Welcome to AppCUI's documentation!
 ==================================
 
-This is a test page
-
 .. toctree::
    :maxdepth: 2
 
