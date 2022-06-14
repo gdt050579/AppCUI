@@ -1372,7 +1372,7 @@ IniObject::Iterator& IniObject::Iterator::operator++()
 }
 bool IniObject::Iterator::operator!=(const Iterator& it)
 {
-    return (*((IniObjectIterator*) &this->data)) != (*((IniObjectIterator*) &it.data));
+    return (*((const IniObjectIterator*) &this->data)) != (*((const IniObjectIterator*) &it.data));
 }
 IniSection IniObject::Iterator::operator*()
 {
