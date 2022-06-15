@@ -249,7 +249,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 bool InternalWindowManager::Create()
 {
     CHECK((tree = Factory::TreeView::Create(
-                 this, "l:1,t:1,r:1,b:3", { { "Window" }, { "Tag" } }, TreeViewFlags::Searchable))
+                 this, "l:1,t:1,r:1,b:3", { "n:Window,w:fill", "n:Tag,w:10" }, TreeViewFlags::Searchable))
                 .IsValid(),
           false,
           "");
