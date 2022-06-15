@@ -486,10 +486,7 @@ class PropertyListEditDialog : public PropertyEditDialog
     void OnInitPropertyDialog() override
     {
         lv = Factory::ListView::Create(
-              this,
-              "l:1,t:1,r:1,b:3",
-              { "a:l,w:100" },
-              ListViewFlags::HideColumns | ListViewFlags::SearchMode);
+              this, "l:1,t:1,r:1,b:3", { "a:l,w:100" }, ListViewFlags::HideColumns | ListViewFlags::SearchMode);
         if (prop.listValues.size() > 0)
         {
             items   = new ListViewItem[prop.listValues.size()];
@@ -1118,7 +1115,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         NumericFormatter n;
         LocalString<32> tmpString;
         Size tmpSize;
-        char16 tmpCh16;
+        char16 tmpCh16 = 0;
         ColorPair cp;
         switch (prop.type)
         {
@@ -2007,10 +2004,7 @@ void PropertyList::Paint(Graphics::Renderer& renderer)
 void PropertyList::OnAfterResize(int newWidth, int)
 {
     auto* Members = (PropertyListContext*) this->Context;
-    if (Members->propertyNameWidth == 0)
-        Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
-    else
-        Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
+    Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
 }
 bool PropertyList::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
