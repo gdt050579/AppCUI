@@ -72,7 +72,8 @@ static time_t FiletimeToUnix(uint64 windowsTicks)
 
 bool DateTime::CreateFromFileTime(const uint64 entry)
 {
-    return CreateFromFileTime(((const uint32*) &entry)[1], ((const uint32*) &entry)[0]);
+    //return CreateFromFileTime(((const uint32*) &entry)[1], ((const uint32*) &entry)[0]);
+    return CreateFromFileTime(static_cast<uint32>(entry>>32), static_cast<uint32>(entry & 0xFFFFFFFF));
 }
 
 bool DateTime::CreateFromFileTime(const uint32 low, const uint32 high)
