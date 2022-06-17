@@ -57,7 +57,7 @@ const std::shared_ptr<State>& StateMachine::PeekState()
     return states.top();
 }
 
-const bool StateMachine::GetStatesCount() const
+bool StateMachine::GetStatesCount() const
 {
     return states.size();
 }

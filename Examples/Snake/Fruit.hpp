@@ -21,6 +21,6 @@ class Fruit
     void SetColor(const Color& color);
     const ColorPair& GetColor() const;
 
-    const int GetScore() const;
+    int GetScore() const;
 };
 } // namespace Snake
