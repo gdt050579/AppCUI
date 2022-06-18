@@ -2,15 +2,26 @@
 
 namespace AppCUI::Controls
 {
-UserControl::UserControl(const ConstString& caption, string_view layout)
+UserControl::UserControl(const ConstString& caption, string_view layout, bool verticalScrollBar)
     : Control(new ControlContext(), caption, layout, false)
 {
-    auto Members   = reinterpret_cast<ControlContext*>(this->Context);
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    auto cc   = reinterpret_cast<ControlContext*>(this->Context);
+    cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    if (verticalScrollBar)
+    {
+        cc->Flags |= GATTR_VSCROLL;
+        cc->ScrollBars.OutsideControl = true;
+    }
 }
-UserControl::UserControl(string_view layout) : Control(new ControlContext(), "", layout, false)
+
+UserControl::UserControl(string_view layout, bool verticalScrollBar) : Control(new ControlContext(), "", layout, false)
 {
-    auto Members   = reinterpret_cast<ControlContext*>(this->Context);
-    Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    auto cc   = reinterpret_cast<ControlContext*>(this->Context);
+    cc->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+    if (verticalScrollBar)
+    {
+        cc->Flags |= GATTR_VSCROLL;
+        cc->ScrollBars.OutsideControl = true;
+    }
 }
 } // namespace AppCUI::Controls

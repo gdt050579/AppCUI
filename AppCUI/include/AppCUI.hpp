@@ -4018,8 +4018,8 @@ namespace Controls
     class EXPORT UserControl : public Control
     {
       protected:
-        UserControl(const ConstString& caption, string_view layout);
-        UserControl(string_view layout);
+        UserControl(const ConstString& caption, string_view layout, bool verticalScrollBar = false);
+        UserControl(string_view layout, bool verticalScrollBar = false);
     };
     enum class ViewerFlags : uint32
     {
