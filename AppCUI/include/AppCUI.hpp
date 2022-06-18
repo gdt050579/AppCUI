@@ -4020,7 +4020,8 @@ namespace Controls
         /* 0 -> 0x40 (GATTR) */
         None                    = 0x000000,
         ShowVerticalScrollBar   = 0x000100,
-        ShowHorizontalScrollBar = 0x000200
+        ShowHorizontalScrollBar = 0x000200,
+        ScrollBarOutsideControl = 0x000400,
     };
     class EXPORT UserControl : public Control
     {

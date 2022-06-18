@@ -11,12 +11,15 @@ UserControl::UserControl(const ConstString& caption, string_view layout, UserCon
     if ((flags & UserControlFlags::ShowVerticalScrollBar) != UserControlFlags::None)
     {
         cc->Flags |= GATTR_VSCROLL;
-        cc->ScrollBars.OutsideControl = true;
     }
 
     if ((flags & UserControlFlags::ShowHorizontalScrollBar) != UserControlFlags::None)
     {
         cc->Flags |= GATTR_HSCROLL;
+    }
+
+    if ((flags & UserControlFlags::ScrollBarOutsideControl) != UserControlFlags::None)
+    {
         cc->ScrollBars.OutsideControl = true;
     }
 }
@@ -29,12 +32,15 @@ UserControl::UserControl(string_view layout, UserControlFlags flags) : Control(n
     if ((flags & UserControlFlags::ShowVerticalScrollBar) != UserControlFlags::None)
     {
         cc->Flags |= GATTR_VSCROLL;
-        cc->ScrollBars.OutsideControl = true;
     }
 
     if ((flags & UserControlFlags::ShowHorizontalScrollBar) != UserControlFlags::None)
     {
         cc->Flags |= GATTR_HSCROLL;
+    }
+
+    if ((flags & UserControlFlags::ScrollBarOutsideControl) != UserControlFlags::None)
+    {
         cc->ScrollBars.OutsideControl = true;
     }
 }
