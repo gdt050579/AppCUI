@@ -18,10 +18,7 @@ UserControl::UserControl(const ConstString& caption, string_view layout, UserCon
         cc->Flags |= GATTR_HSCROLL;
     }
 
-    if ((flags & UserControlFlags::ScrollBarOutsideControl) != UserControlFlags::None)
-    {
-        cc->ScrollBars.OutsideControl = true;
-    }
+    cc->ScrollBars.OutsideControl = ((flags & UserControlFlags::ScrollBarOutsideControl) != UserControlFlags::None);
 }
 
 UserControl::UserControl(string_view layout, UserControlFlags flags) : Control(new ControlContext(), "", layout, false)
@@ -39,9 +36,6 @@ UserControl::UserControl(string_view layout, UserControlFlags flags) : Control(n
         cc->Flags |= GATTR_HSCROLL;
     }
 
-    if ((flags & UserControlFlags::ScrollBarOutsideControl) != UserControlFlags::None)
-    {
-        cc->ScrollBars.OutsideControl = true;
-    }
+    cc->ScrollBars.OutsideControl = ((flags & UserControlFlags::ScrollBarOutsideControl) != UserControlFlags::None);
 }
 } // namespace AppCUI::Controls
