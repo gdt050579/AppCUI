@@ -4015,11 +4015,19 @@ namespace Controls
         friend Factory::Tab;
         friend Control;
     };
+    enum class UserControlFlags : uint32
+    {
+        /* 0 -> 0x40 (GATTR) */
+        None                    = 0x000000,
+        ShowVerticalScrollBar   = 0x000100,
+        ShowHorizontalScrollBar = 0x000200,
+        ScrollBarOutsideControl = 0x000400,
+    };
     class EXPORT UserControl : public Control
     {
       protected:
-        UserControl(const ConstString& caption, string_view layout);
-        UserControl(string_view layout);
+        UserControl(const ConstString& caption, string_view layout, UserControlFlags flags = UserControlFlags::None);
+        UserControl(string_view layout, UserControlFlags flags = UserControlFlags::None);
     };
     enum class ViewerFlags : uint32
     {
@@ -5619,3 +5627,4 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::TreeViewFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::UserControlFlags, AppCUI::uint32)
