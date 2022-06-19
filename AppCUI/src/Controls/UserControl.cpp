@@ -11,11 +11,13 @@ UserControl::UserControl(const ConstString& caption, string_view layout, UserCon
     if ((flags & UserControlFlags::ShowVerticalScrollBar) != UserControlFlags::None)
     {
         cc->Flags |= GATTR_VSCROLL;
+        cc->ScrollBars.TopMargin = 4;
     }
 
     if ((flags & UserControlFlags::ShowHorizontalScrollBar) != UserControlFlags::None)
     {
         cc->Flags |= GATTR_HSCROLL;
+        cc->ScrollBars.LeftMargin = 4;
     }
 
     cc->ScrollBars.OutsideControl = ((flags & UserControlFlags::ScrollBarOutsideControl) != UserControlFlags::None);
