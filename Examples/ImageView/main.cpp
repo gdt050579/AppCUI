@@ -6541,7 +6541,7 @@ class ImageWinViewer : public Window, public Handlers::OnCheckInterface
 {
     Reference<ImageView> img;
   public:
-    ImageWinViewer(const AppCUI::Graphics::Image& _img, ImageRenderingMethod method, ImageScaleMethod scale)
+    ImageWinViewer(const AppCUI::Graphics::Image& _img, ImageRenderingMethod method, ImageScaleMethod scale, bool border)
         : Window("Image view", "d:c,w:100%,h:100%", WindowFlags::None)
     {
         img = Factory::ImageView::Create(this, "l:0,t:1,r:0,b:0");
@@ -6558,9 +6558,10 @@ class MainWin : public Window
 {
     Reference<ComboBox> cbMethod;
     Reference<ComboBox> cbScale;
+    Reference<CheckBox> cbBorder;
 
   public:
-    MainWin() : Window("Image example", "d:c,w:50,h:19", WindowFlags::None)
+    MainWin() : Window("Image example", "d:c,w:50,h:21", WindowFlags::None)
     {
         Factory::Button::Create(this, "Show Dizzy image !", "x:1,y:1,w:46", BTN_SHOW_DIZZY);
         Factory::Button::Create(this, "Show Me !", "x:1,y:3,w:46", BTN_SHOW_GDT);
@@ -6574,9 +6575,11 @@ class MainWin : public Window
               this, "l:8,b:3,w:38", "PixelTo16ColorsSmallBlock,PixelTo64ColorsLargeBlock,GrayScale,Ascii art");
         cbMethod->SetCurentItemIndex(0);
 
-        Factory::Label::Create(this, "Scale", "l:1,b:1,w:6");
-        cbScale = Factory::ComboBox::Create(this, "l:8,b:1,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
+        Factory::Label::Create(this, "Scale", "l:1,b:5,w:6");
+        cbScale = Factory::ComboBox::Create(this, "l:8,b:5,w:38", "No scale (keep original size),50%,25%,20%,10%,5%");
         cbScale->SetCurentItemIndex(0);
+
+        cbBorder = Factory::CheckBox::Create(this, "Paint a &border around the image", "l:1,b:1,w:50");
     }
     ImageRenderingMethod GetMethod()
     {
@@ -6630,7 +6633,7 @@ class MainWin : public Window
                 AppCUI::Graphics::Image img;
                 img.Create(256, 192);                                              // ZX Spectrum screen size
                 memcpy(img.GetPixelsBuffer(), dizzy_pixels, sizeof(dizzy_pixels)); // direct memory copy
-                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                ImageWinViewer iwv(img, GetMethod(), GetScale(), cbBorder->IsChecked());
                 iwv.Show();
                 return true;
             }
@@ -6639,7 +6642,7 @@ class MainWin : public Window
                 AppCUI::Graphics::Image img;
                 img.Create(150, 150);                                          // 150x150 small icon with my face
                 memcpy(img.GetPixelsBuffer(), gdt_pixels, sizeof(gdt_pixels)); // direct memory copy
-                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                ImageWinViewer iwv(img, GetMethod(), GetScale(), cbBorder->IsChecked());
                 iwv.Show();
                 return true;
             }
@@ -6670,7 +6673,7 @@ class MainWin : public Window
                         }
                     }
                 }
-                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                ImageWinViewer iwv(img, GetMethod(), GetScale(), cbBorder->IsChecked());
                 iwv.Show();
                 return true;
             }
@@ -6688,7 +6691,7 @@ class MainWin : public Window
                               Pixel(x * 16 * ((bit >> 2) & 1), x * 16 * ((bit >> 1) & 1), x * 16 * (bit & 1)));
                     }
                 }
-                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                ImageWinViewer iwv(img, GetMethod(), GetScale(), cbBorder->IsChecked());
                 iwv.Show();
                 return true;
             }
@@ -6706,7 +6709,7 @@ class MainWin : public Window
                       "...66..."
                       "..6666.."
                       "bBbBbBbB");
-                ImageWinViewer iwv(img, GetMethod(), GetScale());
+                ImageWinViewer iwv(img, GetMethod(), GetScale(), cbBorder->IsChecked());
                 iwv.Show();
                 return true;
             }
@@ -6722,7 +6725,7 @@ class MainWin : public Window
                     }
                     else
                     {
-                        ImageWinViewer iwv(img, GetMethod(), GetScale());
+                        ImageWinViewer iwv(img, GetMethod(), GetScale(), cbBorder->IsChecked());
                         iwv.Show();
                     }
                 }
