@@ -1517,6 +1517,14 @@ void Controls::Control::UpdateVScrollBar(uint64 value, uint64 maxValue)
     CTRLC->ScrollBars.VerticalValue    = value;
     CTRLC->ScrollBars.MaxVerticalValue = maxValue;
 }
+void Controls::Control::SetVScrollBarTopMargin(uint32 space)
+{
+    CTRLC->ScrollBars.TopMargin = space;
+}
+void Controls::Control::SetHScrollBarLeftMarging(uint32 space)
+{
+    CTRLC->ScrollBars.LeftMargin = space;
+}
 int Controls::Control::GetGroup()
 {
     return CTRLC->GroupID;
