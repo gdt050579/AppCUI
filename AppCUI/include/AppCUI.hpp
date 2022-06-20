@@ -3605,6 +3605,8 @@ namespace Controls
         // Scroll bars
         void UpdateHScrollBar(uint64 value, uint64 maxValue);
         void UpdateVScrollBar(uint64 value, uint64 maxValue);
+        void SetVScrollBarTopMargin(uint32 space);
+        void SetHScrollBarLeftMarging(uint32 space);
 
         // handlers
         virtual Handlers::Control* Handlers();
