@@ -11,8 +11,8 @@ void CanvasControlContext::MoveScrollTo(int newX, int newY)
 
     if (this->Flags && ViewerFlags::Border)
     {
-        viewWidth++;
-        viewHeight++;
+        viewWidth -= 2;
+        viewHeight -= 2;
     }
 
     if ((newX + imgWidth) < viewWidth)
@@ -100,15 +100,19 @@ void CanvasViewer::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
 
+    uint32 borderSize = Members->Flags && ViewerFlags::Border ? 2 : 0;
+
     // horizontal
-    if (Members->canvas.GetHeight() > (uint32) Members->Layout.Height)
-        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (uint32) Members->Layout.Height);
+    if (Members->canvas.GetHeight() > (borderSize + (uint32) Members->Layout.Height))
+        UpdateVScrollBar(
+              -Members->CanvasScrollY, Members->canvas.GetHeight() - (borderSize + (uint32) Members->Layout.Height));
     else
         UpdateVScrollBar(-Members->CanvasScrollY, 0);
 
     // vertical
-    if (Members->canvas.GetWidth() > (uint32) Members->Layout.Width)
-        UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth() - (uint32) Members->Layout.Width);
+    if (Members->canvas.GetWidth() > (borderSize + (uint32) Members->Layout.Width))
+        UpdateHScrollBar(
+              -Members->CanvasScrollX, Members->canvas.GetWidth() - (borderSize + (uint32) Members->Layout.Width));
     else
         UpdateHScrollBar(-Members->CanvasScrollX, 0);
 }
