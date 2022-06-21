@@ -4,10 +4,16 @@ namespace AppCUI
 {
 void CanvasControlContext::MoveScrollTo(int newX, int newY)
 {
-    const int imgWidth   = canvas.GetWidth();
-    const int imgHeight  = canvas.GetHeight();
-    const int viewWidth  = Layout.Width;
-    const int viewHeight = Layout.Height;
+    const int imgWidth  = canvas.GetWidth();
+    const int imgHeight = canvas.GetHeight();
+    int viewWidth       = Layout.Width;
+    int viewHeight      = Layout.Height;
+
+    if (this->Flags && ViewerFlags::Border)
+    {
+        viewWidth -= 2;
+        viewHeight -= 2;
+    }
 
     if ((newX + imgWidth) < viewWidth)
         newX = viewWidth - imgWidth;
@@ -28,7 +34,7 @@ CanvasViewer::CanvasViewer(
     auto Members = reinterpret_cast<CanvasControlContext*>(this->Context);
 
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP | ((uint32) flags);
-    if (((((uint32) flags) & ((uint32) ViewerFlags::HideScrollBar)) == 0))
+    if (!(Members->Flags && ViewerFlags::HideScrollBar))
     {
         Members->Flags |= (GATTR_VSCROLL | GATTR_HSCROLL);
     }
@@ -37,7 +43,7 @@ CanvasViewer::CanvasViewer(
     Members->mouseDragX                = 0;
     Members->mouseDragY                = 0;
     Members->dragModeEnabled           = false;
-    Members->ScrollBars.OutsideControl = ((((uint32) flags) & ((uint32) ViewerFlags::Border)) == 0);
+    Members->ScrollBars.OutsideControl = !(Members->Flags && ViewerFlags::Border);
     ASSERT(Members->canvas.Create(canvasWidth, canvasHeight), "Fail to create a canvas of size object !");
 }
 
@@ -49,8 +55,10 @@ CanvasViewer::~CanvasViewer()
 void CanvasViewer::Paint(Graphics::Renderer& renderer)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
+    auto left = 0;
+    auto top  = 0;
 
-    if (Members->Flags & ((uint32) ViewerFlags::Border))
+    if (Members->Flags && ViewerFlags::Border)
     {
         renderer.DrawRectSize(
               0,
@@ -76,27 +84,35 @@ void CanvasViewer::Paint(Graphics::Renderer& renderer)
         }
         if (!renderer.SetClipMargins(1, 1, 1, 1))
             return; // clipping is not visible --> no need to try to draw the rest
+        left = top = 1;
     }
     if (!this->IsEnabled())
         renderer.DrawCanvas(
-              Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas, Members->Cfg->Text.Inactive);
+              Members->CanvasScrollX + left,
+              Members->CanvasScrollY + top,
+              Members->canvas,
+              Members->Cfg->Text.Inactive);
     else
-        renderer.DrawCanvas(Members->CanvasScrollX, Members->CanvasScrollY, Members->canvas);
+        renderer.DrawCanvas(Members->CanvasScrollX + left, Members->CanvasScrollY + top, Members->canvas);
 }
 
 void CanvasViewer::OnUpdateScrollBars()
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
 
+    uint32 borderSize = Members->Flags && ViewerFlags::Border ? 2 : 0;
+
     // horizontal
-    if (Members->canvas.GetHeight() > (uint32) Members->Layout.Height)
-        UpdateVScrollBar(-Members->CanvasScrollY, Members->canvas.GetHeight() - (uint32) Members->Layout.Height);
+    if (Members->canvas.GetHeight() > (borderSize + (uint32) Members->Layout.Height))
+        UpdateVScrollBar(
+              -Members->CanvasScrollY, Members->canvas.GetHeight() - (borderSize + (uint32) Members->Layout.Height));
     else
         UpdateVScrollBar(-Members->CanvasScrollY, 0);
 
     // vertical
-    if (Members->canvas.GetWidth() > (uint32) Members->Layout.Width)
-        UpdateHScrollBar(-Members->CanvasScrollX, Members->canvas.GetWidth() - (uint32) Members->Layout.Width);
+    if (Members->canvas.GetWidth() > (borderSize + (uint32) Members->Layout.Width))
+        UpdateHScrollBar(
+              -Members->CanvasScrollX, Members->canvas.GetWidth() - (borderSize + (uint32) Members->Layout.Width));
     else
         UpdateHScrollBar(-Members->CanvasScrollX, 0);
 }
