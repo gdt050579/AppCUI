@@ -26,16 +26,22 @@ bool File::OpenWrite(const std::filesystem::path& filePath)
     Close();
 
     // sanitize -> https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
-    auto path = filePath.u16string();
-    std::replace(path.begin(), path.end(), L'/', L'\\');
+    auto path      = filePath.u16string();
+    auto u16svPath = std::u16string_view{ path.data(), path.size() };
 
-    LocalUnicodeStringBuilder<1024> longPath;
-    CHECK(longPath.Add(longPathPrefix), false, "");
-    CHECK(longPath.Add(path), false, "");
-    CHECK(longPath.AddChar(u'\0'), false, "");
+    LocalUnicodeStringBuilder<2048> longPath;
+    if (u16svPath.size() >= MAX_PATH && u16svPath.starts_with(u"\\") == false && u16svPath.starts_with(u"\?") == false)
+    {
+        std::replace(path.begin(), path.end(), L'/', L'\\');
+
+        CHECK(longPath.Add(longPathPrefix), false, "");
+        CHECK(longPath.Add(path), false, "");
+        CHECK(longPath.AddChar(u'\0'), false, "");
+        u16svPath = longPath.ToStringView();
+    }
 
     HANDLE hFile = CreateFileW(
-          (LPCWSTR) longPath.GetString(),
+          (LPCWSTR) u16svPath.data(),
           GENERIC_READ | GENERIC_WRITE,
           FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL,
@@ -62,22 +68,22 @@ bool File::OpenRead(const std::filesystem::path& filePath)
     Close();
 
     // sanitize -> https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
-    auto path = filePath.u16string();
-    std::replace(path.begin(), path.end(), L'/', L'\\');
+    auto path      = filePath.u16string();
+    auto u16svPath = std::u16string_view{ path.data(), path.size() };
 
-    LocalUnicodeStringBuilder<1024> longPath;
-    CHECK(longPath.Add(longPathPrefix), false, "");
-    CHECK(longPath.Add(path), false, "");
-    CHECK(longPath.AddChar(u'\0'), false, "");
+    LocalUnicodeStringBuilder<2048> longPath;
+    if (u16svPath.size() >= MAX_PATH && u16svPath.starts_with(u"\\") == false && u16svPath.starts_with(u"\?") == false)
+    {
+        std::replace(path.begin(), path.end(), L'/', L'\\');
+
+        CHECK(longPath.Add(longPathPrefix), false, "");
+        CHECK(longPath.Add(path), false, "");
+        CHECK(longPath.AddChar(u'\0'), false, "");
+        u16svPath = longPath.ToStringView();
+    }
 
     HANDLE hFile = CreateFileW(
-          (LPCWSTR) longPath.GetString(),
-          GENERIC_READ,
-          FILE_SHARE_READ | FILE_SHARE_WRITE,
-          NULL,
-          OPEN_EXISTING,
-          0,
-          NULL);
+          (LPCWSTR) u16svPath.data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 
     CHECK(hFile != INVALID_HANDLE_VALUE,
           false,
@@ -95,16 +101,22 @@ bool File::Create(const std::filesystem::path& filePath, bool overwriteExisting)
     Close();
 
     // sanitize -> https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=powershell
-    auto path = filePath.u16string();
-    std::replace(path.begin(), path.end(), L'/', L'\\');
+    auto path      = filePath.u16string();
+    auto u16svPath = std::u16string_view{ path.data(), path.size() };
 
-    LocalUnicodeStringBuilder<1024> longPath;
-    CHECK(longPath.Add(longPathPrefix), false, "");
-    CHECK(longPath.Add(path), false, "");
-    CHECK(longPath.AddChar(u'\0'), false, "");
+    LocalUnicodeStringBuilder<2048> longPath;
+    if (u16svPath.size() >= MAX_PATH && u16svPath.starts_with(u"\\") == false && u16svPath.starts_with(u"\?") == false)
+    {
+        std::replace(path.begin(), path.end(), L'/', L'\\');
+
+        CHECK(longPath.Add(longPathPrefix), false, "");
+        CHECK(longPath.Add(path), false, "");
+        CHECK(longPath.AddChar(u'\0'), false, "");
+        u16svPath = longPath.ToStringView();
+    }
 
     HANDLE hFile = CreateFileW(
-          (LPCWSTR) longPath.GetString(),
+          (LPCWSTR) u16svPath.data(),
           GENERIC_READ | GENERIC_WRITE,
           FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL,
