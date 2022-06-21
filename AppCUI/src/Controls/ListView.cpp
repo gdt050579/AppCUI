@@ -104,6 +104,9 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     case ListViewItem::Type::Emphasized_2:
         itemCol = Cfg->Text.Emphasized2;
         break;
+    case ListViewItem::Type::Emphasized_3:
+        itemCol = Cfg->Text.Emphasized3;
+        break;
     case ListViewItem::Type::Category:
         itemCol = Cfg->Text.Highlighted;
         break;

@@ -3003,8 +3003,9 @@ namespace Controls
             WarningInformation = 4,
             Emphasized_1       = 5,
             Emphasized_2       = 6,
-            Category           = 7,
-            Colored            = 8
+            Emphasized_3       = 7,
+            Category           = 8,
+            Colored            = 9
         };
 
       public:
@@ -5317,7 +5318,7 @@ namespace Application
         struct
         {
             Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Emphasized1,
-                  Emphasized2;
+                  Emphasized2, Emphasized3;
         } Text;
         struct
         {
