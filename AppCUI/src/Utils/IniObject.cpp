@@ -280,7 +280,29 @@ void AddSectionValueToString(std::string& res, std::string value)
     res += value;
     res += string_separator;
 }
-void AddSectionToString(std::string& res, Ini::Section& sect)
+void AddValueToString(std::string& res,AppCUI::Ini::Value& value)
+{
+    res += value.KeyName;
+    res += " = ";
+    if (value.KeyValues.size() > 0)
+    {
+        auto sz = value.KeyValues.size();
+        res += "[";
+        for (size_t index = 0; index < sz; index++)
+        {
+            if (index > 0)
+                res += " , ";
+            AddSectionValueToString(res, value.KeyValues[index]);
+        }
+        res += "]";
+    }
+    else
+    {
+        AddSectionValueToString(res, value.KeyValue);
+    }
+    res += "\n";
+}
+void AddSectionToString(std::string& res, Ini::Section& sect, bool sorted)
 {
     res += "\n";
     if (sect.Name.Len() > 0)
@@ -293,25 +315,7 @@ void AddSectionToString(std::string& res, Ini::Section& sect)
     // add values
     for (auto& entry : sect.Keys)
     {
-        res += entry.second.KeyName;
-        res += " = ";
-        if (entry.second.KeyValues.size() > 0)
-        {
-            auto sz = entry.second.KeyValues.size();
-            res += "[";
-            for (size_t index = 0; index < sz; index++)
-            {
-                if (index > 0)
-                    res += " , ";
-                AddSectionValueToString(res, entry.second.KeyValues[index]);
-            }
-            res += "]";
-        }
-        else
-        {
-            AddSectionValueToString(res, entry.second.KeyValue);
-        }
-        res += "\n";
+        AddValueToString(res, entry.second);
     }
 }
 
