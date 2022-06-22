@@ -280,7 +280,29 @@ void AddSectionValueToString(std::string& res, std::string value)
     res += value;
     res += string_separator;
 }
-void AddSectionToString(std::string& res, Ini::Section& sect)
+void AddValueToString(std::string& res,AppCUI::Ini::Value& value)
+{
+    res += value.KeyName;
+    res += " = ";
+    if (value.KeyValues.size() > 0)
+    {
+        auto sz = value.KeyValues.size();
+        res += "[";
+        for (size_t index = 0; index < sz; index++)
+        {
+            if (index > 0)
+                res += " , ";
+            AddSectionValueToString(res, value.KeyValues[index]);
+        }
+        res += "]";
+    }
+    else
+    {
+        AddSectionValueToString(res, value.KeyValue);
+    }
+    res += "\n";
+}
+void AddSectionToString(std::string& res, Ini::Section& sect, bool sorted)
 {
     res += "\n";
     if (sect.Name.Len() > 0)
@@ -291,27 +313,33 @@ void AddSectionToString(std::string& res, Ini::Section& sect)
         res += "\n";
     }
     // add values
-    for (auto& entry : sect.Keys)
+    if (sorted)
     {
-        res += entry.second.KeyName;
-        res += " = ";
-        if (entry.second.KeyValues.size() > 0)
+        PointerArrayStorage<AppCUI::Ini::Value> entries(sect.Keys.size());
+        size_t idx = 0;
+        for (auto& entry : sect.Keys)
+            entries[idx++] = &entry.second;
+        struct
         {
-            auto sz = entry.second.KeyValues.size();
-            res += "[";
-            for (size_t index = 0; index < sz; index++)
+            bool operator()(AppCUI::Ini::Value* v1, AppCUI::Ini::Value* v2) const
             {
-                if (index > 0)
-                    res += " , ";
-                AddSectionValueToString(res, entry.second.KeyValues[index]);
+                return String::Compare(v1->KeyName.c_str(), v2->KeyName.c_str(), true) < 0;
             }
-            res += "]";
-        }
-        else
+        } CompareIniValue;
+        std::sort(entries.begin(), entries.end(), CompareIniValue);
+        // write entries to the string
+        for (auto entry : entries)
         {
-            AddSectionValueToString(res, entry.second.KeyValue);
+            AddValueToString(res, *entry);
         }
-        res += "\n";
+    }
+    else
+    {
+        // write them as they are (faster)
+        for (auto& entry : sect.Keys)
+        {
+            AddValueToString(res, entry.second);
+        }
     }
 }
 
@@ -1591,18 +1619,42 @@ uint32 IniObject::GetSectionsCount()
     return (uint32) WRAPPER->Sections.size();
 }
 
-string_view IniObject::ToString()
+string_view IniObject::ToString(bool sorted)
 {
     VALIDATE_INITED(string_view());
     WRAPPER->toStringBuffer.reserve(4096);
     WRAPPER->toStringBuffer.clear();
 
     // add default section
-    AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection);
+    AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection, sorted);
+    
     // add rest of the sections
-    for (auto& entry : WRAPPER->Sections)
+    if (sorted)
     {
-        AddSectionToString(WRAPPER->toStringBuffer, *entry.second);
+        PointerArrayStorage<AppCUI::Ini::Section> entries(WRAPPER->Sections.size());
+        size_t idx = 0;
+        for (auto& entry : WRAPPER->Sections)
+            entries[idx++] = entry.second.get();
+        struct
+        {
+            bool operator()(AppCUI::Ini::Section* s1, AppCUI::Ini::Section* s2) const
+            {
+                return s1->Name.CompareWith(s2->Name.GetText(),true) < 0;
+            }
+        } CompareIniSections;
+        std::sort(entries.begin(), entries.end(), CompareIniSections);
+        for (auto entry : entries)
+        {
+            AddSectionToString(WRAPPER->toStringBuffer, *entry, sorted);
+        }
+    }
+    else
+    {
+        // faster -> no sort
+        for (auto& entry : WRAPPER->Sections)
+        {
+            AddSectionToString(WRAPPER->toStringBuffer, *entry.second, sorted);
+        }
     }
     // return result
     return (string_view) WRAPPER->toStringBuffer;
