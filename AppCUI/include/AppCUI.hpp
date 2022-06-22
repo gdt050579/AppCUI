@@ -799,6 +799,44 @@ namespace Utils
             return callback(data, args...);
         }
     };
+
+    template <typename T, size_t stackAllocated = 128>
+    class PointerArrayStorage
+    {
+        static_assert(stackAllocated >= 1, "Expected a size bigger than one elements !");
+        T* stack[stackAllocated];
+        T** elements;
+        size_t size;
+
+      public:
+        PointerArrayStorage(size_t elementsCount)
+        {
+            if (elementsCount <= stackAllocated)
+                elements = stack;
+            else
+                elements = new T*[elementsCount];
+            size       = elementsCount;
+        }
+        ~PointerArrayStorage()
+        {
+            if (size > stackAllocated)
+                delete[] elements;
+            elements = nullptr;
+            size     = 0;
+        }
+        inline size_t GetLength() const
+        {
+            return size;
+        }
+        inline T*& operator[](size_t index) const
+        {
+            return elements[index];
+        }
+        inline T* GetArray() const
+        {
+            return elements;
+        }
+    };
 } // namespace Utils
 using Utils::ConstString;
 namespace Application
@@ -2050,7 +2088,7 @@ namespace Utils
         bool DeleteSection(string_view name);
         bool DeleteValue(string_view valuePath);
 
-        string_view ToString();
+        string_view ToString(bool sorted = true);
     };
 
 }; // namespace Utils

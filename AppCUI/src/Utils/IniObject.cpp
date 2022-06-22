@@ -313,9 +313,20 @@ void AddSectionToString(std::string& res, Ini::Section& sect, bool sorted)
         res += "\n";
     }
     // add values
-    for (auto& entry : sect.Keys)
+    if (sorted)
     {
-        AddValueToString(res, entry.second);
+        PointerArrayStorage<AppCUI::Ini::Value> entries(sect.Keys.size());
+        size_t idx = 0;
+        for (auto& entry : sect.Keys)
+            entries[idx++] = &entry.second;
+    }
+    else
+    {
+        // write them as they are (faster)
+        for (auto& entry : sect.Keys)
+        {
+            AddValueToString(res, entry.second);
+        }
     }
 }
 
@@ -1595,18 +1606,18 @@ uint32 IniObject::GetSectionsCount()
     return (uint32) WRAPPER->Sections.size();
 }
 
-string_view IniObject::ToString()
+string_view IniObject::ToString(bool sorted)
 {
     VALIDATE_INITED(string_view());
     WRAPPER->toStringBuffer.reserve(4096);
     WRAPPER->toStringBuffer.clear();
 
     // add default section
-    AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection);
+    AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection, sorted);
     // add rest of the sections
     for (auto& entry : WRAPPER->Sections)
     {
-        AddSectionToString(WRAPPER->toStringBuffer, *entry.second);
+        AddSectionToString(WRAPPER->toStringBuffer, *entry.second, sorted);
     }
     // return result
     return (string_view) WRAPPER->toStringBuffer;
