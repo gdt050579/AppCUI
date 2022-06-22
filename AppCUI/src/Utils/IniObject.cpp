@@ -1627,10 +1627,34 @@ string_view IniObject::ToString(bool sorted)
 
     // add default section
     AddSectionToString(WRAPPER->toStringBuffer, WRAPPER->DefaultSection, sorted);
+    
     // add rest of the sections
-    for (auto& entry : WRAPPER->Sections)
+    if (sorted)
     {
-        AddSectionToString(WRAPPER->toStringBuffer, *entry.second, sorted);
+        PointerArrayStorage<AppCUI::Ini::Section> entries(WRAPPER->Sections.size());
+        size_t idx = 0;
+        for (auto& entry : WRAPPER->Sections)
+            entries[idx++] = entry.second.get();
+        struct
+        {
+            bool operator()(AppCUI::Ini::Section* s1, AppCUI::Ini::Section* s2) const
+            {
+                return s1->Name.CompareWith(s2->Name.GetText(),true) < 0;
+            }
+        } CompareIniSections;
+        std::sort(entries.begin(), entries.end(), CompareIniSections);
+        for (auto entry : entries)
+        {
+            AddSectionToString(WRAPPER->toStringBuffer, *entry, sorted);
+        }
+    }
+    else
+    {
+        // faster -> no sort
+        for (auto& entry : WRAPPER->Sections)
+        {
+            AddSectionToString(WRAPPER->toStringBuffer, *entry.second, sorted);
+        }
     }
     // return result
     return (string_view) WRAPPER->toStringBuffer;
