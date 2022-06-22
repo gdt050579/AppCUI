@@ -832,9 +832,17 @@ namespace Utils
         {
             return elements[index];
         }
-        inline T* GetArray() const
+        inline T** GetArray() const
         {
             return elements;
+        }
+        inline T** begin() const
+        {
+            return elements; 
+        }
+        inline T** end() const
+        {
+            return elements + size;
         }
     };
 } // namespace Utils

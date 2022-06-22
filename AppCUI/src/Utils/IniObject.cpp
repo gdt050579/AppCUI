@@ -319,6 +319,19 @@ void AddSectionToString(std::string& res, Ini::Section& sect, bool sorted)
         size_t idx = 0;
         for (auto& entry : sect.Keys)
             entries[idx++] = &entry.second;
+        struct
+        {
+            bool operator()(AppCUI::Ini::Value* v1, AppCUI::Ini::Value* v2) const
+            {
+                return String::Compare(v1->KeyName.c_str(), v2->KeyName.c_str(), true) < 0;
+            }
+        } CompareIniValue;
+        std::sort(entries.begin(), entries.end(), CompareIniValue);
+        // write entries to the string
+        for (auto entry : entries)
+        {
+            AddValueToString(res, *entry);
+        }
     }
     else
     {
