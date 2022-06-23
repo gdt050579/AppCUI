@@ -63,7 +63,7 @@ void GameOverState::Resume()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool GameOverState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar)
+bool GameOverState::OnKeyEvent(Reference<Control> /*control*/, Key keyCode, char16_t /*unicodeChar*/)
 {
     if (keyCode == Key::Enter)
     {

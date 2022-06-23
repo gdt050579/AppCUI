@@ -2,7 +2,7 @@
 
 namespace Snake
 {
-StateMachine::StateMachine(StateMachine* other)
+StateMachine::StateMachine(StateMachine* /*other*/)
 {
 }
 
@@ -61,4 +61,4 @@ bool StateMachine::GetStatesCount() const
 {
     return states.size();
 }
-} // namespace Tetris
+} // namespace Snake

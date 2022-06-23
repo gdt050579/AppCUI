@@ -47,12 +47,12 @@ void SnakeBody::UpdatePosition(const Point& delta)
         body[1].second = lastColorAte;
     }
     else // pass the color before popping
-    {        
-        for (auto i = 0; i < body.size() - 1; i++)
+    {
+        for (auto i = 0; i < static_cast<int>(body.size()) - 1; i++)
         {
-            auto& entry  = body[i];
-            auto& nEntry = body[i + 1ULL];
-            entry.second = nEntry.second;
+            auto& entry        = body[i];
+            const auto& nEntry = body[i + 1ULL];
+            entry.second       = nEntry.second;
         }
 
         body.pop_back();

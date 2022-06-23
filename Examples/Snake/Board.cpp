@@ -103,7 +103,7 @@ void Board::GenerateFruit()
     matrix[p.Y][p.X] = true;
 }
 
-void Board::Update(int scale, const Reference<Control> control, const Size& size, unsigned long delta, bool& gameOver)
+void Board::Update(int scale, const Reference<Control> /*control*/, const Size& size, unsigned long delta, bool& gameOver)
 {
     gameOver = false;
     level    = static_cast<unsigned int>(delta / deltaLevelIncrease) + 1;
