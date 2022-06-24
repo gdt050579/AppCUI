@@ -28,7 +28,7 @@ void PauseState::Init()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool PauseState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
+bool PauseState::HandleEvent(Reference<Control> /*ctrl*/, Event eventType, int controlID)
 {
     switch (eventType)
     {
@@ -84,7 +84,7 @@ bool PauseState::DoActionForControl(int controlID)
     return true;
 }
 
-bool PauseState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar)
+bool PauseState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t /*unicodeChar*/)
 
 {
     switch (keyCode)
@@ -145,4 +145,4 @@ bool PauseState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t un
 
     return false;
 }
-} // namespace Tetris
+} // namespace Snake

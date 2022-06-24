@@ -38,7 +38,7 @@ void GameOverState::Init()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool GameOverState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
+bool GameOverState::HandleEvent(Reference<Control> /*ctrl*/, Event /*eventType*/, int /*controlID*/)
 {
     return false;
 }

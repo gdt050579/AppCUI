@@ -2,20 +2,20 @@
 
 namespace Snake
 {
-bool Board::SetDirection(HeadingTo direction)
+bool Board::SetDirection(HeadingTo newDirection)
 {
     CHECK(directionUpdated, false, "");
 
     // you can't change direction 180 degrees
-    if (this->direction == HeadingTo::Down && direction == HeadingTo::Up ||
-        direction == HeadingTo::Down && this->direction == HeadingTo::Up ||
-        direction == HeadingTo::Left && this->direction == HeadingTo::Right ||
-        this->direction == HeadingTo::Left && direction == HeadingTo::Right)
+    if (((this->direction == HeadingTo::Down) && (newDirection == HeadingTo::Up)) ||
+        ((this->direction == HeadingTo::Up) && (newDirection == HeadingTo::Down)) ||
+        ((this->direction == HeadingTo::Left) && (newDirection == HeadingTo::Right)) ||
+        ((this->direction == HeadingTo::Right) && (newDirection == HeadingTo::Left)))
     {
         return false;
     }
 
-    this->direction  = direction;
+    this->direction  = newDirection;
     directionUpdated = false;
 
     return true;
@@ -103,7 +103,8 @@ void Board::GenerateFruit()
     matrix[p.Y][p.X] = true;
 }
 
-void Board::Update(int scale, const Reference<Control> /*control*/, const Size& size, unsigned long delta, bool& gameOver)
+void Board::Update(
+      int scale, const Reference<Control> /*control*/, const Size& size, unsigned long delta, bool& gameOver)
 {
     gameOver = false;
     level    = static_cast<unsigned int>(delta / deltaLevelIncrease) + 1;
