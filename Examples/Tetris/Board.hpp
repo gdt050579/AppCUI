@@ -24,7 +24,7 @@ class Board
     int matrixYBottom = 0;
 
     Size size{ 1, 1 }; // block size on canvas
-    ColorPair colorBorder{ Color::White, Color::Transparent };
+    //ColorPair colorBorder{ Color::White, Color::Transparent };
 
     std::deque<Piece> pieces{};
     std::optional<Piece> currentPiece;
