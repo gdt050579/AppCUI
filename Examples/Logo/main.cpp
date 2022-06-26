@@ -27,7 +27,7 @@ class LogoWin : public Window
             for (int x = 0; AppCuiLogo[y][x]; x++)
             {
                 SpecialChars sc{};
-                ColorPair col;
+                ColorPair col = NoColorPair;
                 switch (AppCuiLogo[y][x])
                 {
                 case 'X':
