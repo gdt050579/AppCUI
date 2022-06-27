@@ -594,7 +594,7 @@ void ListViewControlContext::UpdateSelectionInfo()
               "Fail to create selection string ");
         CHECKBK(tmp.SetFormat("[%u/%u]", count, size), "Fail to format selection status string !");
         this->Selection.StatusLength = tmp.Len();
-        this->Selection.Count        = count; 
+        this->Selection.Count        = count;
         return;
     }
     this->Selection.Status[0]    = 0;
@@ -645,46 +645,67 @@ void ListViewControlContext::MoveTo(int index)
     if (originalPoz != index)
         TriggerListViewItemChangedEvent();
 }
-void ListViewControlContext::CopyToClipboard(bool justCurrentItem)
+void ListViewControlContext::CopyToClipboard(bool justCurrentItem, bool HTMLformat)
 {
     LocalUnicodeStringBuilder<256> temp;
 
+    if (Items.Indexes.Len() == 0)
+        return;
+
+    if (HTMLformat)
+        temp.Add("<table>");
+
     if (justCurrentItem)
     {
-        if (Items.Indexes.Len() > 0)
+        if (HTMLformat)
+            temp.Add("<tr>");
+        for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
         {
-            for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
+            if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
             {
-                if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
-                {
-                    temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
-                    if (clipboardSeparator != 0)
-                        temp.Add(string_view{ &clipboardSeparator, 1 });
-                }
+                if (HTMLformat)
+                    temp.Add("<td>");
+                temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
+                if (HTMLformat)
+                    temp.Add("</td>");
+                else if (clipboardSeparator != 0)
+                    temp.Add(string_view{ &clipboardSeparator, 1 });
             }
-            OS::Clipboard::SetText(temp);
         }
+        if (HTMLformat)
+            temp.Add("</tr>");
     }
     else
     {
         // copy all selected items
         for (uint32 gr = 0; gr < Items.Indexes.Len(); gr++)
-        {   
+        {
             if ((GetFilteredItem(gr)->Flags & ITEM_FLAG_SELECTED) == 0)
                 continue;
+            if (HTMLformat)
+                temp.Add("<tr>");
             for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
             {
                 if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
                 {
+                    if (HTMLformat)
+                        temp.Add("<td>");
                     temp.Add(GetFilteredItem(gr)->SubItem[tr]);
-                    if (clipboardSeparator != 0)
+                    if (HTMLformat)
+                        temp.Add("</td>");
+                    else if (clipboardSeparator != 0)
                         temp.Add(string_view{ &clipboardSeparator, 1 });
                 }
             }
-            temp.Add("\n");
+            if (HTMLformat)
+                temp.Add("</tr>");
+            else
+                temp.Add("\n");
         }
-        OS::Clipboard::SetText(temp);
     }
+    if (HTMLformat)
+        temp.Add("</table>");
+    OS::Clipboard::SetText(temp);
 }
 bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
