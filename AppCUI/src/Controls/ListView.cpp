@@ -594,10 +594,12 @@ void ListViewControlContext::UpdateSelectionInfo()
               "Fail to create selection string ");
         CHECKBK(tmp.SetFormat("[%u/%u]", count, size), "Fail to format selection status string !");
         this->Selection.StatusLength = tmp.Len();
+        this->Selection.Count        = count; 
         return;
     }
     this->Selection.Status[0]    = 0;
     this->Selection.StatusLength = 0;
+    this->Selection.Count        = 0;
 }
 void ListViewControlContext::UpdateSelection(int start, int end, bool select)
 {
@@ -665,8 +667,11 @@ void ListViewControlContext::CopyToClipboard(bool justCurrentItem)
     }
     else
     {
+        // copy all selected items
         for (uint32 gr = 0; gr < Items.Indexes.Len(); gr++)
-        {
+        {   
+            if ((GetFilteredItem(gr)->Flags & ITEM_FLAG_SELECTED) == 0)
+                continue;
             for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
             {
                 if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
@@ -840,7 +845,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 
     case Key::Ctrl | Key::C:
     case Key::Ctrl | Key::Insert:
-
+        CopyToClipboard(this->Selection.Count == 0);
         return true;
     case Key::Ctrl | Key::Alt | Key::Insert:
         CopyToClipboard(true);
@@ -1242,6 +1247,7 @@ ListView::ListView(string_view layout, std::initializer_list<ConstString> column
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
+    Members->Selection.Count        = 0;
 }
 void ListView::Paint(Graphics::Renderer& renderer)
 {

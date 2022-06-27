@@ -678,6 +678,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     {
         char Status[20];
         uint32 StatusLength;
+        uint32 Count;
     } Selection;
     char clipboardSeparator;
 
@@ -726,7 +727,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     bool SetFirstVisibleLine(ItemHandle item);
     int GetVisibleItemsCount();
 
-    void CopyToClipboard(bool allSelected);
+    void CopyToClipboard(bool justCurrentItem);
 
     bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
     GenericRef GetItemDataAsPointer(const ItemHandle item) const;
