@@ -465,9 +465,10 @@ uint32 ListViewControlContext::GetItemHeight(ItemHandle item)
     PREPARE_LISTVIEW_ITEM(item, 0);
     return i.Height;
 }
-void ListViewControlContext::SetClipboardSeparator(char ch)
+void ListViewControlContext::SetClipboardFormat(bool htmlFormat, char textFormatSeparator)
 {
-    clipboardSeparator = ch;
+    clipboardSeparator  = textFormatSeparator;
+    clipboardHtmlFormat = htmlFormat;
 }
 
 bool ListViewControlContext::IsItemChecked(ItemHandle item)
@@ -1401,9 +1402,9 @@ uint32 ListView::GetCheckedItemsCount()
     return WRAPPER->GetCheckedItemsCount();
 }
 
-void ListView::SetClipboardSeparator(char ch)
+void ListView::SetClipboardFormat(bool htmlFormat, char textFormatSeparator)
 {
-    WRAPPER->SetClipboardSeparator(ch);
+    WRAPPER->SetClipboardFormat(htmlFormat, textFormatSeparator);
 }
 
 void ListView::OnMousePressed(int x, int y, Input::MouseButton button)

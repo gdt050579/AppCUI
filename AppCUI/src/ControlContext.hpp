@@ -681,6 +681,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
         uint32 Count;
     } Selection;
     char clipboardSeparator;
+    bool clipboardHtmlFormat;
 
     Controls::ListView* Host;
 
@@ -711,7 +712,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
     bool SetItemType(ItemHandle item, ListViewItem::Type type);
-    void SetClipboardSeparator(char ch);
+    void SetClipboardFormat(bool htmlFormat, char textFormatSeparator);
     bool IsItemChecked(ItemHandle item);
     bool IsItemSelected(ItemHandle item);
     void SelectAllItems();

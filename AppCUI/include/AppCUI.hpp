@@ -4251,7 +4251,7 @@ namespace Controls
         bool SetCurrentItem(ListViewItem item);
 
         // misc
-        void SetClipboardSeparator(char ch);
+        void SetClipboardFormat(bool htmlFormat, char textFormatSeparator);
 
         // sort
         bool Sort();
