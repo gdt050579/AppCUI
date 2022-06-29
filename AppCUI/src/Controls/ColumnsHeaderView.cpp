@@ -18,6 +18,11 @@ ColumnsHeaderView::ColumnsHeaderView(
 ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Control(context, "", layout, false)
 {
 }
+
+void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format)
+{
+    // TODO
+}
 bool ColumnsHeaderView::HeaderHasMouseCaption() const
 {
     return ICH->Header.HasMouseCaption();

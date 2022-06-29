@@ -4158,6 +4158,12 @@ namespace Controls
         FixedSized     = 0x00008,
         HideHeader     = 0x00010,
     };
+    enum class CopyClipboardFormat : uint32
+    {
+        TextWithTabs,
+        CSV,
+        HTML
+    };
     class EXPORT ColumnsHeaderView : public Control
     {
       protected:
@@ -4183,6 +4189,8 @@ namespace Controls
         void SetFrozenColumnsCount(uint32 count = 0);
         std::optional<uint32> GetSortColumnIndex() const;
         Column GetSortColumn();
+
+        void SetClipboardFormat(CopyClipboardFormat format);
 
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
