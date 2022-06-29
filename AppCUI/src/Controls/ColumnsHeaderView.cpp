@@ -21,7 +21,7 @@ ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Contro
 
 void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format)
 {
-    // TODO
+    ICH->copyClipboardFormat = format;
 }
 bool ColumnsHeaderView::HeaderHasMouseCaption() const
 {

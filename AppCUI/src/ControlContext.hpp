@@ -648,11 +648,12 @@ class ColumnsHeader
 struct ColumnsHeaderViewControlContext : public ControlContext
 {
     ColumnsHeader Header;
+    CopyClipboardFormat copyClipboardFormat;
     ColumnsHeaderViewControlContext(
           Reference<ColumnsHeaderView> host,
           std::initializer_list<ConstString> columnsList,
           ColumnsHeaderViewFlags flags)
-        : Header(host, columnsList, flags)
+        : Header(host, columnsList, flags), copyClipboardFormat(CopyClipboardFormat::TextWithTabs)
     {
     }
 };
