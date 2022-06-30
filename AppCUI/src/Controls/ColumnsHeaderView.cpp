@@ -9,6 +9,23 @@ Graphics::CharacterBuffer null_column_reference; // use this as std::option<cons
 #define ICH         ((ColumnsHeaderViewControlContext*) (this->Context))
 #define NULL_COLUMN Column(nullptr, 0)
 
+ColumnsHeaderView::CopyToClipboardBuilder::CopyToClipboardBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& _output)
+    : output(_output), Context(obj->Context)
+{
+}
+bool ColumnsHeaderView::CopyToClipboardBuilder::AddNewLine()
+{
+}
+bool ColumnsHeaderView::CopyToClipboardBuilder::AddString(uint32 columnIndex, ConstString& text)
+{
+}
+bool ColumnsHeaderView::CopyToClipboardBuilder::AddString(uint32 columnIndex, const CharacterBuffer& text)
+{
+}
+bool ColumnsHeaderView::CopyToClipboardBuilder::Finalize()
+{
+}
+
 ColumnsHeaderView::ColumnsHeaderView(
       string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
     : ColumnsHeaderView(new ColumnsHeaderViewControlContext(this, columnsList, flags), layout)

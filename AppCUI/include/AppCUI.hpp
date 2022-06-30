@@ -4167,11 +4167,26 @@ namespace Controls
     class EXPORT ColumnsHeaderView : public Control
     {
       protected:
+        class CopyToClipboardBuilder
+        {
+            void* Context;
+            UnicodeStringBuilder& output;
+
+          public:
+            CopyToClipboardBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& output);
+            bool AddNewLine();
+            bool AddString(uint32 columnIndex, ConstString& text);
+            bool AddString(uint32 columnIndex, const CharacterBuffer& text);
+            bool Finalize();
+        };
+
         ColumnsHeaderView(
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
         ColumnsHeaderView(void* context, string_view layout);
         bool HeaderHasMouseCaption() const;
         bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
+
+
 
       public:
         // virtual methods
