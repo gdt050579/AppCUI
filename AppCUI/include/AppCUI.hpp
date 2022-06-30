@@ -4158,25 +4158,26 @@ namespace Controls
         FixedSized     = 0x00008,
         HideHeader     = 0x00010,
     };
-    enum class CopyClipboardFormat : uint32
+    enum class CopyClipboardFormat : uint8
     {
-        TextWithTabs,
+        TextWithTabs = 0,
         CSV,
         HTML
     };
     class EXPORT ColumnsHeaderView : public Control
     {
       protected:
-        class CopyToClipboardBuilder
+        class TableBuilder
         {
             void* Context;
             UnicodeStringBuilder& output;
+            uint8 state;
 
           public:
-            CopyToClipboardBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& output);
-            bool AddNewLine();
+            TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& output);
+            bool Start();
+            bool AddNewRow();
             bool AddString(uint32 columnIndex, ConstString& text);
-            bool AddString(uint32 columnIndex, const CharacterBuffer& text);
             bool Finalize();
         };
 

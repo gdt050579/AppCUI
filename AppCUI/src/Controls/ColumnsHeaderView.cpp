@@ -9,20 +9,67 @@ Graphics::CharacterBuffer null_column_reference; // use this as std::option<cons
 #define ICH         ((ColumnsHeaderViewControlContext*) (this->Context))
 #define NULL_COLUMN Column(nullptr, 0)
 
-ColumnsHeaderView::CopyToClipboardBuilder::CopyToClipboardBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& _output)
-    : output(_output), Context(obj->Context)
+constexpr uint8 TABLE_BUILDER_STATE_NONE      = 0;
+constexpr uint8 TABLE_BUILDER_STATE_ROW_ADDED = 1;
+
+ColumnsHeaderView::TableBuilder::TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& _output)
+    : output(_output), Context(obj->Context), state(TABLE_BUILDER_STATE_NONE)
+{
+    output.Clear();
+
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+    case CopyClipboardFormat::TextWithTabs:
+        // nothing to do
+        break;
+    case CopyClipboardFormat::HTML:
+
+        if (state == TABLE_BUILDER_STATE_NONE) // first raw
+        {
+            CHECK(output.Add("<tr>"), false, "");
+        }
+        else
+        {
+            CHECK(output.Add("</tr><tr>"), false, "");
+        }
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+}
+bool ColumnsHeaderView::TableBuilder::AddNewRow()
+{
+
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+    case CopyClipboardFormat::TextWithTabs:
+        if (state != TABLE_BUILDER_STATE_NONE) // no raw added
+        {
+            CHECK(output.Add("\n"), false, "");
+        }
+        break;
+    case CopyClipboardFormat::HTML:
+        if (state == TABLE_BUILDER_STATE_NONE) // first raw
+        {
+            CHECK(output.Add("<tr>"), false, "");
+        }
+        else
+        {
+            CHECK(output.Add("</tr><tr>"), false, "");
+        }
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+    state = TABLE_BUILDER_STATE_ROW_ADDED;
+    return true;    
+}
+bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString& text)
 {
 }
-bool ColumnsHeaderView::CopyToClipboardBuilder::AddNewLine()
-{
-}
-bool ColumnsHeaderView::CopyToClipboardBuilder::AddString(uint32 columnIndex, ConstString& text)
-{
-}
-bool ColumnsHeaderView::CopyToClipboardBuilder::AddString(uint32 columnIndex, const CharacterBuffer& text)
-{
-}
-bool ColumnsHeaderView::CopyToClipboardBuilder::Finalize()
+bool ColumnsHeaderView::TableBuilder::Finalize()
 {
 }
 
