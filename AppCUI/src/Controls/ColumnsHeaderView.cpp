@@ -10,13 +10,19 @@ Graphics::CharacterBuffer null_column_reference; // use this as std::option<cons
 #define NULL_COLUMN Column(nullptr, 0)
 
 constexpr uint8 TABLE_BUILDER_STATE_NONE      = 0;
-constexpr uint8 TABLE_BUILDER_STATE_ROW_ADDED = 1;
+constexpr uint8 TABLE_BUILDER_STATE_STARTED   = 1;
+constexpr uint8 TABLE_BUILDER_STATE_ROW_ADDED = 2;
 
 ColumnsHeaderView::TableBuilder::TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& _output)
     : output(_output), Context(obj->Context), state(TABLE_BUILDER_STATE_NONE)
 {
     output.Clear();
-
+}
+bool ColumnsHeaderView::TableBuilder::Start()
+{
+    CHECK(state == TABLE_BUILDER_STATE_NONE,
+          false,
+          "Fail to start the builder (you have already called this method) !");
     switch (ICH->copyClipboardFormat)
     {
     case CopyClipboardFormat::CSV:
@@ -24,34 +30,28 @@ ColumnsHeaderView::TableBuilder::TableBuilder(ColumnsHeaderView* obj, UnicodeStr
         // nothing to do
         break;
     case CopyClipboardFormat::HTML:
-
-        if (state == TABLE_BUILDER_STATE_NONE) // first raw
-        {
-            CHECK(output.Add("<tr>"), false, "");
-        }
-        else
-        {
-            CHECK(output.Add("</tr><tr>"), false, "");
-        }
+        CHECK(output.Add("<html><table>"), false, "");
         break;
     default:
         RETURNERROR(false, "Unknwon clipboard format");
     }
+    state = TABLE_BUILDER_STATE_STARTED;
+    return true;
 }
 bool ColumnsHeaderView::TableBuilder::AddNewRow()
 {
-
+    CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to add new row. Have you call `Start()` method ?");
     switch (ICH->copyClipboardFormat)
     {
     case CopyClipboardFormat::CSV:
     case CopyClipboardFormat::TextWithTabs:
-        if (state != TABLE_BUILDER_STATE_NONE) // no raw added
+        if (state != TABLE_BUILDER_STATE_STARTED) // no raw added
         {
             CHECK(output.Add("\n"), false, "");
         }
         break;
     case CopyClipboardFormat::HTML:
-        if (state == TABLE_BUILDER_STATE_NONE) // first raw
+        if (state == TABLE_BUILDER_STATE_STARTED) // first raw
         {
             CHECK(output.Add("<tr>"), false, "");
         }
@@ -64,13 +64,28 @@ bool ColumnsHeaderView::TableBuilder::AddNewRow()
         RETURNERROR(false, "Unknwon clipboard format");
     }
     state = TABLE_BUILDER_STATE_ROW_ADDED;
-    return true;    
+    return true;
 }
 bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString& text)
 {
+    CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to add string. Have you call `Start()` method ?");
 }
 bool ColumnsHeaderView::TableBuilder::Finalize()
 {
+    CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to complete the buffer. Have you call `Start()` method ?");
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+    case CopyClipboardFormat::TextWithTabs:
+        break;
+    case CopyClipboardFormat::HTML:
+        CHECK(output.Add("</table></html>"), false, "");
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+    state = TABLE_BUILDER_STATE_NONE;
+    return true;
 }
 
 ColumnsHeaderView::ColumnsHeaderView(
