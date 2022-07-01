@@ -69,6 +69,30 @@ bool ColumnsHeaderView::TableBuilder::AddNewRow()
 bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString& text)
 {
     CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to add string. Have you call `Start()` method ?");
+    CHECK(columnIndex < ICH->Header.GetColumnsCount(), false, "Invalid column index: %u", columnIndex);
+    CHECK((ICH->Header[columnIndex].flags & InternalColumnFlags::AllowValueCopy) == InternalColumnFlags::AllowValueCopy,
+          false,
+          "");
+
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+        CHECK(output.Add(text), false, "");
+        CHECK(output.Add(","), false, "");
+        break;
+    case CopyClipboardFormat::TextWithTabs:
+        CHECK(output.Add(text), false, "");
+        CHECK(output.Add("\t"), false, "");
+        break;
+    case CopyClipboardFormat::HTML:
+        CHECK(output.Add("<td>"), false, "");
+        CHECK(output.Add(text), false, "");
+        CHECK(output.Add("</td>"), false, "");
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+    return true;
 }
 bool ColumnsHeaderView::TableBuilder::Finalize()
 {
