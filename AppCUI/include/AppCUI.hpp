@@ -4166,7 +4166,7 @@ namespace Controls
     };
     class EXPORT ColumnsHeaderView : public Control
     {
-      protected:
+      public:
         class TableBuilder
         {
             void* Context;
@@ -4177,10 +4177,11 @@ namespace Controls
             TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& output);
             bool Start();
             bool AddNewRow();
-            bool AddString(uint32 columnIndex, ConstString& text);
+            bool AddString(uint32 columnIndex, ConstString text);
             bool Finalize();
         };
 
+      protected:
         ColumnsHeaderView(
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
         ColumnsHeaderView(void* context, string_view layout);

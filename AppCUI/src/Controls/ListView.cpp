@@ -648,30 +648,20 @@ void ListViewControlContext::CopyToClipboard(bool justCurrentItem, bool HTMLform
 
     if (Items.Indexes.Len() == 0)
         return;
-
-    if (HTMLformat)
-        temp.Add("<table>");
+    ColumnsHeaderView::TableBuilder tb(this->Host, temp);
+    if (!tb.Start())
+        return;
 
     if (justCurrentItem)
     {
-        if (HTMLformat)
-            temp.Add("<tr>");
+        if (!tb.AddNewRow())
+            return;
         for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
         {
-            if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
-            {
-                if (HTMLformat)
-                    temp.Add("<td>");
-                temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
-                if (HTMLformat)
-                    temp.Add("</td>");
-                else if (clipboardSeparator != 0)
-                    temp.Add(string_view{ &clipboardSeparator, 1 });
-            }
+            if (!tb.AddString(tr, (CharacterView)(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr])))
+                return;
         }
-        if (HTMLformat)
-            temp.Add("</tr>");
-    }
+    } 
     else
     {
         // copy all selected items
@@ -679,29 +669,17 @@ void ListViewControlContext::CopyToClipboard(bool justCurrentItem, bool HTMLform
         {
             if ((GetFilteredItem(gr)->Flags & ITEM_FLAG_SELECTED) == 0)
                 continue;
-            if (HTMLformat)
-                temp.Add("<tr>");
+            if (!tb.AddNewRow())
+                return;
             for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
             {
-                if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
-                {
-                    if (HTMLformat)
-                        temp.Add("<td>");
-                    temp.Add(GetFilteredItem(gr)->SubItem[tr]);
-                    if (HTMLformat)
-                        temp.Add("</td>");
-                    else if (clipboardSeparator != 0)
-                        temp.Add(string_view{ &clipboardSeparator, 1 });
-                }
+                if (!tb.AddString(tr, (CharacterView) (GetFilteredItem(Items.CurentItemIndex)->SubItem[tr])))
+                    return;
             }
-            if (HTMLformat)
-                temp.Add("</tr>");
-            else
-                temp.Add("\n");
         }
     }
-    if (HTMLformat)
-        temp.Add("</table>");
+    if (!tb.Finalize())
+        return;
     OS::Clipboard::SetText(temp);
 }
 bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
