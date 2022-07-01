@@ -66,7 +66,7 @@ bool ColumnsHeaderView::TableBuilder::AddNewRow()
     state = TABLE_BUILDER_STATE_ROW_ADDED;
     return true;
 }
-bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString& text)
+bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString text)
 {
     CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to add string. Have you call `Start()` method ?");
     CHECK(columnIndex < ICH->Header.GetColumnsCount(), false, "Invalid column index: %u", columnIndex);

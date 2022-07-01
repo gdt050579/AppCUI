@@ -673,7 +673,7 @@ void ListViewControlContext::CopyToClipboard(bool justCurrentItem, bool HTMLform
                 return;
             for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
             {
-                if (!tb.AddString(tr, (CharacterView) (GetFilteredItem(Items.CurentItemIndex)->SubItem[tr])))
+                if (!tb.AddString(tr, (CharacterView) (GetFilteredItem(gr)->SubItem[tr])))
                     return;
             }
         }
