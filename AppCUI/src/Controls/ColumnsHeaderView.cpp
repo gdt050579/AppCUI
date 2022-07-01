@@ -120,6 +120,7 @@ ColumnsHeaderView::ColumnsHeaderView(
 // context MUST be a derivate of ColumnsHeaderViewControlContext
 ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Control(context, "", layout, false)
 {
+    ICH->copyClipboardFormat = CopyClipboardFormat::TextWithTabs;
 }
 
 void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format)

@@ -465,11 +465,7 @@ uint32 ListViewControlContext::GetItemHeight(ItemHandle item)
     PREPARE_LISTVIEW_ITEM(item, 0);
     return i.Height;
 }
-void ListViewControlContext::SetClipboardFormat(bool htmlFormat, char textFormatSeparator)
-{
-    clipboardSeparator  = textFormatSeparator;
-    clipboardHtmlFormat = htmlFormat;
-}
+
 
 bool ListViewControlContext::IsItemChecked(ItemHandle item)
 {
@@ -1263,7 +1259,6 @@ ListView::ListView(string_view layout, std::initializer_list<ConstString> column
     Members->Items.CurentItemIndex     = 0;
     Members->Filter.FilterModeEnabled  = false;
     Members->Filter.LastFoundItem      = -1;
-    Members->clipboardSeparator        = '\t';
     Members->Host                      = this;
     Members->ScrollBars.OutsideControl = Members->Flags && ListViewFlags::HideBorder;
     Members->Filter.SearchText.Clear();
@@ -1400,11 +1395,6 @@ void ListView::UncheckAllItems()
 uint32 ListView::GetCheckedItemsCount()
 {
     return WRAPPER->GetCheckedItemsCount();
-}
-
-void ListView::SetClipboardFormat(bool htmlFormat, char textFormatSeparator)
-{
-    WRAPPER->SetClipboardFormat(htmlFormat, textFormatSeparator);
 }
 
 void ListView::OnMousePressed(int x, int y, Input::MouseButton button)

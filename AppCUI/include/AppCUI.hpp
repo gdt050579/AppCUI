@@ -4274,9 +4274,6 @@ namespace Controls
         uint32 GetCheckedItemsCount();
         bool SetCurrentItem(ListViewItem item);
 
-        // misc
-        void SetClipboardFormat(bool htmlFormat, char textFormatSeparator);
-
         // sort
         bool Sort();
         bool Sort(uint32 columnIndex, SortDirection direction);
