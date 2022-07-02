@@ -13,6 +13,41 @@ constexpr uint8 TABLE_BUILDER_STATE_NONE      = 0;
 constexpr uint8 TABLE_BUILDER_STATE_STARTED   = 1;
 constexpr uint8 TABLE_BUILDER_STATE_ROW_ADDED = 2;
 
+bool AddTextAsCSVFormat(UnicodeStringBuilder& output, ConstString text)
+{
+    LocalUnicodeStringBuilder<512> temp;
+    CHECK(temp.Set(text), false, "");
+    // first check if a special character is present
+    bool specialFormat = false;
+    for (auto i : temp.ToStringView())
+    {
+        specialFormat |= ((i == '"') || (i == ',') || (i == '\n') || (i == '\r') || (i == '\t'));
+    }
+    if (specialFormat)
+    {
+        CHECK(output.Add("\""), false, "");
+        for (auto i : temp.ToStringView())
+        {
+            if (i == 0)
+                continue;
+            if (i == '"')
+            {
+                CHECK(output.Add("\"\""), false, "");
+            }
+            else
+            {
+                CHECK(output.AddChar(i), false, "");
+            }
+        }
+        CHECK(output.Add("\""), false, "");
+    }
+    else
+    {
+        CHECK(output.Add(temp), false, "");
+    }
+
+    return true;
+}
 ColumnsHeaderView::TableBuilder::TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& _output)
     : output(_output), Context(obj->Context), state(TABLE_BUILDER_STATE_NONE)
 {
@@ -77,7 +112,7 @@ bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString 
     switch (ICH->copyClipboardFormat)
     {
     case CopyClipboardFormat::CSV:
-        CHECK(output.Add(text), false, "");
+        CHECK(AddTextAsCSVFormat(output, text), false, "");
         CHECK(output.Add(","), false, "");
         break;
     case CopyClipboardFormat::TextWithTabs:
@@ -86,7 +121,7 @@ bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString 
         break;
     case CopyClipboardFormat::HTML:
         CHECK(output.Add("<td>"), false, "");
-        CHECK(output.Add(text), false, "");
+        CHECK(AddTextAsCSVFormat(output, text), false, "");
         CHECK(output.Add("</td>"), false, "");
         break;
     default:
