@@ -13,6 +13,28 @@ constexpr uint8 TABLE_BUILDER_STATE_NONE      = 0;
 constexpr uint8 TABLE_BUILDER_STATE_STARTED   = 1;
 constexpr uint8 TABLE_BUILDER_STATE_ROW_ADDED = 2;
 
+bool AddTextAsHTMLFormat(UnicodeStringBuilder& output, ConstString text)
+{
+    LocalUnicodeStringBuilder<512> temp;
+    NumericFormatter n;
+    CHECK(temp.Set(text), false, "");
+    for (auto i : temp.ToStringView())
+    {
+        if (i == 0)
+            continue;
+        if ((i == '%') || (i == '<') || (i == '>') || (i == ';') || (i > 126))
+        {
+            CHECK(output.Add("&#"), false, "");
+            CHECK(output.Add(n.ToDec((uint32)i)),false,"");
+            CHECK(output.AddChar(';'), false, "");
+        } 
+        else
+        {
+            CHECK(output.AddChar(i), false, "");
+        }
+    }
+    return true;
+}
 bool AddTextAsCSVFormat(UnicodeStringBuilder& output, ConstString text)
 {
     LocalUnicodeStringBuilder<512> temp;
@@ -121,7 +143,7 @@ bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString 
         break;
     case CopyClipboardFormat::HTML:
         CHECK(output.Add("<td>"), false, "");
-        CHECK(AddTextAsCSVFormat(output, text), false, "");
+        CHECK(AddTextAsHTMLFormat(output, text), false, "");
         CHECK(output.Add("</td>"), false, "");
         break;
     default:
