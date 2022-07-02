@@ -3114,18 +3114,18 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         // sort them after the name (first column)
         lv->Sort(0, SortDirection::Ascendent);
         // Add a checkbox for Enable/Disable feature
-        auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:30", LV_ENABLE_DISABLE);
+        auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:20", LV_ENABLE_DISABLE);
         cb->SetChecked(true);
         cb->Handlers()->OnCheck = this;
         // columns
-        auto show_capital = Factory::CheckBox::Create(this, "Show capital", "x:33,y:20,w:30", CB_SHOW_CAPITAL);
+        auto show_capital = Factory::CheckBox::Create(this, "Show capital", "x:43,y:20,w:20", CB_SHOW_CAPITAL);
         show_capital->SetChecked(true);
         show_capital->Handlers()->OnCheck = this;
         auto show_largets_city =
-              Factory::CheckBox::Create(this, "Show largest city", "x:33,y:21,w:30", CB_SHOW_LARGEST_CITY);
+              Factory::CheckBox::Create(this, "Show largest city", "x:43,y:21,w:24", CB_SHOW_LARGEST_CITY);
         show_largets_city->SetChecked(true);
         show_largets_city->Handlers()->OnCheck = this;
-        auto show_population = Factory::CheckBox::Create(this, "Show population", "x:33,y:22,w:30", CB_SHOW_POPULATION);
+        auto show_population = Factory::CheckBox::Create(this, "Show population", "x:43,y:22,w:20", CB_SHOW_POPULATION);
         show_population->SetChecked(true);
         show_population->Handlers()->OnCheck = this;
         // add suport for frozen columns
@@ -3140,11 +3140,13 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         fc->SetHotKey('F');
         fc->Handlers()->OnCurrentItemChanged = this;
 
-        auto rbTextWithTabs = Factory::RadioBox::Create(this, "Copy as Text with Tabs", "x:1,y:20,w:26", 1234, RB_COPY_TEXT);
-        rbTextWithTabs->Handlers()->OnCheck                                                                     = this;
-        rbTextWithTabs->SetChecked(true);
-        Factory::RadioBox::Create(this, "Copy as CSV", "x:1,y:21,w:26", 1234, RB_COPY_CSV)->Handlers()->OnCheck = this;
-        Factory::RadioBox::Create(this, "Copy as HTML table", "x:1,y:22,w:26", 1234, RB_COPY_HTML)
+        Factory::RadioBox::Create(this, "Copy format: Text with Tabs", "x:1,y:20,w:40", 1234, RB_COPY_TEXT, true)
+              ->Handlers()
+              ->OnCheck = this;
+        Factory::RadioBox::Create(this, "Copy format: CSV (Comma separated)", "x:1,y:21,w:40", 1234, RB_COPY_CSV)
+              ->Handlers()
+              ->OnCheck = this;
+        Factory::RadioBox::Create(this, "Copy format: HTML table", "x:1,y:22,w:40", 1234, RB_COPY_HTML)
               ->Handlers()
               ->OnCheck = this;
     }
