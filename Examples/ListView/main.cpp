@@ -3077,6 +3077,10 @@ const char* english_words[] = { "a",
 #define CB_SHOW_POPULATION   1001
 #define CB_SHOW_LARGEST_CITY 1002
 
+#define RB_COPY_TEXT 2000
+#define RB_COPY_CSV  2001
+#define RB_COPY_HTML 2002
+
 class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::OnComboBoxCurrentItemChangedInterface
 {
     Reference<ListView> lv;
@@ -3135,6 +3139,14 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         fc->SetCurentItemIndex(0);
         fc->SetHotKey('F');
         fc->Handlers()->OnCurrentItemChanged = this;
+
+        auto rbTextWithTabs = Factory::RadioBox::Create(this, "Copy as Text with Tabs", "x:1,y:20,w:26", 1234, RB_COPY_TEXT);
+        rbTextWithTabs->Handlers()->OnCheck                                                                     = this;
+        rbTextWithTabs->SetChecked(true);
+        Factory::RadioBox::Create(this, "Copy as CSV", "x:1,y:21,w:26", 1234, RB_COPY_CSV)->Handlers()->OnCheck = this;
+        Factory::RadioBox::Create(this, "Copy as HTML table", "x:1,y:22,w:26", 1234, RB_COPY_HTML)
+              ->Handlers()
+              ->OnCheck = this;
     }
     void OnCheck(Reference<Controls::Control> control, bool value) override
     {
@@ -3151,6 +3163,15 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
             break;
         case CB_SHOW_LARGEST_CITY:
             lv->GetColumn(3).SetVisible(value);
+            break;
+        case RB_COPY_TEXT:
+            lv->SetClipboardFormat(CopyClipboardFormat::TextWithTabs);
+            break;
+        case RB_COPY_CSV:
+            lv->SetClipboardFormat(CopyClipboardFormat::CSV);
+            break;
+        case RB_COPY_HTML:
+            lv->SetClipboardFormat(CopyClipboardFormat::HTML);
             break;
         }
     }
