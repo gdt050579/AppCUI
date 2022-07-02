@@ -9,6 +9,166 @@ Graphics::CharacterBuffer null_column_reference; // use this as std::option<cons
 #define ICH         ((ColumnsHeaderViewControlContext*) (this->Context))
 #define NULL_COLUMN Column(nullptr, 0)
 
+constexpr uint8 TABLE_BUILDER_STATE_NONE      = 0;
+constexpr uint8 TABLE_BUILDER_STATE_STARTED   = 1;
+constexpr uint8 TABLE_BUILDER_STATE_ROW_ADDED = 2;
+
+bool AddTextAsHTMLFormat(UnicodeStringBuilder& output, ConstString text)
+{
+    LocalUnicodeStringBuilder<512> temp;
+    NumericFormatter n;
+    CHECK(temp.Set(text), false, "");
+    for (auto i : temp.ToStringView())
+    {
+        if (i == 0)
+            continue;
+        if ((i == '%') || (i == '<') || (i == '>') || (i == ';') || (i > 126))
+        {
+            CHECK(output.Add("&#"), false, "");
+            CHECK(output.Add(n.ToDec((uint32)i)),false,"");
+            CHECK(output.AddChar(';'), false, "");
+        } 
+        else
+        {
+            CHECK(output.AddChar(i), false, "");
+        }
+    }
+    return true;
+}
+bool AddTextAsCSVFormat(UnicodeStringBuilder& output, ConstString text)
+{
+    LocalUnicodeStringBuilder<512> temp;
+    CHECK(temp.Set(text), false, "");
+    // first check if a special character is present
+    bool specialFormat = false;
+    for (auto i : temp.ToStringView())
+    {
+        specialFormat |= ((i == '"') || (i == ',') || (i == '\n') || (i == '\r') || (i == '\t'));
+    }
+    if (specialFormat)
+    {
+        CHECK(output.Add("\""), false, "");
+        for (auto i : temp.ToStringView())
+        {
+            if (i == 0)
+                continue;
+            if (i == '"')
+            {
+                CHECK(output.Add("\"\""), false, "");
+            }
+            else
+            {
+                CHECK(output.AddChar(i), false, "");
+            }
+        }
+        CHECK(output.Add("\""), false, "");
+    }
+    else
+    {
+        CHECK(output.Add(temp), false, "");
+    }
+
+    return true;
+}
+ColumnsHeaderView::TableBuilder::TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& _output)
+    : output(_output), Context(obj->Context), state(TABLE_BUILDER_STATE_NONE)
+{
+    output.Clear();
+}
+bool ColumnsHeaderView::TableBuilder::Start()
+{
+    CHECK(state == TABLE_BUILDER_STATE_NONE,
+          false,
+          "Fail to start the builder (you have already called this method) !");
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+    case CopyClipboardFormat::TextWithTabs:
+        // nothing to do
+        break;
+    case CopyClipboardFormat::HTML:
+        CHECK(output.Add("<html><table>"), false, "");
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+    state = TABLE_BUILDER_STATE_STARTED;
+    return true;
+}
+bool ColumnsHeaderView::TableBuilder::AddNewRow()
+{
+    CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to add new row. Have you call `Start()` method ?");
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+    case CopyClipboardFormat::TextWithTabs:
+        if (state != TABLE_BUILDER_STATE_STARTED) // no raw added
+        {
+            CHECK(output.Add("\n"), false, "");
+        }
+        break;
+    case CopyClipboardFormat::HTML:
+        if (state == TABLE_BUILDER_STATE_STARTED) // first raw
+        {
+            CHECK(output.Add("<tr>"), false, "");
+        }
+        else
+        {
+            CHECK(output.Add("</tr><tr>"), false, "");
+        }
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+    state = TABLE_BUILDER_STATE_ROW_ADDED;
+    return true;
+}
+bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString text)
+{
+    CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to add string. Have you call `Start()` method ?");
+    CHECK(columnIndex < ICH->Header.GetColumnsCount(), false, "Invalid column index: %u", columnIndex);
+    CHECK((ICH->Header[columnIndex].flags & InternalColumnFlags::AllowValueCopy) == InternalColumnFlags::AllowValueCopy,
+          false,
+          "");
+
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+        CHECK(AddTextAsCSVFormat(output, text), false, "");
+        CHECK(output.Add(","), false, "");
+        break;
+    case CopyClipboardFormat::TextWithTabs:
+        CHECK(output.Add(text), false, "");
+        CHECK(output.Add("\t"), false, "");
+        break;
+    case CopyClipboardFormat::HTML:
+        CHECK(output.Add("<td>"), false, "");
+        CHECK(AddTextAsHTMLFormat(output, text), false, "");
+        CHECK(output.Add("</td>"), false, "");
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+    return true;
+}
+bool ColumnsHeaderView::TableBuilder::Finalize()
+{
+    CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to complete the buffer. Have you call `Start()` method ?");
+    switch (ICH->copyClipboardFormat)
+    {
+    case CopyClipboardFormat::CSV:
+    case CopyClipboardFormat::TextWithTabs:
+        break;
+    case CopyClipboardFormat::HTML:
+        CHECK(output.Add("</table></html>"), false, "");
+        break;
+    default:
+        RETURNERROR(false, "Unknwon clipboard format");
+    }
+    state = TABLE_BUILDER_STATE_NONE;
+    return true;
+}
+
 ColumnsHeaderView::ColumnsHeaderView(
       string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
     : ColumnsHeaderView(new ColumnsHeaderViewControlContext(this, columnsList, flags), layout)
@@ -17,6 +177,12 @@ ColumnsHeaderView::ColumnsHeaderView(
 // context MUST be a derivate of ColumnsHeaderViewControlContext
 ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Control(context, "", layout, false)
 {
+    ICH->copyClipboardFormat = CopyClipboardFormat::TextWithTabs;
+}
+
+void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format)
+{
+    ICH->copyClipboardFormat = format;
 }
 bool ColumnsHeaderView::HeaderHasMouseCaption() const
 {

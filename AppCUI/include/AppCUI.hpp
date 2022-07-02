@@ -815,7 +815,7 @@ namespace Utils
                 elements = stack;
             else
                 elements = new T*[elementsCount];
-            size       = elementsCount;
+            size = elementsCount;
         }
         ~PointerArrayStorage()
         {
@@ -838,7 +838,7 @@ namespace Utils
         }
         inline T** begin() const
         {
-            return elements; 
+            return elements;
         }
         inline T** end() const
         {
@@ -3841,7 +3841,7 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       protected:
-        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID);
+        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID, bool checked);
 
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -4158,8 +4158,29 @@ namespace Controls
         FixedSized     = 0x00008,
         HideHeader     = 0x00010,
     };
+    enum class CopyClipboardFormat : uint8
+    {
+        TextWithTabs = 0,
+        CSV,
+        HTML
+    };
     class EXPORT ColumnsHeaderView : public Control
     {
+      public:
+        class TableBuilder
+        {
+            void* Context;
+            UnicodeStringBuilder& output;
+            uint8 state;
+
+          public:
+            TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& output);
+            bool Start();
+            bool AddNewRow();
+            bool AddString(uint32 columnIndex, ConstString text);
+            bool Finalize();
+        };
+
       protected:
         ColumnsHeaderView(
               string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
@@ -4183,6 +4204,8 @@ namespace Controls
         void SetFrozenColumnsCount(uint32 count = 0);
         std::optional<uint32> GetSortColumnIndex() const;
         Column GetSortColumn();
+
+        void SetClipboardFormat(CopyClipboardFormat format);
 
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
@@ -4249,9 +4272,6 @@ namespace Controls
         uint32 GetItemsCount();
         uint32 GetCheckedItemsCount();
         bool SetCurrentItem(ListViewItem item);
-
-        // misc
-        void SetClipboardSeparator(char ch);
 
         // sort
         bool Sort();
@@ -4818,19 +4838,21 @@ namespace Controls
 
           public:
             static Pointer<Controls::RadioBox> Create(
-                  const ConstString& caption, string_view layout, int groupID, int controlID = 0);
+                  const ConstString& caption, string_view layout, int groupID, int controlID = 0, bool checked = false);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control* parent,
                   const ConstString& caption,
                   string_view layout,
                   int groupID,
-                  int controlID = 0);
+                  int controlID = 0,
+                  bool checked  = false);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control& parent,
                   const ConstString& caption,
                   string_view layout,
                   int groupID,
-                  int controlID = 0);
+                  int controlID = 0,
+                  bool checked  = false);
         };
         class EXPORT Splitter
         {

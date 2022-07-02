@@ -648,11 +648,12 @@ class ColumnsHeader
 struct ColumnsHeaderViewControlContext : public ControlContext
 {
     ColumnsHeader Header;
+    CopyClipboardFormat copyClipboardFormat;
     ColumnsHeaderViewControlContext(
           Reference<ColumnsHeaderView> host,
           std::initializer_list<ConstString> columnsList,
           ColumnsHeaderViewFlags flags)
-        : Header(host, columnsList, flags)
+        : Header(host, columnsList, flags), copyClipboardFormat(CopyClipboardFormat::TextWithTabs)
     {
     }
 };
@@ -678,8 +679,8 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     {
         char Status[20];
         uint32 StatusLength;
+        uint32 Count;
     } Selection;
-    char clipboardSeparator;
 
     Controls::ListView* Host;
 
@@ -710,7 +711,6 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
     bool SetItemType(ItemHandle item, ListViewItem::Type type);
-    void SetClipboardSeparator(char ch);
     bool IsItemChecked(ItemHandle item);
     bool IsItemSelected(ItemHandle item);
     void SelectAllItems();
@@ -725,6 +725,8 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     int GetFirstVisibleLine();
     bool SetFirstVisibleLine(ItemHandle item);
     int GetVisibleItemsCount();
+
+    void CopyToClipboard(bool justCurrentItem, bool HTMLformat = true);
 
     bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
     GenericRef GetItemDataAsPointer(const ItemHandle item) const;

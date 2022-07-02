@@ -269,7 +269,7 @@ bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
 {
     if (Flags && ListViewFlags::HideSearchBar)
         return false; // search bar will not be drawn
-    if (this->Layout.Width < ((int)LISTVIEW_SEARCH_BAR_WIDTH + 6))
+    if (this->Layout.Width < ((int) LISTVIEW_SEARCH_BAR_WIDTH + 6))
         return false; // width is too small to render the seach bar
     int x, y;
     if (Flags && ListViewFlags::PopupSearchBar)
@@ -465,10 +465,7 @@ uint32 ListViewControlContext::GetItemHeight(ItemHandle item)
     PREPARE_LISTVIEW_ITEM(item, 0);
     return i.Height;
 }
-void ListViewControlContext::SetClipboardSeparator(char ch)
-{
-    clipboardSeparator = ch;
-}
+
 
 bool ListViewControlContext::IsItemChecked(ItemHandle item)
 {
@@ -594,10 +591,12 @@ void ListViewControlContext::UpdateSelectionInfo()
               "Fail to create selection string ");
         CHECKBK(tmp.SetFormat("[%u/%u]", count, size), "Fail to format selection status string !");
         this->Selection.StatusLength = tmp.Len();
+        this->Selection.Count        = count;
         return;
     }
     this->Selection.Status[0]    = 0;
     this->Selection.StatusLength = 0;
+    this->Selection.Count        = 0;
 }
 void ListViewControlContext::UpdateSelection(int start, int end, bool select)
 {
@@ -643,9 +642,48 @@ void ListViewControlContext::MoveTo(int index)
     if (originalPoz != index)
         TriggerListViewItemChangedEvent();
 }
-bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
+void ListViewControlContext::CopyToClipboard(bool justCurrentItem, bool HTMLformat)
 {
     LocalUnicodeStringBuilder<256> temp;
+
+    if (Items.Indexes.Len() == 0)
+        return;
+    ColumnsHeaderView::TableBuilder tb(this->Host, temp);
+    if (!tb.Start())
+        return;
+
+    if (justCurrentItem)
+    {
+        if (!tb.AddNewRow())
+            return;
+        for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
+        {
+            if (!tb.AddString(tr, (CharacterView)(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr])))
+                return;
+        }
+    } 
+    else
+    {
+        // copy all selected items
+        for (uint32 gr = 0; gr < Items.Indexes.Len(); gr++)
+        {
+            if ((GetFilteredItem(gr)->Flags & ITEM_FLAG_SELECTED) == 0)
+                continue;
+            if (!tb.AddNewRow())
+                return;
+            for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
+            {
+                if (!tb.AddString(tr, (CharacterView) (GetFilteredItem(gr)->SubItem[tr])))
+                    return;
+            }
+        }
+    }
+    if (!tb.Finalize())
+        return;
+    OS::Clipboard::SetText(temp);
+}
+bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
+{
     InternalListViewItem* lvi;
     bool selected;
 
@@ -803,35 +841,10 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 
     case Key::Ctrl | Key::C:
     case Key::Ctrl | Key::Insert:
-        if (Items.Indexes.Len() > 0)
-        {
-            for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
-            {
-                if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
-                {
-                    temp.Add(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr]);
-                    if (clipboardSeparator != 0)
-                        temp.Add(string_view{ &clipboardSeparator, 1 });
-                }
-            }
-            OS::Clipboard::SetText(temp);
-        }
+        CopyToClipboard(this->Selection.Count == 0);
         return true;
     case Key::Ctrl | Key::Alt | Key::Insert:
-        for (uint32 gr = 0; gr < Items.Indexes.Len(); gr++)
-        {
-            for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
-            {
-                if ((Header[tr].flags & InternalColumnFlags::AllowValueCopy) != InternalColumnFlags::None)
-                {
-                    temp.Add(GetFilteredItem(gr)->SubItem[tr]);
-                    if (clipboardSeparator != 0)
-                        temp.Add(string_view{ &clipboardSeparator, 1 });
-                }
-            }
-            temp.Add("\n");
-        }
-        OS::Clipboard::SetText(temp);
+        CopyToClipboard(true);
         return true;
     };
     // search mode
@@ -853,7 +866,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
     {
         if ((this->Layout.Width > 20) && (y == (this->Layout.Height - 1)))
         {
-            if ((x >= 2) && (x <= (3 + (int32)LISTVIEW_SEARCH_BAR_WIDTH)))
+            if ((x >= 2) && (x <= (3 + (int32) LISTVIEW_SEARCH_BAR_WIDTH)))
             {
                 this->Filter.FilterModeEnabled = true;
                 return;
@@ -1224,12 +1237,12 @@ ListView::ListView(string_view layout, std::initializer_list<ConstString> column
     Members->Items.CurentItemIndex     = 0;
     Members->Filter.FilterModeEnabled  = false;
     Members->Filter.LastFoundItem      = -1;
-    Members->clipboardSeparator        = '\t';
     Members->Host                      = this;
     Members->ScrollBars.OutsideControl = Members->Flags && ListViewFlags::HideBorder;
     Members->Filter.SearchText.Clear();
     Members->Selection.Status[0]    = 0;
     Members->Selection.StatusLength = 0;
+    Members->Selection.Count        = 0;
 }
 void ListView::Paint(Graphics::Renderer& renderer)
 {
@@ -1360,11 +1373,6 @@ void ListView::UncheckAllItems()
 uint32 ListView::GetCheckedItemsCount()
 {
     return WRAPPER->GetCheckedItemsCount();
-}
-
-void ListView::SetClipboardSeparator(char ch)
-{
-    WRAPPER->SetClipboardSeparator(ch);
 }
 
 void ListView::OnMousePressed(int x, int y, Input::MouseButton button)

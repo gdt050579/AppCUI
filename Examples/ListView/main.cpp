@@ -3077,6 +3077,10 @@ const char* english_words[] = { "a",
 #define CB_SHOW_POPULATION   1001
 #define CB_SHOW_LARGEST_CITY 1002
 
+#define RB_COPY_TEXT 2000
+#define RB_COPY_CSV  2001
+#define RB_COPY_HTML 2002
+
 class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::OnComboBoxCurrentItemChangedInterface
 {
     Reference<ListView> lv;
@@ -3110,18 +3114,18 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         // sort them after the name (first column)
         lv->Sort(0, SortDirection::Ascendent);
         // Add a checkbox for Enable/Disable feature
-        auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:30", LV_ENABLE_DISABLE);
+        auto cb = Factory::CheckBox::Create(this, "Enable/Disable list view", "x:1,y:18,w:20", LV_ENABLE_DISABLE);
         cb->SetChecked(true);
         cb->Handlers()->OnCheck = this;
         // columns
-        auto show_capital = Factory::CheckBox::Create(this, "Show capital", "x:33,y:20,w:30", CB_SHOW_CAPITAL);
+        auto show_capital = Factory::CheckBox::Create(this, "Show capital", "x:43,y:20,w:20", CB_SHOW_CAPITAL);
         show_capital->SetChecked(true);
         show_capital->Handlers()->OnCheck = this;
         auto show_largets_city =
-              Factory::CheckBox::Create(this, "Show largest city", "x:33,y:21,w:30", CB_SHOW_LARGEST_CITY);
+              Factory::CheckBox::Create(this, "Show largest city", "x:43,y:21,w:24", CB_SHOW_LARGEST_CITY);
         show_largets_city->SetChecked(true);
         show_largets_city->Handlers()->OnCheck = this;
-        auto show_population = Factory::CheckBox::Create(this, "Show population", "x:33,y:22,w:30", CB_SHOW_POPULATION);
+        auto show_population = Factory::CheckBox::Create(this, "Show population", "x:43,y:22,w:20", CB_SHOW_POPULATION);
         show_population->SetChecked(true);
         show_population->Handlers()->OnCheck = this;
         // add suport for frozen columns
@@ -3135,6 +3139,16 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         fc->SetCurentItemIndex(0);
         fc->SetHotKey('F');
         fc->Handlers()->OnCurrentItemChanged = this;
+
+        Factory::RadioBox::Create(this, "Copy format: Text with Tabs", "x:1,y:20,w:40", 1234, RB_COPY_TEXT, true)
+              ->Handlers()
+              ->OnCheck = this;
+        Factory::RadioBox::Create(this, "Copy format: CSV (Comma separated)", "x:1,y:21,w:40", 1234, RB_COPY_CSV)
+              ->Handlers()
+              ->OnCheck = this;
+        Factory::RadioBox::Create(this, "Copy format: HTML table", "x:1,y:22,w:40", 1234, RB_COPY_HTML)
+              ->Handlers()
+              ->OnCheck = this;
     }
     void OnCheck(Reference<Controls::Control> control, bool value) override
     {
@@ -3151,6 +3165,15 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
             break;
         case CB_SHOW_LARGEST_CITY:
             lv->GetColumn(3).SetVisible(value);
+            break;
+        case RB_COPY_TEXT:
+            lv->SetClipboardFormat(CopyClipboardFormat::TextWithTabs);
+            break;
+        case RB_COPY_CSV:
+            lv->SetClipboardFormat(CopyClipboardFormat::CSV);
+            break;
+        case RB_COPY_HTML:
+            lv->SetClipboardFormat(CopyClipboardFormat::HTML);
             break;
         }
     }
