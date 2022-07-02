@@ -815,7 +815,7 @@ namespace Utils
                 elements = stack;
             else
                 elements = new T*[elementsCount];
-            size       = elementsCount;
+            size = elementsCount;
         }
         ~PointerArrayStorage()
         {
@@ -838,7 +838,7 @@ namespace Utils
         }
         inline T** begin() const
         {
-            return elements; 
+            return elements;
         }
         inline T** end() const
         {
@@ -3841,7 +3841,7 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       protected:
-        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID);
+        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID, bool checked);
 
       public:
         void OnMouseReleased(int x, int y, Input::MouseButton button) override;
@@ -4187,8 +4187,6 @@ namespace Controls
         ColumnsHeaderView(void* context, string_view layout);
         bool HeaderHasMouseCaption() const;
         bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
-
-
 
       public:
         // virtual methods
@@ -4840,19 +4838,21 @@ namespace Controls
 
           public:
             static Pointer<Controls::RadioBox> Create(
-                  const ConstString& caption, string_view layout, int groupID, int controlID = 0);
+                  const ConstString& caption, string_view layout, int groupID, int controlID = 0, bool checked = false);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control* parent,
                   const ConstString& caption,
                   string_view layout,
                   int groupID,
-                  int controlID = 0);
+                  int controlID = 0,
+                  bool checked  = false);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control& parent,
                   const ConstString& caption,
                   string_view layout,
                   int groupID,
-                  int controlID = 0);
+                  int controlID = 0,
+                  bool checked  = false);
         };
         class EXPORT Splitter
         {

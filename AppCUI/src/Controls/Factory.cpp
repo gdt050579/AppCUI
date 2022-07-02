@@ -71,20 +71,23 @@ REFERENCE<CheckBox> Factory::CheckBox::Create(
 }
 
 //======[RADIOBOX]===================================================================================
-POINTER<RadioBox> Factory::RadioBox::Create(const ConstString& caption, string_view layout, int groupID, int controlID)
+POINTER<RadioBox> Factory::RadioBox::Create(
+      const ConstString& caption, string_view layout, int groupID, int controlID, bool checked)
 {
-    return POINTER<Controls::RadioBox>(new Controls::RadioBox(caption, layout, groupID, controlID));
+    return POINTER<Controls::RadioBox>(new Controls::RadioBox(caption, layout, groupID, controlID, checked));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control* parent, const ConstString& caption, string_view layout, int groupID, int controlID)
+      Control* parent, const ConstString& caption, string_view layout, int groupID, int controlID, bool checked)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::RadioBox>(Factory::RadioBox::Create(caption, layout, groupID, controlID));
+    return parent->AddControl<Controls::RadioBox>(
+          Factory::RadioBox::Create(caption, layout, groupID, controlID, checked));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control& parent, const ConstString& caption, string_view layout, int groupID, int controlID)
+      Control& parent, const ConstString& caption, string_view layout, int groupID, int controlID, bool checked)
 {
-    return parent.AddControl<Controls::RadioBox>(Factory::RadioBox::Create(caption, layout, groupID, controlID));
+    return parent.AddControl<Controls::RadioBox>(
+          Factory::RadioBox::Create(caption, layout, groupID, controlID, checked));
 }
 
 //======[SPLITTER]===================================================================================
