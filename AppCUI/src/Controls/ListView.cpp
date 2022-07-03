@@ -642,7 +642,7 @@ void ListViewControlContext::MoveTo(int index)
     if (originalPoz != index)
         TriggerListViewItemChangedEvent();
 }
-void ListViewControlContext::CopyToClipboard(bool justCurrentItem, bool HTMLformat)
+void ListViewControlContext::CopyToClipboard(bool justCurrentItem)
 {
     LocalUnicodeStringBuilder<256> temp;
 

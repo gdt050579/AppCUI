@@ -726,7 +726,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     bool SetFirstVisibleLine(ItemHandle item);
     int GetVisibleItemsCount();
 
-    void CopyToClipboard(bool justCurrentItem, bool HTMLformat = true);
+    void CopyToClipboard(bool justCurrentItem);
 
     bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
     GenericRef GetItemDataAsPointer(const ItemHandle item) const;
