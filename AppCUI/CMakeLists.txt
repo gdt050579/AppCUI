@@ -3,6 +3,16 @@ include_directories(src)
 
 project(AppCUI VERSION 1.0)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT supported OUTPUT error)
+
+if( supported )
+	message(STATUS "${PROJECT_NAME} => IPO / LTO enabled")
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+	message(STATUS "${PROJECT_NAME} => IPO / LTO not supported: <${error}>")
+endif()
+
 # Add libAppCUI
 add_library(${PROJECT_NAME} SHARED)
 
@@ -103,13 +113,3 @@ file(GLOB_RECURSE APP_CUI_HEADERS include/*.hpp)
 target_sources(${PROJECT_NAME} PRIVATE ${APP_CUI_HEADERS})
 get_target_property(APP_CUI_SOURCES ${PROJECT_NAME} SOURCES)
 source_group(TREE ${CMAKE_SOURCE_DIR}/${PROJECT_NAME} FILES ${APP_CUI_SOURCES} ${APP_CUI_HEADERS})
-
-include(CheckIPOSupported)
-check_ipo_supported(RESULT supported OUTPUT error)
-
-if( supported )
-	message(STATUS "${PROJECT_NAME} => IPO / LTO enabled")
-	set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-else()
-	message(STATUS "${PROJECT_NAME} => IPO / LTO not supported: <${error}>")
-endif()
