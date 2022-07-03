@@ -1,7 +1,17 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Project setup
-project(appcui VERSION 1.0)
+project(AppCUI VERSION 1.0)
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT supported OUTPUT error)
+
+if( supported )
+	message(STATUS "${PROJECT_NAME} => IPO / LTO enabled")
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+	message(STATUS "${PROJECT_NAME} => IPO / LTO not supported: <${error}>")
+endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
