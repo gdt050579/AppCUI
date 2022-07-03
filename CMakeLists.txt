@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Project setup
-project(appcui VERSION 1.0)
+project(AppCUI VERSION 1.0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
