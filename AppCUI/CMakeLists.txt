@@ -3,16 +3,6 @@ include_directories(src)
 
 project(AppCUI VERSION 1.0)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT supported OUTPUT error)
-
-if( supported )
-	message(STATUS "${PROJECT_NAME} => IPO / LTO enabled")
-	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-else()
-	message(STATUS "${PROJECT_NAME} => IPO / LTO not supported: <${error}>")
-endif()
-
 # Add libAppCUI
 add_library(${PROJECT_NAME} SHARED)
 
