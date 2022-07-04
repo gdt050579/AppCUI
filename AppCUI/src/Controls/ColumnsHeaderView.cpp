@@ -93,6 +93,19 @@ bool ColumnsHeaderView::TableBuilder::Start()
         RETURNERROR(false, "Unknwon clipboard format");
     }
     state = TABLE_BUILDER_STATE_STARTED;
+
+    // check flags
+    if ((ICH->CopyToClipboard.flags & CopyClipboardFlags::CopyHeader)!=CopyClipboardFlags::None)
+    {
+        // add header
+        CHECK(AddNewRow(), false, "");
+        for (uint32 index = 0; index < ICH->Header.GetColumnsCount();index++)
+        {
+            CHECK(AddString(index, ICH->Header[index].name), false, "");
+        }
+    }
+
+
     return true;
 }
 bool ColumnsHeaderView::TableBuilder::AddNewRow()

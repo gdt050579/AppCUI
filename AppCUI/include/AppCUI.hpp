@@ -5690,6 +5690,7 @@ ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::ProgressStatus::Flags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ColumnsHeaderViewFlags, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::CopyClipboardFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
