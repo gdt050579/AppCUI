@@ -3076,6 +3076,7 @@ const char* english_words[] = { "a",
 #define LV_ENABLE_DISABLE    999
 #define CB_SHOW_POPULATION   1001
 #define CB_SHOW_LARGEST_CITY 1002
+#define CB_COPY_HEADER       1003
 
 #define RB_COPY_TEXT 2000
 #define RB_COPY_CSV  2001
@@ -3084,9 +3085,10 @@ const char* english_words[] = { "a",
 class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::OnComboBoxCurrentItemChangedInterface
 {
     Reference<ListView> lv;
-
+    CopyClipboardFlags copyFlags;
+    CopyClipboardFormat copyFormat;
   public:
-    MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:26", WindowFlags::None)
+    MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:28", WindowFlags::None)
     {
         lv = Factory::ListView::Create(
               this,
@@ -3149,6 +3151,11 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
         Factory::RadioBox::Create(this, "Copy format: HTML table", "x:1,y:22,w:40", 1234, RB_COPY_HTML)
               ->Handlers()
               ->OnCheck = this;
+
+        Factory::CheckBox::Create(this, "Copy header", "x:1,y:24,w:15", CB_COPY_HEADER)->Handlers()->OnCheck = this;
+        copyFormat = CopyClipboardFormat::TextWithTabs;
+        copyFlags  = CopyClipboardFlags::None;
+        lv->SetClipboardFormat(copyFormat, copyFlags);
     }
     void OnCheck(Reference<Controls::Control> control, bool value) override
     {
@@ -3167,13 +3174,20 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
             lv->GetColumn(3).SetVisible(value);
             break;
         case RB_COPY_TEXT:
-            lv->SetClipboardFormat(CopyClipboardFormat::TextWithTabs, CopyClipboardFlags::None);
+            copyFormat = CopyClipboardFormat::TextWithTabs;
+            lv->SetClipboardFormat(copyFormat, copyFlags);
             break;
         case RB_COPY_CSV:
-            lv->SetClipboardFormat(CopyClipboardFormat::CSV, CopyClipboardFlags::None);
+            copyFormat = CopyClipboardFormat::CSV;
+            lv->SetClipboardFormat(copyFormat, copyFlags);
             break;
         case RB_COPY_HTML:
-            lv->SetClipboardFormat(CopyClipboardFormat::HTML, CopyClipboardFlags::None);
+            copyFormat = CopyClipboardFormat::HTML;
+            lv->SetClipboardFormat(copyFormat, copyFlags);
+            break;
+        case CB_COPY_HEADER:
+            copyFlags = value ? CopyClipboardFlags::CopyHeader : CopyClipboardFlags::None;
+            lv->SetClipboardFormat(copyFormat, copyFlags);
             break;
         }
     }
