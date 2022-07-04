@@ -4164,6 +4164,11 @@ namespace Controls
         CSV,
         HTML
     };
+    enum class CopyClipboardFlags : uint32
+    {
+        None       = 0,
+        CopyHeader = 0x00000001,
+    };
     class EXPORT ColumnsHeaderView : public Control
     {
       public:
@@ -4205,7 +4210,7 @@ namespace Controls
         std::optional<uint32> GetSortColumnIndex() const;
         Column GetSortColumn();
 
-        void SetClipboardFormat(CopyClipboardFormat format);
+        void SetClipboardFormat(CopyClipboardFormat format, CopyClipboardFlags flags);
 
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;

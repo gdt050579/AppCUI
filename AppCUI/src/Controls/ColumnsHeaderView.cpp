@@ -180,7 +180,7 @@ ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Contro
     ICH->copyClipboardFormat = CopyClipboardFormat::TextWithTabs;
 }
 
-void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format)
+void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format, CopyClipboardFlags flags)
 {
     ICH->copyClipboardFormat = format;
 }
