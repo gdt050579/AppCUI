@@ -3167,13 +3167,13 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
             lv->GetColumn(3).SetVisible(value);
             break;
         case RB_COPY_TEXT:
-            lv->SetClipboardFormat(CopyClipboardFormat::TextWithTabs);
+            lv->SetClipboardFormat(CopyClipboardFormat::TextWithTabs, CopyClipboardFlags::None);
             break;
         case RB_COPY_CSV:
-            lv->SetClipboardFormat(CopyClipboardFormat::CSV);
+            lv->SetClipboardFormat(CopyClipboardFormat::CSV, CopyClipboardFlags::None);
             break;
         case RB_COPY_HTML:
-            lv->SetClipboardFormat(CopyClipboardFormat::HTML);
+            lv->SetClipboardFormat(CopyClipboardFormat::HTML, CopyClipboardFlags::None);
             break;
         }
     }
