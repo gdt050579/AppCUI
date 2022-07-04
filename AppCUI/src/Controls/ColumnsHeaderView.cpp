@@ -25,9 +25,9 @@ bool AddTextAsHTMLFormat(UnicodeStringBuilder& output, ConstString text)
         if ((i == '%') || (i == '<') || (i == '>') || (i == ';') || (i > 126))
         {
             CHECK(output.Add("&#"), false, "");
-            CHECK(output.Add(n.ToDec((uint32)i)),false,"");
+            CHECK(output.Add(n.ToDec((uint32) i)), false, "");
             CHECK(output.AddChar(';'), false, "");
-        } 
+        }
         else
         {
             CHECK(output.AddChar(i), false, "");
@@ -80,7 +80,7 @@ bool ColumnsHeaderView::TableBuilder::Start()
     CHECK(state == TABLE_BUILDER_STATE_NONE,
           false,
           "Fail to start the builder (you have already called this method) !");
-    switch (ICH->copyClipboardFormat)
+    switch (ICH->CopyToClipboard.format)
     {
     case CopyClipboardFormat::CSV:
     case CopyClipboardFormat::TextWithTabs:
@@ -93,12 +93,25 @@ bool ColumnsHeaderView::TableBuilder::Start()
         RETURNERROR(false, "Unknwon clipboard format");
     }
     state = TABLE_BUILDER_STATE_STARTED;
+
+    // check flags
+    if ((ICH->CopyToClipboard.flags & CopyClipboardFlags::CopyHeader)!=CopyClipboardFlags::None)
+    {
+        // add header
+        CHECK(AddNewRow(), false, "");
+        for (uint32 index = 0; index < ICH->Header.GetColumnsCount();index++)
+        {
+            CHECK(AddString(index, ICH->Header[index].name), false, "");
+        }
+    }
+
+
     return true;
 }
 bool ColumnsHeaderView::TableBuilder::AddNewRow()
 {
     CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to add new row. Have you call `Start()` method ?");
-    switch (ICH->copyClipboardFormat)
+    switch (ICH->CopyToClipboard.format)
     {
     case CopyClipboardFormat::CSV:
     case CopyClipboardFormat::TextWithTabs:
@@ -131,7 +144,7 @@ bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString 
           false,
           "");
 
-    switch (ICH->copyClipboardFormat)
+    switch (ICH->CopyToClipboard.format)
     {
     case CopyClipboardFormat::CSV:
         CHECK(AddTextAsCSVFormat(output, text), false, "");
@@ -154,7 +167,7 @@ bool ColumnsHeaderView::TableBuilder::AddString(uint32 columnIndex, ConstString 
 bool ColumnsHeaderView::TableBuilder::Finalize()
 {
     CHECK(state != TABLE_BUILDER_STATE_NONE, false, "Fail to complete the buffer. Have you call `Start()` method ?");
-    switch (ICH->copyClipboardFormat)
+    switch (ICH->CopyToClipboard.format)
     {
     case CopyClipboardFormat::CSV:
     case CopyClipboardFormat::TextWithTabs:
@@ -177,12 +190,14 @@ ColumnsHeaderView::ColumnsHeaderView(
 // context MUST be a derivate of ColumnsHeaderViewControlContext
 ColumnsHeaderView::ColumnsHeaderView(void* context, string_view layout) : Control(context, "", layout, false)
 {
-    ICH->copyClipboardFormat = CopyClipboardFormat::TextWithTabs;
+    ICH->CopyToClipboard.format = CopyClipboardFormat::TextWithTabs;
+    ICH->CopyToClipboard.flags  = CopyClipboardFlags::None;
 }
 
-void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format)
+void ColumnsHeaderView::SetClipboardFormat(CopyClipboardFormat format, CopyClipboardFlags flags)
 {
-    ICH->copyClipboardFormat = format;
+    ICH->CopyToClipboard.format = format;
+    ICH->CopyToClipboard.flags  = flags;
 }
 bool ColumnsHeaderView::HeaderHasMouseCaption() const
 {
