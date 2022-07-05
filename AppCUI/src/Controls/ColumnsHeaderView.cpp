@@ -71,7 +71,7 @@ bool AddTextAsCSVFormat(UnicodeStringBuilder& output, ConstString text)
     return true;
 }
 ColumnsHeaderView::TableBuilder::TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& _output)
-    : output(_output), Context(obj->Context), state(TABLE_BUILDER_STATE_NONE)
+    : Context(obj->Context), output(_output), state(TABLE_BUILDER_STATE_NONE)
 {
     output.Clear();
 }
