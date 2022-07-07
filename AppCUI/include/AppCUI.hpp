@@ -5324,7 +5324,8 @@ namespace Application
         Default        = 0,
         SDL            = 1,
         Terminal       = 2,
-        WindowsConsole = 3
+        WindowsConsole = 3,
+        Tests          = 4,
     };
     enum class ThemeType : uint32
     {
