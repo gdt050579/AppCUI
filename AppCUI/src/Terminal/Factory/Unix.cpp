@@ -1,4 +1,5 @@
 #include "../TerminalFactory.hpp"
+#include "../TestTerminal/TestTerminal.hpp"
 
 #ifdef APPCUI_HAS_SDL
 #    include "../SDLTerminal/SDLTerminal.hpp"
@@ -40,7 +41,9 @@ static unique_ptr<AbstractTerminal> GetTerminalImpl(FrontendType frontend)
         RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install ncurses", (uint32) frontend);
 #endif
         break;
-    }
+    case FrontendType::Tests:
+        return std::make_unique<TestTerminal>();
+     }
     RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (uint32) frontend);
 }
 
