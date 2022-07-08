@@ -6,17 +6,8 @@ namespace AppCUI
 {
 namespace Internal
 {
-    constexpr uint32 KEYTRANSLATION_MATRIX_SIZE = 256;
     class TestTerminal : public AbstractTerminal
     {
-        struct
-        {
-            uint32 x, y;
-        } lastMousePosition;
-
-
-
-
       public:
         TestTerminal();
         virtual bool OnInit(const Application::InitializationData& initData) override;

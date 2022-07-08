@@ -7,24 +7,31 @@ using namespace Graphics;
 
 TestTerminal::TestTerminal()
 {
-    this->lastMousePosition = { 0xFFFFFFFFu, 0xFFFFFFFFu };
 }
 TestTerminal::~TestTerminal()
 {
 }
 bool TestTerminal::OnInit(const Application::InitializationData& initData)
 {
-    
     // computer terminal size
-    Size terminalSize = { 80, 40 };
-    CHECK((terminalSize.Width > 0) && (terminalSize.Height > 0), false, "Fail to update terminal size !");
+    uint32 termWidth, termHeight;
+    if ((initData.Width > 0) && (initData.Height > 0))
+    {
+        termWidth  = initData.Width;
+        termHeight = initData.Height;
+    }
+    else
+    {
+        termWidth  = 100; // default values for terminal width
+        termHeight = 60;  // default values for terminal height
+    }
 
     // create canvases
-    CHECK(this->ScreenCanvas.Create(terminalSize.Width, terminalSize.Height),
+    CHECK(this->ScreenCanvas.Create(termWidth, termHeight),
           false,
           "Fail to create an internal canvas of %u x %u size",
-          terminalSize.Width,
-          terminalSize.Height);
+          termWidth,
+          termHeight);
 
     return true;
 }
