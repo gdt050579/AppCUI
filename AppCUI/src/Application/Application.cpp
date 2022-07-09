@@ -15,7 +15,7 @@ bool Application::Init(Application::InitializationFlags flags)
     initData.Flags = flags;
     return Application::Init(initData);
 }
-bool InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags)
+bool Application::InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags)
 {
     Application::InitializationData initData;
     initData.Flags  = flags;

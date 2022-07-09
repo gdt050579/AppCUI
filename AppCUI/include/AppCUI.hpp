@@ -5453,7 +5453,7 @@ namespace Application
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(InitializationData& initData);
 
-    NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
+    NODISCARD("Check the return of the InitForTests function. If false, AppCUI has not been initialized properly")
     EXPORT bool InitForTests(
           uint32 width, uint32 height, Application::InitializationFlags flags = Application::InitializationFlags::None);
 
