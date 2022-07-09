@@ -1857,6 +1857,7 @@ namespace Utils
         static bool ToString(Input::Key keyCode, char* text, uint32 maxTextSize);
         static bool ToString(Input::Key keyCode, Utils::String& text);
         static Input::Key FromString(string_view stringRepresentation);
+        static Input::Key KeyModifiersFromString(string_view stringRepresentation);
 
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };

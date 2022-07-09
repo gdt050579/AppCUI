@@ -72,6 +72,29 @@ bool Utils::KeyUtils::ToString(Input::Key keyCode, Utils::String& text)
     CHECK(text.Add(k), false, "");
     return true;
 }
+Input::Key Utils::KeyUtils::KeyModifiersFromString(string_view stringRepresentation)
+{
+    auto k = FromString(stringRepresentation);
+    if (k!=Key::None)
+        return k & KeyUtils::KEY_SHIFT_MASK;
+    // check if it is just the name of the modifier
+    if (stringRepresentation.data() == nullptr)
+        return Input::Key::None;
+    if (stringRepresentation.length() == 0)
+        return Input::Key::None;
+    if (stringRepresentation.length() > 48)
+        return Input::Key::None;
+    // temporary solution
+    char Key[64];
+    memcpy(Key, stringRepresentation.data(), stringRepresentation.length());
+    if (Utils::String::Equals(Key, "Alt"))
+        return Key::Alt;
+    if (Utils::String::Equals(Key, "Ctrl"))
+        return Key::Ctrl;
+    if (Utils::String::Equals(Key, "Shift"))
+        return Key::Shift;
+    return Key::None;
+}
 Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
 {
     uint32 code     = 0;
