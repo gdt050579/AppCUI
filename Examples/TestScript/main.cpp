@@ -30,9 +30,13 @@ int main()
             Print()
             # copy last two characters
             Key.Hold(Shift)
-            Key.Press(Left)
-            Key.Press(Left)
-            
+            Key.PressMultipleTimes(Left,2)
+            Key.Release()
+            Key.Press(Ctrl+Ins)
+            Key.Press(Tab)
+            # now we are at the second text field --> lets paste the data
+            Key.Press(Shift+Ins)
+            Print()            
     )SCRIPT");
     return 0;
 }

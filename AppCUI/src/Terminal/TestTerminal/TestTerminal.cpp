@@ -146,7 +146,7 @@ void TestTerminal::AddKeyPressCommand(const std::string_view* params)
 
     this->commandsQueue.push(cmd);
 }
-void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
+void TestTerminal::AddKeyHoldCommand(const std::string_view* params)
 {
     Command cmd(CommandID::KeyHold);
     auto k = KeyUtils::FromString(params[0]);
@@ -154,7 +154,7 @@ void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
     cmd.Params[0].keyValue = k & KeyUtils::KEY_SHIFT_MASK;
     this->commandsQueue.push(cmd);
 }
-void TestTerminal::AddKeyHoldCommand(const std::string_view* params)
+void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
 {
     Command cmd(CommandID::KeyPress);
     for (auto ch : params[0])
