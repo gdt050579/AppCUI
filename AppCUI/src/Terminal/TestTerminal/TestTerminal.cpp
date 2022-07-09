@@ -15,6 +15,8 @@ struct
     { "Mouse.Hold", TestTerminal::CommandID::MouseHold, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Mouse.Release", TestTerminal::CommandID::MouseRelease, 2 /* x,y */ },
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
+    { "Mouse.Move", TestTerminal::CommandID::MouseMove, 2 /* x,y */ },
+    { "Mouse.Drag", TestTerminal::CommandID::MouseMove, 4 /* x1,y1,x2,y2 */ },
     { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
     { "Key.PressMultipleTimes", TestTerminal::CommandID::KeyPressMultipleTimes, 2 /* key, times */ },
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
@@ -108,11 +110,23 @@ void TestTerminal::AddMouseReleaseCommand(const std::string_view* params)
     Command cmd(CommandID::MouseRelease);
     auto x = Number::ToInt32(params[0]);
     auto y = Number::ToInt32(params[1]);
-    ASSERT(x.has_value(), "First parameter (x) must be a valid int32 value -> (in Mouse.Press(x,y,button)");
-    ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Press(x,y,button)");
+    ASSERT(x.has_value(), "First parameter (x) must be a valid int32 value -> (in Mouse.Release(x,y)");
+    ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Release(x,y)");
     cmd.Params[0].i32Value = x.value();
     cmd.Params[1].i32Value = y.value();
     this->commandsQueue.push(cmd);
+}
+void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
+{
+    Command cmd(CommandID::MouseMove);
+    auto x = Number::ToInt32(params[0]);
+    auto y = Number::ToInt32(params[1]);
+    ASSERT(x.has_value(), "First parameter (x) must be a valid int32 value -> (in Mouse.Move(x,y)");
+    ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Move(x,y)");
+    cmd.Params[0].i32Value         = x.value();
+    cmd.Params[1].i32Value         = y.value();
+    cmd.Params[2].mouseButtonValue = Input::MouseButton::None;
+    k this->commandsQueue.push(cmd);
 }
 void TestTerminal::AddKeyPressMultipleTimesCommand(const std::string_view* params)
 {
@@ -223,6 +237,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         case TestTerminal::CommandID::MouseRelease:
             AddMouseReleaseCommand(params);
             break;
+        case TestTerminal::CommandID::MouseMove:
+            AddMouseReleaseCommand(params);
+            break;
         case TestTerminal::CommandID::MouseClick:
             AddMouseHoldCommand(params);
             AddMouseReleaseCommand(params);
@@ -318,6 +335,12 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.mouseY      = cmd.Params[1].i32Value;
             evnt.mouseButton = Input::MouseButton::None;
             break;
+        case CommandID::MouseMove:
+            evnt.eventType   = SystemEventType::MouseMove;
+            evnt.mouseX      = cmd.Params[0].i32Value;
+            evnt.mouseY      = cmd.Params[1].i32Value;
+            evnt.mouseButton = cmd.Params[2].mouseButtonValue;
+            break;
         case CommandID::KeyPress:
             evnt.eventType        = SystemEventType::KeyPressed;
             evnt.keyCode          = cmd.Params[0].keyValue;
@@ -340,6 +363,7 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         case CommandID::MouseClick:
         case CommandID::KeyType:
         case CommandID::KeyPressMultipleTimes:
+        case CommandID::MouseDrag:
             ASSERT(false, "Internal flow error -> cthese are composed events (should be treated at the perser side)");
             break;
         default:
