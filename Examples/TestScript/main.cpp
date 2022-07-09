@@ -34,7 +34,10 @@ int main()
             Key.Press(Tab)
             # now we are at the second text field --> lets paste the data
             Key.Press(Shift+Insert)
-            Print()            
+            Print()          
+            # lets move the window
+            Mouse.Drag(20,5,18,3)
+            Print()  
     )SCRIPT");
     return 0;
 }

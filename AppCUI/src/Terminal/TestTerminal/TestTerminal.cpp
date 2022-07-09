@@ -16,7 +16,7 @@ struct
     { "Mouse.Release", TestTerminal::CommandID::MouseRelease, 2 /* x,y */ },
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Mouse.Move", TestTerminal::CommandID::MouseMove, 2 /* x,y */ },
-    { "Mouse.Drag", TestTerminal::CommandID::MouseMove, 4 /* x1,y1,x2,y2 */ },
+    { "Mouse.Drag", TestTerminal::CommandID::MouseDrag, 4 /* x1,y1,x2,y2 */ },
     { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
     { "Key.PressMultipleTimes", TestTerminal::CommandID::KeyPressMultipleTimes, 2 /* key, times */ },
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
@@ -132,8 +132,8 @@ void TestTerminal::AddMouseDragCommand(const std::string_view* params)
 {
     auto x1 = Number::ToInt32(params[0]);
     auto y1 = Number::ToInt32(params[1]);
-    auto x2 = Number::ToInt32(params[3]);
-    auto y2 = Number::ToInt32(params[14]);
+    auto x2 = Number::ToInt32(params[2]);
+    auto y2 = Number::ToInt32(params[3]);
     ASSERT(x1.has_value(), "First parameter (x1) must be a valid int32 value -> (in Mouse.Drag(x1,y1,x2,y2)");
     ASSERT(y1.has_value(), "Second parameter (y1) must be a valid int32 value -> (in Mouse.Drag(x1,y1,x2,y2)");
     ASSERT(x2.has_value(), "Third parameter (x2) must be a valid int32 value -> (in Mouse.Drag(x1,y1,x2,y2)");
