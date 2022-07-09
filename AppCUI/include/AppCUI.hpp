@@ -5455,7 +5455,7 @@ namespace Application
 
     NODISCARD("Check the return of the InitForTests function. If false, AppCUI has not been initialized properly")
     EXPORT bool InitForTests(
-          uint32 width, uint32 height, Application::InitializationFlags flags = Application::InitializationFlags::None);
+          uint32 width, uint32 height, Application::InitializationFlags flags = Application::InitializationFlags::None, bool asciiMode = false);
 
     EXPORT bool Run();
     EXPORT bool RunTestScript(std::string_view script);

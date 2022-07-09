@@ -14,11 +14,12 @@ class SimpleWin : public Window
 };
 int main()
 {
-    if (!Application::InitForTests(60,20))
+    if (!Application::InitForTests(60,20, InitializationFlags::None, true))
         return 1;
     Application::AddWindow(std::make_unique<SimpleWin>());
     Application::RunTestScript(R"SCRIPT(
             Print()
+            # click on the checkbox
             Mouse.Click(14,7,Left)
             Print()
     )SCRIPT");

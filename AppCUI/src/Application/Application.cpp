@@ -15,13 +15,15 @@ bool Application::Init(Application::InitializationFlags flags)
     initData.Flags = flags;
     return Application::Init(initData);
 }
-bool Application::InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags)
+bool Application::InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags, bool asciiMode)
 {
     Application::InitializationData initData;
-    initData.Flags  = flags;
-    initData.Width  = width;
-    initData.Height = height;
-    initData.Frontend = AppCUI::Application::FrontendType::Tests;
+    initData.Flags               = flags;
+    initData.Width               = width;
+    initData.Height              = height;
+    initData.Frontend            = AppCUI::Application::FrontendType::Tests;
+    initData.SpecialCharacterSet = asciiMode ? AppCUI::Application::SpecialCharacterSetType::Ascii
+                                             : AppCUI::Application::SpecialCharacterSetType::Unicode; 
     return Application::Init(initData);
 }
 bool Application::Init(InitializationData& initData)

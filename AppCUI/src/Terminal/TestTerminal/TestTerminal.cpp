@@ -120,6 +120,16 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
     {
         // format = WORD ( param1, param2, ... paramn);
         start = SkipSpaces(start, end);
+        if (start >= end)
+            break;
+        if ((*start) == '#')
+        {
+            // we have a comment --> skip till end of line
+            while ((start < end) && ((*start) != '\n') && ((*start) != '\r'))
+                start++;
+            continue;
+        }
+
         next  = ParseWord(start, end);
         cmd   = { start, (size_t) (next - start) };
         start = SkipSpaces(next, end);
