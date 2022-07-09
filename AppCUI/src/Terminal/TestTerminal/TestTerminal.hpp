@@ -2,6 +2,7 @@
 
 #include "../../Internal.hpp"
 #include <queue>
+#include <optional>
 
 namespace AppCUI
 {
@@ -9,11 +10,43 @@ namespace Internal
 {
     class TestTerminal : public AbstractTerminal
     {
-        std::queue<SystemEvent> eventsQueue;
+      public:
+        enum class CommandID : uint8
+        {
+            None,
+            MousePress,
+            MouseRelease
+        };
+        struct Command
+        {
+            CommandID id;
+            union
+            {
+                int32 i32Value;
+                uint32 u32Value;
+                AppCUI::Input::Key keyValue;
+                char16 charValue;
+                AppCUI::Input::MouseButton mouseButtonValue;
+            } Params[8];
+            Command() : id(CommandID::None)
+            {
+            }
+            Command(CommandID _id) : id(_id)
+            {
+            }
+        };
+
+      protected:
+        std::queue<Command> commandsQueue;
+
+
+        void AddMousePressCommand(const std::string_view* params);
+        void AddMouseReleaseCommand(const std::string_view* params);
+
       public:
         TestTerminal();
 
-        bool CreateEventsQueue(std::string_view commandsScript);
+        void CreateEventsQueue(std::string_view commandsScript);
 
         virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
