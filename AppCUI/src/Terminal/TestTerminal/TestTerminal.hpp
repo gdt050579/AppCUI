@@ -14,9 +14,10 @@ namespace Internal
         enum class CommandID : uint8
         {
             None,
-            MousePress,
+            MouseHold,
             MouseRelease,
             MouseClick,
+            KeyPress,
             Print
         };
         struct Command
@@ -42,8 +43,9 @@ namespace Internal
         std::queue<Command> commandsQueue;
 
 
-        void AddMousePressCommand(const std::string_view* params);
+        void AddMouseHoldCommand(const std::string_view* params);
         void AddMouseReleaseCommand(const std::string_view* params);
+        void AddKeyPressCommand(const std::string_view* params);
         void PrintCurrentScreen();
       public:
         TestTerminal();

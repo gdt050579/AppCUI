@@ -12,9 +12,10 @@ struct
     TestTerminal::CommandID id;
     uint8 paramsCount;
 } SupporttedCommandsFormat[] = {
-    { "Mouse.Press", TestTerminal::CommandID::MousePress, 3 /* x,y,button(Left,Right,Middle) */ },
+    { "Mouse.Hold", TestTerminal::CommandID::MouseHold, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Mouse.Release", TestTerminal::CommandID::MouseRelease, 2 /* x,y */ },
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
+    { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
 };
 
@@ -82,9 +83,9 @@ void TestTerminal::PrintCurrentScreen()
         std::cout << temp << std::endl;
     }
 }
-void TestTerminal::AddMousePressCommand(const std::string_view* params)
+void TestTerminal::AddMouseHoldCommand(const std::string_view* params)
 {
-    Command cmd(CommandID::MousePress);
+    Command cmd(CommandID::MouseHold);
     auto x = Number::ToInt32(params[0]);
     auto y = Number::ToInt32(params[1]);
     auto b = StringToMouseButton(params[2]);
@@ -107,6 +108,14 @@ void TestTerminal::AddMouseReleaseCommand(const std::string_view* params)
     ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Press(x,y,button)");
     cmd.Params[0].i32Value = x.value();
     cmd.Params[1].i32Value = y.value();
+    this->commandsQueue.push(cmd);
+}
+void TestTerminal::AddKeyPressCommand(const std::string_view* params)
+{
+    Command cmd(CommandID::KeyPress);
+    auto k = KeyUtils::FromString(params[0]);
+    ASSERT(k != Input::Key::None, "Invalid key code");
+    cmd.Params[0].keyValue = k;
     this->commandsQueue.push(cmd);
 }
 void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
@@ -162,15 +171,18 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         ASSERT(cmdID != TestTerminal::CommandID::None, "Unknown command ID");
         switch (cmdID)
         {
-        case TestTerminal::CommandID::MousePress:
-            AddMousePressCommand(params);
+        case TestTerminal::CommandID::MouseHold:
+            AddMouseHoldCommand(params);
             break;
         case TestTerminal::CommandID::MouseRelease:
             AddMouseReleaseCommand(params);
             break;
         case TestTerminal::CommandID::MouseClick:
-            AddMousePressCommand(params);
+            AddMouseHoldCommand(params);
             AddMouseReleaseCommand(params);
+            break;
+        case TestTerminal::CommandID::KeyPress:
+            AddKeyPressCommand(params);
             break;
         case TestTerminal::CommandID::Print:
             this->commandsQueue.emplace(CommandID::Print);
@@ -236,7 +248,7 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         evnt.updateFrames = false;
         switch (cmd.id)
         {
-        case CommandID::MousePress:
+        case CommandID::MouseHold:
             evnt.eventType   = SystemEventType::MouseDown;
             evnt.mouseX      = cmd.Params[0].i32Value;
             evnt.mouseY      = cmd.Params[1].i32Value;
