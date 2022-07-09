@@ -79,6 +79,14 @@ void TestTerminal::AddMousePressCommand(const std::string_view* params)
 }
 void TestTerminal::AddMouseReleaseCommand(const std::string_view* params)
 {
+    Command cmd(CommandID::MouseRelease);
+    auto x = Number::ToInt32(params[0]);
+    auto y = Number::ToInt32(params[1]);
+    ASSERT(x.has_value(), "First parameter (x) must be a valid int32 value -> (in Mouse.Press(x,y,button)");
+    ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Press(x,y,button)");
+    cmd.Params[0].i32Value         = x.value();
+    cmd.Params[1].i32Value         = y.value();
+    this->commandsQueue.push(cmd);
 }
 void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
 {
@@ -185,8 +193,25 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
     else
     {
-        evnt = this->eventsQueue.front();
-        this->eventsQueue.pop();
+        auto cmd = this->commandsQueue.front();
+        this->commandsQueue.pop();
+        switch (cmd.id)
+        {
+        case CommandID::MousePress:
+            evnt.eventType   = SystemEventType::MouseDown;
+            evnt.mouseX      = cmd.Params[0].i32Value;
+            evnt.mouseY      = cmd.Params[1].i32Value;
+            evnt.mouseButton = cmd.Params[2].mouseButtonValue;
+            break;
+        case CommandID::MouseRelease:
+            evnt.eventType   = SystemEventType::MouseUp;
+            evnt.mouseX      = cmd.Params[0].i32Value;
+            evnt.mouseY      = cmd.Params[1].i32Value;
+            evnt.mouseButton = Input::MouseButton::None;
+            break;
+        default:
+            ASSERT(false, "Internal flow error -> command ID without a code path !");
+        }
     }
 }
 
