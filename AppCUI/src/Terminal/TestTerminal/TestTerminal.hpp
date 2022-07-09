@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Internal.hpp"
+#include <queue>
 
 namespace AppCUI
 {
@@ -8,8 +9,12 @@ namespace Internal
 {
     class TestTerminal : public AbstractTerminal
     {
+        std::queue<SystemEvent> eventsQueue;
       public:
         TestTerminal();
+
+        bool CreateEventsQueue(std::string_view commandsScript);
+
         virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
         virtual void OnUninit() override;
