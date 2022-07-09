@@ -10,6 +10,8 @@ class SimpleWin : public Window
     SimpleWin() : Window("Test", "d:c,w:40,h:10", WindowFlags::None)
     {
         Factory::CheckBox::Create(this, "A checkbox", "x:1,y:1,w:20");
+        Factory::TextField::Create(this, "", "x:1,y:3,w:30");
+        Factory::TextField::Create(this, "", "x:1,y:5,w:30");
     }
 };
 int main()
@@ -21,6 +23,10 @@ int main()
             Print()
             # click on the checkbox
             Mouse.Click(14,7,Left)
+            # move to the next control
+            Key.Press(Tab)
+            # type something in the text field
+            Key.Type(Hello)
             Print()
     )SCRIPT");
     return 0;
