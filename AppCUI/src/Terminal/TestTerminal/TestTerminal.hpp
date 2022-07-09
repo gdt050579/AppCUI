@@ -52,6 +52,7 @@ namespace Internal
         void AddMouseHoldCommand(const std::string_view* params);
         void AddMouseReleaseCommand(const std::string_view* params);
         void AddMouseMoveCommand(const std::string_view* params);
+        void AddMouseDragCommand(const std::string_view* params);
         void AddKeyPressCommand(const std::string_view* params);
         void AddKeyPressMultipleTimesCommand(const std::string_view* params);
         void AddKeyTypeCommand(const std::string_view* params);

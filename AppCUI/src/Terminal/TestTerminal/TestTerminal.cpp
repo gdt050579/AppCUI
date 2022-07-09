@@ -126,7 +126,35 @@ void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
     cmd.Params[0].i32Value         = x.value();
     cmd.Params[1].i32Value         = y.value();
     cmd.Params[2].mouseButtonValue = Input::MouseButton::None;
-    k this->commandsQueue.push(cmd);
+    this->commandsQueue.push(cmd);
+}
+void TestTerminal::AddMouseDragCommand(const std::string_view* params)
+{
+    auto x1 = Number::ToInt32(params[0]);
+    auto y1 = Number::ToInt32(params[1]);
+    auto x2 = Number::ToInt32(params[3]);
+    auto y2 = Number::ToInt32(params[14]);
+    ASSERT(x1.has_value(), "First parameter (x1) must be a valid int32 value -> (in Mouse.Drag(x1,y1,x2,y2)");
+    ASSERT(y1.has_value(), "Second parameter (y1) must be a valid int32 value -> (in Mouse.Drag(x1,y1,x2,y2)");
+    ASSERT(x2.has_value(), "Third parameter (x2) must be a valid int32 value -> (in Mouse.Drag(x1,y1,x2,y2)");
+    ASSERT(y2.has_value(), "Fourth parameter (y2) must be a valid int32 value -> (in Mouse.Drag(x1,y1,x2,y2)");
+
+    Command cmd(CommandID::MouseHold);
+    cmd.Params[0].i32Value         = x1.value();
+    cmd.Params[1].i32Value         = y1.value();
+    cmd.Params[2].mouseButtonValue = Input::MouseButton::Left;
+    this->commandsQueue.push(cmd);
+
+    cmd.id                         = CommandID::MouseMove;
+    cmd.Params[0].i32Value         = x2.value();
+    cmd.Params[1].i32Value         = y2.value();
+    cmd.Params[2].mouseButtonValue = Input::MouseButton::Left;
+    this->commandsQueue.push(cmd);
+
+    cmd.id                         = CommandID::MouseRelease;
+    cmd.Params[0].i32Value         = x2.value();
+    cmd.Params[1].i32Value         = y2.value();
+    this->commandsQueue.push(cmd);
 }
 void TestTerminal::AddKeyPressMultipleTimesCommand(const std::string_view* params)
 {
@@ -239,6 +267,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         case TestTerminal::CommandID::MouseMove:
             AddMouseReleaseCommand(params);
+            break;
+        case TestTerminal::CommandID::MouseDrag:
+            AddMouseDragCommand(params);
             break;
         case TestTerminal::CommandID::MouseClick:
             AddMouseHoldCommand(params);
