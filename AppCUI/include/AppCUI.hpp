@@ -5458,6 +5458,7 @@ namespace Application
           uint32 width, uint32 height, Application::InitializationFlags flags = Application::InitializationFlags::None);
 
     EXPORT bool Run();
+    EXPORT bool RunTestScript(std::string_view script);
     EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);

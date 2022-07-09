@@ -1,4 +1,5 @@
 #include "../Terminal/TerminalFactory.hpp"
+#include "../Terminal/TestTerminal/TestTerminal.hpp"
 
 #include <math.h>
 
@@ -33,6 +34,15 @@ bool Application::Init(InitializationData& initData)
     delete app;
     app = nullptr;
     RETURNERROR(false, "Fail to initialized application !");
+}
+bool Application::RunTestScript(std::string_view testScript)
+{
+    CHECK(app, false, "Application has not been initialized !");
+    CHECK(app->Inited, false, "Application has not been corectly initialized !");
+    auto testTerm = dynamic_cast<TestTerminal*>(app->terminal.get());
+    CHECK(testTerm, false, "`RunTestScript` can only work with a TestTerminal frontend !");
+    testTerm->CreateEventsQueue(testScript);
+    return Run();
 }
 bool Application::Run()
 {
