@@ -41,7 +41,7 @@ bool TestTerminal::CreateEventsQueue(std::string_view commandsScript)
     const char* end   = start + commandsScript.size();
     const char* next  = nullptr;
     std::string_view cmd;
-    std::string_view params[4];
+    std::string_view params[10];
     while (start < end)
     {
         // format = WORD ( param1, param2, ... paramn);
@@ -60,7 +60,7 @@ bool TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             start                = SkipSpaces(next, end);
             if ((start < end) && ((*start) == ','))
                 start = SkipSpaces(start+1, end);
-            CHECK(paramIndex < 4, false, "Too many parameters --> max allowed are 3 !");
+            CHECK(paramIndex < 10, false, "Too many parameters --> max allowed are 9 !");
         }
         if ((start < end) && ((*start) == ')'))
             start = SkipSpaces(start + 1, end);
