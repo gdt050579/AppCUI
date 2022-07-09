@@ -18,7 +18,7 @@ class SimpleWin : public Window
 };
 int main()
 {
-    if (!Application::Init())
+    if (!Application::InitForTests(60,20))
         return 1;
     Application::AddWindow(std::make_unique<SimpleWin>());
     Application::Run();
