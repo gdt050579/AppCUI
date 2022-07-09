@@ -14,6 +14,7 @@ struct
 } SupporttedCommandsFormat[] = {
     { "Mouse.Press", TestTerminal::CommandID::MousePress, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Mouse.Release", TestTerminal::CommandID::MouseRelease, 2 /* x,y */ },
+    { "Print", TestTerminal::CommandID::Print, 0 /**/ },
 };
 
 const char* SkipSpaces(const char* start, const char* end)
@@ -63,10 +64,10 @@ TestTerminal::~TestTerminal()
 void TestTerminal::PrintCurrentScreen()
 {
     LocalString<512> temp;
-    for (auto y = 0u; y < this->ScreenCanvas.GetHeight();y++)
+    for (auto y = 0u; y < this->ScreenCanvas.GetHeight(); y++)
     {
         temp.Clear();
-        for (auto x = 0u; x < this->ScreenCanvas.GetWidth();x++)
+        for (auto x = 0u; x < this->ScreenCanvas.GetWidth(); x++)
         {
             const auto ch = *(this->ScreenCanvas.GetCharactersBuffer() + y * this->ScreenCanvas.GetWidth() + x);
             if (ch.Code < 32)
@@ -118,7 +119,7 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         // format = WORD ( param1, param2, ... paramn);
         start = SkipSpaces(start, end);
         next  = ParseWord(start, end);
-        cmd   = { start, (size_t)(next - start) };
+        cmd   = { start, (size_t) (next - start) };
         start = SkipSpaces(next, end);
         ASSERT(start < end, "Premature end of command -> Expecting a '(' after the comand name !");
         ASSERT(*start == '(', "Expecting a '(' after the comand name !");
@@ -127,7 +128,7 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         while ((start < end) && ((*start) != ')'))
         {
             next                 = ParseWord(start, end);
-            params[paramIndex++] = { start, (size_t)(next - start) };
+            params[paramIndex++] = { start, (size_t) (next - start) };
             start                = SkipSpaces(next, end);
             if ((start < end) && ((*start) == ','))
                 start = SkipSpaces(start + 1, end);
@@ -141,7 +142,7 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         {
             if (cmd == SupporttedCommandsFormat[idx].commandName)
             {
-                ASSERT(paramIndex != SupporttedCommandsFormat[idx].paramsCount, "Invalid number of parameters");
+                ASSERT(paramIndex == SupporttedCommandsFormat[idx].paramsCount, "Invalid number of parameters");
                 cmdID = SupporttedCommandsFormat[idx].id;
                 break;
             }
