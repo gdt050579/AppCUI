@@ -17,6 +17,10 @@ int main()
     if (!Application::InitForTests(60,20))
         return 1;
     Application::AddWindow(std::make_unique<SimpleWin>());
-    Application::RunTestScript("Print()");
+    Application::RunTestScript(R"SCRIPT(
+            Print()
+            Mouse.Click(14,7,Left)
+            Print()
+    )SCRIPT");
     return 0;
 }

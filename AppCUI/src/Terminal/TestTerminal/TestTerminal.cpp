@@ -65,6 +65,7 @@ TestTerminal::~TestTerminal()
 void TestTerminal::PrintCurrentScreen()
 {
     LocalString<512> temp;
+    std::cout << std::endl;
     for (auto y = 0u; y < this->ScreenCanvas.GetHeight(); y++)
     {
         temp.Clear();
