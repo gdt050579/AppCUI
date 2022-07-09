@@ -18,6 +18,7 @@ namespace Internal
             MouseRelease,
             MouseClick,
             KeyPress,
+            KeyType,
             Print
         };
         struct Command
@@ -46,6 +47,7 @@ namespace Internal
         void AddMouseHoldCommand(const std::string_view* params);
         void AddMouseReleaseCommand(const std::string_view* params);
         void AddKeyPressCommand(const std::string_view* params);
+        void AddKeyTypeCommand(const std::string_view* params);
         void PrintCurrentScreen();
       public:
         TestTerminal();

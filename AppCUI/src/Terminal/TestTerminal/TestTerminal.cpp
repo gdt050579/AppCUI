@@ -16,6 +16,7 @@ struct
     { "Mouse.Release", TestTerminal::CommandID::MouseRelease, 2 /* x,y */ },
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
+    { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
 };
 
@@ -127,6 +128,16 @@ void TestTerminal::AddKeyPressCommand(const std::string_view* params)
 
     this->commandsQueue.push(cmd);
 }
+void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
+{
+    Command cmd(CommandID::KeyPress);
+    for (auto ch : params[0])
+    {
+        cmd.Params[0].keyValue = KeyUtils::FromString({ &ch, 1 });
+        cmd.Params[1].charValue = ch;
+        this->commandsQueue.push(cmd);
+    }    
+}
 void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
 {
     const char* start = commandsScript.data();
@@ -192,6 +203,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         case TestTerminal::CommandID::KeyPress:
             AddKeyPressCommand(params);
+            break;
+        case TestTerminal::CommandID::KeyType:
+            AddKeyTypeCommand(params);
             break;
         case TestTerminal::CommandID::Print:
             this->commandsQueue.emplace(CommandID::Print);
@@ -279,6 +293,7 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             PrintCurrentScreen();
             break;
         case CommandID::MouseClick:
+        case CommandID::KeyType:
             ASSERT(false, "Internal flow error -> cthese are composed events (should be treated at the perser side)");
             break;
         default:
