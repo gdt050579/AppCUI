@@ -86,7 +86,7 @@ void TestTerminal::PrintCurrentScreen()
             else
                 temp.AddChar((char) ch.Code);
         }
-        std::cout << temp << std::endl;
+        std::cout << temp.GetText() << std::endl;
     }
 }
 void TestTerminal::AddMouseHoldCommand(const std::string_view* params)
@@ -151,9 +151,9 @@ void TestTerminal::AddMouseDragCommand(const std::string_view* params)
     cmd.Params[2].mouseButtonValue = Input::MouseButton::Left;
     this->commandsQueue.push(cmd);
 
-    cmd.id                         = CommandID::MouseRelease;
-    cmd.Params[0].i32Value         = x2.value();
-    cmd.Params[1].i32Value         = y2.value();
+    cmd.id                 = CommandID::MouseRelease;
+    cmd.Params[0].i32Value = x2.value();
+    cmd.Params[1].i32Value = y2.value();
     this->commandsQueue.push(cmd);
 }
 void TestTerminal::AddKeyPressMultipleTimesCommand(const std::string_view* params)
@@ -332,7 +332,7 @@ void TestTerminal::OnUninit()
 void TestTerminal::OnFlushToScreen()
 {
 }
-void TestTerminal::OnFlushToScreen(const Graphics::Rect& rect)
+void TestTerminal::OnFlushToScreen(const Graphics::Rect& /*rect*/)
 {
 }
 bool TestTerminal::OnUpdateCursor()
@@ -408,7 +408,7 @@ bool TestTerminal::IsEventAvailable()
 {
     return false;
 }
-bool TestTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
+bool TestTerminal::HasSupportFor(Application::SpecialCharacterSetType /*type*/)
 {
     return true;
 }
