@@ -116,6 +116,15 @@ void TestTerminal::AddKeyPressCommand(const std::string_view* params)
     auto k = KeyUtils::FromString(params[0]);
     ASSERT(k != Input::Key::None, "Invalid key code");
     cmd.Params[0].keyValue = k;
+    if (k == Input::Key::Space)
+        cmd.Params[1].charValue = ' ';
+    else if (((uint32) k >= (uint32) Input::Key::A) && ((uint32) k <= (uint32) Input::Key::Z))
+        cmd.Params[1].charValue = 'a' + (uint32) k - (uint32) Input::Key::A;
+    else if (((uint32) k >= (uint32) Input::Key::N0) && ((uint32) k <= (uint32) Input::Key::N9))
+        cmd.Params[1].charValue = '0' + (uint32) k - (uint32) Input::Key::N0;
+    else
+        cmd.Params[1].charValue = 0;
+
     this->commandsQueue.push(cmd);
 }
 void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
@@ -259,6 +268,11 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.mouseX      = cmd.Params[0].i32Value;
             evnt.mouseY      = cmd.Params[1].i32Value;
             evnt.mouseButton = Input::MouseButton::None;
+            break;
+        case CommandID::KeyPress:
+            evnt.eventType        = SystemEventType::KeyPressed;
+            evnt.keyCode          = cmd.Params[0].keyValue;
+            evnt.unicodeCharacter = cmd.Params[1].charValue;
             break;
         case CommandID::Print:
             evnt.eventType = SystemEventType::None;
