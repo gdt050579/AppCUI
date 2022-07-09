@@ -9,6 +9,7 @@ class SimpleWin : public Window
   public:
     SimpleWin() : Window("Test", "d:c,w:40,h:10", WindowFlags::None)
     {
+        Factory::CheckBox::Create(this, "A checkbox", "x:1,y:1,w:20");
     }
 };
 int main()

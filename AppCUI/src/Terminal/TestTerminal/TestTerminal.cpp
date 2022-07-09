@@ -14,6 +14,7 @@ struct
 } SupporttedCommandsFormat[] = {
     { "Mouse.Press", TestTerminal::CommandID::MousePress, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Mouse.Release", TestTerminal::CommandID::MouseRelease, 2 /* x,y */ },
+    { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
 };
 
@@ -156,6 +157,10 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         case TestTerminal::CommandID::MouseRelease:
             AddMouseReleaseCommand(params);
             break;
+        case TestTerminal::CommandID::MouseClick:
+            AddMousePressCommand(params);
+            AddMouseReleaseCommand(params);
+            break;
         case TestTerminal::CommandID::Print:
             this->commandsQueue.emplace(CommandID::Print);
             break;
@@ -236,8 +241,12 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.eventType = SystemEventType::None;
             PrintCurrentScreen();
             break;
+        case CommandID::MouseClick:
+            ASSERT(false, "Internal flow error -> cthese are composed events (should be treated at the perser side)");
+            break;
         default:
             ASSERT(false, "Internal flow error -> command ID without a code path !");
+            break;
         }
     }
 }

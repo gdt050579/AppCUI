@@ -16,6 +16,7 @@ namespace Internal
             None,
             MousePress,
             MouseRelease,
+            MouseClick,
             Print
         };
         struct Command
