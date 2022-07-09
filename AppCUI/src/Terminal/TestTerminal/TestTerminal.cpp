@@ -60,7 +60,25 @@ TestTerminal::TestTerminal()
 TestTerminal::~TestTerminal()
 {
 }
-
+void TestTerminal::PrintCurrentScreen()
+{
+    LocalString<512> temp;
+    for (auto y = 0u; y < this->ScreenCanvas.GetHeight();y++)
+    {
+        temp.Clear();
+        for (auto x = 0u; x < this->ScreenCanvas.GetWidth();x++)
+        {
+            const auto ch = *(this->ScreenCanvas.GetCharactersBuffer() + y * this->ScreenCanvas.GetWidth() + x);
+            if (ch.Code < 32)
+                temp.AddChar(' ');
+            else if (ch.Code > 127)
+                temp.AddChar('?');
+            else
+                temp.AddChar((char) ch.Code);
+        }
+        std::cout << temp << std::endl;
+    }
+}
 void TestTerminal::AddMousePressCommand(const std::string_view* params)
 {
     Command cmd(CommandID::MousePress);
@@ -84,8 +102,8 @@ void TestTerminal::AddMouseReleaseCommand(const std::string_view* params)
     auto y = Number::ToInt32(params[1]);
     ASSERT(x.has_value(), "First parameter (x) must be a valid int32 value -> (in Mouse.Press(x,y,button)");
     ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Press(x,y,button)");
-    cmd.Params[0].i32Value         = x.value();
-    cmd.Params[1].i32Value         = y.value();
+    cmd.Params[0].i32Value = x.value();
+    cmd.Params[1].i32Value = y.value();
     this->commandsQueue.push(cmd);
 }
 void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
@@ -100,7 +118,7 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         // format = WORD ( param1, param2, ... paramn);
         start = SkipSpaces(start, end);
         next  = ParseWord(start, end);
-        cmd   = { start, next - start };
+        cmd   = { start, (size_t)(next - start) };
         start = SkipSpaces(next, end);
         ASSERT(start < end, "Premature end of command -> Expecting a '(' after the comand name !");
         ASSERT(*start == '(', "Expecting a '(' after the comand name !");
@@ -109,7 +127,7 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         while ((start < end) && ((*start) != ')'))
         {
             next                 = ParseWord(start, end);
-            params[paramIndex++] = { start, next - start };
+            params[paramIndex++] = { start, (size_t)(next - start) };
             start                = SkipSpaces(next, end);
             if ((start < end) && ((*start) == ','))
                 start = SkipSpaces(start + 1, end);
@@ -136,6 +154,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         case TestTerminal::CommandID::MouseRelease:
             AddMouseReleaseCommand(params);
+            break;
+        case TestTerminal::CommandID::Print:
+            this->commandsQueue.emplace(CommandID::Print);
             break;
         default:
             ASSERT(false, "Internal error (code path to a command ID was not treated !");
@@ -195,6 +216,7 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     {
         auto cmd = this->commandsQueue.front();
         this->commandsQueue.pop();
+        evnt.updateFrames = false;
         switch (cmd.id)
         {
         case CommandID::MousePress:
@@ -208,6 +230,10 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.mouseX      = cmd.Params[0].i32Value;
             evnt.mouseY      = cmd.Params[1].i32Value;
             evnt.mouseButton = Input::MouseButton::None;
+            break;
+        case CommandID::Print:
+            evnt.eventType = SystemEventType::None;
+            PrintCurrentScreen();
             break;
         default:
             ASSERT(false, "Internal flow error -> command ID without a code path !");
