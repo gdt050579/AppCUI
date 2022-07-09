@@ -87,11 +87,12 @@ Input::Key Utils::KeyUtils::KeyModifiersFromString(string_view stringRepresentat
     // temporary solution
     char Key[64];
     memcpy(Key, stringRepresentation.data(), stringRepresentation.length());
-    if (Utils::String::Equals(Key, "Alt"))
+    Key[stringRepresentation.length()] = 0;
+    if (Utils::String::Equals(Key, "Alt", true))
         return Key::Alt;
-    if (Utils::String::Equals(Key, "Ctrl"))
+    if (Utils::String::Equals(Key, "Ctrl", true))
         return Key::Ctrl;
-    if (Utils::String::Equals(Key, "Shift"))
+    if (Utils::String::Equals(Key, "Shift", true))
         return Key::Shift;
     return Key::None;
 }
@@ -116,19 +117,19 @@ Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
     // automat de stari - pentru modifier
     for (int tr = 0; tr < 3; tr++)
     {
-        if (Utils::String::StartsWith(key, "Alt+"))
+        if (Utils::String::StartsWith(key, "Alt+", true))
         {
             modifier |= 1;
             key += 4;
             continue;
         }
-        if (Utils::String::StartsWith(key, "Ctrl+"))
+        if (Utils::String::StartsWith(key, "Ctrl+", true))
         {
             modifier |= 2;
             key += 5;
             continue;
         }
-        if (Utils::String::StartsWith(key, "Shift+"))
+        if (Utils::String::StartsWith(key, "Shift+", true))
         {
             modifier |= 4;
             key += 6;

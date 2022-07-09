@@ -149,9 +149,9 @@ void TestTerminal::AddKeyPressCommand(const std::string_view* params)
 void TestTerminal::AddKeyHoldCommand(const std::string_view* params)
 {
     Command cmd(CommandID::KeyHold);
-    auto k = KeyUtils::FromString(params[0]);
-    ASSERT((k & KeyUtils::KEY_SHIFT_MASK) != Input::Key::None, "Expected shift keys (Shift,Ctrl or Alt)");
-    cmd.Params[0].keyValue = k & KeyUtils::KEY_SHIFT_MASK;
+    auto k = KeyUtils::KeyModifiersFromString(params[0]);
+    ASSERT(k != Input::Key::None, "Expected shift keys (Shift,Ctrl or Alt)");
+    cmd.Params[0].keyValue = k;
     this->commandsQueue.push(cmd);
 }
 void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
