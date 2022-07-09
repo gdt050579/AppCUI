@@ -28,6 +28,11 @@ int main()
             # type something in the text field
             Key.Type(Hello)
             Print()
+            # copy last two characters
+            Key.Hold(Shift)
+            Key.Press(Left)
+            Key.Press(Left)
+            
     )SCRIPT");
     return 0;
 }

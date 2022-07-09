@@ -16,6 +16,7 @@ struct
     { "Mouse.Release", TestTerminal::CommandID::MouseRelease, 2 /* x,y */ },
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
+    { "Key.PressMultipleTimes", TestTerminal::CommandID::KeyPressMultipleTimes, 2 /* key, times */ },
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
     { "Key.Hold", TestTerminal::CommandID::KeyHold, 1 /* shift state */ },
     { "Key.Release", TestTerminal::CommandID::KeyRelease, 0 /**/ },
@@ -112,6 +113,21 @@ void TestTerminal::AddMouseReleaseCommand(const std::string_view* params)
     cmd.Params[0].i32Value = x.value();
     cmd.Params[1].i32Value = y.value();
     this->commandsQueue.push(cmd);
+}
+void TestTerminal::AddKeyPressMultipleTimesCommand(const std::string_view* params)
+{
+    auto times = Number::ToUInt32(params[1]);
+    ASSERT(
+          times.has_value(),
+          "Second parameter (times) must be a valid uint32 value -> (in Key.PressMultipleTimes(key,times)");
+    ASSERT(
+          times.value() > 0, "Second parameter (times) must be bigger than 0 -> (in Key.PressMultipleTimes(key,times)");
+    auto val = times.value();
+    while (val)
+    {
+        AddKeyPressCommand(params);
+        val--;
+    }
 }
 void TestTerminal::AddKeyPressCommand(const std::string_view* params)
 {
@@ -213,6 +229,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         case TestTerminal::CommandID::KeyPress:
             AddKeyPressCommand(params);
+            break;
+        case TestTerminal::CommandID::KeyPressMultipleTimes:
+            AddKeyPressMultipleTimesCommand(params);
             break;
         case TestTerminal::CommandID::KeyType:
             AddKeyTypeCommand(params);
@@ -320,6 +339,7 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             break;
         case CommandID::MouseClick:
         case CommandID::KeyType:
+        case CommandID::KeyPressMultipleTimes:
             ASSERT(false, "Internal flow error -> cthese are composed events (should be treated at the perser side)");
             break;
         default:
