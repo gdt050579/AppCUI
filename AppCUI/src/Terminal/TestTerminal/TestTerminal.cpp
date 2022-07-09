@@ -17,6 +17,8 @@ struct
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
+    { "Key.Hold", TestTerminal::CommandID::KeyHold, 1 /* shift state */ },
+    { "Key.Release", TestTerminal::CommandID::KeyRelease, 0 /**/ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
 };
 
@@ -130,13 +132,21 @@ void TestTerminal::AddKeyPressCommand(const std::string_view* params)
 }
 void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
 {
+    Command cmd(CommandID::KeyHold);
+    auto k = KeyUtils::FromString(params[0]);
+    ASSERT((k & KeyUtils::KEY_SHIFT_MASK) != Input::Key::None, "Expected shift keys (Shift,Ctrl or Alt)");
+    cmd.Params[0].keyValue = k & KeyUtils::KEY_SHIFT_MASK;
+    this->commandsQueue.push(cmd);
+}
+void TestTerminal::AddKeyHoldCommand(const std::string_view* params)
+{
     Command cmd(CommandID::KeyPress);
     for (auto ch : params[0])
     {
-        cmd.Params[0].keyValue = KeyUtils::FromString({ &ch, 1 });
+        cmd.Params[0].keyValue  = KeyUtils::FromString({ &ch, 1 });
         cmd.Params[1].charValue = ch;
         this->commandsQueue.push(cmd);
-    }    
+    }
 }
 void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
 {
@@ -206,6 +216,12 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         case TestTerminal::CommandID::KeyType:
             AddKeyTypeCommand(params);
+            break;
+        case TestTerminal::CommandID::KeyHold:
+            AddKeyHoldCommand(params);
+            break;
+        case TestTerminal::CommandID::KeyRelease:
+            this->commandsQueue.emplace(CommandID::KeyRelease);
             break;
         case TestTerminal::CommandID::Print:
             this->commandsQueue.emplace(CommandID::Print);
@@ -287,6 +303,16 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.eventType        = SystemEventType::KeyPressed;
             evnt.keyCode          = cmd.Params[0].keyValue;
             evnt.unicodeCharacter = cmd.Params[1].charValue;
+            break;
+        case CommandID::KeyHold:
+            evnt.eventType        = SystemEventType::ShiftStateChanged;
+            evnt.keyCode          = cmd.Params[0].keyValue;
+            evnt.unicodeCharacter = 0;
+            break;
+        case CommandID::KeyRelease:
+            evnt.eventType        = SystemEventType::ShiftStateChanged;
+            evnt.keyCode          = Input::Key::None;
+            evnt.unicodeCharacter = 0;
             break;
         case CommandID::Print:
             evnt.eventType = SystemEventType::None;
