@@ -5,6 +5,5 @@ target_sources(AppCUI PRIVATE
     CommandBarController.cpp
     Config.cpp
     MenuBar.cpp
-    TestCommandsParser.cpp
     ToolTip.cpp
 )
