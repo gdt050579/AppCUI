@@ -1,4 +1,5 @@
 add_subdirectory(Factory)
+add_subdirectory(TestTerminal)
 if (MSVC)
     add_subdirectory(WindowsTerminal)
 else()  

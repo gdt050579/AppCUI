@@ -1,4 +1,5 @@
 #include "../Terminal/TerminalFactory.hpp"
+#include "../Terminal/TestTerminal/TestTerminal.hpp"
 
 #include <math.h>
 
@@ -14,7 +15,17 @@ bool Application::Init(Application::InitializationFlags flags)
     initData.Flags = flags;
     return Application::Init(initData);
 }
-
+bool Application::InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags, bool asciiMode)
+{
+    Application::InitializationData initData;
+    initData.Flags               = flags;
+    initData.Width               = width;
+    initData.Height              = height;
+    initData.Frontend            = AppCUI::Application::FrontendType::Tests;
+    initData.SpecialCharacterSet = asciiMode ? AppCUI::Application::SpecialCharacterSetType::Ascii
+                                             : AppCUI::Application::SpecialCharacterSetType::Unicode; 
+    return Application::Init(initData);
+}
 bool Application::Init(InitializationData& initData)
 {
     CHECK(app == nullptr, false, "Application has already been initialized !");
@@ -25,6 +36,15 @@ bool Application::Init(InitializationData& initData)
     delete app;
     app = nullptr;
     RETURNERROR(false, "Fail to initialized application !");
+}
+bool Application::RunTestScript(std::string_view testScript)
+{
+    CHECK(app, false, "Application has not been initialized !");
+    CHECK(app->Inited, false, "Application has not been corectly initialized !");
+    auto testTerm = dynamic_cast<TestTerminal*>(app->terminal.get());
+    CHECK(testTerm, false, "`RunTestScript` can only work with a TestTerminal frontend !");
+    testTerm->CreateEventsQueue(testScript);
+    return Run();
 }
 bool Application::Run()
 {

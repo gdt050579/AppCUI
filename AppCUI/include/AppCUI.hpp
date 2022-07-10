@@ -1857,6 +1857,7 @@ namespace Utils
         static bool ToString(Input::Key keyCode, char* text, uint32 maxTextSize);
         static bool ToString(Input::Key keyCode, Utils::String& text);
         static Input::Key FromString(string_view stringRepresentation);
+        static Input::Key KeyModifiersFromString(string_view stringRepresentation);
 
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };
@@ -5324,7 +5325,8 @@ namespace Application
         Default        = 0,
         SDL            = 1,
         Terminal       = 2,
-        WindowsConsole = 3
+        WindowsConsole = 3,
+        Tests          = 4,
     };
     enum class ThemeType : uint32
     {
@@ -5452,7 +5454,12 @@ namespace Application
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(InitializationData& initData);
 
+    NODISCARD("Check the return of the InitForTests function. If false, AppCUI has not been initialized properly")
+    EXPORT bool InitForTests(
+          uint32 width, uint32 height, Application::InitializationFlags flags = Application::InitializationFlags::None, bool asciiMode = false);
+
     EXPORT bool Run();
+    EXPORT bool RunTestScript(std::string_view script);
     EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
