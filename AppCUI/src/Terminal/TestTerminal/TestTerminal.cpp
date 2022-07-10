@@ -256,7 +256,7 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             start = SkipSpaces(start + 1, end);
         // check the command ID
         auto cmdID = TestTerminal::CommandID::None;
-        for (auto idx = 0; idx < ARRAY_LEN(SupporttedCommandsFormat); idx++)
+        for (auto idx = 0U; idx < ARRAY_LEN(SupporttedCommandsFormat); idx++)
         {
             if (cmd == SupporttedCommandsFormat[idx].commandName)
             {
