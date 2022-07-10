@@ -72,21 +72,30 @@ TestTerminal::~TestTerminal()
 void TestTerminal::PrintCurrentScreen()
 {
     LocalString<512> temp;
+    auto w = this->ScreenCanvas.GetWidth();
+    auto p = this->ScreenCanvas.GetCharactersBuffer();
+    auto e = p + ((size_t) w) * ((size_t) this->ScreenCanvas.GetHeight());
+    auto x = 0U;
+
     std::cout << std::endl;
-    for (auto y = 0u; y < this->ScreenCanvas.GetHeight(); y++)
+    temp.Clear();
+
+    while (p<e)
     {
-        temp.Clear();
-        for (auto x = 0u; x < this->ScreenCanvas.GetWidth(); x++)
+        if (p->Code < 32)
+            temp.AddChar(' ');
+        else if (p->Code > 127)
+            temp.AddChar('?');
+        else
+            temp.AddChar((char) p->Code);
+        x++;
+        p++;
+        if (x==w)
         {
-            const auto ch = *(this->ScreenCanvas.GetCharactersBuffer() + y * this->ScreenCanvas.GetWidth() + x);
-            if (ch.Code < 32)
-                temp.AddChar(' ');
-            else if (ch.Code > 127)
-                temp.AddChar('?');
-            else
-                temp.AddChar((char) ch.Code);
+            x = 0;
+            std::cout << temp.GetText() << std::endl;
+            temp.Clear();
         }
-        std::cout << temp.GetText() << std::endl;
     }
 }
 void TestTerminal::AddMouseHoldCommand(const std::string_view* params)
@@ -349,8 +358,7 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
     else
     {
-        auto cmd = this->commandsQueue.front();
-        this->commandsQueue.pop();
+        auto& cmd         = this->commandsQueue.front();
         evnt.updateFrames = false;
         switch (cmd.id)
         {
@@ -401,6 +409,8 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             ASSERT(false, "Internal flow error -> command ID without a code path !");
             break;
         }
+        // remove the command from queue
+        this->commandsQueue.pop();
     }
 }
 
