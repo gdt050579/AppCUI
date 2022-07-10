@@ -62,6 +62,22 @@ std::optional<AppCUI::Input::MouseButton> StringToMouseButton(std::string_view t
         return AppCUI::Input::MouseButton::Center;
     return std::nullopt;
 }
+TestTerminal::Command::Command()
+{
+    this->id = CommandID::None;
+    for (auto idx = 0U; idx < ARRAY_LEN(this->Params);idx++)
+    {
+        this->Params[idx].u32Value = 0;
+    }
+}
+TestTerminal::Command::Command(CommandID _id)
+{
+    this->id = _id;
+    for (auto idx = 0U; idx < ARRAY_LEN(this->Params); idx++)
+    {
+        this->Params[idx].u32Value = 0;
+    }
+}
 
 TestTerminal::TestTerminal()
 {

@@ -37,12 +37,8 @@ namespace Internal
                 char16 charValue;
                 AppCUI::Input::MouseButton mouseButtonValue;
             } Params[8];
-            Command() : id(CommandID::None)
-            {
-            }
-            Command(CommandID _id) : id(_id)
-            {
-            }
+            Command();
+            Command(CommandID id);
         };
 
       protected:
