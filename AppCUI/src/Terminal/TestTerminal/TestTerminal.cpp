@@ -65,7 +65,7 @@ std::optional<AppCUI::Input::MouseButton> StringToMouseButton(std::string_view t
 TestTerminal::Command::Command()
 {
     this->id = CommandID::None;
-    for (auto idx = 0U; idx < ARRAY_LEN(this->Params);idx++)
+    for (auto idx = 0U; idx < ARRAY_LEN(this->Params); idx++)
     {
         this->Params[idx].u32Value = 0;
     }
@@ -85,6 +85,32 @@ TestTerminal::TestTerminal()
 TestTerminal::~TestTerminal()
 {
 }
+uint64 TestTerminal::ComputeHash(bool useColors)
+{
+    auto p = this->ScreenCanvas.GetCharactersBuffer();
+    auto e = p + ((size_t) this->ScreenCanvas.GetWidth()) * ((size_t) this->ScreenCanvas.GetHeight());
+    // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+    uint64 hash = 0xcbf29ce484222325ULL;
+    if (useColors)
+    {
+        while (p < p)
+        {
+            hash = hash ^ (p->PackedValue);
+            hash = hash * 0x00000100000001B3ULL;
+            p++;
+        }
+    }
+    else
+    {
+        while (p < p)
+        {
+            hash = hash ^ (p->Code);
+            hash = hash * 0x00000100000001B3ULL;
+            p++;
+        }
+    }
+    return hash;
+}
 void TestTerminal::PrintCurrentScreen()
 {
     LocalString<512> temp;
@@ -96,7 +122,7 @@ void TestTerminal::PrintCurrentScreen()
     std::cout << std::endl;
     temp.Clear();
 
-    while (p<e)
+    while (p < e)
     {
         if (p->Code < 32)
             temp.AddChar(' ');
@@ -106,7 +132,7 @@ void TestTerminal::PrintCurrentScreen()
             temp.AddChar((char) p->Code);
         x++;
         p++;
-        if (x==w)
+        if (x == w)
         {
             x = 0;
             std::cout << temp.GetText() << std::endl;

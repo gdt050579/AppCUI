@@ -44,6 +44,7 @@ namespace Internal
       protected:
         std::queue<Command> commandsQueue;
 
+        uint64 ComputeHash(bool useColors);
 
         void AddMouseHoldCommand(const std::string_view* params);
         void AddMouseReleaseCommand(const std::string_view* params);
