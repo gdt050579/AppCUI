@@ -93,7 +93,7 @@ uint64 TestTerminal::ComputeHash(bool useColors)
     uint64 hash = 0xcbf29ce484222325ULL;
     if (useColors)
     {
-        while (p < p)
+        while (p < e)
         {
             hash = hash ^ (p->PackedValue);
             hash = hash * 0x00000100000001B3ULL;
@@ -102,7 +102,7 @@ uint64 TestTerminal::ComputeHash(bool useColors)
     }
     else
     {
-        while (p < p)
+        while (p < e)
         {
             hash = hash ^ (p->Code);
             hash = hash * 0x00000100000001B3ULL;
