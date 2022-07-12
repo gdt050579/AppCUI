@@ -24,7 +24,8 @@ namespace Internal
             KeyType,
             KeyHold,
             KeyRelease,
-            Print
+            Print,
+            PrintScreenHash
         };
         struct Command
         {
@@ -36,6 +37,7 @@ namespace Internal
                 AppCUI::Input::Key keyValue;
                 char16 charValue;
                 AppCUI::Input::MouseButton mouseButtonValue;
+                bool boolValue;
             } Params[8];
             Command();
             Command(CommandID id);
@@ -54,7 +56,9 @@ namespace Internal
         void AddKeyPressMultipleTimesCommand(const std::string_view* params);
         void AddKeyTypeCommand(const std::string_view* params);
         void AddKeyHoldCommand(const std::string_view* params);
+        void AddPrintScreenHashCommand(const std::string_view* params);
         void PrintCurrentScreen();
+        void PrintScreenHash(bool withColors);
       public:
         TestTerminal();
 

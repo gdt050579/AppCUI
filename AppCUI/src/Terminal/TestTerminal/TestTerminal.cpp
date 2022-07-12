@@ -23,6 +23,7 @@ struct
     { "Key.Hold", TestTerminal::CommandID::KeyHold, 1 /* shift state */ },
     { "Key.Release", TestTerminal::CommandID::KeyRelease, 0 /**/ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
+    { "PrintScreenHash", TestTerminal::CommandID::PrintScreenHash, 1 /*with colors*/ },
 };
 
 const char* SkipSpaces(const char* start, const char* end)
@@ -60,6 +61,16 @@ std::optional<AppCUI::Input::MouseButton> StringToMouseButton(std::string_view t
         return AppCUI::Input::MouseButton::Center;
     if (temp.Equals("center", true))
         return AppCUI::Input::MouseButton::Center;
+    return std::nullopt;
+}
+std::optional<bool> StringToBool(std::string_view txt)
+{
+    LocalString<64> temp;
+    CHECK(temp.Set(txt), std::nullopt, "");
+    if ((temp.Equals("true", true)) || (temp.Equals("yes", true)))
+        return true;
+    if ((temp.Equals("false", true)) || (temp.Equals("no", true)))
+        return false;
     return std::nullopt;
 }
 TestTerminal::Command::Command()
@@ -139,6 +150,19 @@ void TestTerminal::PrintCurrentScreen()
             temp.Clear();
         }
     }
+}
+void TestTerminal::PrintScreenHash(bool withColors)
+{
+    auto hash = ComputeHash(withColors);
+    std::cout << "ScreenHash: " << std::hex << hash << std::endl;
+}
+void TestTerminal::AddPrintScreenHashCommand(const std::string_view* params)
+{
+    auto withColors = StringToBool(params[0]);
+    ASSERT(withColors.has_value(), "First parameter (withColors) must be a valid boolean value [true or false] -> (in PrintScreenHash(withColors)");
+    Command cmd(CommandID::PrintScreenHash);
+    cmd.Params[0].boolValue = withColors.value();
+    this->commandsQueue.push(cmd);
 }
 void TestTerminal::AddMouseHoldCommand(const std::string_view* params)
 {
@@ -338,6 +362,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         case TestTerminal::CommandID::KeyHold:
             AddKeyHoldCommand(params);
             break;
+        case TestTerminal::CommandID::PrintScreenHash:
+            AddPrintScreenHashCommand(params);
+            break;
         case TestTerminal::CommandID::KeyRelease:
             this->commandsQueue.emplace(CommandID::KeyRelease);
             break;
@@ -440,6 +467,10 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         case CommandID::Print:
             evnt.eventType = SystemEventType::None;
             PrintCurrentScreen();
+            break;
+        case CommandID::PrintScreenHash:
+            evnt.eventType = SystemEventType::None;
+            PrintScreenHash(cmd.Params[0].boolValue);
             break;
         case CommandID::MouseClick:
         case CommandID::KeyType:
