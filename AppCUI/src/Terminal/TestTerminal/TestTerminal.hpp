@@ -24,6 +24,7 @@ namespace Internal
             KeyType,
             KeyHold,
             KeyRelease,
+            ResizeTerminal,
             Print,
             PrintScreenHash
         };

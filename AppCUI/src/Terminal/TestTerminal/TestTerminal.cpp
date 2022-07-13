@@ -22,6 +22,7 @@ struct
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
     { "Key.Hold", TestTerminal::CommandID::KeyHold, 1 /* shift state */ },
     { "Key.Release", TestTerminal::CommandID::KeyRelease, 0 /**/ },
+    { "Terminal.Resize", TestTerminal::CommandID::ResizeTerminal, 2 /* width, height */ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
     { "PrintScreenHash", TestTerminal::CommandID::PrintScreenHash, 1 /*with colors*/ },
 };
