@@ -204,6 +204,17 @@ void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
     cmd.Params[2].mouseButtonValue = Input::MouseButton::None;
     this->commandsQueue.push(cmd);
 }
+void TestTerminal::AddTerminalResizeCommand(const std::string_view* params)
+{
+    Command cmd(CommandID::ResizeTerminal);
+    auto w = Number::ToUInt32(params[0]);
+    auto h = Number::ToUInt32(params[1]);
+    ASSERT(w.has_value(), "First parameter (width) must be a valid uint32 value -> (in Terminal.Resize(width,height)");
+    ASSERT(h.has_value(), "Second parameter (height) must be a valid uint32 value -> (in Terminal.Resize(width,height)");
+    cmd.Params[0].u32Value         = w.value();
+    cmd.Params[1].u32Value         = h.value();
+    this->commandsQueue.push(cmd);
+}
 void TestTerminal::AddMouseDragCommand(const std::string_view* params)
 {
     auto x1 = Number::ToInt32(params[0]);
@@ -365,6 +376,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         case TestTerminal::CommandID::PrintScreenHash:
             AddPrintScreenHashCommand(params);
+            break;
+        case TestTerminal::CommandID::ResizeTerminal:
+            AddTerminalResizeCommand(params);
             break;
         case TestTerminal::CommandID::KeyRelease:
             this->commandsQueue.emplace(CommandID::KeyRelease);
