@@ -479,6 +479,11 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.keyCode          = Input::Key::None;
             evnt.unicodeCharacter = 0;
             break;
+        case CommandID::ResizeTerminal:
+            evnt.eventType = SystemEventType::AppResized;
+            evnt.newWidth  = cmd.Params[0].u32Value;
+            evnt.newHeight = cmd.Params[1].u32Value;
+            break;
         case CommandID::Print:
             evnt.eventType = SystemEventType::None;
             PrintCurrentScreen();
