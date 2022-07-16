@@ -25,6 +25,7 @@ struct
     { "Terminal.Resize", TestTerminal::CommandID::ResizeTerminal, 2 /* width, height */ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
     { "PrintScreenHash", TestTerminal::CommandID::PrintScreenHash, 1 /*with colors*/ },
+    { "ValidateScreenHash", TestTerminal::CommandID::ValidateScreenHash, 2 /*hash, with colors*/ },
 };
 
 const char* SkipSpaces(const char* start, const char* end)

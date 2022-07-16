@@ -26,7 +26,8 @@ namespace Internal
             KeyRelease,
             ResizeTerminal,
             Print,
-            PrintScreenHash
+            PrintScreenHash,
+            ValidateScreenHash
         };
         struct Command
         {
