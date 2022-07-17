@@ -59,6 +59,7 @@ namespace Internal
         void AddKeyTypeCommand(const std::string_view* params);
         void AddKeyHoldCommand(const std::string_view* params);
         void AddTerminalResizeCommand(const std::string_view* params);
+        void AddValidateHashCommand(const std::string_view* params);
         void AddPrintScreenHashCommand(const std::string_view* params);
         void PrintCurrentScreen();
         void PrintScreenHash(bool withColors);
