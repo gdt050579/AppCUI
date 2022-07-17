@@ -44,7 +44,8 @@ bool Application::RunTestScript(std::string_view testScript)
     auto testTerm = dynamic_cast<TestTerminal*>(app->terminal.get());
     CHECK(testTerm, false, "`RunTestScript` can only work with a TestTerminal frontend !");
     testTerm->CreateEventsQueue(testScript);
-    return Run();
+    CHECK(Run(),false,"Execution error (Run method failed)");
+    return testTerm->AreAllTestValidated();
 }
 bool Application::Run()
 {
