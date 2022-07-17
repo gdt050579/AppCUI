@@ -22,7 +22,10 @@ struct
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
     { "Key.Hold", TestTerminal::CommandID::KeyHold, 1 /* shift state */ },
     { "Key.Release", TestTerminal::CommandID::KeyRelease, 0 /**/ },
+    { "Terminal.Resize", TestTerminal::CommandID::ResizeTerminal, 2 /* width, height */ },
     { "Print", TestTerminal::CommandID::Print, 0 /**/ },
+    { "PrintScreenHash", TestTerminal::CommandID::PrintScreenHash, 1 /*with colors*/ },
+    { "ValidateScreenHash", TestTerminal::CommandID::ValidateScreenHash, 2 /*hash, with colors*/ },
 };
 
 const char* SkipSpaces(const char* start, const char* end)
@@ -62,10 +65,20 @@ std::optional<AppCUI::Input::MouseButton> StringToMouseButton(std::string_view t
         return AppCUI::Input::MouseButton::Center;
     return std::nullopt;
 }
+std::optional<bool> StringToBool(std::string_view txt)
+{
+    LocalString<64> temp;
+    CHECK(temp.Set(txt), std::nullopt, "");
+    if ((temp.Equals("true", true)) || (temp.Equals("yes", true)))
+        return true;
+    if ((temp.Equals("false", true)) || (temp.Equals("no", true)))
+        return false;
+    return std::nullopt;
+}
 TestTerminal::Command::Command()
 {
     this->id = CommandID::None;
-    for (auto idx = 0U; idx < ARRAY_LEN(this->Params);idx++)
+    for (auto idx = 0U; idx < ARRAY_LEN(this->Params); idx++)
     {
         this->Params[idx].u32Value = 0;
     }
@@ -79,11 +92,37 @@ TestTerminal::Command::Command(CommandID _id)
     }
 }
 
-TestTerminal::TestTerminal()
+TestTerminal::TestTerminal() : scriptValidationResult(nullptr)
 {
 }
 TestTerminal::~TestTerminal()
 {
+}
+uint64 TestTerminal::ComputeHash(bool useColors)
+{
+    auto p = this->ScreenCanvas.GetCharactersBuffer();
+    auto e = p + ((size_t) this->ScreenCanvas.GetWidth()) * ((size_t) this->ScreenCanvas.GetHeight());
+    // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+    uint64 hash = 0xcbf29ce484222325ULL;
+    if (useColors)
+    {
+        while (p < e)
+        {
+            hash = hash ^ (p->PackedValue);
+            hash = hash * 0x00000100000001B3ULL;
+            p++;
+        }
+    }
+    else
+    {
+        while (p < e)
+        {
+            hash = hash ^ (p->Code);
+            hash = hash * 0x00000100000001B3ULL;
+            p++;
+        }
+    }
+    return hash;
 }
 void TestTerminal::PrintCurrentScreen()
 {
@@ -96,7 +135,7 @@ void TestTerminal::PrintCurrentScreen()
     std::cout << std::endl;
     temp.Clear();
 
-    while (p<e)
+    while (p < e)
     {
         if (p->Code < 32)
             temp.AddChar(' ');
@@ -106,13 +145,39 @@ void TestTerminal::PrintCurrentScreen()
             temp.AddChar((char) p->Code);
         x++;
         p++;
-        if (x==w)
+        if (x == w)
         {
             x = 0;
             std::cout << temp.GetText() << std::endl;
             temp.Clear();
         }
     }
+}
+void TestTerminal::PrintScreenHash(bool withColors)
+{
+    auto hash = ComputeHash(withColors);
+    std::cout << "ScreenHash: " << std::hex << hash << std::endl;
+}
+void TestTerminal::ValidateScreenHash(uint64 hashToValidate, bool withColors)
+{
+    const auto currentScreenHash = ComputeHash(withColors);
+    if (hashToValidate != currentScreenHash)
+    {
+        LOG_ERROR("Testing validation error (expecting %llu hash, but got %llu)", hashToValidate, currentScreenHash);
+        if (this->scriptValidationResult)
+            (*this->scriptValidationResult) = false;
+    }
+}
+void TestTerminal::AddPrintScreenHashCommand(const std::string_view* params)
+{
+    auto withColors = StringToBool(params[0]);
+    ASSERT(
+          withColors.has_value(),
+          "First parameter (withColors) must be a valid boolean value [true or false] -> (in "
+          "PrintScreenHash(withColors)");
+    Command cmd(CommandID::PrintScreenHash);
+    cmd.Params[0].boolValue = withColors.value();
+    this->commandsQueue.push(cmd);
 }
 void TestTerminal::AddMouseHoldCommand(const std::string_view* params)
 {
@@ -151,6 +216,18 @@ void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
     cmd.Params[0].i32Value         = x.value();
     cmd.Params[1].i32Value         = y.value();
     cmd.Params[2].mouseButtonValue = Input::MouseButton::None;
+    this->commandsQueue.push(cmd);
+}
+void TestTerminal::AddTerminalResizeCommand(const std::string_view* params)
+{
+    Command cmd(CommandID::ResizeTerminal);
+    auto w = Number::ToUInt32(params[0]);
+    auto h = Number::ToUInt32(params[1]);
+    ASSERT(w.has_value(), "First parameter (width) must be a valid uint32 value -> (in Terminal.Resize(width,height)");
+    ASSERT(
+          h.has_value(), "Second parameter (height) must be a valid uint32 value -> (in Terminal.Resize(width,height)");
+    cmd.Params[0].u32Value = w.value();
+    cmd.Params[1].u32Value = h.value();
     this->commandsQueue.push(cmd);
 }
 void TestTerminal::AddMouseDragCommand(const std::string_view* params)
@@ -221,6 +298,23 @@ void TestTerminal::AddKeyHoldCommand(const std::string_view* params)
     cmd.Params[0].keyValue = k;
     this->commandsQueue.push(cmd);
 }
+void TestTerminal::AddValidateHashCommand(const std::string_view* params)
+{
+    Command cmd(CommandID::ValidateScreenHash);
+    auto hash       = Number::ToUInt64(params[0]);
+    auto withColors = StringToBool(params[1]);
+    ASSERT(
+          hash.has_value(),
+          "First parameter (hash) must be a valid uint64 value -> (in ValidateScreenHash(hash,withColors)");
+    ASSERT(
+          withColors.has_value(),
+          "Second parameter (withColors) must be a valid bool value (true or false) -> (in "
+          "ValidateScreenHash(hash,withColors)");
+    cmd.Params[0].u32Value  = static_cast<uint32>((hash.value() >> 32) & 0xFFFFFFFF);
+    cmd.Params[1].u32Value  = static_cast<uint32>(hash.value() & 0xFFFFFFFF);
+    cmd.Params[2].boolValue = withColors.value();
+    this->commandsQueue.push(cmd);
+}
 void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
 {
     Command cmd(CommandID::KeyPress);
@@ -231,7 +325,7 @@ void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
         this->commandsQueue.push(cmd);
     }
 }
-void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
+void TestTerminal::CreateEventsQueue(std::string_view commandsScript, bool * _scriptValidationResult)
 {
     const char* start = commandsScript.data();
     const char* end   = start + commandsScript.size();
@@ -312,6 +406,15 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         case TestTerminal::CommandID::KeyHold:
             AddKeyHoldCommand(params);
             break;
+        case TestTerminal::CommandID::PrintScreenHash:
+            AddPrintScreenHashCommand(params);
+            break;
+        case TestTerminal::CommandID::ResizeTerminal:
+            AddTerminalResizeCommand(params);
+            break;
+        case TestTerminal::CommandID::ValidateScreenHash:
+            AddValidateHashCommand(params);
+            break;
         case TestTerminal::CommandID::KeyRelease:
             this->commandsQueue.emplace(CommandID::KeyRelease);
             break;
@@ -323,6 +426,10 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         }
     }
+    // finally - reset testValidated flag
+    this->scriptValidationResult = _scriptValidationResult;
+    if (this->scriptValidationResult)
+        (*this->scriptValidationResult) = true;
 }
 bool TestTerminal::OnInit(const Application::InitializationData& initData)
 {
@@ -346,6 +453,7 @@ bool TestTerminal::OnInit(const Application::InitializationData& initData)
           termWidth,
           termHeight);
 
+    // reset flags
     return true;
 }
 void TestTerminal::RestoreOriginalConsoleSettings()
@@ -411,9 +519,24 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.keyCode          = Input::Key::None;
             evnt.unicodeCharacter = 0;
             break;
+        case CommandID::ResizeTerminal:
+            evnt.eventType = SystemEventType::AppResized;
+            evnt.newWidth  = cmd.Params[0].u32Value;
+            evnt.newHeight = cmd.Params[1].u32Value;
+            break;
         case CommandID::Print:
             evnt.eventType = SystemEventType::None;
             PrintCurrentScreen();
+            break;
+        case CommandID::PrintScreenHash:
+            evnt.eventType = SystemEventType::None;
+            PrintScreenHash(cmd.Params[0].boolValue);
+            break;
+        case CommandID::ValidateScreenHash:
+            evnt.eventType = SystemEventType::None;
+            ValidateScreenHash(
+                  (static_cast<uint64>(cmd.Params[0].u32Value) << 32) | static_cast<uint64>(cmd.Params[1].u32Value),
+                  cmd.Params[2].boolValue);
             break;
         case CommandID::MouseClick:
         case CommandID::KeyType:

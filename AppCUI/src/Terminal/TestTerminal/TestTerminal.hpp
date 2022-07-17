@@ -24,7 +24,10 @@ namespace Internal
             KeyType,
             KeyHold,
             KeyRelease,
-            Print
+            ResizeTerminal,
+            Print,
+            PrintScreenHash,
+            ValidateScreenHash
         };
         struct Command
         {
@@ -36,6 +39,7 @@ namespace Internal
                 AppCUI::Input::Key keyValue;
                 char16 charValue;
                 AppCUI::Input::MouseButton mouseButtonValue;
+                bool boolValue;
             } Params[8];
             Command();
             Command(CommandID id);
@@ -43,7 +47,9 @@ namespace Internal
 
       protected:
         std::queue<Command> commandsQueue;
+        bool* scriptValidationResult;
 
+        uint64 ComputeHash(bool useColors);
 
         void AddMouseHoldCommand(const std::string_view* params);
         void AddMouseReleaseCommand(const std::string_view* params);
@@ -53,11 +59,16 @@ namespace Internal
         void AddKeyPressMultipleTimesCommand(const std::string_view* params);
         void AddKeyTypeCommand(const std::string_view* params);
         void AddKeyHoldCommand(const std::string_view* params);
+        void AddTerminalResizeCommand(const std::string_view* params);
+        void AddValidateHashCommand(const std::string_view* params);
+        void AddPrintScreenHashCommand(const std::string_view* params);
         void PrintCurrentScreen();
+        void PrintScreenHash(bool withColors);
+        void ValidateScreenHash(uint64 hashToValidate, bool withColors);
       public:
         TestTerminal();
 
-        void CreateEventsQueue(std::string_view commandsScript);
+        void CreateEventsQueue(std::string_view commandsScript, bool* scriptValidationResult);
 
         virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
