@@ -92,7 +92,7 @@ TestTerminal::Command::Command(CommandID _id)
     }
 }
 
-TestTerminal::TestTerminal() : testsValidated(true)
+TestTerminal::TestTerminal() : scriptValidationResult(nullptr)
 {
 }
 TestTerminal::~TestTerminal()
@@ -164,7 +164,8 @@ void TestTerminal::ValidateScreenHash(uint64 hashToValidate, bool withColors)
     if (hashToValidate != currentScreenHash)
     {
         LOG_ERROR("Testing validation error (expecting %llu hash, but got %llu)", hashToValidate, currentScreenHash);
-        this->testsValidated = false;
+        if (this->scriptValidationResult)
+            (*this->scriptValidationResult) = false;
     }
 }
 void TestTerminal::AddPrintScreenHashCommand(const std::string_view* params)
@@ -324,7 +325,7 @@ void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
         this->commandsQueue.push(cmd);
     }
 }
-void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
+void TestTerminal::CreateEventsQueue(std::string_view commandsScript, bool * _scriptValidationResult)
 {
     const char* start = commandsScript.data();
     const char* end   = start + commandsScript.size();
@@ -426,7 +427,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
         }
     }
     // finally - reset testValidated flag
-    this->testsValidated = true;
+    this->scriptValidationResult = _scriptValidationResult;
+    if (this->scriptValidationResult)
+        (*this->scriptValidationResult) = true;
 }
 bool TestTerminal::OnInit(const Application::InitializationData& initData)
 {
@@ -451,7 +454,6 @@ bool TestTerminal::OnInit(const Application::InitializationData& initData)
           termHeight);
 
     // reset flags
-    this->testsValidated = true;
     return true;
 }
 void TestTerminal::RestoreOriginalConsoleSettings()

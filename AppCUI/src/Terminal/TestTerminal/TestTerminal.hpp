@@ -47,7 +47,7 @@ namespace Internal
 
       protected:
         std::queue<Command> commandsQueue;
-        bool testsValidated;
+        bool* scriptValidationResult;
 
         uint64 ComputeHash(bool useColors);
 
@@ -68,11 +68,7 @@ namespace Internal
       public:
         TestTerminal();
 
-        void CreateEventsQueue(std::string_view commandsScript);
-        inline bool AreAllTestValidated() const
-        {
-            return testsValidated;
-        }
+        void CreateEventsQueue(std::string_view commandsScript, bool* scriptValidationResult);
 
         virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;

@@ -39,7 +39,7 @@ int main()
             # now we are at the second text field --> lets paste the data
             Key.Press(Shift+Insert)
             Print()  
-            ValidateScreenHash(0x49bc5622afba79e6, false)     
+            ValidateScreenHash(0xb627729d103bcc1d, false)     
             # lets move the window
             Mouse.Drag(20,5,18,3)
             Print()  
