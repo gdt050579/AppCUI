@@ -92,7 +92,7 @@ TestTerminal::Command::Command(CommandID _id)
     }
 }
 
-TestTerminal::TestTerminal()
+TestTerminal::TestTerminal() : testsValidated(true)
 {
 }
 TestTerminal::~TestTerminal()
@@ -157,6 +157,15 @@ void TestTerminal::PrintScreenHash(bool withColors)
 {
     auto hash = ComputeHash(withColors);
     std::cout << "ScreenHash: " << std::hex << hash << std::endl;
+}
+void TestTerminal::ValidateScreenHash(uint64 hashToValidate, bool withColors)
+{
+    const auto currentScreenHash = ComputeHash(withColors);
+    if (hashToValidate != currentScreenHash)
+    {
+        LOG_ERROR("Testing validation error (expecting %llu hash, but got %llu)", hashToValidate, currentScreenHash);
+        this->testsValidated = false;
+    }
 }
 void TestTerminal::AddPrintScreenHashCommand(const std::string_view* params)
 {
@@ -416,6 +425,8 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript)
             break;
         }
     }
+    // finally - reset testValidated flag
+    this->testsValidated = true;
 }
 bool TestTerminal::OnInit(const Application::InitializationData& initData)
 {
@@ -439,6 +450,8 @@ bool TestTerminal::OnInit(const Application::InitializationData& initData)
           termWidth,
           termHeight);
 
+    // reset flags
+    this->testsValidated = true;
     return true;
 }
 void TestTerminal::RestoreOriginalConsoleSettings()
@@ -516,6 +529,12 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         case CommandID::PrintScreenHash:
             evnt.eventType = SystemEventType::None;
             PrintScreenHash(cmd.Params[0].boolValue);
+            break;
+        case CommandID::ValidateScreenHash:
+            evnt.eventType = SystemEventType::None;
+            ValidateScreenHash(
+                  (static_cast<uint64>(cmd.Params[0].u32Value) << 32) | static_cast<uint64>(cmd.Params[1].u32Value),
+                  cmd.Params[2].boolValue);
             break;
         case CommandID::MouseClick:
         case CommandID::KeyType:

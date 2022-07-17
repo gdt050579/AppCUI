@@ -47,6 +47,7 @@ namespace Internal
 
       protected:
         std::queue<Command> commandsQueue;
+        bool testsValidated;
 
         uint64 ComputeHash(bool useColors);
 
@@ -63,10 +64,15 @@ namespace Internal
         void AddPrintScreenHashCommand(const std::string_view* params);
         void PrintCurrentScreen();
         void PrintScreenHash(bool withColors);
+        void ValidateScreenHash(uint64 hashToValidate, bool withColors);
       public:
         TestTerminal();
 
         void CreateEventsQueue(std::string_view commandsScript);
+        inline bool AreAllTestValidated() const
+        {
+            return testsValidated;
+        }
 
         virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
