@@ -19,6 +19,7 @@ namespace Internal
             MouseClick,
             MouseDrag,
             MouseMove,
+            MouseWheel,
             KeyPress,
             KeyPressMultipleTimes,
             KeyType,
