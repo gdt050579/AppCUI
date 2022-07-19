@@ -66,6 +66,20 @@ std::optional<AppCUI::Input::MouseButton> StringToMouseButton(std::string_view t
         return AppCUI::Input::MouseButton::Center;
     return std::nullopt;
 }
+std::optional<AppCUI::Input::MouseWheel> StringToMouseWheel(std::string_view txt)
+{
+    LocalString<64> temp;
+    CHECK(temp.Set(txt), std::nullopt, "");
+    if (temp.Equals("left", true))
+        return AppCUI::Input::MouseWheel::Left;
+    if (temp.Equals("right", true))
+        return AppCUI::Input::MouseWheel::Right;
+    if (temp.Equals("up", true))
+        return AppCUI::Input::MouseWheel::Up;
+    if (temp.Equals("down", true))
+        return AppCUI::Input::MouseWheel::Down;
+    return std::nullopt;
+}
 std::optional<bool> StringToBool(std::string_view txt)
 {
     LocalString<64> temp;
