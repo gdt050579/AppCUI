@@ -1,6 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
+
 #define APPCUI_VERSION "1.151.0"
 
 #include <filesystem>
