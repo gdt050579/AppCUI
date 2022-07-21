@@ -17,7 +17,7 @@ struct
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Mouse.Move", TestTerminal::CommandID::MouseMove, 2 /* x,y */ },
     { "Mouse.Drag", TestTerminal::CommandID::MouseDrag, 4 /* x1,y1,x2,y2 */ },
-    { "Mouse.Wheel", TestTerminal::CommandID::MouseWheel, 2 /* direction, times */ },
+    { "Mouse.Wheel", TestTerminal::CommandID::MouseWheel, 2 /* x,y, direction, times */ },
     { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
     { "Key.PressMultipleTimes", TestTerminal::CommandID::KeyPressMultipleTimes, 2 /* key, times */ },
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
@@ -233,20 +233,28 @@ void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
     cmd.Params[2].mouseButtonValue = Input::MouseButton::None;
     this->commandsQueue.push(cmd);
 }
-void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
+void TestTerminal::AddMouseWheelCommand(const std::string_view* params)
 {
     Command cmd(CommandID::MouseWheel);
-    auto dir   = StringToMouseWheel(params[0]);
-    auto times = Number::ToUInt32(params[1]);
+    auto x     = Number::ToInt32(params[0]);
+    auto y     = Number::ToInt32(params[1]);
+    auto dir   = StringToMouseWheel(params[2]);
+    auto times = Number::ToUInt32(params[3]);
+    ASSERT(x.has_value(), "First parameter (x) must be a valid int32 value -> (in Mouse.Wheel(x,y,direction,times)");
+    ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Wheel(x,y,direction,times)");
     ASSERT(
           dir.has_value(),
-          "First parameter (dir) must be a valid wheel value (left,right,top,down) -> (in "
+          "Second parameter (dir) must be a valid wheel value (left,right,top,down) -> (in "
           "Mouse.Wheel(direction,times)");
     ASSERT(
           times.has_value(),
-          "Second parameter (times) must be a valid uint32 value -> (in Mouse.Wheel(direction,times)");
-    ASSERT(times.value() > 0, "Second parameter (times) should be bigger than 0 -> (in Mouse.Wheel(direction,times)");
-    cmd.Params[0].mouseWheelValue = dir.value();
+          "Third parameter (times) must be a valid uint32 value -> (in Mouse.Wheel(x,y,direction,times)");
+    ASSERT(
+          times.value() > 0,
+          "Second parameter (times) should be bigger than 0 -> (x,y,in Mouse.Wheel(direction,times)");
+    cmd.Params[0].i32Value        = x.value();
+    cmd.Params[1].i32Value        = y.value();
+    cmd.Params[2].mouseWheelValue = dir.value();
     auto n                        = times.value();
     while (n > 0)
     {
@@ -541,8 +549,10 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.mouseButton = cmd.Params[2].mouseButtonValue;
             break;
         case CommandID::MouseWheel:
-            evnt.eventType = SystemEventType::MouseWheel;
-            evnt.mouseWheel    = cmd.Params[0].mouseWheelValue;
+            evnt.eventType  = SystemEventType::MouseWheel;
+            evnt.mouseX     = cmd.Params[0].i32Value;
+            evnt.mouseY     = cmd.Params[1].i32Value;
+            evnt.mouseWheel = cmd.Params[2].mouseWheelValue;
             break;
         case CommandID::KeyPress:
             evnt.eventType        = SystemEventType::KeyPressed;
