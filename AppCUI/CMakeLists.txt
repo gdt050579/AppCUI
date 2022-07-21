@@ -54,8 +54,8 @@ endif()
 
 if (APPCUI_HAS_NCURSES)
     if (UNIX)        
-        # include_directories("/usr/local/opt/ncurses/include")
-        # link_directories("/usr/local/opt/ncurses/lib")
+        include_directories("/usr/local/opt/ncurses/include")
+        link_directories("/usr/local/opt/ncurses/lib")
         # set(CURSES_LIBRARY "/usr/local/opt/ncurses/lib")
         # set(CURSES_INCLUDE_PATH "/usr/local/opt/ncurses/include")   
         
