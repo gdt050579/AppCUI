@@ -53,10 +53,22 @@ if (APPCUI_HAS_SDL)
 endif()
 
 if (APPCUI_HAS_NCURSES)
-    if (UNIX)
+    if (UNIX)        
+        # include_directories("/usr/local/opt/ncurses/include")
+        # link_directories("/usr/local/opt/ncurses/lib")
+        # set(CURSES_LIBRARY "/usr/local/opt/ncurses/lib")
+        # set(CURSES_INCLUDE_PATH "/usr/local/opt/ncurses/include")   
+        
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
         find_package(Curses)
+        if(NOT TARGET Curses::NCurses)
+            add_library(Curses::NCurses UNKNOWN IMPORTED)
+            set_target_properties(Curses::NCurses PROPERTIES
+                IMPORTED_LOCATION "${CURSES_NCURSES_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${CURSES_INCLUDE_DIR}"
+            )
+        endif()
     endif()
 
     if (CURSES_FOUND)
