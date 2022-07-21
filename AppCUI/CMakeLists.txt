@@ -57,7 +57,10 @@ if (APPCUI_HAS_NCURSES)
         include_directories("/usr/local/opt/ncurses/include")
         link_directories("/usr/local/opt/ncurses/lib")
         set(CURSES_LIBRARY "/usr/local/opt/ncurses/lib")
-        set(CURSES_INCLUDE_PATH "/usr/local/opt/ncurses/include")   
+        set(CURSES_INCLUDE_PATH "/usr/local/opt/ncurses/include")
+        
+        set(LDFLAGS "-L/usr/local/opt/ncurses/lib")
+        set(CPPFLAGS "-I/usr/local/opt/ncurses/include")
         
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
