@@ -56,6 +56,7 @@ if (APPCUI_HAS_NCURSES)
     if (APPLE)        
         # TODO: cmake script fo find this
         list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew/Cellar/ncurses/6.3")
+        list(APPEND CMAKE_PREFIX_PATH "/usr/local/Cellar/ncurses/6.3")
         
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
