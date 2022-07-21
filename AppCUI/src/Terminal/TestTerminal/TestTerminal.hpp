@@ -40,6 +40,7 @@ namespace Internal
                 AppCUI::Input::Key keyValue;
                 char16 charValue;
                 AppCUI::Input::MouseButton mouseButtonValue;
+                AppCUI::Input::MouseWheel mouseWheelValue;
                 bool boolValue;
             } Params[8];
             Command();

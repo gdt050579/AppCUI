@@ -246,8 +246,8 @@ void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
           times.has_value(),
           "Second parameter (times) must be a valid uint32 value -> (in Mouse.Wheel(direction,times)");
     ASSERT(times.value() > 0, "Second parameter (times) should be bigger than 0 -> (in Mouse.Wheel(direction,times)");
-    cmd.Params[0].i32Value         = x.value();
-    auto n                 = times.value();
+    cmd.Params[0].mouseWheelValue = dir.value();
+    auto n                        = times.value();
     while (n > 0)
     {
         this->commandsQueue.push(cmd);
@@ -539,6 +539,10 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.mouseX      = cmd.Params[0].i32Value;
             evnt.mouseY      = cmd.Params[1].i32Value;
             evnt.mouseButton = cmd.Params[2].mouseButtonValue;
+            break;
+        case CommandID::MouseWheel:
+            evnt.eventType = SystemEventType::MouseWheel;
+            evnt.mouseWheel    = cmd.Params[0].mouseWheelValue;
             break;
         case CommandID::KeyPress:
             evnt.eventType        = SystemEventType::KeyPressed;
