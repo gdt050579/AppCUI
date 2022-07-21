@@ -74,10 +74,8 @@ if (APPCUI_HAS_NCURSES)
         target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
         target_compile_definitions(${PROJECT_NAME} PRIVATE NCURSES_WIDECHAR)
         target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
-    endif()
-
-    
-    if (UNIX)
+        
+    elseif (UNIX)
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
         find_package(Curses)
