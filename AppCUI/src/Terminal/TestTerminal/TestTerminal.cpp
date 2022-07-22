@@ -431,6 +431,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript, bool* _scr
         case TestTerminal::CommandID::MouseMove:
             AddMouseReleaseCommand(params);
             break;
+        case TestTerminal::CommandID::MouseWheel:
+            AddMouseWheelCommand(params);
+            break;
         case TestTerminal::CommandID::MouseDrag:
             AddMouseDragCommand(params);
             break;
