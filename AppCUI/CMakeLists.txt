@@ -82,7 +82,10 @@ if (APPCUI_HAS_NCURSES)
             message(STATUS "${PROJECT_NAME} => NOT CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED")
     	    # target_link_libraries(${PROJECT_NAME} PRIVATE lib external)
         endif()
-    
+        
+        message(STATUS "${PROJECT_NAME} IMPORTED_LOCATION => ${CURSES_NCURSES_LIBRARY}")
+        message(STATUS "${PROJECT_NAME} INTERFACE_INCLUDE_DIRECTORIES => ${CURSES_INCLUDE_DIR}")
+        
         install(TARGETS ${CURSES_LIBRARIES} LIBRARY DESTINATION @executable_path NAMELINK_ONLY)
         
     elseif (UNIX)
