@@ -60,7 +60,7 @@ if (APPCUI_HAS_NCURSES)
         
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
-        find_package(Curses REQUIRED)
+        find_package(Curses CONFIG REQUIRED)
         if(NOT TARGET Curses::NCurses)
             add_library(Curses::NCurses UNKNOWN IMPORTED)
             set_target_properties(Curses::NCurses PROPERTIES
@@ -91,7 +91,6 @@ if (APPCUI_HAS_NCURSES)
     elseif (UNIX)
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
-        find_package(Curses)
 
         if (CURSES_FOUND)
             message("Have Curses")
