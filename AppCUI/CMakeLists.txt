@@ -75,6 +75,16 @@ if (APPCUI_HAS_NCURSES)
         target_compile_definitions(${PROJECT_NAME} PRIVATE NCURSES_WIDECHAR)
         target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
         
+        if(CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED)
+            message(STATUS "${PROJECT_NAME} => CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED")
+    	    target_link_libraries(${PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:weak_library,lib,external>")
+        else()
+            message(STATUS "${PROJECT_NAME} => NOT CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED")
+    	    # target_link_libraries(${PROJECT_NAME} PRIVATE lib external)
+        endif()
+    
+        install(TARGETS ${CURSES_LIBRARIES} LIBRARY DESTINATION @executable_path NAMELINK_ONLY)
+        
     elseif (UNIX)
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
