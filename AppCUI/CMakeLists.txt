@@ -91,6 +91,7 @@ if (APPCUI_HAS_NCURSES)
     elseif (UNIX)
         set(CURSES_NEED_WIDE "TRUE")
         set(CURSES_NEED_NCURSES "TRUE")
+        find_package(Curses)
 
         if (CURSES_FOUND)
             message("Have Curses")
