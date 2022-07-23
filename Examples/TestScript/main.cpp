@@ -31,6 +31,7 @@ int main()
             # type something in the text field
             Key.Type(Hello)
             Print()
+            PrintScreenHash(false)
             ValidateScreenHash(0x49bc5622afba79e6, false)
             # copy last two characters
             Key.PressMultipleTimes(Shift+Left,2)
@@ -39,6 +40,7 @@ int main()
             # now we are at the second text field --> lets paste the data
             Key.Press(Shift+Insert)
             Print()  
+            PrintScreenHash(false)
             ValidateScreenHash(0xb627729d103bcc1d, false)     
             # lets move the window
             Mouse.Drag(20,5,18,3)
