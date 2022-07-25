@@ -64,7 +64,7 @@ elseif (APPLE)
 
     FOREACH(subdir ${SUBDIRS})
         list(APPEND CMAKE_PREFIX_PATH "${NCURSES_HOMEBREW_PATH}/${subdir}")
-	message(STATUS "NCURSES_HOMEBREW_PATH => "${NCURSES_HOMEBREW_PATH}/${subdir}")
+	message(STATUS "NCURSES_HOMEBREW_PATH => ${NCURSES_HOMEBREW_PATH}/${subdir}")
     ENDFOREACH()
 elseif (UNIX)
     add_definitions(-DBUILD_FOR_UNIX)
