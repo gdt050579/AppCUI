@@ -25,6 +25,19 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(APPCUI_ENABLE_OUTPUT_LOCATION 1)
 endif()
 
+if (CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+    execute_process(
+        COMMAND brew --prefix ncurses
+        RESULT_VARIABLE BREW_NCURSES
+        OUTPUT_VARIABLE BREW_NCURSES_PREFIX
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if (BREW_NCURSES EQUAL 0 AND EXISTS "${BREW_NCURSES_PREFIX}")
+        message(STATUS "Found NCURSES keg installed by Homebrew at ${BREW_NCURSES_PREFIX}")
+        set(NCURSES_EXECUTABLE "${BREW_NCURSES_PREFIX}/bin/ncurses")
+    endif()
+endif()
+
 MACRO(SUBDIRLIST result curdir)
   FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
   SET(dirlist "")
@@ -46,7 +59,7 @@ elseif (APPLE)
         add_compile_options(-W)
     endif()
     
-    SET(NCURSES_HOMEBREW_PATH "/opt/homebrew/Cellar/ncurses")
+    SET(NCURSES_HOMEBREW_PATH BREW_NCURSES_PREFIX)
     SUBDIRLIST(SUBDIRS NCURSES_HOMEBREW_PATH)
 
     FOREACH(subdir ${SUBDIRS})
