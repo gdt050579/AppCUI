@@ -5,6 +5,7 @@ project(AppCUI VERSION 1.0)
 
 # Add libAppCUI
 add_library(${PROJECT_NAME} SHARED)
+set(APPCUI_HAS_NCURSES 1)
 
 #versioning
 file(READ "include/AppCUI.hpp" appcui_content)
@@ -23,7 +24,7 @@ if (MSVC)
 endif()
 
 option(APPCUI_HAS_SDL "Use SDL" ON)
-option(APPCUI_HAS_NCURSES "Use ncurses" ON)
+option(APPCUI_HAS_NCURSES "Use ncurses" 1)
 
 # Add SDL
 if (APPCUI_HAS_SDL)
@@ -52,64 +53,48 @@ if (APPCUI_HAS_SDL)
     endif()
 endif()
 
-if (APPCUI_HAS_NCURSES)
-    if (APPLE)                
-        set(CURSES_NEED_WIDE "TRUE")
-        set(CURSES_NEED_NCURSES "TRUE")
-        find_package(Curses CONFIG REQUIRED)
-        if(NOT TARGET Curses::NCurses)
-            add_library(Curses::NCurses UNKNOWN IMPORTED)
-            set_target_properties(Curses::NCurses PROPERTIES
-                IMPORTED_LOCATION "${CURSES_NCURSES_LIBRARY}"
-                INTERFACE_INCLUDE_DIRECTORIES "${CURSES_INCLUDE_DIR}"
-            )
-        endif()
-        
-        message("Have Curses")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE APPCUI_HAS_NCURSES)
-        target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
-        target_compile_definitions(${PROJECT_NAME} PRIVATE NCURSES_WIDECHAR)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
-        
-        if(CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED)
-            message(STATUS "${PROJECT_NAME} => CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED")
-    	    target_link_libraries(${PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:weak_library,lib,external>")
-        else()
-            message(STATUS "${PROJECT_NAME} => NOT CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED")
-    	    # target_link_libraries(${PROJECT_NAME} PRIVATE lib external)
-        endif()
-        
-        message(STATUS "${PROJECT_NAME} IMPORTED_LOCATION => ${CURSES_NCURSES_LIBRARY}")
-        message(STATUS "${PROJECT_NAME} INTERFACE_INCLUDE_DIRECTORIES => ${CURSES_INCLUDE_DIR}")
-        
-        install(TARGETS ${CURSES_LIBRARIES} LIBRARY DESTINATION @executable_path NAMELINK_ONLY)
-        
-    elseif (UNIX)
-        set(CURSES_NEED_WIDE "TRUE")
-        set(CURSES_NEED_NCURSES "TRUE")
-        find_package(Curses)
+if (NOT APPCUI_HAS_SDL)
+    if (UNIX)
 
-        if (CURSES_FOUND)
-            message("Have Curses")
+        set(REPO_LOCATION "https://github.com/mirror/ncurses.git")
+
+        get_filename_component(BIN_LOCATION "${CMAKE_BINARY_DIR}/../bin" ABSOLUTE)
+        set(INSTALL_LOCATION "${BIN_LOCATION}/ncursesw")
+        message("INSTALL_LOCATION => ${INSTALL_LOCATION}")
+
+        if (NOT EXISTS INSTALL_LOCATION) # some sort of caching => we may want to put this under a flag that can be passed to cmake
+            if (NOT EXISTS BIN_LOCATION)
+                message("Creating BIN_LOCATION => ${BIN_LOCATION}")
+                file(MAKE_DIRECTORY ${BIN_LOCATION})
+            else()
+                message("BIN_LOCATION exists => ${BIN_LOCATION}")
+            endif()
+
             target_compile_definitions(${PROJECT_NAME} PRIVATE APPCUI_HAS_NCURSES)
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
+
+            set(CURSES_NEED_WIDE "TRUE")
+            set(CURSES_NEED_NCURSES "TRUE")
+
+            include(ExternalProject)
+    
+            ExternalProject_Add(ncursesw
+                INSTALL_DIR ${INSTALL_LOCATION}
+                GIT_REPOSITORY ${REPO_LOCATION}
+                UPDATE_COMMAND git pull ${REPO_LOCATION}
+                CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix <INSTALL_DIR> --with-normal --without-debug --without-manpages --enable-widec
+                BUILD_COMMAND make -C <BINARY_DIR>
+                INSTALL_COMMAND make -C <BINARY_DIR> install
+            )
+    
+            target_include_directories(${PROJECT_NAME} PRIVATE ${INSTALL_LOCATION}/ncursesw/include)
             target_compile_definitions(${PROJECT_NAME} PRIVATE NCURSES_WIDECHAR)
-            target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
-        else()
-            message("Don't have Curses")
-            set(CURSES_LIBRARIES "")
-            set(APPCUI_HAS_NCURSES OFF)
+            target_link_libraries(${PROJECT_NAME} PRIVATE INTERFACE -L${INSTALL_LOCATION}/lib -lncursesw ${CMAKE_DL_LIBS})
         endif()
     endif()
 endif()
 
-if (UNIX AND NOT (SDL2_FOUND OR CURSES_FOUND))
-    message(FATAL_ERROR "On unix you must have either ncurses or SDL")
-endif()
-
-
 if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
-    target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
+    target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs ${CMAKE_DL_LIBS})
 endif()
 
 add_subdirectory(src)

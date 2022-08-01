@@ -210,6 +210,7 @@ void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
     refresh();
 }
+
 bool NcursesTerminal::IsEventAvailable()
 {
     NOT_IMPLEMENTED(false);
