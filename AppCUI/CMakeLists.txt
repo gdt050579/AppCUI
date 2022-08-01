@@ -81,20 +81,20 @@ if (NOT APPCUI_HAS_SDL)
                 INSTALL_DIR ${INSTALL_LOCATION}
                 GIT_REPOSITORY ${REPO_LOCATION}
                 UPDATE_COMMAND git pull ${REPO_LOCATION}
-                CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix <INSTALL_DIR> --with-normal --without-debug --without-manpages --enable-widec
+                CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix <INSTALL_DIR> --with-normal --without-debug --without-manpages --enable-widec --without-progs --without-tack --without-tests
                 BUILD_COMMAND make -C <BINARY_DIR>
                 INSTALL_COMMAND make -C <BINARY_DIR> install
             )
     
             target_include_directories(${PROJECT_NAME} PRIVATE ${INSTALL_LOCATION}/ncursesw/include)
             target_compile_definitions(${PROJECT_NAME} PRIVATE NCURSES_WIDECHAR)
-            target_link_libraries(${PROJECT_NAME} PRIVATE INTERFACE -L${INSTALL_LOCATION}/lib -lncursesw ${CMAKE_DL_LIBS})
+            target_link_libraries(${PROJECT_NAME} PRIVATE INTERFACE -L${INSTALL_LOCATION}/lib -lncursesw -fPIC ${CMAKE_DL_LIBS})
         endif()
     endif()
 endif()
 
 if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
-    target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs ${CMAKE_DL_LIBS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
 endif()
 
 add_subdirectory(src)
