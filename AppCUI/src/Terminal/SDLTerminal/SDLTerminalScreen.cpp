@@ -94,13 +94,13 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     auto fs           = cmrc::font::get_filesystem();
     auto fontResource = fs.open(FONT_PATH);
 
-    // Drop font to disk
-    const fs::path fontFilePath = fs::temp_directory_path() / "AppCUI_Font.ttf";
-    std::ofstream fontFile(fontFilePath, std::ios::binary | std::ios::trunc);
-    std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
+    const auto filesize = std::distance(fontResource.begin(), fontResource.end());
+    std::unique_ptr<char[]> fontBuffer{ new char[filesize] };
+    memset(fontBuffer.get(), 0, filesize);
+    std::copy(fontResource.begin(), fontResource.end(), fontBuffer.get());
 
-    // Load font file as TTF
-    this->font = TTF_OpenFont(fontFilePath.string().c_str(), fontSize);
+    // Load font buffer as TTF
+    this->font = TTF_OpenFontRW(SDL_RWFromMem(fontBuffer.get(), static_cast<int>(filesize)), 1, fontSize);
     CHECK(font, false, "Failed to init font");
 
     int fontCharWidth  = 0;
@@ -152,12 +152,18 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
         pixelHeight = charWidth * initData.Height;
     }
 
+    const auto cp = std::filesystem::current_path();
+
     window = SDL_CreateWindow(
-          "AppCUI", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, pixelWidth, pixelHeight, windowFlags);
+          "AppCUI",
+          SDL_WINDOWPOS_CENTERED,
+          SDL_WINDOWPOS_CENTERED,
+          static_cast<int>(pixelWidth),
+          static_cast<int>(pixelHeight),
+          windowFlags);
     CHECK(window, false, "Failed to initialize SDL Window: %s", SDL_GetError());
     windowID = SDL_GetWindowID(window);
 
-    // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     CHECK(renderer, false, "Failed to initialize SDL Renderer: %s", SDL_GetError());
@@ -297,4 +303,4 @@ void SDLTerminal::uninitScreen()
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
-}
+} // namespace AppCUI::Internal

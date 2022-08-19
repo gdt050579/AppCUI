@@ -47,10 +47,6 @@ jobs:
         echo "$output"
         $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.dll)
         echo "$output"
-        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*/*.tpl)
-        echo "$output"
-        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*/*.gpl)
-        echo "$output"
     
     - name: Store Artifacts SDL
       uses: actions/upload-artifact@v3
@@ -81,10 +77,6 @@ jobs:
         $output=$(7z a "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.exe)
         echo "$output"
         $output=$(7z a "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.dll)
-        echo "$output"
-        $output=$(7z a "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*/*.tpl)
-        echo "$output"
-        $output=$(7z a "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*/*.gpl)
         echo "$output"
     
     - name: Store Artifacts
