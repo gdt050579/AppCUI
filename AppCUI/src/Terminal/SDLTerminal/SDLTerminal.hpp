@@ -21,6 +21,7 @@ namespace Internal
         SDL_Window* window;
         Uint32 windowID;
         SDL_Renderer* renderer;
+        std::unique_ptr<char[]> fontBuffer;
         TTF_Font* font;
         size_t charWidth;
         size_t charHeight;

@@ -88,19 +88,21 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     default:
         break;
     }
-    TTF_Init();
+
+    CHECK(TTF_WasInit() || TTF_Init() == 0,
+          false,
+          (std::string("Failed to initialize true type support: ") + TTF_GetError() + "\n").c_str());
 
     // Load font resource
     auto fs           = cmrc::font::get_filesystem();
     auto fontResource = fs.open(FONT_PATH);
 
-    const auto filesize = std::distance(fontResource.begin(), fontResource.end());
-    std::unique_ptr<char[]> fontBuffer{ new char[filesize] };
-    memset(fontBuffer.get(), 0, filesize);
+    const auto filesize = static_cast<int>(std::distance(fontResource.begin(), fontResource.end()));
+    this->fontBuffer.reset(new char[filesize]);
     std::copy(fontResource.begin(), fontResource.end(), fontBuffer.get());
 
     // Load font buffer as TTF
-    this->font = TTF_OpenFontRW(SDL_RWFromMem(fontBuffer.get(), static_cast<int>(filesize)), 1, fontSize);
+    this->font = TTF_OpenFontRW(SDL_RWFromMem(fontBuffer.get(), filesize), 1, fontSize);
     CHECK(font, false, "Failed to init font");
 
     int fontCharWidth  = 0;
