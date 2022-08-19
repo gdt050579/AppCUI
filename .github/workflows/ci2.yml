@@ -50,7 +50,7 @@ jobs:
     - name: Store Artifacts SDL
       uses: actions/upload-artifact@v3
       with:
-        name: windows_artifacts
+        name: windows_artifacts_sdl
         path: "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
         retention-days: 1
 
@@ -88,3 +88,34 @@ jobs:
         name: windows_artifacts
         path: "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
         retention-days: 1
+
+  publish_job:
+    name: "Publish to release"
+    runs-on: [ubuntu-latest]
+    needs: [build-win-SDL, build-win]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add tag data to enviroment
+      run: |
+        output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
+        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: windows_artifacts_sdl
+        path: artifacts
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: windows_artifacts
+        path: artifacts
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "${{env.APPCUI_VERSION}}"
+        prerelease: true # ${{ github.event.inputs.isPreRelease }}
+        title: Build ${{env.APPCUI_VERSION}}
+        files: |
+            artifacts/*.zip
