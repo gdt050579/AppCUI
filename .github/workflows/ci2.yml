@@ -15,7 +15,7 @@ jobs:
   build-win-SDL:
     runs-on: [windows-latest]
     env:
-      SDL2_URL: "https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip"
+      SDL2_URL: "https://www.libsdl.org/release/SDL2-devel-2.0.22-VC.zip"
       SDL2_TTF_URL: "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.0.15-VC.zip"
       SDL2_PATH: "C:\\SDL"
     steps:
@@ -27,7 +27,7 @@ jobs:
     - name: Install SDL2
       run: python .github/workflows/win_sdl2.py
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="C:\SDL\SDL2-2.0.14;C:\SDL\SDL2_ttf-2.0.15"
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="C:\SDL\SDL2-2.0.22;C:\SDL\SDL2_ttf-2.0.15"
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
@@ -38,6 +38,11 @@ jobs:
     
     - name: Create archive SDL
       run: |
+        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" C:/SDL/SDL2-2.0.22/lib/x64/*.dll)
+        echo "$output"
+        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" C:/SDL/SDL2_ttf-2.0.15/lib/x64/*.dll)
+        echo "$output"
+
         $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.exe)
         echo "$output"
         $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.dll)
