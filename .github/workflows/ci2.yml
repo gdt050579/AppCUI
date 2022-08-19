@@ -112,7 +112,7 @@ jobs:
         echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
 
     - name: Create archive SDL
-      working-directory: /home/runner/work/AppCUI/AppCUI/bin/Release
+      working-directory: /home/runner/work/AppCUI/AppCUI/AppCUI/bin/Release
       run: |
         output=$(zip -9 -r "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" .)
         echo "$output"
@@ -121,7 +121,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: linux_artifacts_sdl
-        path: "/home/runner/work/AppCUI/AppCUI/bin/Release/AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+        path: "/home/runner/work/AppCUI/AppCUI/AppCUI/bin/Release/AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
         retention-days: 1  
 
   build-ubuntu:
@@ -146,7 +146,7 @@ jobs:
         echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
 
     - name: Create archive
-      working-directory: /home/runner/work/AppCUI/AppCUI/bin/Release
+      working-directory: /home/runner/work/AppCUI/AppCUI/AppCUI/bin/Release
       run: |
         output=$(zip -9 -r "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" .)
         echo "$output"
@@ -155,7 +155,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: linux_artifacts
-        path: "/home/runner/work/AppCUI/AppCUI/bin/Release/AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+        path: "/home/runner/work/AppCUI/AppCUI/AppCUI/bin/Release/AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
         retention-days: 1  
 
   publish_job:
