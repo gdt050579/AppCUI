@@ -1,7 +1,10 @@
 #include "../TerminalFactory.hpp"
 #include "../WindowsTerminal/WindowsTerminal.hpp"
 #include "../TestTerminal/TestTerminal.hpp"
-#include "../SDLTerminal/SDLTerminal.hpp"
+
+#ifdef APPCUI_HAS_SDL
+#    include "../SDLTerminal/SDLTerminal.hpp"
+#endif
 
 namespace AppCUI::Internal
 {
