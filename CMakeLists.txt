@@ -28,6 +28,8 @@ elseif (UNIX)
     add_definitions(-DBUILD_FOR_UNIX)
     add_compile_options(-g)
     add_compile_options(-W)
+
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath -Wl,$ORIGIN")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -49,9 +51,7 @@ endif()
 
 if (NOT DEBUG_BUILD)
     if (MSVC)
-        #add_compile_options(-O2)
         add_compile_options(-Ob2)
-	#string( REPLACE "/RTC1" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
     else()
         add_compile_options(-O3)
     endif()
