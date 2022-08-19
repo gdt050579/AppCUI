@@ -33,7 +33,6 @@ jobs:
 
   build-win:
     runs-on: [windows-latest]
-    env:
     steps:
     - uses: actions/checkout@v2
       with:
