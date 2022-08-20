@@ -243,7 +243,7 @@ jobs:
 
     - uses: actions/download-artifact@v2
       with:
-        name: apple_artifacts
+        name: apple_artifacts_sdl
         path: artifacts
 
     - uses: "marvinpinto/action-automatic-releases@latest"
