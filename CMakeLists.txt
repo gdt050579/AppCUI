@@ -3,16 +3,6 @@ cmake_minimum_required(VERSION 3.13)
 # Project setup
 project(AppCUI VERSION 1.0)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT supported OUTPUT error)
-
-if( supported )
-	message(STATUS "${PROJECT_NAME} => IPO / LTO enabled")
-	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-else()
-	message(STATUS "${PROJECT_NAME} => IPO / LTO not supported: <${error}>")
-endif()
-
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -34,10 +24,16 @@ elseif (APPLE)
         add_compile_options(-g)
         add_compile_options(-W)
     endif()
+
+    set(CMAKE_MACOSX_RPATH TRUE)
+    set(CMAKE_SKIP_BUILD_RPATH FALSE)
+    set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 elseif (UNIX)
     add_definitions(-DBUILD_FOR_UNIX)
     add_compile_options(-g)
     add_compile_options(-W)
+
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath -Wl,$ORIGIN")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -59,9 +55,7 @@ endif()
 
 if (NOT DEBUG_BUILD)
     if (MSVC)
-        #add_compile_options(-O2)
         add_compile_options(-Ob2)
-	#string( REPLACE "/RTC1" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
     else()
         add_compile_options(-O3)
     endif()
