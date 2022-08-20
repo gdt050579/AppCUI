@@ -83,9 +83,13 @@ if (APPCUI_HAS_SDL)
 endif()
 
 if (APPCUI_HAS_NCURSES)
+    if (APPLE)
+        list(APPEND CMAKE_PREFIX_PATH "/usr/local")
+    endif()
+
     if (UNIX)
-        set(CURSES_NEED_WIDE "TRUE")
-        set(CURSES_NEED_NCURSES "TRUE")
+        set(CURSES_NEED_WIDE TRUE)
+        set(CURSES_NEED_NCURSES TRUE)
         find_package(Curses)
     endif()
 
