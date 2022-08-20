@@ -83,9 +83,24 @@ if (APPCUI_HAS_SDL)
 endif()
 
 if (APPCUI_HAS_NCURSES)
+    if (APPLE)
+        execute_process(COMMAND "brew" "--cellar" "ncurses" OUTPUT_VARIABLE NCURSES_BREW_PATH_PREFIX)
+        string(STRIP "${NCURSES_BREW_PATH_PREFIX}" NCURSES_BREW_PATH_PREFIX)
+        message("NCURSES_BREW_PATH_PREFIX => ${NCURSES_BREW_PATH_PREFIX}")
+
+        include(get_subfolders)
+        SUBDIRLIST(NCURSES_SUBDIRS "${NCURSES_BREW_PATH_PREFIX}")
+        message("NCURSES_SUBDIRS => ${NCURSES_SUBDIRS}")
+        LIST(GET NCURSES_SUBDIRS 0 NCURSES_BREW_PATH_VERSION)
+        message("NCURSES_BREW_PATH_VERSION => ${NCURSES_BREW_PATH_VERSION}")
+
+        list(APPEND CMAKE_PREFIX_PATH "${NCURSES_BREW_PATH_PREFIX}/${NCURSES_BREW_PATH_VERSION}")
+        message("CMAKE_PREFIX_PATH => ${CMAKE_PREFIX_PATH}")
+    endif()
+
     if (UNIX)
-        set(CURSES_NEED_WIDE "TRUE")
-        set(CURSES_NEED_NCURSES "TRUE")
+        set(CURSES_NEED_WIDE TRUE)
+        set(CURSES_NEED_NCURSES TRUE)
         find_package(Curses)
     endif()
 
