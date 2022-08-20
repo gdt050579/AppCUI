@@ -88,6 +88,7 @@ if (APPCUI_HAS_NCURSES)
         execute_process(COMMAND "brew" "--cellar" "ncurses" OUTPUT_VARIABLE NCURSES_BREW_PATH_PREFIX)
         message("NCURSES_BREW_PATH_PREFIX => ${NCURSES_BREW_PATH_PREFIX}")
         list(APPEND CMAKE_PREFIX_PATH "${NCURSES_BREW_PATH_PREFIX}/6.3")
+        message("CMAKE_PREFIX_PATH => ${CMAKE_PREFIX_PATH}")
     endif()
 
     if (UNIX)
