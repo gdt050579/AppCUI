@@ -1,4 +1,4 @@
-name: build-cmake-redesign
+name: build-and-deploy-release
 
 on:
   push:
