@@ -32,7 +32,6 @@ include_directories("${SRC_DIR}")
 
 # Add libAppCUI
 add_library(${PROJECT_NAME} SHARED)
-set(APPCUI_HAS_NCURSES 1)
 
 # versioning
 file(READ "${MAIN_HEADER}" appcui_content)
@@ -50,9 +49,6 @@ if (MSVC)
     configure_file("resources/windows.rc.in" ${WINRC_FOLDER} @ONLY)  
     target_sources(${PROJECT_NAME} PRIVATE ${WINRC_FOLDER})
 endif()
-
-option(APPCUI_HAS_SDL "Use SDL" ON)
-option(APPCUI_HAS_NCURSES "Use ncurses" 1)
 
 # Add SDL
 if (APPCUI_HAS_SDL)
@@ -120,6 +116,11 @@ if (APPCUI_HAS_NCURSES)
         set(APPCUI_HAS_NCURSES OFF)
     endif()
 endif()
+
+if (UNIX AND NOT (SDL2_FOUND OR CURSES_FOUND))
+    message(FATAL_ERROR "On unix you must have either ncurses or SDL")
+endif()
+
 
 if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
     target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs)
