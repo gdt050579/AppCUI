@@ -84,7 +84,10 @@ endif()
 
 if (APPCUI_HAS_NCURSES)
     if (APPLE)
-        list(APPEND CMAKE_PREFIX_PATH "/usr/local")
+        set(CMAKE_COMMAND_BREW_PREFIX, "brew --prefix ncurses")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E echo bar OUTPUT_VARIABLE NCURSES_BREW_PATH_PREFIX)
+        message("NCURSES_BREW_PATH_PREFIX => ${NCURSES_BREW_PATH_PREFIX}")
+        list(APPEND CMAKE_PREFIX_PATH NCURSES_BREW_PATH_PREFIX)
     endif()
 
     if (UNIX)
