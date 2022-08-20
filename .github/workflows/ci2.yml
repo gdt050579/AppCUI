@@ -3,7 +3,7 @@ name: build-cmake-redesign
 on:
   push:
     branches:
-      - cmake-redesign
+      - main
   workflow_dispatch:
   pull_request:
 
