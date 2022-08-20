@@ -17,6 +17,7 @@ struct
     { "Mouse.Click", TestTerminal::CommandID::MouseClick, 3 /* x,y,button(Left,Right,Middle) */ },
     { "Mouse.Move", TestTerminal::CommandID::MouseMove, 2 /* x,y */ },
     { "Mouse.Drag", TestTerminal::CommandID::MouseDrag, 4 /* x1,y1,x2,y2 */ },
+    { "Mouse.Wheel", TestTerminal::CommandID::MouseWheel, 2 /* x,y, direction, times */ },
     { "Key.Press", TestTerminal::CommandID::KeyPress, 1 /* key */ },
     { "Key.PressMultipleTimes", TestTerminal::CommandID::KeyPressMultipleTimes, 2 /* key, times */ },
     { "Key.Type", TestTerminal::CommandID::KeyType, 1 /* string with keys */ },
@@ -63,6 +64,20 @@ std::optional<AppCUI::Input::MouseButton> StringToMouseButton(std::string_view t
         return AppCUI::Input::MouseButton::Center;
     if (temp.Equals("center", true))
         return AppCUI::Input::MouseButton::Center;
+    return std::nullopt;
+}
+std::optional<AppCUI::Input::MouseWheel> StringToMouseWheel(std::string_view txt)
+{
+    LocalString<64> temp;
+    CHECK(temp.Set(txt), std::nullopt, "");
+    if (temp.Equals("left", true))
+        return AppCUI::Input::MouseWheel::Left;
+    if (temp.Equals("right", true))
+        return AppCUI::Input::MouseWheel::Right;
+    if (temp.Equals("up", true))
+        return AppCUI::Input::MouseWheel::Up;
+    if (temp.Equals("down", true))
+        return AppCUI::Input::MouseWheel::Down;
     return std::nullopt;
 }
 std::optional<bool> StringToBool(std::string_view txt)
@@ -218,6 +233,35 @@ void TestTerminal::AddMouseMoveCommand(const std::string_view* params)
     cmd.Params[2].mouseButtonValue = Input::MouseButton::None;
     this->commandsQueue.push(cmd);
 }
+void TestTerminal::AddMouseWheelCommand(const std::string_view* params)
+{
+    Command cmd(CommandID::MouseWheel);
+    auto x     = Number::ToInt32(params[0]);
+    auto y     = Number::ToInt32(params[1]);
+    auto dir   = StringToMouseWheel(params[2]);
+    auto times = Number::ToUInt32(params[3]);
+    ASSERT(x.has_value(), "First parameter (x) must be a valid int32 value -> (in Mouse.Wheel(x,y,direction,times)");
+    ASSERT(y.has_value(), "Second parameter (y) must be a valid int32 value -> (in Mouse.Wheel(x,y,direction,times)");
+    ASSERT(
+          dir.has_value(),
+          "Second parameter (dir) must be a valid wheel value (left,right,top,down) -> (in "
+          "Mouse.Wheel(direction,times)");
+    ASSERT(
+          times.has_value(),
+          "Third parameter (times) must be a valid uint32 value -> (in Mouse.Wheel(x,y,direction,times)");
+    ASSERT(
+          times.value() > 0,
+          "Second parameter (times) should be bigger than 0 -> (x,y,in Mouse.Wheel(direction,times)");
+    cmd.Params[0].i32Value        = x.value();
+    cmd.Params[1].i32Value        = y.value();
+    cmd.Params[2].mouseWheelValue = dir.value();
+    auto n                        = times.value();
+    while (n > 0)
+    {
+        this->commandsQueue.push(cmd);
+        n--;
+    }
+}
 void TestTerminal::AddTerminalResizeCommand(const std::string_view* params)
 {
     Command cmd(CommandID::ResizeTerminal);
@@ -325,7 +369,7 @@ void TestTerminal::AddKeyTypeCommand(const std::string_view* params)
         this->commandsQueue.push(cmd);
     }
 }
-void TestTerminal::CreateEventsQueue(std::string_view commandsScript, bool * _scriptValidationResult)
+void TestTerminal::CreateEventsQueue(std::string_view commandsScript, bool* _scriptValidationResult)
 {
     const char* start = commandsScript.data();
     const char* end   = start + commandsScript.size();
@@ -386,6 +430,9 @@ void TestTerminal::CreateEventsQueue(std::string_view commandsScript, bool * _sc
             break;
         case TestTerminal::CommandID::MouseMove:
             AddMouseReleaseCommand(params);
+            break;
+        case TestTerminal::CommandID::MouseWheel:
+            AddMouseWheelCommand(params);
             break;
         case TestTerminal::CommandID::MouseDrag:
             AddMouseDragCommand(params);
@@ -503,6 +550,12 @@ void TestTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             evnt.mouseX      = cmd.Params[0].i32Value;
             evnt.mouseY      = cmd.Params[1].i32Value;
             evnt.mouseButton = cmd.Params[2].mouseButtonValue;
+            break;
+        case CommandID::MouseWheel:
+            evnt.eventType  = SystemEventType::MouseWheel;
+            evnt.mouseX     = cmd.Params[0].i32Value;
+            evnt.mouseY     = cmd.Params[1].i32Value;
+            evnt.mouseWheel = cmd.Params[2].mouseWheelValue;
             break;
         case CommandID::KeyPress:
             evnt.eventType        = SystemEventType::KeyPressed;

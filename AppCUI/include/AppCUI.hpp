@@ -2,7 +2,7 @@
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
 
-#define APPCUI_VERSION "1.152.0"
+#define APPCUI_VERSION "1.155.0"
 
 #include <filesystem>
 #include <map>
