@@ -87,7 +87,7 @@ if (APPCUI_HAS_NCURSES)
         set(CMAKE_COMMAND_BREW_PREFIX, "--prefix ncurses")
         execute_process(COMMAND "brew" "--prefix" "ncurses" OUTPUT_VARIABLE NCURSES_BREW_PATH_PREFIX)
         message("NCURSES_BREW_PATH_PREFIX => ${NCURSES_BREW_PATH_PREFIX}")
-        list(APPEND CMAKE_PREFIX_PATH NCURSES_BREW_PATH_PREFIX)
+        list(APPEND CMAKE_PREFIX_PATH ${NCURSES_BREW_PATH_PREFIX}/lib")
     endif()
 
     if (UNIX)
