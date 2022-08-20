@@ -197,7 +197,7 @@ jobs:
         echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
 
     - name: Create archive SDL
-      working-directory: /home/runner/work/AppCUI/AppCUI/bin
+      working-directory: /Users/runner/work/AppCUI/AppCUI/bin
       run: |
         output=$(zip -9 -r "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" .)
         echo "$output"
@@ -206,7 +206,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: apple_artifacts_sdl
-        path: "/home/runner/work/AppCUI/AppCUI/bin/AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+        path: "/Users/runner/work/AppCUI/AppCUI/bin/AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
         retention-days: 1  
 
   publish_job:
