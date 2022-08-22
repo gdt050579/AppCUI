@@ -17,6 +17,7 @@ with open(header_location, 'r') as f:
             version = line.split('#define APPCUI_VERSION ')[
                 1].strip(' \r\n\t\"')
             found_version = True
+            print(version)
             os.putenv('APPCUI_VERSION', version)
             break
 
