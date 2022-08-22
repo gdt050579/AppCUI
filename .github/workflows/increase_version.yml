@@ -25,7 +25,9 @@ jobs:
         submodules: true
 
     - name: Get Version to ENV and increase it
-      run: python .github/workflows/get_version_and_update.py AppCUI/include/AppCUI.hpp ${{ github.event.inputs.versionToUpdate }}
+      run: |
+        output=$(python .github/workflows/get_version_and_update.py AppCUI/include/AppCUI.hpp ${{ github.event.inputs.versionToUpdate }})
+        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
       
     - name: Show Version
       run: echo "${{ env.APPCUI_VERSION }}"
