@@ -89,7 +89,7 @@ bool SDLTerminal::initFont(const InitializationData& initData)
         break;
     }
 
-    CHECK(TTF_WasInit() || TTF_Init() == 0, false, "Failed to initialize true type support: %s") + TTF_GetError();
+    CHECK(TTF_WasInit() || TTF_Init() == 0, false, "Failed to initialize true type support: %s", TTF_GetError());
 
     // Load font resource
     auto fs           = cmrc::font::get_filesystem();
