@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       versionToUpdate:
-        description: 'Verstion to update'     
+        description: 'Version to update'     
         required: true
         default: 'minor' 
         type: choice
@@ -15,7 +15,6 @@ on:
         - major
         - minor
         - patch
-
 
 jobs:
   version-ubuntu:
@@ -25,14 +24,20 @@ jobs:
       with:
         submodules: true
 
-    - name: Get Version to env and increase it
-      run: python .github/workflows/get_version_and_update.py AppCUI/include/AppCUI.hpp ${{ github.event.inputs.versionToUpdate }}
+    - name: Get Version to ENV and increase it
+      run: |
+        output=$(python .github/workflows/get_version_and_update.py AppCUI/include/AppCUI.hpp ${{ github.event.inputs.versionToUpdate }})
+        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+      
+    - name: Show Version
+      run: echo "${{ env.APPCUI_VERSION }}"
 
     - name: Commit files
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git commit -m "Updated AppCUI version" -a
+        git commit -m "Updated AppCUI version ${{ env.APPCUI_VERSION }}" -a
+        
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
