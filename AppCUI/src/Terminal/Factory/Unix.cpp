@@ -1,11 +1,8 @@
 #include "../TerminalFactory.hpp"
 #include "../TestTerminal/TestTerminal.hpp"
+#include "../SDLTerminal/SDLTerminal.hpp"
 
-#ifdef APPCUI_HAS_SDL
-#    include "../SDLTerminal/SDLTerminal.hpp"
-#endif
-
-#ifdef APPCUI_HAS_NCURSES
+#ifdef UNIX
 #    include "../NcursesTerminal/NcursesTerminal.hpp"
 #endif
 

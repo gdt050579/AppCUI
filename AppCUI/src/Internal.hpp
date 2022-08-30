@@ -244,6 +244,7 @@ namespace Internal
         Application::Config config;
         Utils::IniObject settings;
         unique_ptr<AbstractTerminal> terminal;
+        Application::FrontendType frontend;
         unique_ptr<CommandBarController> cmdBar;
         unique_ptr<MenuBar> menu;
         vector<Controls::Control*> toDelete;
@@ -270,6 +271,9 @@ namespace Internal
 
         ApplicationImpl();
         ~ApplicationImpl();
+
+        
+        Application::FrontendType GetFrontendType() const;
 
         void Destroy();
         void ComputePositions();

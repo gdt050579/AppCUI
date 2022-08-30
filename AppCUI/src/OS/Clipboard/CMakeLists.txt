@@ -1,7 +1,3 @@
 if (MSVC)
-    target_sources(AppCUI PRIVATE ClipboardWindows.cpp)
-elseif (APPCUI_HAS_SDL)
-    target_sources(AppCUI PRIVATE ClipboardSDL.cpp)
-else()
-    target_sources(AppCUI PRIVATE ClipboardDefault.cpp)
+    target_sources(AppCUI PRIVATE Clipboard.cpp)
 endif()

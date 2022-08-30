@@ -23,7 +23,7 @@ static Key getShiftState(const SDL_Keymod keyModifiers)
     return currentShiftState;
 }
 
-bool SDLTerminal::initInput(const Application::InitializationData&)
+bool SDLTerminal::InitInput(const Application::InitializationData&)
 {
     oldShiftState = Key::None;
 
@@ -63,7 +63,7 @@ bool SDLTerminal::initInput(const Application::InitializationData&)
     return true;
 }
 
-void SDLTerminal::handleMouse(SystemEvent& evt, const SDL_Event& eSdl)
+void SDLTerminal::HandleMouse(SystemEvent& evt, const SDL_Event& eSdl)
 {
     if (eSdl.type == SDL_MOUSEBUTTONDOWN || eSdl.type == SDL_MOUSEBUTTONUP)
     {
@@ -101,7 +101,7 @@ void SDLTerminal::handleMouse(SystemEvent& evt, const SDL_Event& eSdl)
     }
 }
 
-void SDLTerminal::handleKeyUp(SystemEvent& evt, const SDL_Event& eSdl)
+void SDLTerminal::HandleKeyUp(SystemEvent& evt, const SDL_Event& eSdl)
 {
     const SDL_Keymod keyModifiers = static_cast<SDL_Keymod>(eSdl.key.keysym.mod);
     auto currentShiftState        = getShiftState(keyModifiers);
@@ -113,7 +113,7 @@ void SDLTerminal::handleKeyUp(SystemEvent& evt, const SDL_Event& eSdl)
     oldShiftState = currentShiftState;
 }
 
-void SDLTerminal::handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
+void SDLTerminal::HandleKeyDown(SystemEvent& evt, const SDL_Event& eSdl)
 {
     evt.eventType = SystemEventType::KeyPressed;
 
@@ -196,13 +196,13 @@ void SDLTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     case SDL_MOUSEMOTION:
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN:
-        handleMouse(evnt, e);
+        HandleMouse(evnt, e);
         break;
     case SDL_KEYDOWN:
-        handleKeyDown(evnt, e);
+        HandleKeyDown(evnt, e);
         break;
     case SDL_KEYUP:
-        handleKeyUp(evnt, e);
+        HandleKeyUp(evnt, e);
         break;
     case SDL_WINDOWEVENT:
         if (e.window.windowID == windowID)
@@ -249,7 +249,7 @@ bool SDLTerminal::IsEventAvailable()
     NOT_IMPLEMENTED(false);
 }
 
-void SDLTerminal::uninitInput()
+void SDLTerminal::UninitInput()
 {
 }
 }
