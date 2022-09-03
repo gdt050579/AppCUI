@@ -56,6 +56,14 @@ find_package(SDL2TTF)
 
 if (SDL2_FOUND)
     message("Found SDL2.")
+    
+    if (UNIX)
+    	if (APPLE)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa -framework OpenGL -framework IOKit")
+	else()
+	    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lglfw3")
+	endif()	
+    endif()
 
     # Add font used by SDL 
     include(CMakeRC)
@@ -67,7 +75,7 @@ if (SDL2_FOUND)
     set(FONT_LIB_NAME font)
 
     target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY} SDL2::SDL2 SDL2::SDL2-static)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${FONT_LIB_NAME})
 else()
     message(FATAL_ERROR "Couldn't find SDL2 and/or SDL2TTF!")
