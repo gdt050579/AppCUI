@@ -52,7 +52,7 @@ include(FindSDL2)
 include(FindSDL2TTF)
 
 find_package(SDL2 CONFIG REQUIRED)
-find_package(SDL2TTF CONFIG REQUIRED)
+find_package(SDL2TTF REQUIRED)
 
 if (SDL2_FOUND)
     message("Found SDL2.")
