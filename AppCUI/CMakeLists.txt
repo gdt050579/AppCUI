@@ -51,8 +51,8 @@ endif()
 include(FindSDL2)
 include(FindSDL2TTF)
 
-find_package(SDL2)
-find_package(SDL2TTF)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL2TTF CONFIG REQUIRED)
 
 if (SDL2_FOUND)
     message("Found SDL2.")
@@ -61,7 +61,7 @@ if (SDL2_FOUND)
     	if (APPLE)
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa -framework OpenGL -framework IOKit")
 	else()
-	    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lglfw3")
+	    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lglfw")
 	endif()	
     endif()
 
@@ -88,7 +88,7 @@ if (UNIX)
     
     set(CURSES_NEED_WIDE TRUE)
     set(CURSES_NEED_NCURSES TRUE)
-    find_package(Curses)
+    find_package(Curses REQUIRED)
 
     if (CURSES_FOUND)
     	message("CURSES FOUND!")
