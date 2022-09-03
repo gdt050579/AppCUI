@@ -67,7 +67,7 @@ if (SDL2_FOUND)
     set(FONT_LIB_NAME font)
 
     target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY} SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY_RELEASE} ${SDL2TTF_LIBRARY} SDL2::SDL2 SDL2::SDL2-static)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${FONT_LIB_NAME})
 else()
     message(FATAL_ERROR "Couldn't find SDL2 and/or SDL2TTF!")
