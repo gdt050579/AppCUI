@@ -57,7 +57,7 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         
     - name: List VCPKG artefacts
-      run: ls -R vcpkg/installed
+      run: ls -R /home/runner/work/AppCUI/AppCUI/vcpkg/installed
       
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
@@ -91,7 +91,7 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     
     - name: List VCPKG artefacts
-      run: ls -R vcpkg/installed
+      run: ls -R /Users/runner/work/AppCUI/AppCUI/vcpkg/installed
       
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
