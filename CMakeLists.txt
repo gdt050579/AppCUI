@@ -95,8 +95,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 add_subdirectory(AppCUI)
 
 if(APPCUI_ENABLE_TESTS)
-    add_subdirectory(Tests/Tester)
-    add_subdirectory(Tests/FileTest)
+    if (NOT UNIX)
+        add_subdirectory(Tests/Tester)
+        add_subdirectory(Tests/FileTest)
+    endif()
 endif()
 
 if(APPCUI_ENABLE_EXAMPLES)
