@@ -106,9 +106,10 @@ if (UNIX)
 
     message("CURSES FOUND!")
     message("CURSES_INCLUDE_DIRS => ${CURSES_INCLUDE_DIRS}")
+    message("CURSES_LIBRARIES => ${CURSES_LIBRARIES}")
     target_compile_definitions(${PROJECT_NAME} PRIVATE APPCUI_HAS_NCURSES)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
     target_compile_definitions(${PROJECT_NAME} PRIVATE NCURSES_WIDECHAR)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
 endif()
 
