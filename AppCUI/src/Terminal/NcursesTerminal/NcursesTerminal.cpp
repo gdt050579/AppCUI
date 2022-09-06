@@ -1,5 +1,4 @@
 #include "NcursesTerminal.hpp"
-#include <ncursesw/ncurses.h>
 #include <poll.h>
 
 #if __APPLE__
