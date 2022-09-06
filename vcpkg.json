@@ -7,6 +7,10 @@
             "platform": "linux | osx"
         },
         {
+            "name": "libiconv",
+            "platform": "osx"
+        },
+        {
             "name": "brotli",
             "platform": "windows | linux | osx"
         },
