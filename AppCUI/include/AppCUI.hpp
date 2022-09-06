@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
- 
+
 #define APPCUI_VERSION "1.163.0"
 
 #include <filesystem>
@@ -999,10 +999,11 @@ namespace Utils
     {
         uint8* data;
         size_t length;
+        size_t allocated;
 
       public:
         ~Buffer();
-        Buffer() : data(nullptr), length(0)
+        Buffer() : data(nullptr), length(0), allocated(0)
         {
         }
         Buffer(size_t size);
@@ -1010,34 +1011,40 @@ namespace Utils
 
         Buffer(void*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(char*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(uint8*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(Buffer&& buf) noexcept
         {
-            data       = buf.data;
-            length     = buf.length;
-            buf.data   = nullptr;
-            buf.length = 0;
+            data          = buf.data;
+            length        = buf.length;
+            allocated     = buf.allocated;
+            buf.data      = nullptr;
+            buf.length    = 0;
+            buf.allocated = 0;
         }
 
         inline Buffer& operator=(Buffer&& b) noexcept
         {
             std::swap(data, b.data);
             std::swap(length, b.length);
+            std::swap(allocated, b.allocated);
             return *this;
         }
         inline uint8& operator[](size_t index) const
@@ -1059,6 +1066,10 @@ namespace Utils
         inline size_t GetLength() const
         {
             return length;
+        }
+        inline size_t GetAllocatedSpace() const
+        {
+            return allocated;
         }
         inline uint8* GetData() const
         {
@@ -5457,7 +5468,10 @@ namespace Application
 
     NODISCARD("Check the return of the InitForTests function. If false, AppCUI has not been initialized properly")
     EXPORT bool InitForTests(
-          uint32 width, uint32 height, Application::InitializationFlags flags = Application::InitializationFlags::None, bool asciiMode = false);
+          uint32 width,
+          uint32 height,
+          Application::InitializationFlags flags = Application::InitializationFlags::None,
+          bool asciiMode                         = false);
 
     EXPORT bool Run();
     EXPORT bool RunTestScript(std::string_view script);

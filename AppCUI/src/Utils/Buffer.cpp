@@ -2,96 +2,87 @@
 
 namespace AppCUI::Utils
 {
+#define ALIGN_SIZE(sz) ((static_cast<size_t>(sz) | static_cast<size_t>(0xFF)) + static_cast<size_t>(1))
 Buffer::~Buffer()
 {
     if (data)
         delete[] data;
-    data   = nullptr;
-    length = 0;
+    data      = nullptr;
+    length    = 0;
+    allocated = 0;
 }
 Buffer::Buffer(size_t size)
 {
     if (size > 0)
     {
-        data   = new uint8[size];
-        length = size;
+        data      = new uint8[ALIGN_SIZE(size)];
+        length    = size;
+        allocated = ALIGN_SIZE(size);
     }
     else
     {
-        data   = nullptr;
-        length = 0;
+        data      = nullptr;
+        length    = 0;
+        allocated = 0;
     }
 }
 Buffer::Buffer(const Buffer& buf)
 {
     if ((buf.data) && (buf.length))
     {
-        data = new uint8[buf.length];
+        data = new uint8[ALIGN_SIZE(buf.length)];
         memcpy(data, buf.data, buf.length);
-        length = buf.length;
+        length    = buf.length;
+        allocated = ALIGN_SIZE(buf.length);
     }
     else
     {
-        data   = nullptr;
-        length = 0;
+        data      = nullptr;
+        length    = 0;
+        allocated = 0;
     }
 }
 Buffer& Buffer::operator=(const Buffer& buf)
 {
-    if (data)
-        delete[] data;
-    data   = nullptr;
-    length = 0;
+    if (buf.length > this->allocated)
+    {
+        if (data)
+            delete[] data;
+        data      = new uint8[ALIGN_SIZE(buf.length)];
+        length    = 0;
+        allocated = ALIGN_SIZE(buf.length);
+    }
     if ((buf.data) && (buf.length))
-    {
-        data = new uint8[buf.length];
         memcpy(data, buf.data, buf.length);
-        length = buf.length;
-    }
-    else
-    {
-        data   = nullptr;
-        length = 0;
-    }
+    length = buf.length;
     return *this;
 }
 void Buffer::Resize(size_t newSize)
 {
-    if (newSize == 0)
+    if (newSize > this->allocated)
     {
-        // clean all
-        if (data)
-            delete[] data;
-        data   = nullptr;
-        length = 0;
-        return;
+        auto* temp = new uint8[ALIGN_SIZE(newSize)];
+        memcpy(temp, this->data, this->length);
+        delete[] data;
+        data            = temp;
+        this->allocated = ALIGN_SIZE(newSize);
     }
-    if (newSize <= length)
+    if (newSize <= this->allocated)
     {
-        // just set a different size
         this->length = newSize;
         return;
     }
-    // for bigger sizes
-    auto tmp = new uint8[newSize];
-    if ((data) && (length))
-    {
-        memcpy(tmp, data, length);
-        delete[] data;
-        data = tmp;
-        tmp += length;
-        auto e = data + newSize;
-        while (tmp < e)
-        {
-            *tmp = 0;
-            tmp++;
-        }
-    }
     else
     {
-        data = tmp;
-        memset(data, 0, newSize);
+        auto* temp = data + length;
+        auto e     = data + newSize;
+        while (temp < e)
+        {
+            *temp = 0;
+            temp++;
+        }
+        this->length = newSize;
+        return;
     }
-    this->length = newSize;
 }
 } // namespace AppCUI::Utils
