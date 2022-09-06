@@ -1,5 +1,4 @@
 #include "NcursesTerminal.hpp"
-#include "ncurses.h"
 
 namespace AppCUI::Internal
 {
