@@ -62,6 +62,8 @@ if (UNIX)
     if (APPLE)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa -framework OpenGL -framework IOKit")
     else()
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_DL_LIBS})
+
     	find_package(X11 CONFIG)
         message("X11_LIBRARIES => ${X11_LIBRARIES}")
 	target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
