@@ -7,10 +7,6 @@
             "platform": "linux | osx"
         },
         {
-            "name": "libx11",
-            "platform": "linux"
-        },
-        {
             "name": "brotli",
             "platform": "windows | linux | osx"
         },
