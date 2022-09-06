@@ -1,5 +1,4 @@
 #include "NcursesTerminal.hpp"
-#include "ncurses.h"
 #include <poll.h>
 
 namespace AppCUI::Internal
