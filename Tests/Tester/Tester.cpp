@@ -50,6 +50,9 @@ class MyWin2 : public AppCUI::Controls::Window
 };
 int main()
 {
+    Buffer b;
+    b.Add("123");
+    b.AddMultipleTimes("ABC", 5);
     if (!Application::Init(Application::InitializationFlags::CommandBar))
         return 1;
     Application::AddWindow(std::make_unique<MyWin>());

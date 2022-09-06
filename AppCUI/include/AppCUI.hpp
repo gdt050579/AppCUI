@@ -1001,6 +1001,8 @@ namespace Utils
         size_t length;
         size_t allocated;
 
+        size_t Add(const void* p, size_t size, uint32 times);
+
       public:
         ~Buffer();
         Buffer() : data(nullptr), length(0), allocated(0)
@@ -1083,21 +1085,33 @@ namespace Utils
             return reinterpret_cast<T*>(data + offset);
         }
         void Resize(size_t newSize);
+        void Reserve(size_t newSize);
         Buffer& operator=(const Buffer& b);
 
         // add
-        size_t Add(const void* p, size_t size);
         inline size_t Add(const Buffer& b)
         {
-            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength());
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), 1);
         }
         inline size_t Add(BufferView b)
         {
-            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength());
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), 1);
         }
         inline size_t Add(string_view s)
         {
-            return Add(reinterpret_cast<const void*>(s.data()), s.size());
+            return Add(reinterpret_cast<const void*>(s.data()), s.size(), 1);
+        }
+        inline size_t AddMultipleTimes(const Buffer& b, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), times);
+        }
+        inline size_t AddMultipleTimes(BufferView b, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), times);
+        }
+        inline size_t AddMultipleTimes(string_view s, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size(), times);
         }
     };
 
