@@ -1086,7 +1086,7 @@ namespace Utils
         }
         void Resize(size_t newSize);
         void Reserve(size_t newSize);
-        Buffer& operator=(const Buffer& b);
+        
 
         // add
         inline size_t Add(const Buffer& b)
@@ -1112,6 +1112,25 @@ namespace Utils
         inline size_t AddMultipleTimes(string_view s, uint32 times)
         {
             return Add(reinterpret_cast<const void*>(s.data()), s.size(), times);
+        }
+        // setere
+        inline Buffer& operator=(const Buffer& b)
+        {
+            this->length = 0;
+            Add(b.data, b.length, 1);
+            return *this;
+        }
+        inline Buffer& operator=(BufferView b)
+        {
+            this->length = 0;
+            Add(b.GetData(), b.GetLength(), 1);
+            return *this;
+        }
+        inline Buffer& operator=(string_view s)
+        {
+            this->length = 0;
+            Add(s.data(), s.size(), 1);
+            return *this;
         }
     };
 
