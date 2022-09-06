@@ -1084,6 +1084,21 @@ namespace Utils
         }
         void Resize(size_t newSize);
         Buffer& operator=(const Buffer& b);
+
+        // add
+        size_t Add(const void* p, size_t size);
+        inline size_t Add(const Buffer& b)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength());
+        }
+        inline size_t Add(BufferView b)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength());
+        }
+        inline size_t Add(string_view s)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size());
+        }
     };
 
     class EXPORT String

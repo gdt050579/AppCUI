@@ -62,8 +62,11 @@ void Buffer::Resize(size_t newSize)
     if (newSize > this->allocated)
     {
         auto* temp = new uint8[ALIGN_SIZE(newSize)];
-        memcpy(temp, this->data, this->length);
-        delete[] data;
+        if (this->data)
+        {
+            memcpy(temp, this->data, this->length);
+            delete[] data;
+        }
         data            = temp;
         this->allocated = ALIGN_SIZE(newSize);
     }
@@ -84,5 +87,15 @@ void Buffer::Resize(size_t newSize)
         this->length = newSize;
         return;
     }
+}
+size_t Buffer::Add(const void* p, size_t size)
+{
+    if ((size == 0) || (p == nullptr))
+        return this->length;
+    Resize(this->length + size);
+    memcpy(this->data + this->length, p, size);
+    auto result = this->length;
+    this->length += size;
+    return result;
 }
 } // namespace AppCUI::Utils
