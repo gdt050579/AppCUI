@@ -249,7 +249,7 @@ bool SDLTerminal::IsEventAvailable()
     NOT_IMPLEMENTED(false);
 }
 
-void SDLTerminal::UninitInput()
+void SDLTerminal::UnInitInput()
 {
 }
 }

@@ -129,32 +129,32 @@ void ColorManager::Init()
         nrColors = 0;
     }
 
-    initColorPairs();
+    InitColorPairs();
 }
 
-char ColorManager::mapColor(const AppColor color)
+char ColorManager::MapColor(const AppColor color)
 {
     const char colorMapped = std::underlying_type<AppColor>::type(color);
     return appcuiColorMapping[colorMapped];
 }
 
-int ColorManager::getPairId(const AppColor fg, const AppColor bg)
+int ColorManager::GetPairId(const AppColor fg, const AppColor bg)
 {
-    const char fgMapped = mapColor(fg);
-    const char bgMapped = mapColor(bg);
+    const char fgMapped = MapColor(fg);
+    const char bgMapped = MapColor(bg);
     return pairMapping[fgMapped * NR_APPCUI_COLORS + bgMapped];
 }
 
-void ColorManager::initColorPairs(void)
+void ColorManager::InitColorPairs(void)
 {
     for (const AppColor& fg : TrueColors)
     {
         for (const AppColor& bg : TrueColors)
         {
-            const size_t pair_id = getPairId(fg, bg);
+            const size_t pair_id = GetPairId(fg, bg);
             if (pair_id == 0)
                 continue;
-            init_pair(pair_id, mapColor(fg), mapColor(bg));
+            init_pair(pair_id, MapColor(fg), MapColor(bg));
         }
     }
 }
@@ -163,7 +163,7 @@ void ColorManager::SetColor(const AppColor fg, const AppColor bg)
 {
     if (nrColors == 0)
         return;
-    const int color_num = getPairId(fg, bg);
+    const int color_num = GetPairId(fg, bg);
     attron(COLOR_PAIR(color_num));
 }
 
@@ -171,7 +171,7 @@ void ColorManager::UnsetColor(const AppColor fg, const AppColor bg)
 {
     if (nrColors == 0)
         return;
-    const int color_num = getPairId(fg, bg);
+    const int color_num = GetPairId(fg, bg);
     attroff(COLOR_PAIR(color_num));
 }
 

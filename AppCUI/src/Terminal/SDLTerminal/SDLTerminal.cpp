@@ -9,9 +9,9 @@ bool SDLTerminal::OnInit(const Application::InitializationData& initData)
     return true;
 }
 
-void SDLTerminal::OnUninit()
+void SDLTerminal::OnUnInit()
 {
-    UninitInput();
-    UninitScreen();
+    UnInitInput();
+    UnInitScreen();
 }
 }

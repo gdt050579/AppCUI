@@ -290,7 +290,7 @@ bool SDLTerminal::HasSupportFor(Application::SpecialCharacterSetType /*type*/)
     // SDL based terminal supports all special character set types
     return true;
 }
-void SDLTerminal::UninitScreen()
+void SDLTerminal::UnInitScreen()
 {
     for (const auto& cacheItem : characterCache)
     {

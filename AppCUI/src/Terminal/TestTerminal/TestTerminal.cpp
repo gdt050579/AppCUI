@@ -506,7 +506,7 @@ bool TestTerminal::OnInit(const Application::InitializationData& initData)
 void TestTerminal::RestoreOriginalConsoleSettings()
 {
 }
-void TestTerminal::OnUninit()
+void TestTerminal::OnUnInit()
 {
 }
 void TestTerminal::OnFlushToScreen()

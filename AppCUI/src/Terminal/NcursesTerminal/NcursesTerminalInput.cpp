@@ -11,7 +11,7 @@ constexpr int INSERT_MODE_KEY = 'i';    // Enter insert mode
 constexpr int KEY_ESCAPE      = '\x1B'; // ESC key
 constexpr int KEY_TAB         = '\t';
 
-void debugChar(int y, int c, const char* prefix)
+void DebugChar(int y, int c, const char* prefix)
 {
     string_view myName = keyname(c);
     move(y, 0);
@@ -19,7 +19,7 @@ void debugChar(int y, int c, const char* prefix)
     addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());
 }
 
-bool NcursesTerminal::initInput()
+bool NcursesTerminal::InitInput()
 {
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
@@ -63,7 +63,7 @@ bool NcursesTerminal::initInput()
     return true;
 }
 
-void NcursesTerminal::handleMouse(SystemEvent& evt, const int)
+void NcursesTerminal::HandleMouse(SystemEvent& evt, const int)
 {
     MEVENT mouseEvent;
     if (getmouse(&mouseEvent) == OK)
@@ -87,7 +87,7 @@ void NcursesTerminal::handleMouse(SystemEvent& evt, const int)
     }
 }
 
-void NcursesTerminal::handleKeyNormalMode(SystemEvent& evt, const int c)
+void NcursesTerminal::HandleKeyNormalMode(SystemEvent& evt, const int c)
 {
     if (c == INSERT_MODE_KEY)
     {
@@ -121,7 +121,7 @@ void NcursesTerminal::handleKeyNormalMode(SystemEvent& evt, const int c)
     evt.eventType = SystemEventType::None;
 }
 
-void NcursesTerminal::handleKeyInsertMode(SystemEvent& evt, const int c)
+void NcursesTerminal::HandleKeyInsertMode(SystemEvent& evt, const int c)
 {
     if (c == KEY_ESCAPE) // ESC
     {
@@ -161,17 +161,17 @@ void NcursesTerminal::handleKeyInsertMode(SystemEvent& evt, const int c)
     evt.eventType = SystemEventType::None;
 }
 
-void NcursesTerminal::handleKey(SystemEvent& evt, const int c)
+void NcursesTerminal::HandleKey(SystemEvent& evt, const int c)
 {
-    debugChar(0, c, "key");
+    DebugChar(0, c, "key");
     evt.eventType = SystemEventType::KeyPressed;
     if (mode == TerminalMode::TerminalNormal)
     {
-        handleKeyNormalMode(evt, c);
+        HandleKeyNormalMode(evt, c);
     }
     else if (mode == TerminalMode::TerminalInsert)
     {
-        handleKeyInsertMode(evt, c);
+        HandleKeyInsertMode(evt, c);
     }
 }
 
@@ -194,7 +194,7 @@ void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
     else if (c == KEY_MOUSE)
     {
-        handleMouse(evnt, c);
+        HandleMouse(evnt, c);
         return;
     }
     else if (c == KEY_RESIZE)
@@ -205,7 +205,7 @@ void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
     else
     {
-        handleKey(evnt, c);
+        HandleKey(evnt, c);
         return;
     }
     refresh();
@@ -215,7 +215,7 @@ bool NcursesTerminal::IsEventAvailable()
     NOT_IMPLEMENTED(false);
 }
 
-void NcursesTerminal::uninitInput()
+void NcursesTerminal::UnInitInput()
 {
 }
 }

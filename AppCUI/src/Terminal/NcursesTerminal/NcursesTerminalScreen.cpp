@@ -8,7 +8,7 @@ using namespace Application;
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
 
-bool NcursesTerminal::initScreen()
+bool NcursesTerminal::InitScreen()
 {
     setlocale(LC_ALL, "");
     initscr();
@@ -118,7 +118,7 @@ bool NcursesTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
         break;
     }
 }
-void NcursesTerminal::uninitScreen()
+void NcursesTerminal::UnInitScreen()
 {
     endwin();
 }

@@ -13,7 +13,6 @@ bool Application::Init(Application::InitializationFlags flags)
 {
     Application::InitializationData initData;
     initData.Flags    = flags;
-    initData.Frontend = Application::FrontendType::SDL;
     return Application::Init(initData);
 }
 bool Application::InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags, bool asciiMode)
@@ -58,7 +57,7 @@ bool Application::Run()
     Controls::UninitTextFieldDefaultMenu();
     Controls::UninitTextAreaDefaultMenu();
     LOG_INFO("Starting to un-init AppCUI ...");
-    app->Uninit();
+    app->UnInit();
     Log::Unit();
     LOG_INFO("Uninit successfully");
     delete app;
@@ -87,7 +86,7 @@ bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
     // all good - start the loop
     app->ExecuteEventLoop();
     LOG_INFO("Starting to un-init AppCUI ...");
-    app->Uninit();
+    app->UnInit();
     Log::Unit();
     LOG_INFO("Uninit successfully");
     delete app;
@@ -1466,10 +1465,10 @@ void ApplicationImpl::Terminate()
 {
     loopStatus = LoopStatus::StopApp;
 }
-bool ApplicationImpl::Uninit()
+bool ApplicationImpl::UnInit()
 {
     CHECK(this->Inited, false, "Nothing to uninit --> have you called Application::Init(...) ?");
-    this->terminal->Uninit();
+    this->terminal->UnInit();
     this->Inited = false;
     return true;
 }

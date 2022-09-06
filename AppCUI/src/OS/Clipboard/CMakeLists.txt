@@ -1,3 +1,1 @@
-if (MSVC)
-    target_sources(AppCUI PRIVATE Clipboard.cpp)
-endif()
+target_sources(AppCUI PRIVATE Clipboard.cpp)
