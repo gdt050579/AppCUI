@@ -4,6 +4,8 @@
 
 #if __APPLE__
     #include <mach-o/dyld.h>
+#elif __linux__
+    #include <linux/limits.h>
 #endif
 
 #if __linux__
