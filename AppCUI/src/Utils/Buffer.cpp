@@ -60,17 +60,7 @@ void Buffer::Reserve(size_t newSize)
 
 void Buffer::Resize(size_t newSize)
 {
-    if (newSize > this->allocated)
-    {
-        auto* temp = new uint8[ALIGN_SIZE(newSize)];
-        if (this->data)
-        {
-            memcpy(temp, this->data, this->length);
-            delete[] data;
-        }
-        data            = temp;
-        this->allocated = ALIGN_SIZE(newSize);
-    }
+    Reserve(newSize);
     if (newSize <= this->allocated)
     {
         this->length = newSize;

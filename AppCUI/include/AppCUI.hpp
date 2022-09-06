@@ -1008,7 +1008,7 @@ namespace Utils
         Buffer() : data(nullptr), length(0), allocated(0)
         {
         }
-        Buffer(size_t size);
+        //Buffer(size_t size);
         Buffer(const Buffer& buf);
 
         Buffer(void*& ptr, size_t size)
@@ -1086,7 +1086,6 @@ namespace Utils
         }
         void Resize(size_t newSize);
         void Reserve(size_t newSize);
-        
 
         // add
         inline size_t Add(const Buffer& b)
@@ -1101,6 +1100,11 @@ namespace Utils
         {
             return Add(reinterpret_cast<const void*>(s.data()), s.size(), 1);
         }
+        inline size_t Add(u16string_view s)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size() * 2, 1);
+        }
+        // add multiple times
         inline size_t AddMultipleTimes(const Buffer& b, uint32 times)
         {
             return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), times);
@@ -1113,7 +1117,11 @@ namespace Utils
         {
             return Add(reinterpret_cast<const void*>(s.data()), s.size(), times);
         }
-        // setere
+        inline size_t AddMultipleTimes(u16string_view s, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size() * 2, times);
+        }
+        // seters
         inline Buffer& operator=(const Buffer& b)
         {
             this->length = 0;
@@ -1130,6 +1138,12 @@ namespace Utils
         {
             this->length = 0;
             Add(s.data(), s.size(), 1);
+            return *this;
+        }
+        inline Buffer& operator=(u16string_view s)
+        {
+            this->length = 0;
+            Add(s.data(), s.size() * 2, 1);
             return *this;
         }
     };

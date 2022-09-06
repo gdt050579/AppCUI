@@ -54,6 +54,7 @@ int main()
     b.Add("123");
     b.AddMultipleTimes("ABC", 5);
     b.AddMultipleTimes(" ", 250);
+    b = "xyz";
     if (!Application::Init(Application::InitializationFlags::CommandBar))
         return 1;
     Application::AddWindow(std::make_unique<MyWin>());
