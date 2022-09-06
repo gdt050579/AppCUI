@@ -2,6 +2,7 @@
 
 #include "../../Internal.hpp"
 #include <array>
+#include <ncursesw/ncurses.h>
 
 /*
     AppCUI uses 16 colors, 16 for background and 16 for foreground.
