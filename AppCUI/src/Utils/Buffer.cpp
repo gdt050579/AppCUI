@@ -11,21 +11,7 @@ Buffer::~Buffer()
     length    = 0;
     allocated = 0;
 }
-Buffer::Buffer(size_t size)
-{
-    if (size > 0)
-    {
-        data      = new uint8[ALIGN_SIZE(size)];
-        length    = size;
-        allocated = ALIGN_SIZE(size);
-    }
-    else
-    {
-        data      = nullptr;
-        length    = 0;
-        allocated = 0;
-    }
-}
+
 Buffer::Buffer(const Buffer& buf)
 {
     if ((buf.data) && (buf.length))

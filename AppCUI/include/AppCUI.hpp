@@ -1008,7 +1008,6 @@ namespace Utils
         Buffer() : data(nullptr), length(0), allocated(0)
         {
         }
-        //Buffer(size_t size);
         Buffer(const Buffer& buf);
 
         Buffer(void*& ptr, size_t size)
