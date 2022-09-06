@@ -16,7 +16,8 @@ Buffer File::ReadContent(const std::filesystem::path& path)
     auto file_size = f.GetSize();
     CHECK(file_size > 0, Buffer(), "Empty file (%s)!", path.string().c_str());
     CHECK(file_size < 0xFFFFFFF, Buffer(), "File size exceed 0xFFFFF bytes (%s)", path.string().c_str());
-    Buffer buf(file_size);
+    Buffer buf;
+    buf.Resize(file_size);
     CHECK(f.Read(buf.GetData(), (uint32) file_size),
           Buffer(),
           "Fail to read %u bytes from the file %s",

@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
- 
+
 #define APPCUI_VERSION "1.163.0"
 
 #include <filesystem>
@@ -999,45 +999,53 @@ namespace Utils
     {
         uint8* data;
         size_t length;
+        size_t allocated;
+
+        size_t Add(const void* p, size_t size, uint32 times);
 
       public:
         ~Buffer();
-        Buffer() : data(nullptr), length(0)
+        Buffer() : data(nullptr), length(0), allocated(0)
         {
         }
-        Buffer(size_t size);
         Buffer(const Buffer& buf);
 
         Buffer(void*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(char*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(uint8*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(Buffer&& buf) noexcept
         {
-            data       = buf.data;
-            length     = buf.length;
-            buf.data   = nullptr;
-            buf.length = 0;
+            data          = buf.data;
+            length        = buf.length;
+            allocated     = buf.allocated;
+            buf.data      = nullptr;
+            buf.length    = 0;
+            buf.allocated = 0;
         }
 
         inline Buffer& operator=(Buffer&& b) noexcept
         {
             std::swap(data, b.data);
             std::swap(length, b.length);
+            std::swap(allocated, b.allocated);
             return *this;
         }
         inline uint8& operator[](size_t index) const
@@ -1060,6 +1068,10 @@ namespace Utils
         {
             return length;
         }
+        inline size_t GetAllocatedSpace() const
+        {
+            return allocated;
+        }
         inline uint8* GetData() const
         {
             return data;
@@ -1072,7 +1084,67 @@ namespace Utils
             return reinterpret_cast<T*>(data + offset);
         }
         void Resize(size_t newSize);
-        Buffer& operator=(const Buffer& b);
+        void Reserve(size_t newSize);
+
+        // add
+        inline size_t Add(const Buffer& b)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), 1);
+        }
+        inline size_t Add(BufferView b)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), 1);
+        }
+        inline size_t Add(string_view s)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size(), 1);
+        }
+        inline size_t Add(u16string_view s)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size() * 2, 1);
+        }
+        // add multiple times
+        inline size_t AddMultipleTimes(const Buffer& b, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), times);
+        }
+        inline size_t AddMultipleTimes(BufferView b, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), times);
+        }
+        inline size_t AddMultipleTimes(string_view s, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size(), times);
+        }
+        inline size_t AddMultipleTimes(u16string_view s, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size() * 2, times);
+        }
+        // seters
+        inline Buffer& operator=(const Buffer& b)
+        {
+            this->length = 0;
+            Add(b.data, b.length, 1);
+            return *this;
+        }
+        inline Buffer& operator=(BufferView b)
+        {
+            this->length = 0;
+            Add(b.GetData(), b.GetLength(), 1);
+            return *this;
+        }
+        inline Buffer& operator=(string_view s)
+        {
+            this->length = 0;
+            Add(s.data(), s.size(), 1);
+            return *this;
+        }
+        inline Buffer& operator=(u16string_view s)
+        {
+            this->length = 0;
+            Add(s.data(), s.size() * 2, 1);
+            return *this;
+        }
     };
 
     class EXPORT String
@@ -5457,7 +5529,10 @@ namespace Application
 
     NODISCARD("Check the return of the InitForTests function. If false, AppCUI has not been initialized properly")
     EXPORT bool InitForTests(
-          uint32 width, uint32 height, Application::InitializationFlags flags = Application::InitializationFlags::None, bool asciiMode = false);
+          uint32 width,
+          uint32 height,
+          Application::InitializationFlags flags = Application::InitializationFlags::None,
+          bool asciiMode                         = false);
 
     EXPORT bool Run();
     EXPORT bool RunTestScript(std::string_view script);
