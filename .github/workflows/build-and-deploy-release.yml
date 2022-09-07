@@ -30,7 +30,7 @@ jobs:
         echo "APPCUI_VERSION=$output" | Out-File -FilePath $env:GITHUB_ENV -Append
         
     - name: Copy static libs from VCPKG
-      working-directory: /home/runner/work/AppCUI/AppCUI/bin
+      working-directory: "D:/a/AppCUI/AppCUI/bin"
       run: cp -R ../build/vcpkg_installed/x64-windows/lib/*.lib .
             
     - name: List bin artefacts
