@@ -1459,7 +1459,7 @@ const Graphics::CharacterBuffer& Window::GetTag()
 
 bool Window::Exit(Dialogs::Result dialogResult)
 {
-    CHECK(dialogResult != Dialogs::Result::None, false, "Dialog result code must not be None !");
+    //CHECK(dialogResult != Dialogs::Result::None, false, "Dialog result code must not be None !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->DialogResult                     = dialogResult;
     Members->ResizeMoveMode                   = false;

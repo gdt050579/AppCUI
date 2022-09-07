@@ -3844,7 +3844,7 @@ namespace Controls
         bool CenterScreen();
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKeyChanged() override;
-        bool Exit(Dialogs::Result dialogResult);
+        bool Exit(Dialogs::Result dialogResult = Dialogs::Result::None);
         bool IsWindowInResizeMode();
         bool EnableResizeMode();
 
