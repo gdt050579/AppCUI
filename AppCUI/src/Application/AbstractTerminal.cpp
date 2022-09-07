@@ -19,7 +19,7 @@ bool AbstractTerminal::Init(const Application::InitializationData& initData)
 {
     return this->OnInit(initData);
 }
-void AbstractTerminal::Uninit()
+void AbstractTerminal::UnInit()
 {
     // restore the original screen settings before AppCUI was initialized
     this->RestoreOriginalConsoleSettings();
@@ -37,7 +37,7 @@ void AbstractTerminal::Uninit()
     // restore the original cursor position
     this->OnUpdateCursor();
     // OS specific On-unit
-    this->OnUninit();
+    this->OnUnInit();
 }
 void AbstractTerminal::Update()
 {

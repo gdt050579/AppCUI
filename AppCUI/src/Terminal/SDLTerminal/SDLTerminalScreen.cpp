@@ -64,7 +64,7 @@ constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
 //
 // After the font is successfully loaded, let's see how wide and high are the characters,
 // that will be our cell width and cell height.
-bool SDLTerminal::initFont(const InitializationData& initData)
+bool SDLTerminal::InitFont(const InitializationData& initData)
 {
     size_t fontSize = 0;
     switch (initData.CharSize)
@@ -89,7 +89,7 @@ bool SDLTerminal::initFont(const InitializationData& initData)
         break;
     }
 
-    CHECK(TTF_WasInit() || TTF_Init() == 0, false, "Failed to initialize true type support: %s", TTF_GetError());
+    CHECK(TTF_WasInit() == 0 && TTF_Init() == 0, false, "Failed to initialize true type support: %s", TTF_GetError());
 
     // Load font resource
     auto fs           = cmrc::font::get_filesystem();
@@ -118,14 +118,14 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     return true;
 }
 
-bool SDLTerminal::initScreen(const InitializationData& initData)
+bool SDLTerminal::InitScreen(const InitializationData& initData)
 {
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    CHECK(initFont(initData), false, "Unable to init font");
+    CHECK(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) == 0, false, "Failed to initialize SDL: %s", SDL_GetError());
+    CHECK(InitFont(initData), false, "Unable to init font");
 
     // Default size is half the screen
     SDL_DisplayMode DM;
-    SDL_GetCurrentDisplayMode(0, &DM);
+    CHECK(SDL_GetCurrentDisplayMode(0, &DM) == 0, false, "Failed getting SDL current display mode: %s", SDL_GetError());
     size_t pixelWidth  = DM.w / 2;
     size_t pixelHeight = DM.h / 2;
 
@@ -164,8 +164,7 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
     CHECK(window, false, "Failed to initialize SDL Window: %s", SDL_GetError());
     windowID = SDL_GetWindowID(window);
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     CHECK(renderer, false, "Failed to initialize SDL Renderer: %s", SDL_GetError());
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
@@ -216,7 +215,7 @@ int codePageConversions(const int ch)
     return ch;
 }
 
-SDL_Texture* SDLTerminal::renderCharacter(
+SDL_Texture* SDLTerminal::RenderCharacter(
       const uint32 charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg)
 {
     if (characterCache.find(charPacked) != characterCache.end())
@@ -230,7 +229,7 @@ SDL_Texture* SDLTerminal::renderCharacter(
         return nullptr;
     }
     SDL_Texture* glyphTexture = SDL_CreateTextureFromSurface(renderer, glyphSurface);
-    SDL_FreeSurface(glyphSurface);
+    // SDL_FreeSurface(glyphSurface);
     characterCache[charPacked] = glyphTexture;
     return glyphTexture;
 }
@@ -255,7 +254,7 @@ void SDLTerminal::OnFlushToScreen()
         {
             Graphics::Character ch = charsBuffer[y * width + x];
 
-            SDL_Texture* glyphTexture = renderCharacter(
+            SDL_Texture* glyphTexture = RenderCharacter(
                   ch.PackedValue,
                   codePageConversions(ch.Code),
                   appcuiColorToSDLColor[(char) ch.Color.Foreground],
@@ -291,7 +290,7 @@ bool SDLTerminal::HasSupportFor(Application::SpecialCharacterSetType /*type*/)
     // SDL based terminal supports all special character set types
     return true;
 }
-void SDLTerminal::uninitScreen()
+void SDLTerminal::UnInitScreen()
 {
     for (const auto& cacheItem : characterCache)
     {

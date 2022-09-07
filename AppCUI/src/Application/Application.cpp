@@ -12,7 +12,7 @@ ApplicationImpl* app = nullptr;
 bool Application::Init(Application::InitializationFlags flags)
 {
     Application::InitializationData initData;
-    initData.Flags = flags;
+    initData.Flags    = flags;
     return Application::Init(initData);
 }
 bool Application::InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags, bool asciiMode)
@@ -23,7 +23,7 @@ bool Application::InitForTests(uint32 width, uint32 height, Application::Initial
     initData.Height              = height;
     initData.Frontend            = AppCUI::Application::FrontendType::Tests;
     initData.SpecialCharacterSet = asciiMode ? AppCUI::Application::SpecialCharacterSetType::Ascii
-                                             : AppCUI::Application::SpecialCharacterSetType::Unicode; 
+                                             : AppCUI::Application::SpecialCharacterSetType::Unicode;
     return Application::Init(initData);
 }
 bool Application::Init(InitializationData& initData)
@@ -45,7 +45,7 @@ bool Application::RunTestScript(std::string_view testScript)
     CHECK(testTerm, false, "`RunTestScript` can only work with a TestTerminal frontend !");
     bool scriptResult = true;
     testTerm->CreateEventsQueue(testScript, &scriptResult);
-    CHECK(Run(),false,"Execution error (Run method failed)");
+    CHECK(Run(), false, "Execution error (Run method failed)");
     return scriptResult;
 }
 bool Application::Run()
@@ -57,7 +57,7 @@ bool Application::Run()
     Controls::UninitTextFieldDefaultMenu();
     Controls::UninitTextAreaDefaultMenu();
     LOG_INFO("Starting to un-init AppCUI ...");
-    app->Uninit();
+    app->UnInit();
     Log::Unit();
     LOG_INFO("Uninit successfully");
     delete app;
@@ -86,7 +86,7 @@ bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
     // all good - start the loop
     app->ExecuteEventLoop();
     LOG_INFO("Starting to un-init AppCUI ...");
-    app->Uninit();
+    app->UnInit();
     Log::Unit();
     LOG_INFO("Uninit successfully");
     delete app;
@@ -561,6 +561,10 @@ ApplicationImpl::~ApplicationImpl()
 {
     this->Destroy();
 }
+Application::FrontendType ApplicationImpl::GetFrontendType() const
+{
+    return app->frontend;
+}
 void ApplicationImpl::Destroy()
 {
     this->Inited             = false;
@@ -722,6 +726,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     LOG_INFO("Requested Size  = %d x %d", initData.Width, initData.Height);
 
     // create the frontend
+    this->frontend = initData.Frontend;
     CHECK((this->terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
     LOG_INFO(
           "Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
@@ -1460,10 +1465,10 @@ void ApplicationImpl::Terminate()
 {
     loopStatus = LoopStatus::StopApp;
 }
-bool ApplicationImpl::Uninit()
+bool ApplicationImpl::UnInit()
 {
     CHECK(this->Inited, false, "Nothing to uninit --> have you called Application::Init(...) ?");
-    this->terminal->Uninit();
+    this->terminal->UnInit();
     this->Inited = false;
     return true;
 }

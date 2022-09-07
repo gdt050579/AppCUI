@@ -75,7 +75,7 @@ namespace Internal
 
         virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
-        virtual void OnUninit() override;
+        virtual void OnUnInit() override;
         virtual void OnFlushToScreen() override;
         virtual void OnFlushToScreen(const Graphics::Rect& r) override;
         virtual bool OnUpdateCursor() override;

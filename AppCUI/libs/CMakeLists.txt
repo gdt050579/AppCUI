@@ -1,1 +1,1 @@
-target_sources(AppCUI PUBLIC lodepng/lodepng.cpp)
+target_sources(AppCUI PRIVATE lodepng/lodepng.cpp)

@@ -448,7 +448,7 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
 void WindowsTerminal::RestoreOriginalConsoleSettings()
 {
 }
-void WindowsTerminal::OnUninit()
+void WindowsTerminal::OnUnInit()
 {
 }
 void WindowsTerminal::OnFlushToScreen()
@@ -486,7 +486,7 @@ void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& rect)
     CHAR_INFO* d               = this->ConsoleBuffer.get();
     Graphics::Character* start = this->ScreenCanvas.GetCharactersBuffer() + screenWidth * t + l;
     auto y                     = t;
-    while (y<=b)
+    while (y <= b)
     {
         Graphics::Character* c = start;
         Graphics::Character* e = c + szW;
@@ -501,9 +501,8 @@ void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& rect)
         start += screenWidth;
     }
 
-
     COORD winSize = { (SHORT) ((r + 1) - l), (SHORT) ((b + 1) - t) };
-    SMALL_RECT sr = { (SHORT) l, (SHORT) t, (SHORT)r, (SHORT)b };
+    SMALL_RECT sr = { (SHORT) l, (SHORT) t, (SHORT) r, (SHORT) b };
     WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
 bool WindowsTerminal::OnUpdateCursor()

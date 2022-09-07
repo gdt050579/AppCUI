@@ -1,3 +1,6 @@
 [submodule "AppCUI/libs/lodepng"]
 	path = AppCUI/libs/lodepng
 	url = https://github.com/lvandeve/lodepng
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/gheorghitamutu/vcpkg.git

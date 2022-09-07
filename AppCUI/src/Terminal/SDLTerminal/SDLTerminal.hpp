@@ -31,9 +31,9 @@ namespace Internal
 
       public:
         virtual bool OnInit(const Application::InitializationData& initData) override;
-        virtual void OnUninit() override;
+        virtual void OnUnInit() override;
         virtual void OnFlushToScreen() override;
-	virtual void OnFlushToScreen(const Graphics::Rect& r) override;
+        virtual void OnFlushToScreen(const Graphics::Rect& r) override;
         virtual bool OnUpdateCursor() override;
         virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
@@ -41,19 +41,19 @@ namespace Internal
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
 
       private:
-        bool initScreen(const Application::InitializationData& initData);
-        bool initInput(const Application::InitializationData& initData);
+        bool InitScreen(const Application::InitializationData& initData);
+        bool InitInput(const Application::InitializationData& initData);
 
-        bool initFont(const Application::InitializationData& initData);
+        bool InitFont(const Application::InitializationData& initData);
 
-        void uninitScreen();
-        void uninitInput();
+        void UnInitScreen();
+        void UnInitInput();
 
-        void handleMouse(SystemEvent& evt, const SDL_Event& eSdl);
-        void handleKeyUp(SystemEvent& evt, const SDL_Event& eSdl);
-        void handleKeyDown(SystemEvent& evt, const SDL_Event& eSdl);
+        void HandleMouse(SystemEvent& evt, const SDL_Event& eSdl);
+        void HandleKeyUp(SystemEvent& evt, const SDL_Event& eSdl);
+        void HandleKeyDown(SystemEvent& evt, const SDL_Event& eSdl);
 
-        SDL_Texture* renderCharacter(
+        SDL_Texture* RenderCharacter(
               const uint32 charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg);
     };
 } // namespace Internal

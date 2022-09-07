@@ -1,5 +1,4 @@
 #include "NcursesTerminal.hpp"
-#include "ncurses.h"
 
 namespace AppCUI::Internal
 {
@@ -8,7 +7,7 @@ using namespace Application;
 const static size_t MAX_TTY_COL = 65535;
 const static size_t MAX_TTY_ROW = 65535;
 
-bool NcursesTerminal::initScreen()
+bool NcursesTerminal::InitScreen()
 {
     setlocale(LC_ALL, "");
     initscr();
@@ -47,7 +46,7 @@ void NcursesTerminal::OnFlushToScreen()
         {
             const Graphics::Character ch = charsBuffer[y * width + x];
 
-            cchar_t t = { 0, { ch.Code, 0 }, {} };
+            cchar_t t = { 0, { ch.Code, 0 } };
             colors.SetColor(ch.Color.Foreground, ch.Color.Background);
             mvadd_wch(y, x, &t);
             colors.UnsetColor(ch.Color.Foreground, ch.Color.Background);
@@ -118,7 +117,7 @@ bool NcursesTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
         break;
     }
 }
-void NcursesTerminal::uninitScreen()
+void NcursesTerminal::UnInitScreen()
 {
     endwin();
 }

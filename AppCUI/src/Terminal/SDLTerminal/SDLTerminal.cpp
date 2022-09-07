@@ -4,16 +4,14 @@ namespace AppCUI::Internal
 {
 bool SDLTerminal::OnInit(const Application::InitializationData& initData)
 {
-    if (!initScreen(initData))
-        return false;
-    if (!initInput(initData))
-        return false;
+    CHECK(InitScreen(initData), false, "");
+    CHECK(InitInput(initData), false, "");
     return true;
 }
 
-void SDLTerminal::OnUninit()
+void SDLTerminal::OnUnInit()
 {
-    uninitInput();
-    uninitScreen();
+    UnInitInput();
+    UnInitScreen();
 }
 }

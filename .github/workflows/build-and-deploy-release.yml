@@ -12,66 +12,31 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build-win-SDL:
-    runs-on: [windows-latest]
-    env:
-      SDL2_URL: "https://www.libsdl.org/release/SDL2-devel-2.0.22-VC.zip"
-      SDL2_TTF_URL: "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.0.15-VC.zip"
-      SDL2_PATH: "C:\\SDL"
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Install requests
-      run: pip install requests
-    - name: Install SDL2
-      run: python .github/workflows/win_sdl2.py
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="C:\SDL\SDL2-2.0.22;C:\SDL\SDL2_ttf-2.0.15"
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Add tag data to enviroment
-      run: |
-        $output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
-        echo "APPCUI_VERSION=$output" | Out-File -FilePath $env:GITHUB_ENV -Append
-    
-    - name: Create archive SDL
-      run: |
-        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" C:/SDL/SDL2-2.0.22/lib/x64/*.dll)
-        echo "$output"
-        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" C:/SDL/SDL2_ttf-2.0.15/lib/x64/*.dll)
-        echo "$output"
-
-        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.exe)
-        echo "$output"
-        $output=$(7z a "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.dll)
-        echo "$output"
-    
-    - name: Store Artifacts SDL
-      uses: actions/upload-artifact@v3
-      with:
-        name: windows_artifacts_sdl
-        path: "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
-        retention-days: 1
-
   build-win:
     runs-on: [windows-latest]
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: true
+        
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    
     - name: Add tag data to enviroment
       run: |
         $output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
         echo "APPCUI_VERSION=$output" | Out-File -FilePath $env:GITHUB_ENV -Append
-
+        
+    - name: Copy static libs from VCPKG
+      working-directory: "D:/a/AppCUI/AppCUI/bin"
+      run: cp -R ../build/vcpkg_installed/x64-windows/lib/*.lib .
+            
+    - name: List bin artefacts
+      shell: cmd
+      run: dir /s "D:/a/AppCUI/AppCUI/bin"
+    
     - name: Create archive
       run: |
         $output=$(7z a "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.exe)
@@ -86,44 +51,6 @@ jobs:
         path: "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
         retention-days: 1
 
-  build-ubuntu-SDL:
-    runs-on: [ubuntu-latest]
-    env:
-      CC: gcc-10
-      CXX: g++-10
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Update
-      run: sudo apt-get update -y
-    - name: Install SDL2
-      run: sudo apt-get install libsdl2-dev -y
-    - name: Install SDL2ttf
-      run: sudo apt-get install libsdl2-ttf-dev -y
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Add tag data to enviroment
-      run: |
-        output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
-        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
-
-    - name: Create archive SDL
-      working-directory: /home/runner/work/AppCUI/AppCUI/bin
-      run: |
-        output=$(zip -9 -r "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" .)
-        echo "$output"
-    
-    - name: Store Artifacts SDL
-      uses: actions/upload-artifact@v3
-      with:
-        name: linux_artifacts_sdl
-        path: "/home/runner/work/AppCUI/AppCUI/bin/AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
-        retention-days: 1  
-
   build-ubuntu:
     runs-on: [ubuntu-latest]
     env:
@@ -133,10 +60,16 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+        
     - name: Update
-      run: sudo apt-get update -y
+      run: sudo apt-get update
+        
+    - name: Install libx11-dev
+      run: sudo apt-get install libx11-dev
+        
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
@@ -144,6 +77,17 @@ jobs:
       run: |
         output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
         echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+
+    - name: Copy static libs from VCPKG
+      working-directory: /home/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-linux/lib/*.a .
+      
+    - name: Copy terminfo from VCPKG
+      working-directory: /home/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-linux/share/terminfo .
+      
+    - name: List bin artefacts
+      run: ls -R /home/runner/work/AppCUI/AppCUI/bin
 
     - name: Create archive
       working-directory: /home/runner/work/AppCUI/AppCUI/bin
@@ -158,81 +102,16 @@ jobs:
         path: "/home/runner/work/AppCUI/AppCUI/bin/AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
         retention-days: 1  
 
-  build-osx-SDL:
-    runs-on: [macos-latest]
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-
-    - name: Brew prefix
-      run: brew --prefix
-    
-    - name: Install brew sdl2
-      run: brew install sdl2
-
-    - name: SDL2 Cellar
-      run: brew --cellar sdl2
-      
-    - name: SDL2 Prefix
-      run: brew --prefix sdl2
-    
-    - name: Install brew sdl2_ttf
-      run: brew install sdl2_ttf
-
-    - name: SDL2 TTF Cellar
-      run: brew --cellar sdl2_ttf
-      
-    - name: SDL2 TTF Prefix
-      run: brew --prefix sdl2_ttf
-
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Add tag data to enviroment
-      run: |
-        output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
-        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
-
-    - name: Create archive SDL
-      working-directory: /Users/runner/work/AppCUI/AppCUI/bin
-      run: |
-        output=$(zip -9 -r "AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" .)
-        echo "$output"
-    
-    - name: Store Artifacts SDL
-      uses: actions/upload-artifact@v3
-      with:
-        name: apple_artifacts_sdl
-        path: "/Users/runner/work/AppCUI/AppCUI/bin/AppCUI-SDL-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
-        retention-days: 1  
-
   build-osx:
     runs-on: [macos-latest]
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: true
-
-    - name: Brew prefix
-      run: brew --prefix
-    
-    - name: Install brew ncurses
-      run: brew install ncurses
-
-    - name: NCurses Cellar
-      run: brew --cellar ncurses
-      
-    - name: NCurses Prefix
-      run: brew --prefix ncurses
-
-    - name: List NCurses files
-      run: ls -R /usr/local/Cellar/ncurses
     
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
@@ -240,6 +119,17 @@ jobs:
       run: |
         output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
         echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+        
+    - name: Copy static libs from VCPKG
+      working-directory: /Users/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-osx/lib/*.a .
+      
+    - name: Copy terminfo from VCPKG
+      working-directory: /Users/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-osx/share/terminfo .
+      
+    - name: List bin artefacts
+      run: ls -R /Users/runner/work/AppCUI/AppCUI/bin
 
     - name: Create archive
       working-directory: /Users/runner/work/AppCUI/AppCUI/bin
@@ -257,7 +147,7 @@ jobs:
   publish_job:
     name: "Publish to release"
     runs-on: [ubuntu-latest]
-    needs: [build-win-SDL, build-win, build-ubuntu-SDL, build-ubuntu, build-osx-SDL, build-osx]
+    needs: [build-win, build-ubuntu, build-osx]
     steps:
     - uses: actions/checkout@v2
 
@@ -268,27 +158,12 @@ jobs:
 
     - uses: actions/download-artifact@v2
       with:
-        name: windows_artifacts_sdl
-        path: artifacts
-
-    - uses: actions/download-artifact@v2
-      with:
         name: windows_artifacts
         path: artifacts
 
     - uses: actions/download-artifact@v2
       with:
-        name: linux_artifacts_sdl
-        path: artifacts
-
-    - uses: actions/download-artifact@v2
-      with:
         name: linux_artifacts
-        path: artifacts
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: apple_artifacts_sdl
         path: artifacts
 
     - uses: actions/download-artifact@v2

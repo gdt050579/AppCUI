@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+  CACHE STRING "Vcpkg toolchain file")
+
+message("CMAKE_TOOLCHAIN_FILE => ${CMAKE_TOOLCHAIN_FILE}")
+
 # Project setup
 project(AppCUI VERSION 1.0)
 
@@ -28,6 +33,21 @@ elseif (APPLE)
     set(CMAKE_MACOSX_RPATH TRUE)
     set(CMAKE_SKIP_BUILD_RPATH FALSE)
     set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
+
+    SET(CMAKE_INSTALL_NAME_DIR @executable_path)
+    message(STATUS "CMAKE_INSTALL_NAME_DIR => ${CMAKE_INSTALL_NAME_DIR}")
+    SET(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+    SET(CMAKE_INSTALL_RPATH @executable_path)
+    message(STATUS "CMAKE_INSTALL_RPATH => ${CMAKE_INSTALL_RPATH}")
+    
+    if(CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED)
+        message(STATUS "${PROJECT_NAME} => CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED")
+    	target_link_libraries(${PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:weak_library,lib,external>")
+    else()
+        message(STATUS "${PROJECT_NAME} => NOT CMAKE_LINK_LIBRARY_USING_weak_library_SUPPORTED")
+    	# target_link_libraries(${PROJECT_NAME} PRIVATE lib external)
+    endif()
+
 elseif (UNIX)
     add_definitions(-DBUILD_FOR_UNIX)
     add_compile_options(-g)
@@ -75,8 +95,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 add_subdirectory(AppCUI)
 
 if(APPCUI_ENABLE_TESTS)
-    add_subdirectory(Tests/Tester)
-    add_subdirectory(Tests/FileTest)
+    if (NOT UNIX)
+        add_subdirectory(Tests/Tester)
+        add_subdirectory(Tests/FileTest)
+    endif()
 endif()
 
 if(APPCUI_ENABLE_EXAMPLES)
@@ -141,4 +163,10 @@ if(APPCUI_ENABLE_EXAMPLES)
     add_subdirectory(Examples/WindowMoveBetweenControls)
     add_subdirectory(Examples/MemoryFile)
     add_subdirectory(Examples/TestScript)
+endif()
+
+if (APPLE)
+    	set_property(TARGET "${PROJECT_NAME}" PROPERTY INSTALL_RPATH "@loader_path")
+elseif (UNIX)
+	set_property(TARGET "${PROJECT_NAME}" PROPERTY INSTALL_RPATH "$ORIGIN")
 endif()
