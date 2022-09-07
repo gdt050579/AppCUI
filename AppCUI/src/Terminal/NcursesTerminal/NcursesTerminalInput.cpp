@@ -94,6 +94,17 @@ void NcursesTerminal::HandleKeyNormalMode(SystemEvent& evt, const int c)
         evt.eventType = SystemEventType::RequestRedraw;
         return;
     }
+    
+    if (c == KEY_ESCAPE)
+    {
+        auto next = getch();
+        if (next != -1)
+        {
+            evt.keyCode |= Input::Key::Alt;
+            evt.keyCode |= static_cast<Input::Key>(next - 69);
+            return;
+        }
+    }
 
     if (keyTranslationMatrix.find(c) != keyTranslationMatrix.end())
     {
