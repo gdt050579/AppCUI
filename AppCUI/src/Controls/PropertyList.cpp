@@ -117,11 +117,11 @@ class PropertyEditDialog : public Window
         switch (eventType)
         {
         case Event::WindowClose:
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Cancel);
             return true;
         case Event::WindowAccept:
             if (this->isReadOnly)
-                this->Exit(1);
+                this->Exit(Dialogs::Result::Ok);
             else
                 Validate();
             return true;
@@ -135,12 +135,12 @@ class PropertyEditDialog : public Window
             else if (id == BUTTON_COMMAND_OK)
             {
                 if (this->isReadOnly)
-                    this->Exit(1);
+                    this->Exit(Dialogs::Result::Ok);
                 else
                     Validate();
             }
             else if (id == BUTTON_COMMAND_CANCEL)
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Cancel);
             return true;
         }
         return false;
@@ -196,7 +196,7 @@ class PropertyCharEditDialog : public PropertyEditDialog
         {
             if (object->SetPropertyValue(prop.id, (char8) ch, error))
             {
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
         }
@@ -204,7 +204,7 @@ class PropertyCharEditDialog : public PropertyEditDialog
         {
             if (object->SetPropertyValue(prop.id, (char16) ch, error))
             {
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
         }
@@ -253,7 +253,7 @@ class PropertyColorEditDialog : public PropertyEditDialog
 
         if (object->SetPropertyValue(prop.id, col->GetColor(), error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -314,7 +314,7 @@ class PropertyColorPairEditDialog : public PropertyEditDialog, public AppCUI::Co
 
         if (object->SetPropertyValue(prop.id, ColorPair{ colFore->GetColor(), colBack->GetColor() }, error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -363,7 +363,7 @@ class PropertyKeyEditDialog : public PropertyEditDialog
 
         if (object->SetPropertyValue(prop.id, key->GetSelectedKey(), error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -459,7 +459,7 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
         }
         if (object->SetPropertyValue(prop.id, value, error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -550,7 +550,7 @@ class PropertyListEditDialog : public PropertyEditDialog
         {
             if (object->SetPropertyValue(prop.id, result, error))
             {
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
             // error
@@ -663,7 +663,7 @@ class PropertyTextEditDialog : public PropertyEditDialog
             if (object->SetPropertyValue(prop.id, value.value(), error))
             {
                 // all good
-                this->Exit(1);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
             else
@@ -687,7 +687,7 @@ class PropertyTextEditDialog : public PropertyEditDialog
         if (object->SetPropertyValue(prop.id, value, error))
         {
             // all good
-            this->Exit(1);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         else
