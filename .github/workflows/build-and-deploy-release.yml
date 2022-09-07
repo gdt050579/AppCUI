@@ -30,6 +30,7 @@ jobs:
         echo "APPCUI_VERSION=$output" | Out-File -FilePath $env:GITHUB_ENV -Append
             
     - name: List bin artefacts
+      shell: bash
       run: dir /s "D:/a/AppCUI/AppCUI/bin"
     
     - name: Create archive
@@ -117,11 +118,11 @@ jobs:
         
     - name: Copy static libs from VCPKG
       working-directory: /Users/runner/work/AppCUI/AppCUI/bin
-      run: cp -R ../build/vcpkg_installed/x64-linux/lib/*.a .
+      run: cp -R ../build/vcpkg_installed/x64-osx/lib/*.a .
       
     - name: Copy terminfo from VCPKG
       working-directory: /Users/runner/work/AppCUI/AppCUI/bin
-      run: cp -R ../build/vcpkg_installed/x64-linux/share/terminfo .
+      run: cp -R ../build/vcpkg_installed/x64-osx/share/terminfo .
       
     - name: List bin artefacts
       run: ls -R /Users/runner/work/AppCUI/AppCUI/bin
