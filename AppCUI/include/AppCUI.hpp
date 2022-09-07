@@ -3834,8 +3834,8 @@ namespace Controls
         bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
         void RemoveMe();
 
-        int Show();
-        int GetDialogResult();
+        Dialogs::Result Show();
+        Dialogs::Result GetDialogResult();
         bool MaximizeRestore();
         void SetTag(const ConstString& name, const ConstString& toolTipText);
         const Graphics::CharacterBuffer& GetTag();
@@ -3844,7 +3844,6 @@ namespace Controls
         bool CenterScreen();
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKeyChanged() override;
-        bool Exit(int dialogResult);
         bool Exit(Dialogs::Result dialogResult);
         bool IsWindowInResizeMode();
         bool EnableResizeMode();

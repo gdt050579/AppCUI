@@ -272,7 +272,7 @@ struct WindowControlContext : public ControlContext
     WindowDragStatus dragStatus;
     int dragOffsetX, dragOffsetY;
     int TitleLeftMargin, TitleMaxWidth;
-    int DialogResult;
+    Dialogs::Result DialogResult;
     struct
     {
         WindowBarItem Items[MAX_WINDOWBAR_ITEMS];

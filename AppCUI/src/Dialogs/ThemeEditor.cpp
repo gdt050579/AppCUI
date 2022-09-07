@@ -2159,11 +2159,11 @@ class ThemeEditorDialog : public Window
             switch (ID)
             {
             case BUTTON_CMD_CLOSE:
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Cancel);
                 return true;
             case BUTTON_CMD_APPLY:
                 (*Application::GetAppConfig()) = cfg.GetConfig();
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return true;
             case BUTTON_CMD_SAVE:
                 SaveTheme();

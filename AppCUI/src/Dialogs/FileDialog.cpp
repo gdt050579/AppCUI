@@ -533,7 +533,7 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, Controls::Event eventT
         }
         else
         {
-            Exit(controlID);
+            Exit(Dialogs::Result::Cancel);
         }
         return true;
     case Event::ComboBoxSelectedItemChanged:
@@ -578,8 +578,7 @@ optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
       const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(false, fileName, extensionsFilter, path);
-    const int res = dlg.Show();
-    if (res == (int) Dialogs::Result::Ok)
+    if (dlg.Show() == Dialogs::Result::Ok)
         return dlg.GetResultedPath();
     return std::nullopt;
 }
@@ -587,8 +586,7 @@ optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
       const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(true, fileName, extensionsFilter, path);
-    const int res = dlg.Show();
-    if (res == (int) Dialogs::Result::Ok)
+    if (dlg.Show() == Dialogs::Result::Ok)
         return dlg.GetResultedPath();
     return std::nullopt;
 }

@@ -160,7 +160,7 @@ class TabExampleWin : public Window
     {
         if ((eventType == Event::ButtonClicked) && (controlID == CLOSE_BUTTON_ID))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return true;
         }
         return false;

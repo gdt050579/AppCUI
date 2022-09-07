@@ -170,17 +170,17 @@ Control* FindClosestControl(Control* parent, MoveDirection dir, const Rect& orig
             if ((flags & GATTR_TABSTOP) == 0)
                 continue;
         }
-        
+
         auto r = child->GetAbsoluteRectangle();
         auto d = PointToPointDistance(origin, r, dir);
-        //LOG_INFO(
-        //      "%s => (%d,%d  %dx%d), D=%d",
-        //      ((std::string) child->GetText()).c_str(),
-        //      r.GetLeft(),
-        //      r.GetTop(),
-        //      r.GetWidth(),
-        //      r.GetHeight(),
-        //      d);
+        // LOG_INFO(
+        //       "%s => (%d,%d  %dx%d), D=%d",
+        //       ((std::string) child->GetText()).c_str(),
+        //       r.GetLeft(),
+        //       r.GetTop(),
+        //       r.GetWidth(),
+        //       r.GetHeight(),
+        //       d);
         if (d < best)
         {
             best   = d;
@@ -216,7 +216,7 @@ Control* FindClosestControl(Control* parent, MoveDirection dir)
     // now we have the current control --> create a center point
     Rect currenChild = child->GetAbsoluteRectangle();
     // Log info
-    //LOG_INFO(
+    // LOG_INFO(
     //      "Current control (X=%d,Y=%d, Size=%dx%d)",
     //      currenChild.GetLeft(),
     //      currenChild.GetTop(),
@@ -716,7 +716,7 @@ Window::Window(const ConstString& caption, string_view layout, WindowFlags Flags
     Members->Maximized                       = false;
     Members->ResizeMoveMode                  = false;
     Members->dragStatus                      = WindowDragStatus::None;
-    Members->DialogResult                    = -1;
+    Members->DialogResult                    = Dialogs::Result::None;
     Members->ControlBar.Current              = NO_CONTROLBAR_ITEM;
     Members->ControlBar.IsCurrentItemPressed = false;
     Members->ControlBar.Count                = 0;
@@ -845,7 +845,7 @@ void Window::Paint(Graphics::Renderer& renderer)
             else
                 state = ControlState::Inactive;
         }
-        //bool hoverOrPressed = (state == ControlState::Hovered) || (state == ControlState::PressedOrSelected);
+        // bool hoverOrPressed = (state == ControlState::Hovered) || (state == ControlState::PressedOrSelected);
         bool drawSeparators = false;
         switch (btn->Type)
         {
@@ -1457,32 +1457,30 @@ const Graphics::CharacterBuffer& Window::GetTag()
     return tempReferenceChBuf;
 }
 
-bool Window::Exit(int dialogResult)
+bool Window::Exit(Dialogs::Result dialogResult)
 {
-    CHECK(dialogResult >= 0, false, "Dialog result code must be bigger than 0 !");
+    CHECK(dialogResult != Dialogs::Result::None, false, "Dialog result code must not be None !");
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->DialogResult                     = dialogResult;
     Members->ResizeMoveMode                   = false;
     Application::GetApplication()->loopStatus = Internal::LoopStatus::StopCurrent;
     return true;
 }
-bool Window::Exit(Dialogs::Result dialogResult)
+Dialogs::Result Window::Show()
 {
-    return this->Exit(static_cast<int>(dialogResult));
-}
-int Window::Show()
-{
-    CHECK(GetParent() == nullptr, -1, "Unable to run modal window if it is attached to another control !");
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
-    CHECK(Members->RecomputeLayout(nullptr), -1, "Fail to recompute layout !");
+    CHECK(GetParent() == nullptr,
+          Dialogs::Result::None,
+          "Unable to run modal window if it is attached to another control !");
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, Dialogs::Result::None);
+    CHECK(Members->RecomputeLayout(nullptr), Dialogs::Result::None, "Fail to recompute layout !");
     this->RecomputeLayout();
-    CHECK(Application::GetApplication()->ExecuteEventLoop(this), -1, "Modal execution failed !");
+    CHECK(Application::GetApplication()->ExecuteEventLoop(this), Dialogs::Result::None, "Modal execution failed !");
 
     return Members->DialogResult;
 }
-int Window::GetDialogResult()
+Dialogs::Result Window::GetDialogResult()
 {
-    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, -1);
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, Dialogs::Result::None);
     return Members->DialogResult;
 }
 bool Window::IsWindowInResizeMode()
