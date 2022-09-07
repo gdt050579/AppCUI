@@ -34,7 +34,7 @@ jobs:
       run: cp -R ../build/vcpkg_installed/x64-windows/lib/*.lib .
             
     - name: List bin artefacts
-      shell: bash
+      shell: cmd
       run: dir /s "D:/a/AppCUI/AppCUI/bin"
     
     - name: Create archive
