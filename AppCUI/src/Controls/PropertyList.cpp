@@ -89,7 +89,8 @@ class PropertyEditDialog : public Window
 
     PropertyEditDialog(
           string_view layout, const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : Window("Edit", layout, WindowFlags::NoCloseButton), prop(_prop), object(_object), isReadOnly(readOnly)
+        : Window("Edit", layout, WindowFlags::NoCloseButton | WindowFlags::ProcessReturn), prop(_prop), object(_object),
+          isReadOnly(readOnly)
     {
         if (readOnly)
         {
