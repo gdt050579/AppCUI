@@ -211,9 +211,9 @@ namespace Internal
         AbstractTerminal();
 
       public:
-        uint32 LastCursorX, LastCursorY;
-        Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
-        bool Inited, LastCursorVisibility;
+        uint32 lastCursorX, lastCursorY;
+        Graphics::Canvas originalScreenCanvas, screenCanvas;
+        bool inited, lastCursorVisibility;
 
         virtual bool OnInit(const Application::InitializationData& initData)  = 0;
         virtual void RestoreOriginalConsoleSettings()                         = 0;

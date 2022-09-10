@@ -13,9 +13,9 @@ namespace Internal
         HANDLE hstdIn;
         DWORD originalStdMode;
         DWORD stdMode;
-        DWORD startTime;
-        unique_ptr<CHAR_INFO> ConsoleBuffer;
-        uint32 ConsoleBufferCount;
+        DWORD64 startTime;
+        unique_ptr<CHAR_INFO> consoleBuffer;
+        uint32 consoleBufferCount;
         struct
         {
             uint32 x, y;
