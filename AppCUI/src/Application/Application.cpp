@@ -12,7 +12,7 @@ ApplicationImpl* app = nullptr;
 bool Application::Init(Application::InitializationFlags flags)
 {
     Application::InitializationData initData;
-    initData.Flags    = flags;
+    initData.Flags = flags;
     return Application::Init(initData);
 }
 bool Application::InitForTests(uint32 width, uint32 height, Application::InitializationFlags flags, bool asciiMode)
@@ -77,7 +77,7 @@ bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
     auto bottom     = Members->Margins.Bottom;
     app->AppDesktop = singleApp.release();
 
-    CHECK(app->AppDesktop->Resize(app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight()),
+    CHECK(app->AppDesktop->Resize(app->terminal->screenCanvas.GetWidth(), app->terminal->screenCanvas.GetHeight()),
           false,
           "");
     ((ControlContext*) (app->AppDesktop->Context))->Margins.Top    = top;
@@ -96,8 +96,8 @@ bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
 bool Application::GetApplicationSize(Graphics::Size& size)
 {
     CHECK(app, false, "Application has not been initialized !");
-    size.Width  = app->terminal->ScreenCanvas.GetWidth();
-    size.Height = app->terminal->ScreenCanvas.GetHeight();
+    size.Width  = app->terminal->screenCanvas.GetWidth();
+    size.Height = app->terminal->screenCanvas.GetHeight();
     return true;
 }
 bool Application::GetDesktopSize(Graphics::Size& size)
@@ -302,8 +302,8 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     }
 
     // set clip
-    app->terminal->ScreenCanvas.SetAbsoluteClip(Members->ScreenClip);
-    app->terminal->ScreenCanvas.SetTranslate(
+    app->terminal->screenCanvas.SetAbsoluteClip(Members->ScreenClip);
+    app->terminal->screenCanvas.SetTranslate(
           Members->ScreenClip.ScreenPosition.X, Members->ScreenClip.ScreenPosition.Y);
 
     if (focused != Members->Focused)
@@ -332,8 +332,8 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     // put the other clip
     if (ctrl == app->ExpandedControl)
     {
-        app->terminal->ScreenCanvas.SetAbsoluteClip(Members->ExpandedViewClip);
-        app->terminal->ScreenCanvas.SetTranslate(
+        app->terminal->screenCanvas.SetAbsoluteClip(Members->ExpandedViewClip);
+        app->terminal->screenCanvas.SetTranslate(
               Members->ExpandedViewClip.ScreenPosition.X, Members->ExpandedViewClip.ScreenPosition.Y);
     }
 
@@ -358,7 +358,7 @@ void PaintControl(Controls::Control* ctrl, Graphics::Renderer& renderer, bool fo
     {
         renderer.ResetClip(); // make sure that the entire surface is available
         if (Members->ScrollBars.OutsideControl)
-            app->terminal->ScreenCanvas.ExtendAbsoluteClipToRightBottomCorner();
+            app->terminal->screenCanvas.ExtendAbsoluteClipToRightBottomCorner();
         ctrl->OnUpdateScrollBars(); // update scroll bars value
         Members->PaintScrollbars(renderer);
     }
@@ -404,8 +404,8 @@ void PaintMenu(Controls::Menu* menu, Graphics::Renderer& renderer, bool activ)
     if (menuContext->Parent)
         PaintMenu(menuContext->Parent, renderer, false);
     // draw myself
-    app->terminal->ScreenCanvas.SetAbsoluteClip(menuContext->ScreenClip);
-    app->terminal->ScreenCanvas.SetTranslate(
+    app->terminal->screenCanvas.SetAbsoluteClip(menuContext->ScreenClip);
+    app->terminal->screenCanvas.SetTranslate(
           menuContext->ScreenClip.ScreenPosition.X, menuContext->ScreenClip.ScreenPosition.Y);
     menuContext->Paint(renderer, activ);
 }
@@ -714,7 +714,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
 }
 bool ApplicationImpl::Init(Application::InitializationData& initData)
 {
-    CHECK(!this->Inited, false, "Application has already been initialized !");
+    CHECK(!Inited, false, "Application has already been initialized !");
 
     if ((initData.Flags & Application::InitializationFlags::LoadSettingsFile) != Application::InitializationFlags::None)
     {
@@ -726,23 +726,22 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     LOG_INFO("Requested Size  = %d x %d", initData.Width, initData.Height);
 
     // create the frontend
-    this->frontend = initData.Frontend;
-    CHECK((this->terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
-    LOG_INFO(
-          "Terminal size: %d x %d", this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
+    frontend = initData.Frontend;
+    CHECK((terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
+    LOG_INFO("Terminal size: %d x %d", terminal->screenCanvas.GetWidth(), terminal->screenCanvas.GetHeight());
 
     // configur other objects and settings
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
     {
-        this->cmdBar = std::make_unique<Internal::CommandBarController>(
-              this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight(), &this->config);
-        this->CommandBarWrapper.Init(this->cmdBar.get());
+        cmdBar = std::make_unique<Internal::CommandBarController>(
+              terminal->screenCanvas.GetWidth(), terminal->screenCanvas.GetHeight(), &config);
+        CommandBarWrapper.Init(cmdBar.get());
     }
     // configure menu
     if ((initData.Flags & Application::InitializationFlags::Menu) != Application::InitializationFlags::None)
     {
-        this->menu = std::make_unique<Internal::MenuBar>();
-        this->menu->SetWidth(this->terminal->ScreenCanvas.GetWidth());
+        menu = std::make_unique<Internal::MenuBar>();
+        menu->SetWidth(terminal->screenCanvas.GetWidth());
     }
 
     // configure theme
@@ -750,26 +749,24 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     {
         if (!LoadThemeFile(initData))
         {
-            Internal::Config::SetTheme(this->config, initData.Theme);
+            Internal::Config::SetTheme(config, initData.Theme);
         }
     }
     else
     {
-        Internal::Config::SetTheme(this->config, initData.Theme);
+        Internal::Config::SetTheme(config, initData.Theme);
     }
 
     if (initData.CustomDesktopConstructor)
-        this->AppDesktop = initData.CustomDesktopConstructor();
+        AppDesktop = initData.CustomDesktopConstructor();
     else
-        this->AppDesktop = Controls::Factory::Desktop::Create().release();
+        AppDesktop = Controls::Factory::Desktop::Create().release();
 
-    CHECK(this->AppDesktop->Resize(this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight()),
-          false,
-          "");
+    CHECK(this->AppDesktop->Resize(terminal->screenCanvas.GetWidth(), terminal->screenCanvas.GetHeight()), false, "");
     if ((initData.Flags & Application::InitializationFlags::Menu) != Application::InitializationFlags::None)
-        ((ControlContext*) (this->AppDesktop->Context))->Margins.Top = 1;
+        ((ControlContext*) (AppDesktop->Context))->Margins.Top = 1;
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
-        ((ControlContext*) (this->AppDesktop->Context))->Margins.Bottom = 1;
+        ((ControlContext*) (AppDesktop->Context))->Margins.Bottom = 1;
 
     // update special character set
     CHECK(Application::SetSpecialCharacterSet(initData.SpecialCharacterSet),
@@ -786,55 +783,55 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     LastWindowID       = 0;
     InitFlags          = initData.Flags;
 
-    this->Inited = true;
+    Inited = true;
     LOG_INFO("AppCUI initialized succesifully");
     return true;
 }
 void ApplicationImpl::Paint()
 {
-    this->terminal->ScreenCanvas.Reset();
+    this->terminal->screenCanvas.Reset();
     // controalele
 
     if (ModalControlsCount > 0)
     {
-        PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, false);
+        PaintControl(this->AppDesktop, this->terminal->screenCanvas, false);
         uint32 tmp = ModalControlsCount - 1;
         for (uint32 tr = 0; tr < tmp; tr++)
-            PaintControl(ModalControlsStack[tr], this->terminal->ScreenCanvas, false);
-        this->terminal->ScreenCanvas.DarkenScreen();
-        PaintControl(ModalControlsStack[ModalControlsCount - 1], this->terminal->ScreenCanvas, true);
+            PaintControl(ModalControlsStack[tr], this->terminal->screenCanvas, false);
+        this->terminal->screenCanvas.DarkenScreen();
+        PaintControl(ModalControlsStack[ModalControlsCount - 1], this->terminal->screenCanvas, true);
     }
     else
     {
-        PaintControl(this->AppDesktop, this->terminal->ScreenCanvas, true);
+        PaintControl(this->AppDesktop, this->terminal->screenCanvas, true);
     }
 
     // clip to the entire screen
-    this->terminal->ScreenCanvas.ClearClip();
-    this->terminal->ScreenCanvas.SetTranslate(0, 0);
+    this->terminal->screenCanvas.ClearClip();
+    this->terminal->screenCanvas.SetTranslate(0, 0);
     // draw command bar
     if (this->cmdBar)
-        this->cmdBar->Paint(this->terminal->ScreenCanvas);
+        this->cmdBar->Paint(this->terminal->screenCanvas);
     // draw menu bar
     if (this->menu)
-        this->menu->Paint(this->terminal->ScreenCanvas);
+        this->menu->Paint(this->terminal->screenCanvas);
     // draw context menu
     if (this->VisibleMenu)
-        PaintMenu(this->VisibleMenu, this->terminal->ScreenCanvas, true);
+        PaintMenu(this->VisibleMenu, this->terminal->screenCanvas, true);
     // draw ToolTip if exists
     // ToolTip must be the last to be drawn (top-most)
     if (this->ToolTip.Visible)
     {
-        this->terminal->ScreenCanvas.SetAbsoluteClip(this->ToolTip.ScreenClip);
-        this->terminal->ScreenCanvas.SetTranslate(
+        this->terminal->screenCanvas.SetAbsoluteClip(this->ToolTip.ScreenClip);
+        this->terminal->screenCanvas.SetTranslate(
               this->ToolTip.ScreenClip.ScreenPosition.X, this->ToolTip.ScreenClip.ScreenPosition.Y);
-        this->ToolTip.Paint(this->terminal->ScreenCanvas);
+        this->ToolTip.Paint(this->terminal->screenCanvas);
     }
 }
 void ApplicationImpl::ComputePositions()
 {
     Graphics::Clip full;
-    full.Set(0, 0, app->terminal->ScreenCanvas.GetWidth(), app->terminal->ScreenCanvas.GetHeight());
+    full.Set(0, 0, app->terminal->screenCanvas.GetWidth(), app->terminal->screenCanvas.GetHeight());
     ComputeControlLayout(full, this->AppDesktop);
     for (uint32 tr = 0; tr < ModalControlsCount; tr++)
         ComputeControlLayout(full, ModalControlsStack[tr]);
@@ -1288,12 +1285,12 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
             loopStatus = LoopStatus::StopApp;
             break;
         case SystemEventType::AppResized:
-            if (((evnt.newWidth != this->terminal->ScreenCanvas.GetWidth()) ||
-                 (evnt.newHeight != this->terminal->ScreenCanvas.GetHeight())) &&
+            if (((evnt.newWidth != this->terminal->screenCanvas.GetWidth()) ||
+                 (evnt.newHeight != this->terminal->screenCanvas.GetHeight())) &&
                 (evnt.newWidth > 0) && (evnt.newHeight > 0))
             {
                 LOG_INFO("New size for app: %dx%d", evnt.newWidth, evnt.newHeight);
-                this->terminal->ScreenCanvas.Resize(evnt.newWidth, evnt.newHeight);
+                this->terminal->screenCanvas.Resize(evnt.newWidth, evnt.newHeight);
                 this->AppDesktop->Resize(evnt.newWidth, evnt.newHeight);
                 if (this->cmdBar)
                     this->cmdBar->SetDesktopSize(evnt.newWidth, evnt.newHeight);
@@ -1458,8 +1455,7 @@ bool ApplicationImpl::SetToolTip(Reference<Controls::Control> control, const Con
               Members->ScreenClip.ClipRect.Y + Members->ScreenClip.ClipRect.Height - 1);
     }
 
-    return this->ToolTip.Show(
-          text, r, this->terminal->ScreenCanvas.GetWidth(), this->terminal->ScreenCanvas.GetHeight());
+    return ToolTip.Show(text, r, terminal->screenCanvas.GetWidth(), terminal->screenCanvas.GetHeight());
 }
 void ApplicationImpl::Terminate()
 {

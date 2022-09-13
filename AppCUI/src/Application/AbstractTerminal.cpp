@@ -5,11 +5,8 @@ namespace AppCUI::Internal
 using namespace Graphics;
 
 AbstractTerminal::AbstractTerminal()
+    : lastCursorVisibility(false), lastCursorX(0xFFFFFFFF), lastCursorY(0xFFFFFFFF), inited(false)
 {
-    this->LastCursorVisibility = false;
-    this->LastCursorX          = 0xFFFFFFFF;
-    this->LastCursorY          = 0xFFFFFFFF;
-    this->Inited               = false;
 }
 AbstractTerminal::~AbstractTerminal()
 {
@@ -22,37 +19,46 @@ bool AbstractTerminal::Init(const Application::InitializationData& initData)
 void AbstractTerminal::UnInit()
 {
     // restore the original screen settings before AppCUI was initialized
-    this->RestoreOriginalConsoleSettings();
+    RestoreOriginalConsoleSettings();
+
     // clear up current buffer
-    this->ScreenCanvas.ClearEntireSurface(' ', ColorPair{ Color::Silver, Color::Black });
+    screenCanvas.ClearEntireSurface(' ', ColorPair{ Color::Silver, Color::Black });
+
     // copy the original buffer
-    this->ScreenCanvas.DrawCanvas(0, 0, this->OriginalScreenCanvas);
+    screenCanvas.DrawCanvas(0, 0, this->originalScreenCanvas);
+
     // restore the original buffer
-    this->OnFlushToScreen();
+    OnFlushToScreen();
+
     // Copy cursor position
-    if (this->OriginalScreenCanvas.GetCursorVisibility())
-        this->ScreenCanvas.SetCursor(this->OriginalScreenCanvas.GetCursorX(), this->OriginalScreenCanvas.GetCursorY());
+    if (originalScreenCanvas.GetCursorVisibility())
+    {
+        screenCanvas.SetCursor(originalScreenCanvas.GetCursorX(), originalScreenCanvas.GetCursorY());
+    }
     else
-        this->ScreenCanvas.HideCursor();
+    {
+        screenCanvas.HideCursor();
+    }
+
     // restore the original cursor position
-    this->OnUpdateCursor();
+    OnUpdateCursor();
+
     // OS specific On-unit
-    this->OnUnInit();
+    OnUnInit();
 }
 void AbstractTerminal::Update()
 {
-    this->OnFlushToScreen();
+    OnFlushToScreen();
 
-    if ((this->ScreenCanvas.GetCursorVisibility() != this->LastCursorVisibility) ||
-        (this->ScreenCanvas.GetCursorX() != this->LastCursorX) ||
-        (this->ScreenCanvas.GetCursorY() != this->LastCursorY))
+    if ((screenCanvas.GetCursorVisibility() != lastCursorVisibility) || (screenCanvas.GetCursorX() != lastCursorX) ||
+        (screenCanvas.GetCursorY() != lastCursorY))
     {
         if (this->OnUpdateCursor())
         {
             // update last cursor information
-            this->LastCursorX          = this->ScreenCanvas.GetCursorX();
-            this->LastCursorY          = this->ScreenCanvas.GetCursorY();
-            this->LastCursorVisibility = this->ScreenCanvas.GetCursorVisibility();
+            lastCursorX          = screenCanvas.GetCursorX();
+            lastCursorY          = screenCanvas.GetCursorY();
+            lastCursorVisibility = screenCanvas.GetCursorVisibility();
         }
     }
 }

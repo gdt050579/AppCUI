@@ -40,7 +40,7 @@ static bool progress_inited      = false;
 
 void ProgressStatus_Paint_Panel()
 {
-    auto canvas = &PSData.App->terminal->ScreenCanvas;
+    auto canvas = &PSData.App->terminal->screenCanvas;
 
     canvas->DarkenScreen();
     canvas->SetAbsoluteClip(PSData.WindowClip);
@@ -73,7 +73,7 @@ void ProgressStatus_Paint_Panel()
 
 void ProgressStatus_Paint_Status()
 {
-    auto canvas = &PSData.App->terminal->ScreenCanvas;
+    auto canvas = &PSData.App->terminal->screenCanvas;
     canvas->SetAbsoluteClip(PSData.WindowClip);
     canvas->SetTranslate(PSData.WindowClip.ScreenPosition.X, PSData.WindowClip.ScreenPosition.Y);
 

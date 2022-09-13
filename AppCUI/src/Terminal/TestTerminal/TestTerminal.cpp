@@ -115,8 +115,8 @@ TestTerminal::~TestTerminal()
 }
 uint64 TestTerminal::ComputeHash(bool useColors)
 {
-    auto p = this->ScreenCanvas.GetCharactersBuffer();
-    auto e = p + ((size_t) this->ScreenCanvas.GetWidth()) * ((size_t) this->ScreenCanvas.GetHeight());
+    auto p = screenCanvas.GetCharactersBuffer();
+    auto e = p + ((size_t) screenCanvas.GetWidth()) * ((size_t) screenCanvas.GetHeight());
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
     uint64 hash = 0xcbf29ce484222325ULL;
     if (useColors)
@@ -142,9 +142,9 @@ uint64 TestTerminal::ComputeHash(bool useColors)
 void TestTerminal::PrintCurrentScreen()
 {
     LocalString<512> temp;
-    auto w = this->ScreenCanvas.GetWidth();
-    auto p = this->ScreenCanvas.GetCharactersBuffer();
-    auto e = p + ((size_t) w) * ((size_t) this->ScreenCanvas.GetHeight());
+    auto w = screenCanvas.GetWidth();
+    auto p = screenCanvas.GetCharactersBuffer();
+    auto e = p + ((size_t) w) * ((size_t) screenCanvas.GetHeight());
     auto x = 0U;
 
     std::cout << std::endl;
@@ -494,7 +494,7 @@ bool TestTerminal::OnInit(const Application::InitializationData& initData)
     }
 
     // create canvases
-    CHECK(this->ScreenCanvas.Create(termWidth, termHeight),
+    CHECK(screenCanvas.Create(termWidth, termHeight),
           false,
           "Fail to create an internal canvas of %u x %u size",
           termWidth,
