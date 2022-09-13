@@ -26,7 +26,7 @@ bool NcursesTerminal::InitScreen()
           "Fail to create an internal canvas of %d x %d size",
           width,
           height);
-    CHECK(OriginalScreenCanvas.Create(width, height),
+    CHECK(originalScreenCanvas.Create(width, height),
           false,
           "Fail to create the original screen canvas of %d x %d size",
           width,
@@ -68,7 +68,7 @@ void NcursesTerminal::OnFlushToScreen()
         mvaddch(height - 1, width - 1, ' ');
         colors.UnsetColor(Graphics::Color::White, Graphics::Color::DarkRed);
     }
-    move(LastCursorY, LastCursorX);
+    move(lastCursorY, lastCursorX);
     refresh();
 }
 void NcursesTerminal::OnFlushToScreen(const Graphics::Rect& /*r*/)
