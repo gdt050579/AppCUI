@@ -21,7 +21,7 @@ bool NcursesTerminal::InitScreen()
     getmaxyx(stdscr, height, width);
     CHECK(height < MAX_TTY_ROW || width < MAX_TTY_COL, false, "Failed to get window sizes");
     // create canvases
-    CHECK(ScreenCanvas.Create(width, height),
+    CHECK(screenCanvas.Create(width, height),
           false,
           "Fail to create an internal canvas of %d x %d size",
           width,
@@ -37,9 +37,9 @@ bool NcursesTerminal::InitScreen()
 
 void NcursesTerminal::OnFlushToScreen()
 {
-    Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const size_t width               = ScreenCanvas.GetWidth();
-    const size_t height              = ScreenCanvas.GetHeight();
+    Graphics::Character* charsBuffer = this->screenCanvas.GetCharactersBuffer();
+    const size_t width               = screenCanvas.GetWidth();
+    const size_t height              = screenCanvas.GetHeight();
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
@@ -79,10 +79,10 @@ void NcursesTerminal::OnFlushToScreen(const Graphics::Rect& /*r*/)
 
 bool NcursesTerminal::OnUpdateCursor()
 {
-    if (ScreenCanvas.GetCursorVisibility())
+    if (screenCanvas.GetCursorVisibility())
     {
         curs_set(1);
-        move(ScreenCanvas.GetCursorY(), ScreenCanvas.GetCursorX());
+        move(screenCanvas.GetCursorY(), screenCanvas.GetCursorX());
     }
     else
     {
