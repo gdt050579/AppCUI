@@ -1175,7 +1175,7 @@ bool TextArea::HasSelection() const
 }
 bool TextArea::GetSelection(uint32& start, uint32& size) const
 {
-    if (WRAPPER->HasSelection())
+    if (WRAPPER->HasSelection()==false)
         return false;
     start = WRAPPER->Selection.Start;
     size  = WRAPPER->Selection.End - WRAPPER->Selection.Start;
