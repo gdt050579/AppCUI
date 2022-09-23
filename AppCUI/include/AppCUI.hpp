@@ -4076,6 +4076,9 @@ namespace Controls
         void OnAfterSetText() override;
         void SetReadOnly(bool value);
         bool IsReadOnly();
+        bool HasSelection() const;
+        bool GetSelection(uint32& start, uint32& size) const;
+
         void SetTabCharacter(char tabCharacter);
         virtual ~TextArea();
 
