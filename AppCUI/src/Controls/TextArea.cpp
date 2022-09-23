@@ -1169,6 +1169,19 @@ void TextArea::SetTabCharacter(char tabCharacter)
 {
     WRAPPER->SetTabCharacter(tabCharacter);
 }
+bool TextArea::HasSelection() const
+{
+    return WRAPPER->HasSelection();
+}
+bool TextArea::GetSelection(uint32& start, uint32& size) const
+{
+    if (WRAPPER->HasSelection())
+        return false;
+    start = WRAPPER->Selection.Start;
+    size  = WRAPPER->Selection.End - WRAPPER->Selection.Start;
+    return true;
+}
+
 Handlers::TextControl* TextArea::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::TextControl);
