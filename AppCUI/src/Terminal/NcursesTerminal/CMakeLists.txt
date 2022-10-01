@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE Color.cpp NcursesTerminal.cpp NcursesTerminalInput.cpp NcursesTerminalScreen.cpp)
+target_sources(AppCUI PRIVATE Color.cpp NcursesTerminal.cpp)

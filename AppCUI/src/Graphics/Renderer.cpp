@@ -1,12 +1,8 @@
 #include "Internal.hpp"
-
 namespace AppCUI::Graphics
 {
 using namespace Utils;
-struct LineTypeChars
-{
-    char16 TopLeft, Top, TopRight, Right, BottomRight, Bottom, BottomLeft, Left;
-};
+
 namespace UnicodeSpecialChars
 {
     int special_characters[(uint32) Graphics::SpecialChars::Count] = {
@@ -377,7 +373,6 @@ Renderer::Renderer()
         SpecialCharacters = UnicodeSpecialChars::special_characters;
     if (LineSpecialChars == nullptr)
         LineSpecialChars = UnicodeSpecialChars::line_types_chars;
-
     this->Clip.Visible   = false;
     this->Cursor.Visible = false;
     this->Cursor.X = this->Cursor.Y = 0;
@@ -1594,6 +1589,14 @@ Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod metho
     h = std::max<>(h, 1U);
     return Size(w, h);
 }
+
+optional<LineTypeChars> Renderer::GetLineTypeValue(LineType lineType)
+{
+    if (LineSpecialChars == nullptr)
+        return {};
+    return LineSpecialChars[(uint8) lineType];
+}
+
 bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod method, ImageScaleMethod scale)
 {
     auto rap = static_cast<uint32>(scale);
