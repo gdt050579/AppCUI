@@ -368,11 +368,6 @@ namespace Graphics
         static EXPORT optional<Size> FromString(string_view text);
     };
 
-    struct LineTypeChars
-    {
-        char16 TopLeft, Top, TopRight, Right, BottomRight, Bottom, BottomLeft, Left;
-    };
-
     struct Point
     {
         int32 X, Y;
@@ -2981,8 +2976,6 @@ namespace Graphics
               const Image& img,
               ImageRenderingMethod method = ImageRenderingMethod::PixelTo16ColorsSmallBlock,
               ImageScaleMethod scale      = ImageScaleMethod::NoScale);
-        // Getters
-        optional<LineTypeChars> GetLineTypeValue(LineType lineType);
     };
 
     class EXPORT Canvas : public Renderer

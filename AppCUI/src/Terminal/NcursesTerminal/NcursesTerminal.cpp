@@ -1,6 +1,6 @@
 #include "NcursesTerminal.hpp"
 #include <poll.h>
-
+#include <stdio.h>
 #if __APPLE__
 #    include <mach-o/dyld.h>
 #elif __linux__
@@ -83,10 +83,8 @@ constexpr int KEY_LOCK_COMBO_MODE = ' ';
 constexpr int KEY_ESCAPE          = '\x1B'; // ESC key
 constexpr int KEY_TAB             = '\t';
 
-const static size_t MAX_TTY_COL   = 65535;
-const static size_t MAX_TTY_ROW   = 65535;
-const static size_t COMBO_DLG_COL = 8;
-const static size_t COMBO_DLG_ROW = 3;
+const static size_t MAX_TTY_COL = 65535;
+const static size_t MAX_TTY_ROW = 65535;
 
 const static ColorPair defaultColorPair = { Color::White, Color::DarkBlue };
 const static ColorPair pressedColorPair = { Color::Green, Color::Red };
@@ -147,6 +145,40 @@ void NcursesTerminal::OnFlushToScreen()
     const size_t comboBoxRight       = width - 1;
 
     cchar_t t;
+    if (mode == TerminalMode::TerminalCombo)
+    {
+        if (canvasState == nullptr)
+        {
+            canvasState = new Character[COMBO_DLG_ROW * COMBO_DLG_COL];
+        }
+        for (size_t x = comboBoxLeft; x <= comboBoxRight; x++)
+        {
+            for (size_t y = comboBoxTop; y <= comboBoxBottom; y++)
+            {
+                const Character ch                                                  = charsBuffer[y * width + x];
+                canvasState[(y - comboBoxTop) * COMBO_DLG_COL + (x - comboBoxLeft)] = ch;
+            }
+        }
+
+        screenCanvas.FillRect(comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, ' ', defaultColorPair);
+        screenCanvas.DrawRect(
+              comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, defaultColorPair, LineType::Double);
+        DrawModifiers(comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, defaultColorPair, pressedColorPair);
+    }
+    else if (canvasState != nullptr)
+    {
+        for (size_t x = comboBoxLeft; x <= comboBoxRight; x++)
+        {
+            for (size_t y = comboBoxTop; y <= comboBoxBottom; y++)
+            {
+                const Character ch         = canvasState[(y - comboBoxTop) * COMBO_DLG_COL + (x - comboBoxLeft)];
+                charsBuffer[y * width + x] = ch;
+            }
+        }
+        delete[] canvasState;
+        canvasState = nullptr;
+    }
+
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < width; x++)
@@ -159,24 +191,13 @@ void NcursesTerminal::OnFlushToScreen()
         }
     }
 
-    if (mode == TerminalMode::TerminalCombo)
-    {
-        optional<LineTypeChars> lineTypeCharsOptional = screenCanvas.GetLineTypeValue(LineType::Double);
-        if (!lineTypeCharsOptional.has_value()) return;
-
-        LineTypeChars lineTypeChars = lineTypeCharsOptional.value();
-        FillBox(comboBoxTop, comboBoxLeft, comboBoxBottom, comboBoxRight, defaultColorPair);
-        DrawBox(comboBoxTop, comboBoxLeft, comboBoxBottom, comboBoxRight, defaultColorPair, lineTypeChars);
-        DrawModifiers(comboBoxTop, comboBoxLeft, comboBoxBottom, comboBoxRight, defaultColorPair, pressedColorPair);
-    }
-
     move(lastCursorY, lastCursorX);
     refresh();
 }
 
 void NcursesTerminal::OnFlushToScreen(const Graphics::Rect& /*r*/)
 {
-    // No implementation for the moment, copy the entire screem
+    // No implementation for the moment, copy the entire screen
     OnFlushToScreen();
 }
 
@@ -474,58 +495,6 @@ void NcursesTerminal::HandleKeyComboMode(SystemEvent& evt, const int c)
     }
 }
 
-void NcursesTerminal::FillBox(
-      const size_t top, const size_t left, const size_t bottom, const size_t right, const ColorPair& colorPair)
-{
-    colors.SetColor(colorPair.Foreground, colorPair.Background);
-    for (size_t x = left; x <= right; x++)
-    {
-        for (size_t y = top; y <= bottom; y++)
-        {
-            mvaddch(y, x, ' ');
-        }
-    }
-    colors.UnsetColor(colorPair.Foreground, colorPair.Background);
-}
-
-void NcursesTerminal::DrawBox(
-      const size_t top,
-      const size_t left,
-      const size_t bottom,
-      const size_t right,
-      const ColorPair& colorPair,
-      const LineTypeChars& lineTypeChars)
-{
-    cchar_t t          = { 0, { lineTypeChars.Top, 0 } };
-    cchar_t tProjected = { 0, { lineTypeChars.Bottom, 0 } };
-    colors.SetColor(colorPair.Foreground, colorPair.Background);
-    // Set Lines Printable
-    for (size_t x = left; x <= right; x++)
-    {
-        mvadd_wch(top, x, &t);
-        mvadd_wch(bottom, x, &tProjected);
-    }
-
-    t          = { 0, { lineTypeChars.Left, 0 } };
-    tProjected = { 0, { lineTypeChars.Right, 0 } };
-    for (size_t y = top; y <= bottom; y++)
-    {
-        mvadd_wch(y, left, &t);
-        mvadd_wch(y, right, &tProjected);
-    }
-
-    // Set Corners Printable
-    t = { 0, { lineTypeChars.BottomRight, 0 } };
-    mvadd_wch(bottom, right, &t);
-    t = { 0, { lineTypeChars.BottomLeft, 0 } };
-    mvadd_wch(bottom, left, &t);
-    t = { 0, { lineTypeChars.TopRight, 0 } };
-    mvadd_wch(top, right, &t);
-    t = { 0, { lineTypeChars.TopLeft, 0 } };
-    mvadd_wch(top, left, &t);
-    colors.UnsetColor(colorPair.Foreground, colorPair.Background);
-}
-
 void NcursesTerminal::DrawModifier(
       const size_t x,
       const size_t y,
@@ -537,16 +506,14 @@ void NcursesTerminal::DrawModifier(
     ColorPair colorPair = defaultColorPair;
     if ((comboKeysMask & static_cast<uint32>(modifier)) == static_cast<uint32>(modifier))
         colorPair = pressedColorPair;
-    colors.SetColor(colorPair.Foreground, colorPair.Background);
-    mvaddch(y, x, printedModifier);
-    colors.UnsetColor(colorPair.Foreground, colorPair.Background);
+    screenCanvas.WriteCharacter(x, y, printedModifier, colorPair);
 }
 
 void NcursesTerminal::DrawModifiers(
-      const size_t top,
       const size_t left,
-      const size_t bottom,
+      const size_t top,
       const size_t right,
+      const size_t bottom,
       const ColorPair& defaultColorPair,
       const ColorPair& pressedColorPair)
 {
@@ -561,9 +528,7 @@ void NcursesTerminal::DrawModifiers(
     if (isComboModeLocked)
         colorPair = pressedColorPair;
 
-    colors.SetColor(colorPair.Foreground, colorPair.Background);
-    mvaddch(modifierY, modifierFirstX + 3, '_');
-    colors.UnsetColor(colorPair.Foreground, colorPair.Background);
+    screenCanvas.WriteCharacter(modifierFirstX + 3, modifierY, '_', colorPair);
 }
 
 void DebugChar(int y, int c, const char* prefix)
