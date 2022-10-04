@@ -249,7 +249,8 @@ void AddSectionValueToString(std::string& res, std::string value)
     }
     for (auto ch : value)
     {
-        if ((ch == ' ') || (ch == '\t'))
+        // # or ; are comments and need to pe put in a string delimitator
+        if ((ch == ' ') || (ch == '\t') || (ch=='#') || (ch==';'))
             spaces++;
         if (ch == '"')
             double_quotes++;
