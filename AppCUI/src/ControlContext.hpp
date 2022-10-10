@@ -723,6 +723,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     void UnSelectAllItems();
     void CheckAllItems();
     void UncheckAllItems();
+    void SetSearchString(const ConstString& text);
     uint32 GetCheckedItemsCount();
 
     void DeleteAllItems();

@@ -466,6 +466,12 @@ uint32 ListViewControlContext::GetItemHeight(ItemHandle item)
     return i.Height;
 }
 
+void ListViewControlContext::SetSearchString(const ConstString& text)
+{
+    Filter.FilterModeEnabled = true;
+    Filter.SearchText.Set(text);
+    UpdateSearch(0);
+}
 
 bool ListViewControlContext::IsItemChecked(ItemHandle item)
 {
@@ -658,10 +664,10 @@ void ListViewControlContext::CopyToClipboard(bool justCurrentItem)
             return;
         for (uint32 tr = 0; tr < Header.GetColumnsCount(); tr++)
         {
-            if (!tb.AddString(tr, (CharacterView)(GetFilteredItem(Items.CurentItemIndex)->SubItem[tr])))
+            if (!tb.AddString(tr, (CharacterView) (GetFilteredItem(Items.CurentItemIndex)->SubItem[tr])))
                 return;
         }
-    } 
+    }
     else
     {
         // copy all selected items
@@ -1437,6 +1443,10 @@ bool ListView::Reserve(uint32 itemsCount)
 {
     WRAPPER->Items.List.reserve(itemsCount);
     return WRAPPER->Items.Indexes.Reserve(itemsCount);
+}
+void ListView::SetSearchString(const ConstString& text)
+{
+    WRAPPER->SetSearchString(text);
 }
 Handlers::ListView* ListView::Handlers()
 {
