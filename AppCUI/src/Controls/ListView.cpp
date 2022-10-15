@@ -372,6 +372,8 @@ bool ListViewControlContext::SetItemText(ItemHandle item, uint32 subItem, const 
           Header.GetColumnsCount());
     CHECK(subItem < MAX_LISTVIEW_COLUMNS, false, "Subitem must be smaller than 64");
     CHECK(i.SubItem[subItem].Set(text), false, "Fail to set text to a sub-item: %s", text);
+    if (this->Filter.filterMode != ListViewFilterMode::None)
+        i.SubItem[subItem].SetColor(this->Cfg->Text.Inactive);
     return true;
 }
 Graphics::CharacterBuffer* ListViewControlContext::GetItemText(ItemHandle item, uint32 subItem)
