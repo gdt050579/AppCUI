@@ -1208,12 +1208,17 @@ void ApplicationImpl::CheckIfAppShouldClose()
         loopStatus = LoopStatus::StopApp;
     }
 }
-bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
+bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
 {
+    CHECK(app->Inited, false, "Application has not been corectly initialized !");
+
     Internal::SystemEvent evnt;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedControl = nullptr;
     this->mouseLockedObject  = MouseLockedObject::None;
+
+    if (resetState)
+        this->loopStatus = LoopStatus::Normal;
     // hide current hovered control when new dialog is opened.
     if (this->MouseOverControl)
     {

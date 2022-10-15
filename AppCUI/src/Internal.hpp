@@ -303,7 +303,7 @@ namespace Internal
         bool Init(Application::InitializationData& initData);
         bool UnInit();
         void CheckIfAppShouldClose();
-        bool ExecuteEventLoop(Controls::Control* control = nullptr);
+        bool ExecuteEventLoop(Controls::Control* control = nullptr, bool resetState = false);
         void Paint();
         void RaiseEvent(
               Utils::Reference<Controls::Control> control,

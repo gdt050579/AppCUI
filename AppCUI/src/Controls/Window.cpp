@@ -1474,7 +1474,7 @@ Dialogs::Result Window::Show()
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, Dialogs::Result::None);
     CHECK(Members->RecomputeLayout(nullptr), Dialogs::Result::None, "Fail to recompute layout !");
     this->RecomputeLayout();
-    CHECK(Application::GetApplication()->ExecuteEventLoop(this), Dialogs::Result::None, "Modal execution failed !");
+    CHECK(Application::GetApplication()->ExecuteEventLoop(this, true), Dialogs::Result::None, "Modal execution failed !");
 
     return Members->DialogResult;
 }
