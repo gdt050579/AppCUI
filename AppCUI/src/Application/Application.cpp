@@ -52,6 +52,7 @@ bool Application::Run()
 {
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
+    app->loopStatus = LoopStatus::Normal;
     app->ExecuteEventLoop();
     LOG_INFO("Uninit text field/area default menu ");
     Controls::UninitTextFieldDefaultMenu();
@@ -76,6 +77,7 @@ bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
     auto top        = Members->Margins.Top;
     auto bottom     = Members->Margins.Bottom;
     app->AppDesktop = singleApp.release();
+    app->loopStatus = LoopStatus::Normal;
 
     CHECK(app->AppDesktop->Resize(app->terminal->screenCanvas.GetWidth(), app->terminal->screenCanvas.GetHeight()),
           false,
