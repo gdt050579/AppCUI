@@ -3579,7 +3579,7 @@ class CustomHighlightDemo : public Window
   public:
     CustomHighlightDemo() : Window("Custom highlight demo", "d:c,w:70,h:18", WindowFlags::Sizeable)
     {
-        auto lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", { "n:Items,w:300" });
+        auto lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", { "n:Items,w:300" }, ListViewFlags::SearchMode);
 
         // items
         lv->AddItems({ { "Hello world from AppCUI demo" }, { "An apple costs 120 USD, a banana only 5 cents" } });
