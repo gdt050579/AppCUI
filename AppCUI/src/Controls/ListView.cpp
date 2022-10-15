@@ -122,7 +122,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     else
     {
         // if activ and filtered
-        if ((this->Filter.FilterModeEnabled) || (this->Filter.SearchText.Len() > 0))
+        if ((this->Filter.CustomHighlightMode) || (this->Filter.SearchText.Len() > 0))
         {
             params.Flags =
                   static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
@@ -491,7 +491,7 @@ void ListViewControlContext::SetSearchString(const ConstString& text)
 }
 void ListViewControlContext::OpenSearchMode()
 {
-    Filter.FilterModeEnabled = true;
+    Filter.CustomHighlightMode = true;
     Filter.SearchText.Set("");
     if (Flags && ListViewFlags::SearchMode)
     {
@@ -588,9 +588,10 @@ void ListViewControlContext::DeleteAllItems()
 {
     Items.List.clear();
     Items.Indexes.Clear();
-    Items.FirstVisibleIndex  = 0;
-    Items.CurentItemIndex    = 0;
-    Filter.FilterModeEnabled = false;
+    Items.FirstVisibleIndex    = 0;
+    Items.CurentItemIndex      = 0;
+    Filter.FilterModeEnabled   = false;
+    Filter.CustomHighlightMode = false;
     Filter.SearchText.Clear();
 }
 // movement
@@ -1429,7 +1430,7 @@ void ListView::OnFocus()
     WRAPPER->Header.RecomputeColumnsSizes();
     // WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     // WRAPPER->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
-    // WRAPPER->Filter.FilterModeEnabled = false;
+    WRAPPER->Filter.FilterModeEnabled = false;
     if ((WRAPPER->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         WRAPPER->UpdateSelectionInfo();
 }

@@ -679,6 +679,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
         Utils::UnicodeStringBuilder SearchText;
         int LastFoundItem;
         bool FilterModeEnabled;
+        bool CustomHighlightMode;
     } Filter;
 
     struct
