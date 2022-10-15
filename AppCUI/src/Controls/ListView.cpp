@@ -442,6 +442,18 @@ GenericRef ListViewControlContext::GetItemDataAsPointer(const ItemHandle item) c
     }
     return GenericRef(nullptr);
 }
+bool ListViewControlContext::HighlightText(ItemHandle item, uint32 subItemIndex, uint32 offset, uint32 charactersCount)
+{
+    PREPARE_LISTVIEW_ITEM(item, false);
+    CHECK(subItemIndex < Header.GetColumnsCount(),
+          false,
+          "Invalid column index (%d), should be smaller than %d",
+          subItemIndex,
+          Header.GetColumnsCount());
+    CHECK(subItemIndex < MAX_LISTVIEW_COLUMNS, false, "Subitem must be smaller than 64");
+    i.SubItem[subItemIndex].SetColor(offset, offset + charactersCount, this->Cfg->Selection.SearchMarker);
+    return true;
+}
 bool ListViewControlContext::SetItemXOffset(ItemHandle item, uint32 XOffset)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
@@ -1570,6 +1582,14 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 {
     LVICHECK(nullptr);
     return LVIC->GetItemDataAsPointer(item);
+}
+bool ListViewItem::HighlightText(uint32 subItemIndex, uint32 offset, uint32 charactersCount)
+{
+    LVICHECK(false);
+    // make sure that we enable search mode 
+    if (LVIC->Filter.FilterModeEnabled==false)
+        LVIC->SetSearchString("");
+    return LVIC->HighlightText(item, subItemIndex, offset, charactersCount);
 }
 
 #undef LVICHECK
