@@ -3582,11 +3582,17 @@ class CustomHighlightDemo : public Window
         auto lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", { "n:Items,w:300" }, ListViewFlags::SearchMode);
 
         // items
-        lv->AddItems({ { "Hello world from AppCUI demo" }, { "An apple costs 120 USD, a banana only 5 cents" } });
+        lv->AddItems({ { "Hello world from AppCUI demo" },
+                       { "An apple costs 120 USD, a banana only 5 cents" },
+                       { "This item has nothing highlighted" } });
 
         // highlight hello and AppCUI from first item
         lv->GetItem(0).HighlightText(0, 0 /* offset of Hello */, 5 /* sizeof(Hello) */);
         lv->GetItem(0).HighlightText(0, 17 /* offset of AppCUI */, 6 /* sizeof(AppCUI) */);
+
+        // highlight 120 and 5 from second item
+        lv->GetItem(1).HighlightText(0, 15 /* offset of 120 */, 3 /* sizeof(120) */);
+        lv->GetItem(1).HighlightText(0, 38 /* offset of 5 */, 1 /* sizeof(5) */);
     }
 };
 

@@ -122,7 +122,8 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     else
     {
         // if activ and filtered
-        if (this->Filter.SearchText.Len() > 0)
+        //if (this->Filter.SearchText.Len() > 0)
+        if (this->Filter.FilterModeEnabled)
         {
             params.Flags =
                   static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
@@ -1428,7 +1429,7 @@ void ListView::OnFocus()
     WRAPPER->Header.RecomputeColumnsSizes();
     // WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     // WRAPPER->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
-    WRAPPER->Filter.FilterModeEnabled = false;
+    //WRAPPER->Filter.FilterModeEnabled = false;
     if ((WRAPPER->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         WRAPPER->UpdateSelectionInfo();
 }
