@@ -1617,7 +1617,7 @@ bool ListViewItem::HighlightText(uint32 subItemIndex, uint32 offset, uint32 char
 {
     LVICHECK(false);
     // make sure that we enable search mode
-    if (LVIC->Filter.filterMode == ListViewFilterMode::CustomHighlight)
+    if (LVIC->Filter.filterMode != ListViewFilterMode::CustomHighlight)
         LVIC->EnableCustomHighlightingMode();
     return LVIC->HighlightText(item, subItemIndex, offset, charactersCount);
 }
