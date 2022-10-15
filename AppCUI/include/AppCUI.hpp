@@ -4355,6 +4355,7 @@ namespace Controls
         uint32 GetCheckedItemsCount();
         bool SetCurrentItem(ListViewItem item);
         void SetSearchString(const ConstString& text);
+        void OpenSearchMode();
 
         // sort
         bool Sort();

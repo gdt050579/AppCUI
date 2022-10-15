@@ -484,6 +484,24 @@ void ListViewControlContext::SetSearchString(const ConstString& text)
     Filter.SearchText.Set(text);
     UpdateSearch(0);
 }
+void ListViewControlContext::OpenSearchMode()
+{
+    Filter.FilterModeEnabled = true;
+    Filter.SearchText.Set("");
+    if (Flags && ListViewFlags::SearchMode)
+    {
+        // change colors for all items
+        auto columnsCount = this->Header.GetColumnsCount();
+        for (auto& lvi: this->Items.List)
+        {
+            // clear all colors
+            for (uint32 gr = 0; gr < columnsCount; gr++)
+            {
+                lvi.SubItem[gr].SetColor(this->Cfg->Text.Inactive);
+            }
+        }
+    }
+}
 
 bool ListViewControlContext::IsItemChecked(ItemHandle item)
 {
@@ -1460,6 +1478,10 @@ void ListView::SetSearchString(const ConstString& text)
 {
     WRAPPER->SetSearchString(text);
 }
+void ListView::OpenSearchMode()
+{
+    WRAPPER->OpenSearchMode();
+}
 Handlers::ListView* ListView::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::ListView);
@@ -1586,9 +1608,12 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 bool ListViewItem::HighlightText(uint32 subItemIndex, uint32 offset, uint32 charactersCount)
 {
     LVICHECK(false);
+    CHECK(LVIC->Flags && ListViewFlags::SearchMode,
+          false,
+          "You need to enable `ListViewFlags::SearchMode` for this API to work!");
     // make sure that we enable search mode 
-    if (LVIC->Filter.FilterModeEnabled==false)
-        LVIC->SetSearchString("");
+    if (LVIC->Filter.FilterModeEnabled == false)
+        LVIC->OpenSearchMode();
     return LVIC->HighlightText(item, subItemIndex, offset, charactersCount);
 }
 
