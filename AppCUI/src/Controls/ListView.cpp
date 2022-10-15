@@ -122,8 +122,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     else
     {
         // if activ and filtered
-        //if (this->Filter.SearchText.Len() > 0)
-        if (this->Filter.FilterModeEnabled)
+        if ((this->Filter.FilterModeEnabled) || (this->Filter.SearchText.Len() > 0))
         {
             params.Flags =
                   static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
@@ -152,6 +151,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     {
         params.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::OverwriteColors |
                        WriteTextFlags::FitTextToWidth | WriteTextFlags::ClipToWidth;
+        if ((this->Filter.FilterModeEnabled) || (this->Filter.SearchText.Len() > 0))
+        {
+            params.Flags =
+                  static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
+        }
     }
     // first column
     const auto& firstColumn = this->Header[0];
@@ -493,7 +497,7 @@ void ListViewControlContext::OpenSearchMode()
     {
         // change colors for all items
         auto columnsCount = this->Header.GetColumnsCount();
-        for (auto& lvi: this->Items.List)
+        for (auto& lvi : this->Items.List)
         {
             // clear all colors
             for (uint32 gr = 0; gr < columnsCount; gr++)
@@ -1425,7 +1429,7 @@ void ListView::OnFocus()
     WRAPPER->Header.RecomputeColumnsSizes();
     // WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
     // WRAPPER->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
-    //WRAPPER->Filter.FilterModeEnabled = false;
+    // WRAPPER->Filter.FilterModeEnabled = false;
     if ((WRAPPER->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         WRAPPER->UpdateSelectionInfo();
 }
@@ -1608,7 +1612,7 @@ bool ListViewItem::HighlightText(uint32 subItemIndex, uint32 offset, uint32 char
     CHECK(LVIC->Flags && ListViewFlags::SearchMode,
           false,
           "You need to enable `ListViewFlags::SearchMode` for this API to work!");
-    // make sure that we enable search mode 
+    // make sure that we enable search mode
     if (LVIC->Filter.FilterModeEnabled == false)
         LVIC->OpenSearchMode();
     return LVIC->HighlightText(item, subItemIndex, offset, charactersCount);
