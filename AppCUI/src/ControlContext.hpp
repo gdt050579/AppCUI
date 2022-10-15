@@ -729,7 +729,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     void CheckAllItems();
     void UncheckAllItems();
     void SetSearchString(const ConstString& text);
-    void OpenSearchMode();
+    void EnableCustomHighlightingMode();
     uint32 GetCheckedItemsCount();
 
     bool HighlightText(ItemHandle item,uint32 subItemIndex, uint32 offset, uint32 charactersCount);
