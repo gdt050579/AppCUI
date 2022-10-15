@@ -58,6 +58,7 @@ int main()
 {
     if (!Application::Init())
         return 1;
+    MessageBox::ShowWarning("Start", "About to start, a window with button should appear next !");
     Application::AddWindow(std::make_unique<MyWin>());
     Application::Run();
     return 0;
