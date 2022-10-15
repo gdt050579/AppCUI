@@ -3577,22 +3577,28 @@ class ColumnSizeDemo : public Window
 class CustomHighlightDemo : public Window
 {
   public:
-    CustomHighlightDemo() : Window("Custom highlight demo", "d:c,w:70,h:10", WindowFlags::Sizeable)
+    CustomHighlightDemo() : Window("Custom highlight demo", "d:c,w:70,h:20", WindowFlags::Sizeable)
     {
-        auto lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:1", { "n:Items,w:300" }, ListViewFlags::HideSearchBar);
+        auto lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:3", { "n:idx,w:3","n:Items,w:300" }, ListViewFlags::HideSearchBar);
 
         // items
-        lv->AddItems({ { "Hello world from AppCUI demo" },
-                       { "An apple costs 120 USD, a banana only 5 cents" },
-                       { "This item has nothing highlighted" } });
 
         // highlight hello and AppCUI from first item
-        lv->GetItem(0).HighlightText(0, 0 /* offset of Hello */, 5 /* sizeof(Hello) */);
-        lv->GetItem(0).HighlightText(0, 17 /* offset of AppCUI */, 6 /* sizeof(AppCUI) */);
+        auto item = lv->AddItem("1.");
+        item.SetText(1, "Hello world from AppCUI demo");
+        lv->GetItem(0).HighlightText(1, 0 /* offset of Hello */, 5 /* sizeof(Hello) */);
+        lv->GetItem(0).HighlightText(1, 17 /* offset of AppCUI */, 6 /* sizeof(AppCUI) */);
 
         // highlight 120 and 5 from second item
-        lv->GetItem(1).HighlightText(0, 15 /* offset of 120 */, 3 /* sizeof(120) */);
-        lv->GetItem(1).HighlightText(0, 38 /* offset of 5 */, 1 /* sizeof(5) */);
+        item = lv->AddItem("2.");
+        item.SetText(1, "An apple costs 120 USD, a banana only 5 cents");
+        lv->GetItem(1).HighlightText(1, 15 /* offset of 120 */, 3 /* sizeof(120) */);
+        lv->GetItem(1).HighlightText(1, 38 /* offset of 5 */, 1 /* sizeof(5) */);
+
+        item = lv->AddItem("3.");
+        item.SetText(1, "No highlights !");
+
+        Factory::Button::Create(this, "&OK", "l:25,b:0,w:17", 100);
     }
 };
 
