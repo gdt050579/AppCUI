@@ -122,7 +122,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     else
     {
         // if activ and filtered
-        if (this->Filter.SearchText.Len() > 0)
+        if ((this->Filter.filterMode == ListViewFilterMode::CustomHighlight) || (this->Filter.SearchText.Len() > 0))
         {
             params.Flags =
                   static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
@@ -151,6 +151,11 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     {
         params.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::OverwriteColors |
                        WriteTextFlags::FitTextToWidth | WriteTextFlags::ClipToWidth;
+        if ((this->Filter.filterMode == ListViewFilterMode::CustomHighlight) || (this->Filter.SearchText.Len() > 0))
+        {
+            params.Flags =
+                  static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
+        }
     }
     // first column
     const auto& firstColumn = this->Header[0];
@@ -274,7 +279,7 @@ bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
     int x, y;
     if (Flags && ListViewFlags::PopupSearchBar)
     {
-        if (!this->Filter.FilterModeEnabled)
+        if (this->Filter.filterMode != ListViewFilterMode::Search)
             return false; // Popup search bar is only visible when FilterModeEnabled is true
         x = (this->Layout.Width - LISTVIEW_SEARCH_BAR_WIDTH) / 2;
         y = this->Layout.Height >= 4 ? (this->Layout.Height - 3) : this->Layout.Height;
@@ -289,7 +294,7 @@ bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
     if (search_text.length() < LISTVIEW_SEARCH_BAR_WIDTH)
     {
         renderer.WriteSingleLineText(x + 1, y, search_text, Cfg->SearchBar.Focused);
-        if (Filter.FilterModeEnabled)
+        if (this->Filter.filterMode == ListViewFilterMode::Search)
             renderer.SetCursor((int) (x + 1 + search_text.length()), y);
     }
     else
@@ -299,7 +304,7 @@ bool ListViewControlContext::DrawSearchBar(Graphics::Renderer& renderer)
               y,
               search_text.substr(search_text.length() - LISTVIEW_SEARCH_BAR_WIDTH, LISTVIEW_SEARCH_BAR_WIDTH),
               Cfg->SearchBar.Focused);
-        if (Filter.FilterModeEnabled)
+        if (this->Filter.filterMode == ListViewFilterMode::Search)
             renderer.SetCursor(x + 1 + LISTVIEW_SEARCH_BAR_WIDTH, y);
     }
     return true;
@@ -442,6 +447,18 @@ GenericRef ListViewControlContext::GetItemDataAsPointer(const ItemHandle item) c
     }
     return GenericRef(nullptr);
 }
+bool ListViewControlContext::HighlightText(ItemHandle item, uint32 subItemIndex, uint32 offset, uint32 charactersCount)
+{
+    PREPARE_LISTVIEW_ITEM(item, false);
+    CHECK(subItemIndex < Header.GetColumnsCount(),
+          false,
+          "Invalid column index (%d), should be smaller than %d",
+          subItemIndex,
+          Header.GetColumnsCount());
+    CHECK(subItemIndex < MAX_LISTVIEW_COLUMNS, false, "Subitem must be smaller than 64");
+    i.SubItem[subItemIndex].SetColor(offset, offset + charactersCount, this->Cfg->Selection.SearchMarker);
+    return true;
+}
 bool ListViewControlContext::SetItemXOffset(ItemHandle item, uint32 XOffset)
 {
     PREPARE_LISTVIEW_ITEM(item, false);
@@ -468,9 +485,25 @@ uint32 ListViewControlContext::GetItemHeight(ItemHandle item)
 
 void ListViewControlContext::SetSearchString(const ConstString& text)
 {
-    Filter.FilterModeEnabled = true;
+    Filter.filterMode = ListViewFilterMode::Search;
     Filter.SearchText.Set(text);
     UpdateSearch(0);
+}
+void ListViewControlContext::EnableCustomHighlightingMode()
+{
+    SetSearchString("");
+    Filter.filterMode = ListViewFilterMode::CustomHighlight;
+
+    // change colors for all items
+    auto columnsCount = this->Header.GetColumnsCount();
+    for (auto& lvi : this->Items.List)
+    {
+        // clear all colors
+        for (uint32 gr = 0; gr < columnsCount; gr++)
+        {
+            lvi.SubItem[gr].SetColor(this->Cfg->Text.Inactive);
+        }
+    }
 }
 
 bool ListViewControlContext::IsItemChecked(ItemHandle item)
@@ -553,9 +586,9 @@ void ListViewControlContext::DeleteAllItems()
 {
     Items.List.clear();
     Items.Indexes.Clear();
-    Items.FirstVisibleIndex  = 0;
-    Items.CurentItemIndex    = 0;
-    Filter.FilterModeEnabled = false;
+    Items.FirstVisibleIndex = 0;
+    Items.CurentItemIndex   = 0;
+    Filter.filterMode       = ListViewFilterMode::None;
     Filter.SearchText.Clear();
 }
 // movement
@@ -706,38 +739,44 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         case Key::Shift | Key::Up:
             UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - 1, !selected);
             MoveTo(Items.CurentItemIndex - 1);
-            Filter.FilterModeEnabled = false;
+            if (Filter.filterMode == ListViewFilterMode::Search)
+                Filter.filterMode = ListViewFilterMode::None;
             TriggerSelectionChangeEvent(currentItemIndex);
             return true;
         case Key::Insert:
         case Key::Down | Key::Shift:
             UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + 1, !selected);
             MoveTo(Items.CurentItemIndex + 1);
-            Filter.FilterModeEnabled = false;
+            if (Filter.filterMode == ListViewFilterMode::Search)
+                Filter.filterMode = ListViewFilterMode::None;
             TriggerSelectionChangeEvent(currentItemIndex);
             return true;
         case Key::PageUp | Key::Shift:
             UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex - GetVisibleItemsCount(), !selected);
             MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
-            Filter.FilterModeEnabled = false;
+            if (Filter.filterMode == ListViewFilterMode::Search)
+                Filter.filterMode = ListViewFilterMode::None;
             TriggerSelectionChangeEvent(currentItemIndex);
             return true;
         case Key::PageDown | Key::Shift:
             UpdateSelection(Items.CurentItemIndex, Items.CurentItemIndex + GetVisibleItemsCount(), !selected);
             MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
-            Filter.FilterModeEnabled = false;
+            if (Filter.filterMode == ListViewFilterMode::Search)
+                Filter.filterMode = ListViewFilterMode::None;
             TriggerSelectionChangeEvent(currentItemIndex);
             return true;
         case Key::Home | Key::Shift:
             UpdateSelection(Items.CurentItemIndex, 0, !selected);
             MoveTo(0);
-            Filter.FilterModeEnabled = false;
+            if (Filter.filterMode == ListViewFilterMode::Search)
+                Filter.filterMode = ListViewFilterMode::None;
             TriggerSelectionChangeEvent(currentItemIndex);
             return true;
         case Key::End | Key::Shift:
             UpdateSelection(Items.CurentItemIndex, Items.Indexes.Len(), !selected);
             MoveTo(Items.Indexes.Len());
-            Filter.FilterModeEnabled = false;
+            if (Filter.filterMode == ListViewFilterMode::Search)
+                Filter.filterMode = ListViewFilterMode::None;
             TriggerSelectionChangeEvent(currentItemIndex);
             return true;
         };
@@ -746,32 +785,38 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     {
     case Key::Up:
         MoveTo(Items.CurentItemIndex - 1);
-        Filter.FilterModeEnabled = false;
+        if (Filter.filterMode == ListViewFilterMode::Search)
+            Filter.filterMode = ListViewFilterMode::None;
         return true;
     case Key::Down:
         MoveTo(Items.CurentItemIndex + 1);
-        Filter.FilterModeEnabled = false;
+        if (Filter.filterMode == ListViewFilterMode::Search)
+            Filter.filterMode = ListViewFilterMode::None;
         return true;
     case Key::PageUp:
         MoveTo(Items.CurentItemIndex - GetVisibleItemsCount());
-        Filter.FilterModeEnabled = false;
+        if (Filter.filterMode == ListViewFilterMode::Search)
+            Filter.filterMode = ListViewFilterMode::None;
         return true;
     case Key::PageDown:
         MoveTo(Items.CurentItemIndex + GetVisibleItemsCount());
-        Filter.FilterModeEnabled = false;
+        if (Filter.filterMode == ListViewFilterMode::Search)
+            Filter.filterMode = ListViewFilterMode::None;
         return true;
     case Key::Home:
         MoveTo(0);
-        Filter.FilterModeEnabled = false;
+        if (Filter.filterMode == ListViewFilterMode::Search)
+            Filter.filterMode = ListViewFilterMode::None;
         return true;
     case Key::End:
         MoveTo(((int) Items.Indexes.Len()) - 1);
-        Filter.FilterModeEnabled = false;
+        if (Filter.filterMode == ListViewFilterMode::Search)
+            Filter.filterMode = ListViewFilterMode::None;
         return true;
     case Key::Backspace:
         if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
         {
-            Filter.FilterModeEnabled = true;
+            Filter.filterMode = ListViewFilterMode::Search;
             if (Filter.SearchText.Len() > 0)
             {
                 Filter.SearchText.Truncate(Filter.SearchText.Len() - 1);
@@ -780,7 +825,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
         }
         return true;
     case Key::Space:
-        if (!Filter.FilterModeEnabled)
+        if (Filter.filterMode == ListViewFilterMode::Search)
         {
             if ((Flags & ListViewFlags::CheckBoxes) == ListViewFlags::None)
                 return false;
@@ -820,7 +865,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     case Key::Escape:
         if ((Flags & ListViewFlags::HideSearchBar) == ListViewFlags::None)
         {
-            if (Filter.FilterModeEnabled)
+            if (Filter.filterMode == ListViewFilterMode::Search)
             {
                 if (Filter.SearchText.Len() > 0)
                 {
@@ -829,7 +874,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
                 }
                 else
                 {
-                    Filter.FilterModeEnabled = false;
+                    Filter.filterMode = ListViewFilterMode::None;
                 }
                 return true;
             }
@@ -856,7 +901,7 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
     // search mode
     if ((!(Flags && ListViewFlags::HideSearchBar)) && (UnicodeChar > 0))
     {
-        Filter.FilterModeEnabled = true;
+        Filter.filterMode = ListViewFilterMode::Search;
         Filter.SearchText.AddChar(UnicodeChar);
         UpdateSearch(0);
         return true;
@@ -874,7 +919,7 @@ void ListViewControlContext::OnMousePressed(int x, int y, Input::MouseButton but
         {
             if ((x >= 2) && (x <= (3 + (int32) LISTVIEW_SEARCH_BAR_WIDTH)))
             {
-                this->Filter.FilterModeEnabled = true;
+                this->Filter.filterMode = ListViewFilterMode::Search;
                 return;
             }
         }
@@ -1122,7 +1167,8 @@ void ListViewControlContext::UpdateSearch(int startPoz)
             this->Filter.LastFoundItem = SearchItem(startPoz);
         }
     }
-    this->Filter.FilterModeEnabled = Filter.SearchText.Len() > 0;
+    if (Filter.SearchText.Len() == 0)
+        this->Filter.filterMode = ListViewFilterMode::None;
 }
 void ListViewControlContext::SendMsg(Event eventType)
 {
@@ -1241,7 +1287,7 @@ ListView::ListView(string_view layout, std::initializer_list<ConstString> column
     // initialize
     Members->Items.FirstVisibleIndex   = 0;
     Members->Items.CurentItemIndex     = 0;
-    Members->Filter.FilterModeEnabled  = false;
+    Members->Filter.filterMode         = ListViewFilterMode::None;
     Members->Filter.LastFoundItem      = -1;
     Members->Host                      = this;
     Members->ScrollBars.OutsideControl = Members->Flags && ListViewFlags::HideBorder;
@@ -1316,10 +1362,6 @@ ListViewItem ListView::GetItem(uint32 index)
     if (index >= WRAPPER->Items.List.size())
         return { nullptr, 0 };
     return { this->Context, index };
-    // uint32 value;
-    // if (WRAPPER->Items.Indexes.Get(index, value))
-    //     return { this->Context, value };
-    // return { nullptr, 0 };
 }
 
 void ListView::DeleteAllItems()
@@ -1396,9 +1438,8 @@ bool ListView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
 void ListView::OnFocus()
 {
     WRAPPER->Header.RecomputeColumnsSizes();
-    // WRAPPER->Columns.HoverSeparatorColumnIndex = INVALID_COLUMN_INDEX;
-    // WRAPPER->Columns.HoverColumnIndex          = INVALID_COLUMN_INDEX;
-    WRAPPER->Filter.FilterModeEnabled = false;
+    if (WRAPPER->Filter.filterMode == ListViewFilterMode::Search)
+        WRAPPER->Filter.filterMode = ListViewFilterMode::None;
     if ((WRAPPER->Flags & ListViewFlags::AllowMultipleItemsSelection) != ListViewFlags::None)
         WRAPPER->UpdateSelectionInfo();
 }
@@ -1448,6 +1489,7 @@ void ListView::SetSearchString(const ConstString& text)
 {
     WRAPPER->SetSearchString(text);
 }
+
 Handlers::ListView* ListView::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::ListView);
@@ -1570,6 +1612,14 @@ GenericRef ListViewItem::GetItemDataAsPointer() const
 {
     LVICHECK(nullptr);
     return LVIC->GetItemDataAsPointer(item);
+}
+bool ListViewItem::HighlightText(uint32 subItemIndex, uint32 offset, uint32 charactersCount)
+{
+    LVICHECK(false);
+    // make sure that we enable search mode
+    if (LVIC->Filter.filterMode != ListViewFilterMode::CustomHighlight)
+        LVIC->EnableCustomHighlightingMode();
+    return LVIC->HighlightText(item, subItemIndex, offset, charactersCount);
 }
 
 #undef LVICHECK

@@ -663,7 +663,12 @@ struct ColumnsHeaderViewControlContext : public ControlContext
         CopyToClipboard.flags  = CopyClipboardFlags::None;
     }
 };
-
+enum class ListViewFilterMode: uint8
+{
+    None,
+    Search,
+    CustomHighlight
+};
 class ListViewControlContext : public ColumnsHeaderViewControlContext
 {
   public:
@@ -678,7 +683,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     {
         Utils::UnicodeStringBuilder SearchText;
         int LastFoundItem;
-        bool FilterModeEnabled;
+        ListViewFilterMode filterMode;
     } Filter;
 
     struct
@@ -724,7 +729,10 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     void CheckAllItems();
     void UncheckAllItems();
     void SetSearchString(const ConstString& text);
+    void EnableCustomHighlightingMode();
     uint32 GetCheckedItemsCount();
+
+    bool HighlightText(ItemHandle item,uint32 subItemIndex, uint32 offset, uint32 charactersCount);
 
     void DeleteAllItems();
 

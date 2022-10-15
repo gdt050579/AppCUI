@@ -3087,6 +3087,7 @@ class MyListViewExample : public Window, Handlers::OnCheckInterface, Handlers::O
     Reference<ListView> lv;
     CopyClipboardFlags copyFlags;
     CopyClipboardFormat copyFormat;
+
   public:
     MyListViewExample(ListViewFlags flags) : Window("List View Example", "d:c,w:70,h:28", WindowFlags::None)
     {
@@ -3573,16 +3574,38 @@ class ColumnSizeDemo : public Window
     }
 };
 
+class CustomHighlightDemo : public Window
+{
+  public:
+    CustomHighlightDemo() : Window("Custom highlight demo", "d:c,w:70,h:10", WindowFlags::Sizeable)
+    {
+        auto lv = Factory::ListView::Create(this, "l:1,t:1,r:1,b:1", { "n:Items,w:300" }, ListViewFlags::HideSearchBar);
+
+        // items
+        lv->AddItems({ { "Hello world from AppCUI demo" },
+                       { "An apple costs 120 USD, a banana only 5 cents" },
+                       { "This item has nothing highlighted" } });
+
+        // highlight hello and AppCUI from first item
+        lv->GetItem(0).HighlightText(0, 0 /* offset of Hello */, 5 /* sizeof(Hello) */);
+        lv->GetItem(0).HighlightText(0, 17 /* offset of AppCUI */, 6 /* sizeof(AppCUI) */);
+
+        // highlight 120 and 5 from second item
+        lv->GetItem(1).HighlightText(0, 15 /* offset of 120 */, 3 /* sizeof(120) */);
+        lv->GetItem(1).HighlightText(0, 38 /* offset of 5 */, 1 /* sizeof(5) */);
+    }
+};
+
 class MyWin : public Window
 {
     Reference<CheckBox> cbHideColumns, cbCheckBoxes, cbHideColumnSeparators, cbSort, cbItemSeparators, cbAllowSelection,
           cbHideSearchBar, cbHideBorder, cbHideScrollBar, cbPopupSearch;
     Reference<CheckBox> cbSimpleListCheckboxes;
     Reference<RadioBox> rbCustomizedListView, rbSimpleList, rbSortAndColumnsFeatures, rbColors, rbTree, rbSearch,
-          rbSelect, rbItemTypes, rbCategory, rbHandlers, rbNoBorder, rbItemHeight, rbColumnSize;
+          rbSelect, rbItemTypes, rbCategory, rbHandlers, rbNoBorder, rbItemHeight, rbColumnSize, rbCustomHighlight;
 
   public:
-    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:30", WindowFlags::None)
+    MyWin() : Window("ListView example config", "x:0,y:0,w:60,h:31", WindowFlags::None)
     {
         rbCustomizedListView = Factory::RadioBox::Create(
               this, "USA states (a generic list with different features)", "x:1,y:1,w:56", MY_GROUP);
@@ -3619,6 +3642,8 @@ class MyWin : public Window
               this, "Build a list view with items of different heights", "x:1,y:23,w:56", MY_GROUP);
         rbColumnSize =
               Factory::RadioBox::Create(this, "Different type of size types for columns", "x:1,y:24,w:56", MY_GROUP);
+        rbCustomHighlight =
+              Factory::RadioBox::Create(this, "Custom highlight for sub-items", "x:1,y:25,w:56", MY_GROUP);
         rbCustomizedListView->SetChecked(true);
         Factory::Button::Create(this, "Show example", "d:b,w:24", SHOW_DEFAULT_EXAMPLE);
 
@@ -3727,6 +3752,11 @@ class MyWin : public Window
         if (rbColumnSize->IsChecked())
         {
             ColumnSizeDemo win;
+            win.Show();
+        }
+        if (rbCustomHighlight->IsChecked())
+        {
+            CustomHighlightDemo win;
             win.Show();
         }
     }

@@ -3144,6 +3144,7 @@ namespace Controls
         bool IsChecked() const;
         bool SetType(ListViewItem::Type type);
         bool SetText(uint32 subItemIndex, const ConstString& text);
+        bool HighlightText(uint32 subItemIndex, uint32 offset, uint32 charactersCount);
         bool SetValues(std::initializer_list<ConstString> value);
         const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
         bool SetXOffset(uint32 value);
