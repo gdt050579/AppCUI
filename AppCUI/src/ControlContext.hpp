@@ -663,7 +663,12 @@ struct ColumnsHeaderViewControlContext : public ControlContext
         CopyToClipboard.flags  = CopyClipboardFlags::None;
     }
 };
-
+enum class ListViewFilterMode: uint8
+{
+    None,
+    Search,
+    CustomHighlight
+};
 class ListViewControlContext : public ColumnsHeaderViewControlContext
 {
   public:
@@ -678,8 +683,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     {
         Utils::UnicodeStringBuilder SearchText;
         int LastFoundItem;
-        bool FilterModeEnabled;
-        bool CustomHighlightMode;
+        ListViewFilterMode filterMode;
     } Filter;
 
     struct
