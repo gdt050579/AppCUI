@@ -52,6 +52,7 @@ bool Application::Run()
 {
     CHECK(app, false, "Application has not been initialized !");
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
+    app->loopStatus = LoopStatus::Normal;
     app->ExecuteEventLoop();
     LOG_INFO("Uninit text field/area default menu ");
     Controls::UninitTextFieldDefaultMenu();
@@ -76,6 +77,7 @@ bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
     auto top        = Members->Margins.Top;
     auto bottom     = Members->Margins.Bottom;
     app->AppDesktop = singleApp.release();
+    app->loopStatus = LoopStatus::Normal;
 
     CHECK(app->AppDesktop->Resize(app->terminal->screenCanvas.GetWidth(), app->terminal->screenCanvas.GetHeight()),
           false,
@@ -1206,12 +1208,17 @@ void ApplicationImpl::CheckIfAppShouldClose()
         loopStatus = LoopStatus::StopApp;
     }
 }
-bool ApplicationImpl::ExecuteEventLoop(Control* ctrl)
+bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
 {
+    CHECK(app->Inited, false, "Application has not been corectly initialized !");
+
     Internal::SystemEvent evnt;
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedControl = nullptr;
     this->mouseLockedObject  = MouseLockedObject::None;
+
+    if (resetState)
+        this->loopStatus = LoopStatus::Normal;
     // hide current hovered control when new dialog is opened.
     if (this->MouseOverControl)
     {
