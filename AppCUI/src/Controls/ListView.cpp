@@ -1347,10 +1347,6 @@ ListViewItem ListView::GetItem(uint32 index)
     if (index >= WRAPPER->Items.List.size())
         return { nullptr, 0 };
     return { this->Context, index };
-    // uint32 value;
-    // if (WRAPPER->Items.Indexes.Get(index, value))
-    //     return { this->Context, value };
-    // return { nullptr, 0 };
 }
 
 void ListView::DeleteAllItems()
