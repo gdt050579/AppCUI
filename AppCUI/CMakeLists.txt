@@ -144,13 +144,6 @@ if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
 endif()
 
 add_subdirectory("${SRC_DIR}")
-add_subdirectory("${LIBS_DIR}")
-
-# lodepng 
-target_include_directories(${PROJECT_NAME} PUBLIC "${LIBS_DIR}/lodepng")
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DLODEPNG_NO_COMPILE_ENCODER)
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DLODEPNG_NO_COMPILE_DISK)
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DLODEPNG_NO_COMPILE_ANCILLARY_CHUNKS)
 
 # Preserve source file paths in debug mode for shared lib
 if (DEBUG_BUILD)

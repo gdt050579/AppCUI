@@ -848,6 +848,18 @@ bool ListViewControlContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
                 Filter.SearchText.AddChar(' ');
                 UpdateSearch(0);
             }
+            else
+            {
+                lvi = GetFilteredItem(Items.CurentItemIndex);
+                if (lvi != nullptr)
+                {
+                    if ((lvi->Flags & ITEM_FLAG_CHECKED) != 0)
+                        lvi->Flags -= ITEM_FLAG_CHECKED;
+                    else
+                        lvi->Flags |= ITEM_FLAG_CHECKED;
+                }
+                TriggerListViewItemCheckedEvent();
+            }
         }
         return true;
     case Key::Enter | Key::Ctrl:

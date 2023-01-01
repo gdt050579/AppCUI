@@ -1,48 +1,22 @@
 #include "ImageLoader.hpp"
-
-#include <lodepng.h>
+#include <libpng16/png.h>
 
 namespace AppCUI::Graphics
 {
 bool LoadPNGToImage(Image& img, const uint8* imageBuffer, uint32 size)
 {
-    uint32 resultedWidth  = 0;
-    uint32 resultedHeight = 0;
-    uint8* temp           = nullptr;
+    /* Initialize the 'png_image' structure. */
+    png_image image{ .version = PNG_IMAGE_VERSION }; /* The control structure used by libpng */
 
-    if (lodepng_decode_memory(
-              &temp, &resultedWidth, &resultedHeight, imageBuffer, size, LodePNGColorType::LCT_RGBA, 8) == 0)
-    {
-        if (temp != nullptr)
-        {
-            CHECK(img.Create(resultedWidth, resultedHeight),
-                  false,
-                  "Fail to create a %ux%u size image",
-                  resultedWidth,
-                  resultedHeight);
+    /* The first argument is the file to read: */
+    CHECK(png_image_begin_read_from_memory(&image, imageBuffer, size) != 0, false, "Failed to read PNG from memory!");
 
-            // data is allocated with malloc --> so for the moment we need to copy it into a buffer allocated with
-            auto* p = img.GetPixelsBuffer();
-            auto e  = temp + ((size_t) resultedWidth * (size_t) resultedHeight) * sizeof(Pixel);
-            auto* c = temp;
-            while (c < e)
-            {
-                p->Red   = *c++;
-                p->Green = *c++;
-                p->Blue  = *c++;
-                p->Alpha = *c++;
-                p++;
-            }
-            free(temp);
-            return true;
-        }
-        RETURNERROR(false, "No bytes were allocated when decoding PNG !");
-    }
-    else
-    {
-        if (temp)
-            free(temp);
-        RETURNERROR(false, "Fail to decode PNG buffer !");
-    }
+    std::unique_ptr<png_byte> buffer(new png_byte[PNG_IMAGE_SIZE(image)]);
+    CHECK(png_image_finish_read(&image, NULL, buffer.get(), 0, NULL) != 0, false, "");
+
+    CHECK(img.Create(image.width, image.height), false, "Fail to create a %ux%u size image", image.width, image.height);
+    memcpy(img.GetPixelsBuffer(), buffer.get(), ((size_t) image.width * (size_t) image.height) * sizeof(Pixel));
+
+    return true;
 }
 } // namespace AppCUI::Graphics

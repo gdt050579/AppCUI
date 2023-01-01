@@ -10,7 +10,11 @@ bool Library::Load(const std::filesystem::path& path)
 {
     CHECK(this->libraryHandle == nullptr, false, "Library already opened !");
     this->libraryHandle = LoadLibraryW(path.native().c_str());
-    CHECK(this->libraryHandle, false, "Fail to load library: %s", path.generic_string().c_str());
+    CHECK(this->libraryHandle,
+          false,
+          "Error: %u! Fail to load library: %s",
+          GetLastError(),
+          path.generic_string().c_str());
     return true;
 }
 void* Library::GetFunction(const char* functionName) const
