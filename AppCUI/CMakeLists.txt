@@ -97,7 +97,7 @@ endif()
 message("BZIP2_LIBRARIES => ${BZIP2_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${BZIP2_LIBRARIES})
 
-message("BROTLICOMMON_LIBRARIES} => ${BROTLICOMMON_LIBRARIES}")
+message("BROTLICOMMON_LIBRARIES => ${BROTLICOMMON_LIBRARIES}")
 message("BROTLIDEC_LIBRARIES => ${BROTLIDEC_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${BROTLIDEC__LIBRARIES} ${BROTLICOMMON_LIBRARIES})
 
@@ -115,6 +115,9 @@ set(FONT_PATH resources/${FONT_NAME})
 target_compile_definitions(${PROJECT_NAME} PRIVATE FONT_PATH="${FONT_PATH}")
 cmrc_add_resource_library(font ${FONT_PATH})
 set(FONT_LIB_NAME font)
+message("FONT_NAME => ${FONT_NAME}")
+message("FONT_PATH => ${FONT_PATH}")
+message("FONT_LIB_NAME => ${FONT_LIB_NAME}")
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
