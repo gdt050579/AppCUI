@@ -39,6 +39,8 @@ bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t len
           false,
           "Fail to copy text data into clipboard (Error: %d) or invalid character size (expecting either 1 or 2)",
           GetLastError());
+
+    return true;
 #endif
 
     return false;
