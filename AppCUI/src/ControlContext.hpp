@@ -984,9 +984,9 @@ class GridControlContext : public ControlContext
     int32 offsetX  = 0;
     int32 offsetY  = 0;
 
-    std::map<uint32, GridCellData> cellsNormal;
-    std::map<uint32, GridCellData> cellsFiltered;
-    std::map<uint32, GridCellData>* cells = &cellsNormal;
+    std::vector<std::vector<GridCellData>> cellsNormal;
+    std::vector<std::vector<GridCellData>> cellsFiltered;
+    std::vector<std::vector<GridCellData>>* cells = &cellsNormal;
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 

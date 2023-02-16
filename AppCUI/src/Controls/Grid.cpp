@@ -61,9 +61,13 @@ void Grid::Paint(Renderer& renderer)
         context->DrawBoxes(renderer);
     }
 
-    for (auto const& [key, val] : *context->cells)
+    for (auto columnIndex = 0UL; columnIndex < context->columnsNo; ++columnIndex)
     {
-        context->DrawCellContent(renderer, key);
+        for (auto rowIndex = 0UL; rowIndex < context->rowsNo; ++rowIndex)
+        {
+            const auto cellIndex = rowIndex * context->columnsNo + columnIndex;
+            context->DrawCellContent(renderer, cellIndex);
+        }
     }
 }
 
@@ -455,12 +459,14 @@ Size Grid::GetGridDimensions() const
 
 bool Grid::UpdateCell(uint32 index, ConstString content, TextAlignament textAlignment, bool sort)
 {
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    const auto context    = reinterpret_cast<GridControlContext*>(Context);
+    const auto cellColumn = index % context->columnsNo;
+    const auto cellRow    = index / context->columnsNo;
     CHECK(index < context->columnsNo * context->rowsNo, false, "");
 
     Utils::UnicodeStringBuilder usb{ content };
     std::u16string u16s(usb);
-    (*context->cells)[index] = { textAlignment, u16s };
+    (*context->cells)[cellColumn][cellRow] = { textAlignment, u16s };
 
     if ((context->flags & GridFlags::Sort) != GridFlags::None)
     {
@@ -952,7 +958,7 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
     const auto x = offsetX + cellColumn * cWidth + 1; // + 1 -> line
     const auto y = offsetY + cellRow * cHeight + 1;   // + 1 -> line
 
-    const auto& data = (*cells)[cellIndex];
+    const auto& data = (*cells)[cellColumn][cellRow];
 
     const auto state = GetComponentState(
           ControlStateFlags::All,
@@ -1452,16 +1458,8 @@ bool GridControlContext::CopySelectedCellsContent() const
     {
         for (auto i = std::min<>(xLeft, xRight); i <= std::max<>(xLeft, xRight); i++)
         {
-            ConstString cs;
-            const auto current = columnsNo * j + i;
-            const auto& it     = cells->find(current);
-            if (it != cells->end())
-            {
-                const auto& data = it->second;
-                cs               = data.content;
-            }
-
-            lusb.Add(cs);
+            const auto& content = (*cells)[i][j].content;
+            lusb.Add(content);
 
             if (i < std::max<>(xLeft, xRight))
             {
@@ -1537,9 +1535,10 @@ bool GridControlContext::PasteContentToSelectedCells()
     auto index = selectedCellsIndexes.begin();
     for (const auto& token : tokens)
     {
-        auto& data   = cells->at(*index);
-        data.content = token;
-
+        const auto cellColumn = (*index) % columnsNo;
+        const auto cellRow    = (*index) / columnsNo;
+        auto& data            = cells->at(cellColumn).at(cellRow);
+        data.content          = token;
         std::advance(index, 1);
     }
 
@@ -1569,9 +1568,14 @@ void GridControlContext::SetDefaultHeaderValues()
 
 void GridControlContext::ReserveMap()
 {
-    for (auto i = 0U; i < columnsNo * rowsNo; i++)
+    (*cells) = std::vector<std::vector<GridCellData>>(columnsNo);
+    for (auto& column : *cells)
     {
-        (*cells)[i] = { Graphics::TextAlignament::Left, u"" };
+        column = std::vector<GridCellData>(rowsNo);
+        for (auto& cellData : column)
+        {
+            cellData = { Graphics::TextAlignament::Left, u"" };
+        }
     }
 }
 
@@ -1584,7 +1588,7 @@ void GridControlContext::ToggleSorting(int x, int y)
         const auto yHeader    = offsetY - GetHeaderHeight() / 2;
         const auto endXHeader = xHeader + cWidth - 2;
 
-        if ((x == (int)endXHeader) && (y == (int)yHeader))
+        if ((x == (int) endXHeader) && (y == (int) yHeader))
         {
             columnsSort[i] = !columnsSort[i];
             SortColumn(i);
@@ -1602,29 +1606,19 @@ void GridControlContext::SortColumn(int colIndex)
         return;
     }
 
-    // this is not that efficient - you could replace it with indexes, sort and then swap
-    std::vector<GridCellData> column;
-    column.reserve(rowsNo);
-    for (auto j = 0U; j < rowsNo; j++)
+    auto incSort = [](const GridCellData& a, const GridCellData& b) -> bool
+    { return a.content.compare(b.content) < 0; };
+    auto decSort = [](const GridCellData& a, const GridCellData& b) -> bool
+    { return a.content.compare(b.content) > 0; };
+
+    auto column = &(*cells)[colIndex];
+    if (columnsSort[colIndex])
     {
-        const auto cell = colIndex + j * columnsNo;
-        column.emplace_back(cells->at(cell));
+        std::sort(column->begin(), column->end(), incSort);
     }
-
-    std::sort(
-          column.begin(),
-          column.end(),
-          [](const GridCellData& a, const GridCellData& b) -> bool { return a.content.compare(b.content) < 0; });
-
-    if (columnsSort[colIndex] == false)
+    else
     {
-        std::reverse(column.begin(), column.end());
-    }
-
-    for (auto j = 0U; j < rowsNo; j++)
-    {
-        const auto cell = colIndex + j * columnsNo;
-        (*cells)[cell]  = column[j];
+        std::sort(column->begin(), column->end(), decSort);
     }
 }
 
@@ -1633,12 +1627,21 @@ void GridControlContext::FindDuplicates()
     duplicatedCellsIndexes.clear();
     CHECKRET(selectedCellsIndexes.size() == 1, "");
 
-    const auto& content = (*cells)[selectedCellsIndexes[0]].content;
-    for (const auto& [key, value] : *cells)
+    const auto cellColumn = selectedCellsIndexes[0] % columnsNo;
+    const auto cellRow    = selectedCellsIndexes[0] / columnsNo;
+
+    const auto& content = (*cells)[cellColumn][cellRow].content;
+    for (auto column = cells->begin(); column != cells->end(); ++column)
     {
-        if (content.compare(value.content) == 0)
+        const auto columnIndex = std::distance(cells->begin(), column);
+        for (auto cell = column->begin(); cell != column->end(); ++cell)
         {
-            duplicatedCellsIndexes.emplace_back(key);
+            const auto rowIndex = std::distance(column->begin(), cell);
+            if (content.compare(cell->content) == 0)
+            {
+                const auto key = rowIndex * columnsNo + columnIndex;
+                duplicatedCellsIndexes.emplace_back(key);
+            }
         }
     }
 
