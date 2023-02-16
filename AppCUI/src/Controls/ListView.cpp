@@ -36,7 +36,9 @@ InternalListViewItem::InternalListViewItem(const InternalListViewItem& obj) : Da
     this->XOffset   = obj.XOffset;
     for (uint32 tr = 0; tr < MAX_LISTVIEW_COLUMNS; tr++)
     {
-        this->SubItem[tr] = obj.SubItem[tr];
+        this->SubItem[tr]         = obj.SubItem[tr];
+        this->subItemsColored[tr] = obj.subItemsColored[tr];
+        this->subItemsColor[tr]   = obj.subItemsColor[tr];
     }
 }
 InternalListViewItem::InternalListViewItem(InternalListViewItem&& obj) noexcept : Data(obj.Data)
@@ -48,7 +50,9 @@ InternalListViewItem::InternalListViewItem(InternalListViewItem&& obj) noexcept 
     this->XOffset   = obj.XOffset;
     for (uint32 tr = 0; tr < MAX_LISTVIEW_COLUMNS; tr++)
     {
-        this->SubItem[tr] = obj.SubItem[tr];
+        this->SubItem[tr]         = obj.SubItem[tr];
+        this->subItemsColored[tr] = obj.subItemsColored[tr];
+        this->subItemsColor[tr]   = obj.subItemsColor[tr];
     }
 }
 
@@ -80,6 +84,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     {
         checkCol = uncheckCol = Cfg->Symbol.Inactive;
     }
+
     // select color based on item type
     switch (item->Type)
     {
@@ -116,6 +121,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
     default:
         break;
     }
+
     // disable is not active
     if (!(Flags & GATTR_ENABLE))
         itemCol = Cfg->Text.Inactive;
@@ -147,6 +153,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         renderer.WriteText(*subitem, params);
         return;
     }
+
     if (item->Height > 1)
     {
         params.Flags = WriteTextFlags::MultipleLines | WriteTextFlags::OverwriteColors |
@@ -157,6 +164,7 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
                   static_cast<WriteTextFlags>((uint32) params.Flags - (uint32) WriteTextFlags::OverwriteColors);
         }
     }
+
     // first column
     const auto& firstColumn = this->Header[0];
     int end_first_column    = x + ((int) firstColumn.width);
@@ -179,7 +187,20 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
         params.Width = end_first_column - x;
         params.X     = x;
         params.Align = firstColumn.align;
-        renderer.WriteText(*subitem, params);
+
+        const auto tr = (subitem - item->SubItem) / sizeof(CharacterBuffer);
+        if (item->Type == ListViewItem::Type::SubItemColored && item->subItemsColored[tr] == true &&
+            (this->Filter.filterMode == ListViewFilterMode::None || this->Filter.SearchText.Len() == 0))
+        {
+            const auto previousColor = params.Color;
+            params.Color             = item->subItemsColor[tr];
+            renderer.WriteText(*subitem, params);
+            params.Color = previousColor;
+        }
+        else
+        {
+            renderer.WriteText(*subitem, params);
+        }
     }
     // rest of the columns
     itemStart = x;
@@ -194,7 +215,19 @@ void ListViewControlContext::DrawItem(Graphics::Renderer& renderer, InternalList
             params.Width       = column.width;
             params.X           = column.x;
             params.Align       = column.align;
-            renderer.WriteText(*subitem, params);
+
+            if (item->Type == ListViewItem::Type::SubItemColored && item->subItemsColored[tr] == true &&
+                (this->Filter.filterMode == ListViewFilterMode::None || this->Filter.SearchText.Len() == 0))
+            {
+                const auto previousColor = params.Color;
+                params.Color             = item->subItemsColor[tr];
+                renderer.WriteText(*subitem, params);
+                params.Color = previousColor;
+            }
+            else
+            {
+                renderer.WriteText(*subitem, params);
+            }
         }
         subitem++;
     }
@@ -411,6 +444,20 @@ bool ListViewControlContext::SetItemColor(ItemHandle item, ColorPair color)
     PREPARE_LISTVIEW_ITEM(item, false);
     i.ItemColor = color;
     i.Type      = ListViewItem::Type::Colored;
+    return true;
+}
+bool ListViewControlContext::SetItemColor(ItemHandle item, uint32 subItemIndex, ColorPair color)
+{
+    PREPARE_LISTVIEW_ITEM(item, false);
+    CHECK(subItemIndex < Header.GetColumnsCount(),
+          false,
+          "Invalid column index (%d), should be smaller than %d",
+          subItemIndex,
+          Header.GetColumnsCount());
+    CHECK(subItemIndex < MAX_LISTVIEW_COLUMNS, false, "Subitem must be smaller than 64");
+    i.SubItem[subItemIndex].SetColor(color);
+    i.subItemsColored[subItemIndex] = true;
+    i.subItemsColor[subItemIndex]   = color;
     return true;
 }
 bool ListViewControlContext::SetItemType(ItemHandle item, ListViewItem::Type type)
@@ -1582,10 +1629,15 @@ uint32 ListViewItem::GetXOffset() const
     LVICHECK(0);
     return LVIC->GetItemXOffset(item);
 }
-bool ListViewItem::SetColor(ColorPair col)
+bool ListViewItem::SetColor(Graphics::ColorPair color)
 {
     LVICHECK(false);
-    return LVIC->SetItemColor(item, col);
+    return LVIC->SetItemColor(item, color);
+}
+bool ListViewItem::SetColor(uint32 subItemIndex, Graphics::ColorPair color)
+{
+    LVICHECK(false);
+    return LVIC->SetItemColor(item, subItemIndex, color);
 }
 bool ListViewItem::SetSelected(bool select)
 {
