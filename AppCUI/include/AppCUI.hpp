@@ -3125,7 +3125,8 @@ namespace Controls
             Emphasized_2       = 6,
             Emphasized_3       = 7,
             Category           = 8,
-            Colored            = 9
+            Colored            = 9,
+            SubItemColored     = 10
         };
 
       public:
@@ -3150,6 +3151,7 @@ namespace Controls
         bool SetXOffset(uint32 value);
         uint32 GetXOffset() const;
         bool SetColor(Graphics::ColorPair color);
+        bool SetColor(uint32 subItemIndex, Graphics::ColorPair color);
         bool SetSelected(bool select);
         bool IsSelected() const;
         bool IsCurrent() const;
