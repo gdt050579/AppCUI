@@ -667,7 +667,7 @@ namespace Utils
         template <typename C>
         constexpr inline Reference<C> ToObjectRef()
         {
-            return Reference<C>((C*) (this->ptr));
+            return Reference<C>(dynamic_cast<C*>(this->ptr));
         }
         constexpr inline operator size_t()
         {
