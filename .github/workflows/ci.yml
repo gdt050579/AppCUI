@@ -42,9 +42,9 @@ jobs:
     # temporarily install pkg-config via brew
     - name: Install pkg-config
       run: |
-        brew update
+        # brew update
         brew install pkg-config
-        brew upgrade
+        # brew upgrade
       
     - name: Install sdl
       run: brew install sdl2

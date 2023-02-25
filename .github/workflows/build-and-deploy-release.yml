@@ -113,9 +113,9 @@ jobs:
     # temporarily install pkg-config via brew
     - name: Install pkg-config
       run: |
-        brew update
+        # brew update
         brew install pkg-config
-        brew upgrade
+        # brew upgrade
     
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
