@@ -1149,17 +1149,18 @@ namespace Utils
 
     class EXPORT String
     {
-        char* Text;
-        uint32 Size;
-        uint32 Allocated;
+        char* Text{ nullptr };
+        uint32 Size{ 0 };
+        uint32 Allocated{ 0 };
 
         bool Grow(uint32 newSize);
 
       public:
-        String(void);
+        String() = default;
+        String(const std::string_view& text);
         String(const String& s);
         String(String&& s);
-        ~String(void);
+        ~String();
 
         // Static functions
         static uint32 Len(const char* string);
