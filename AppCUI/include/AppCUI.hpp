@@ -5547,6 +5547,8 @@ namespace Application
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
     EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
+    EXPORT Controls::ItemHandle AddWindow(
+          unique_ptr<Controls::Window> wnd, Utils::Reference<Controls::Window> referalWindow);
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
