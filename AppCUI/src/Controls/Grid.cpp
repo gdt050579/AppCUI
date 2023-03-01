@@ -1,4 +1,3 @@
-#include <fstream>
 #include "ControlContext.hpp"
 
 namespace AppCUI
@@ -61,13 +60,13 @@ void Grid::Paint(Renderer& renderer)
         context->DrawBoxes(renderer);
     }
 
-    const auto startColumn = std::max<>(0, (-context->offsetX - (int)context->cWidth) / (int)context->cWidth);
-    const auto endColumn = std::max<>(0, (context->Layout.Width - context->offsetX + (int)context->cWidth)
-                                                    / (int)context->cWidth - 1);
+    const auto startColumn = std::max<>(0, (-context->offsetX - (int) context->cWidth) / (int) context->cWidth);
+    const auto endColumn =
+          std::max<>(0, (context->Layout.Width - context->offsetX + (int) context->cWidth) / (int) context->cWidth - 1);
 
-    const auto startRow = std::max<>(0, (-context->offsetY - (int)context->cHeight) / (int)context->cHeight);
-    const auto endRow = std::max<>(0, (context->Layout.Height - context->offsetY + (int)context->cHeight)
-                                                 / (int)context->cHeight - 1);
+    const auto startRow = std::max<>(0, (-context->offsetY - (int) context->cHeight) / (int) context->cHeight);
+    const auto endRow   = std::max<>(
+          0, (context->Layout.Height - context->offsetY + (int) context->cHeight) / (int) context->cHeight - 1);
     for (auto columnIndex = startColumn; columnIndex < endColumn; ++columnIndex)
     {
         for (auto rowIndex = startRow; rowIndex < endRow; ++rowIndex)
@@ -663,14 +662,12 @@ void Controls::Grid::Filter()
 
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
-    const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
-    const auto startColumn = std::max<>(0, (-offsetX - (int)cWidth) / (int)cWidth);
-    const auto endColumn = std::max<>(0, (Layout.Width - offsetX + (int)cWidth)
-                                                   / (int)cWidth - 1);
+    const auto color       = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
+    const auto startColumn = std::max<>(0, (-offsetX - (int) cWidth) / (int) cWidth);
+    const auto endColumn   = std::max<>(0, (Layout.Width - offsetX + (int) cWidth) / (int) cWidth - 1);
 
-    const auto startRow = std::max<>(0, (-offsetY - (int)cHeight) / (int)cHeight);
-    const auto endRow = std::max<>(0, (Layout.Height - offsetY + (int)cHeight)
-                                                / (int)cHeight - 1);
+    const auto startRow = std::max<>(0, (-offsetY - (int) cHeight) / (int) cHeight);
+    const auto endRow   = std::max<>(0, (Layout.Height - offsetY + (int) cHeight) / (int) cHeight - 1);
 
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None &&
         (flags & GridFlags::HideVerticalLines) == GridFlags::None)
@@ -759,10 +756,15 @@ void GridControlContext::DrawLines(Renderer& renderer)
 {
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
 
-    for (auto i = 0U; i <= columnsNo; i++)
+    const auto startColumn = std::max<>(0, (-offsetX - (int) cWidth) / (int) cWidth);
+    const auto endColumn   = std::max<>(0, (Layout.Width - offsetX + (int) cWidth) / (int) cWidth - 1);
+
+    const auto startRow = std::max<>(0, (-offsetY - (int) cHeight) / (int) cHeight);
+    const auto endRow   = std::max<>(0, (Layout.Height - offsetY + (int) cHeight) / (int) cHeight - 1);
+    for (auto i = startColumn; i <= endColumn; i++)
     {
         const auto x = offsetX + i * cWidth;
-        for (auto j = 0U; j <= rowsNo; j++)
+        for (auto j = startRow; j <= endRow; j++)
         {
             const auto y = offsetY + j * cHeight;
 
@@ -912,9 +914,14 @@ SpecialChars GridControlContext::ComputeBoxType(
 
 void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
 {
-    for (auto i = 0U; i < columnsNo; i++)
+    const auto startColumn = std::max<>(0, (-offsetX - (int) cWidth) / (int) cWidth);
+    const auto endColumn   = std::max<>(0, (Layout.Width - offsetX + (int) cWidth) / (int) cWidth - 1);
+
+    const auto startRow = std::max<>(0, (-offsetY - (int) cHeight) / (int) cHeight);
+    const auto endRow   = std::max<>(0, (Layout.Height - offsetY + (int) cHeight) / (int) cHeight - 1);
+    for (auto i = startColumn; i < endColumn; i++)
     {
-        for (auto j = 0U; j < rowsNo; j++)
+        for (auto j = startRow; j < endRow; j++)
         {
             DrawCellBackground(renderer, GridCellStatus::Normal, i, j);
         }
