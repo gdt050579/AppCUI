@@ -39,9 +39,9 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
 
 void Grid::Paint(Renderer& renderer)
 {
+   
     auto context = reinterpret_cast<GridControlContext*>(Context);
     context->UpdateGridParameters(true);
-
     renderer.Clear(' ');
 
     context->DrawHeader(renderer);
@@ -62,6 +62,7 @@ void Grid::Paint(Renderer& renderer)
         context->DrawBoxes(renderer);
     }
 
+
     for (auto columnIndex = START(context->offsetX, context->cWidth);
          columnIndex < END(context->Layout.Width, context->offsetX, context->cWidth);
          ++columnIndex)
@@ -79,7 +80,7 @@ void Grid::Paint(Renderer& renderer)
 bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
-
+    
     switch (keyCode)
     {
     case Input::Key::Left:
@@ -1635,13 +1636,11 @@ void GridControlContext::FindDuplicates()
     const auto cellRow    = selectedCellsIndexes[0] / columnsNo;
 
     const auto& content = (*cells)[cellColumn][cellRow].content;
-    for (auto column = cells->begin(); column != cells->end(); ++column)
+    for (auto columnIndex = START(offsetX, cWidth); columnIndex <= END(Layout.Width, offsetX, cWidth); columnIndex++)
     {
-        const auto columnIndex = std::distance(cells->begin(), column);
-        for (auto cell = column->begin(); cell != column->end(); ++cell)
+        for (auto rowIndex = START(offsetY, cHeight); rowIndex <= END(Layout.Height, offsetY, cHeight); rowIndex++)
         {
-            const auto rowIndex = std::distance(column->begin(), cell);
-            if (content.compare(cell->content) == 0)
+            if (content.compare((*cells)[columnIndex][rowIndex].content) == 0) 
             {
                 const auto key = rowIndex * columnsNo + columnIndex;
                 duplicatedCellsIndexes.emplace_back(key);
