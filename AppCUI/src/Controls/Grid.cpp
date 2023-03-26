@@ -1,6 +1,6 @@
 #include "ControlContext.hpp"
 #define START(offset, dim)          (std::max<>(0, -offset - (int) dim) / (int) dim)
-#define END(layoutDim, offset, dim) (std::max<>(0, (layoutDim - offset + (int) dim) / (int) dim - 1))
+#define END(layoutDim, offset, dim, maxSize) (std::min<>((int) maxSize, (layoutDim - offset + (int) dim - 1) / (int) dim))
 
 namespace AppCUI
 {
@@ -39,9 +39,9 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
 
 void Grid::Paint(Renderer& renderer)
 {
-   
     auto context = reinterpret_cast<GridControlContext*>(Context);
     context->UpdateGridParameters(true);
+
     renderer.Clear(' ');
 
     context->DrawHeader(renderer);
@@ -62,13 +62,12 @@ void Grid::Paint(Renderer& renderer)
         context->DrawBoxes(renderer);
     }
 
-
     for (auto columnIndex = START(context->offsetX, context->cWidth);
-         columnIndex < END(context->Layout.Width, context->offsetX, context->cWidth);
+         columnIndex < END(context->Layout.Width, context->offsetX, context->cWidth, context->columnsNo);
          ++columnIndex)
     {
         for (auto rowIndex = START(context->offsetY, context->cHeight);
-             rowIndex < END(context->Layout.Height, context->offsetY, context->cHeight);
+             rowIndex < END(context->Layout.Height, context->offsetY, context->cHeight, context->rowsNo);
              ++rowIndex)
         {
             const auto cellIndex = rowIndex * context->columnsNo + columnIndex;
@@ -666,10 +665,10 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None &&
         (flags & GridFlags::HideVerticalLines) == GridFlags::None)
     {
-        for (auto i = START(offsetX, cWidth); i <= END(Layout.Width, offsetX, cWidth); i++)
+        for (auto i = START(offsetX, cWidth); i < END(Layout.Width, offsetX, cWidth, columnsNo) + 1; i++)
         {
             const auto x = offsetX + i * cWidth;
-            for (auto j = START(offsetY, cHeight); j <= END(Layout.Height, offsetY, cHeight); j++)
+            for (auto j = START(offsetY, cHeight); j < END(Layout.Height, offsetY, cHeight, rowsNo) + 1; j++)
             {
                 const auto y = offsetY + j * cHeight;
 
@@ -749,11 +748,13 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
 void GridControlContext::DrawLines(Renderer& renderer)
 {
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
-    for (auto i = START(offsetX, cWidth); i <= END(Layout.Width, offsetX, cWidth); i++)
+    const auto value = END(Layout.Width, offsetX, cWidth, columnsNo);
+    const auto secondValue = END(Layout.Height, offsetY, cHeight, rowsNo);
+    for (auto i = START(offsetX, cWidth); i < END(Layout.Width, offsetX, cWidth, columnsNo) + 1; i++)
     {
         const auto x = offsetX + i * cWidth;
-        for (auto j = START(offsetY, cHeight); j <= END(Layout.Height, offsetY, cHeight); j++)
-        {
+        for (auto j = START(offsetY, cHeight); j < END(Layout.Height, offsetY, cHeight, rowsNo) + 1; j++)
+        { 
             const auto y = offsetY + j * cHeight;
 
             if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
@@ -902,9 +903,9 @@ SpecialChars GridControlContext::ComputeBoxType(
 
 void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
 {
-    for (auto i = START(offsetX, cWidth); i < END(Layout.Width, offsetX, cWidth); i++)
+    for (auto i = START(offsetX, cWidth); i < END(Layout.Width, offsetX, cWidth, columnsNo); i++)
     {
-        for (auto j = START(offsetY, cHeight); j < END(Layout.Height, offsetY, cHeight); j++)
+        for (auto j = START(offsetY, cHeight); j < END(Layout.Height, offsetY, cHeight, rowsNo); j++)
         {
             DrawCellBackground(renderer, GridCellStatus::Normal, i, j);
         }
@@ -1636,9 +1637,9 @@ void GridControlContext::FindDuplicates()
     const auto cellRow    = selectedCellsIndexes[0] / columnsNo;
 
     const auto& content = (*cells)[cellColumn][cellRow].content;
-    for (auto columnIndex = START(offsetX, cWidth); columnIndex <= END(Layout.Width, offsetX, cWidth); columnIndex++)
+    for (auto columnIndex = START(offsetX, cWidth); columnIndex < END(Layout.Width, offsetX, cWidth, columnsNo); columnIndex++)
     {
-        for (auto rowIndex = START(offsetY, cHeight); rowIndex <= END(Layout.Height, offsetY, cHeight); rowIndex++)
+        for (auto rowIndex = START(offsetY, cHeight); rowIndex < END(Layout.Height, offsetY, cHeight, rowsNo); rowIndex++)
         {
             if (content.compare((*cells)[columnIndex][rowIndex].content) == 0) 
             {
