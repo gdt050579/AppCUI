@@ -682,8 +682,13 @@ void GridControlContext::FilterColumn(int columnIndex)
 
     const auto filterColumnIndex = selectedCellsIndexes[0] % columnsNo;
     const auto filterRowIndex    = selectedCellsIndexes[0] / columnsNo;
+    
+    ProgressStatus::Init("Searching...", rowsNo);
+    LocalString<512> ls;
+    const char* format = "Reading [%d/%d] rows...";
     for (auto rowIndex = 0; rowIndex < rowsNo; rowIndex++)
     {
+        ProgressStatus::Update(rowIndex, ls.Format(format, rowIndex, rowsNo)); 
         auto va = (*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]);
         if ((*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]) != std::u16string::npos)
         {
