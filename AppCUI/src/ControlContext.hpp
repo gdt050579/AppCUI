@@ -1027,6 +1027,7 @@ class GridControlContext : public ControlContext
     void ReserveMap();
     void ToggleSorting(int x, int y);
     void SortColumn(int index);
+    void FilterColumn(int columnIndex);
     void FindDuplicates();
     uint32 GetHeaderHeight() const;
     uint32 GetColumnSelected() const;

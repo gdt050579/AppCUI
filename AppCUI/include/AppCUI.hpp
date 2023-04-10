@@ -4711,6 +4711,7 @@ namespace Controls
 
         uint32 GetCellsCount() const;
         void SetGridDimensions(const Graphics::Size& dimensions);
+        void SetFilterOnCurrentColumn(const std::u16string& filter);
         Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
               uint32 index,

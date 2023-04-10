@@ -79,7 +79,7 @@ void Grid::Paint(Renderer& renderer)
 bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
-    
+
     switch (keyCode)
     {
     case Input::Key::Left:
@@ -456,6 +456,18 @@ void Controls::Grid::SetGridDimensions(const Graphics::Size& dimensions)
     (*context->cells).clear();
 }
 
+void Controls::Grid::SetFilterOnCurrentColumn(const std::u16string& filter)
+{
+    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    if (context->selectedCellsIndexes.empty())
+    {
+        return;
+    }
+
+    const auto columnIndex              = context->selectedCellsIndexes[0] % context->columnsNo;
+    context->columnsFilter[columnIndex] = filter;
+}
+
 Size Grid::GetGridDimensions() const
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
@@ -655,8 +667,50 @@ void Controls::Grid::Filter()
     auto context = reinterpret_cast<GridControlContext*>(Context);
     if ((context->flags & GridFlags::Filter) != GridFlags::None)
     {
-        // TODO:
+        if (context->selectedCellsIndexes.size() == 1)
+        {
+            const auto columnIndex = context->selectedCellsIndexes[0] % context->columnsNo;
+            context->FilterColumn(columnIndex);
+        }
     }
+}
+
+void GridControlContext::FilterColumn(int columnIndex)
+{
+    std::vector<uint32> filteredRows;
+    filteredRows.reserve(rowsNo);
+
+    const auto filterColumnIndex = selectedCellsIndexes[0] % columnsNo;
+    const auto filterRowIndex    = selectedCellsIndexes[0] / columnsNo;
+    for (auto rowIndex = 0; rowIndex < rowsNo; rowIndex++)
+    {
+        auto va = (*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]);
+        if ((*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]) != std::u16string::npos)
+        {
+            filteredRows.push_back(rowIndex);
+        }
+    }
+
+    if (filteredRows.empty())
+    {
+        return;
+    }
+
+    auto newCells = std::vector<std::vector<GridCellData>>();
+    auto tmpRow   = std::vector<GridCellData>(filteredRows.size());
+    newCells.reserve(columnsNo);
+
+    for (auto columnIndex = 0; columnIndex < columnsNo; columnIndex++)
+    {
+        for (auto filteredIndex = 0; filteredIndex < filteredRows.size(); filteredIndex++)
+        {
+            tmpRow[filteredIndex] = (*cells)[columnIndex][filteredRows[filteredIndex]];
+        }
+        newCells.push_back(tmpRow);
+    }
+
+    *cells = newCells;
+    rowsNo = filteredRows.size();
 }
 
 void GridControlContext::DrawBoxes(Renderer& renderer)
@@ -748,13 +802,11 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
 void GridControlContext::DrawLines(Renderer& renderer)
 {
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
-    const auto value = END(Layout.Width, offsetX, cWidth, columnsNo);
-    const auto secondValue = END(Layout.Height, offsetY, cHeight, rowsNo);
     for (auto i = START(offsetX, cWidth); i < END(Layout.Width, offsetX, cWidth, columnsNo) + 1; i++)
     {
         const auto x = offsetX + i * cWidth;
         for (auto j = START(offsetY, cHeight); j < END(Layout.Height, offsetY, cHeight, rowsNo) + 1; j++)
-        { 
+        {
             const auto y = offsetY + j * cHeight;
 
             if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
@@ -1641,7 +1693,7 @@ void GridControlContext::FindDuplicates()
     {
         for (auto rowIndex = START(offsetY, cHeight); rowIndex < END(Layout.Height, offsetY, cHeight, rowsNo); rowIndex++)
         {
-            if (content.compare((*cells)[columnIndex][rowIndex].content) == 0) 
+            if (content.compare((*cells)[columnIndex][rowIndex].content) == 0)
             {
                 const auto key = rowIndex * columnsNo + columnIndex;
                 duplicatedCellsIndexes.emplace_back(key);
