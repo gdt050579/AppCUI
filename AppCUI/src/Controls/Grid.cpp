@@ -1,6 +1,7 @@
 #include "ControlContext.hpp"
-#define START(offset, dim)          (std::max<>(0, -offset - (int) dim) / (int) dim)
-#define END(layoutDim, offset, dim, maxSize) (std::min<>((int) maxSize, (layoutDim - offset + (int) dim - 1) / (int) dim))
+#define START(offset, dim) (std::max<>(0, -offset - (int) dim) / (int) dim)
+#define END(layoutDim, offset, dim, maxSize)                                                                           \
+    (std::min<>((int) maxSize, (layoutDim - offset + (int) dim - 1) / (int) dim))
 
 namespace AppCUI
 {
@@ -453,18 +454,30 @@ void Controls::Grid::SetGridDimensions(const Graphics::Size& dimensions)
     context->UpdateGridParameters();
 
     context->columnsSort.insert(context->columnsSort.end(), context->columnsNo, true);
-    (*context->cells).clear();
+    context->ReserveMap();
+
+    context->columnsFilter.clear();
+    context->columnsFilter.reserve(context->columnsNo);
+    context->columnsFilter.insert(context->columnsFilter.end(), context->columnsNo, u"");
 }
 
 void Controls::Grid::SetFilterOnCurrentColumn(const std::u16string& filter)
 {
     const auto context = reinterpret_cast<GridControlContext*>(Context);
-    if (context->selectedCellsIndexes.empty())
+    uint32 columnIndex;
+    if (context->anchorCellIndex != 0xFFFFFFFFU)
+    {
+        columnIndex = context->anchorCellIndex % context->columnsNo;
+    }
+    else if (context->hoveredCellIndex != 0xFFFFFFFFU)
+    {
+        columnIndex = context->hoveredCellIndex % context->columnsNo;
+    }
+    else
     {
         return;
     }
 
-    const auto columnIndex              = context->selectedCellsIndexes[0] % context->columnsNo;
     context->columnsFilter[columnIndex] = filter;
 }
 
@@ -667,11 +680,21 @@ void Controls::Grid::Filter()
     auto context = reinterpret_cast<GridControlContext*>(Context);
     if ((context->flags & GridFlags::Filter) != GridFlags::None)
     {
-        if (context->selectedCellsIndexes.size() == 1)
+        uint32 columnIndex;
+        if (context->anchorCellIndex != 0xFFFFFFFFU)
         {
-            const auto columnIndex = context->selectedCellsIndexes[0] % context->columnsNo;
-            context->FilterColumn(columnIndex);
+            columnIndex = context->anchorCellIndex % context->columnsNo;
         }
+        else if (context->hoveredCellIndex != 0xFFFFFFFFU)
+        {
+            columnIndex = context->hoveredCellIndex % context->columnsNo;
+        }
+        else
+        {
+            return;
+        }
+
+        context->FilterColumn(columnIndex);
     }
 }
 
@@ -680,16 +703,12 @@ void GridControlContext::FilterColumn(int columnIndex)
     std::vector<uint32> filteredRows;
     filteredRows.reserve(rowsNo);
 
-    const auto filterColumnIndex = selectedCellsIndexes[0] % columnsNo;
-    const auto filterRowIndex    = selectedCellsIndexes[0] / columnsNo;
-    
     ProgressStatus::Init("Searching...", rowsNo);
     LocalString<512> ls;
     const char* format = "Reading [%d/%d] rows...";
     for (auto rowIndex = 0; rowIndex < rowsNo; rowIndex++)
     {
-        ProgressStatus::Update(rowIndex, ls.Format(format, rowIndex, rowsNo)); 
-        auto va = (*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]);
+        ProgressStatus::Update(rowIndex, ls.Format(format, rowIndex, rowsNo));
         if ((*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]) != std::u16string::npos)
         {
             filteredRows.push_back(rowIndex);
@@ -1694,9 +1713,11 @@ void GridControlContext::FindDuplicates()
     const auto cellRow    = selectedCellsIndexes[0] / columnsNo;
 
     const auto& content = (*cells)[cellColumn][cellRow].content;
-    for (auto columnIndex = START(offsetX, cWidth); columnIndex < END(Layout.Width, offsetX, cWidth, columnsNo); columnIndex++)
+    for (auto columnIndex = START(offsetX, cWidth); columnIndex < END(Layout.Width, offsetX, cWidth, columnsNo);
+         columnIndex++)
     {
-        for (auto rowIndex = START(offsetY, cHeight); rowIndex < END(Layout.Height, offsetY, cHeight, rowsNo); rowIndex++)
+        for (auto rowIndex = START(offsetY, cHeight); rowIndex < END(Layout.Height, offsetY, cHeight, rowsNo);
+             rowIndex++)
         {
             if (content.compare((*cells)[columnIndex][rowIndex].content) == 0)
             {
