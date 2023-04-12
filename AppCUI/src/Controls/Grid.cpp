@@ -739,6 +739,11 @@ void GridControlContext::FilterColumn(int columnIndex)
 
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
+    if (rowsNo == 0)
+    {
+        return;
+    }
+
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None &&
         (flags & GridFlags::HideVerticalLines) == GridFlags::None)
@@ -825,6 +830,11 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
 
 void GridControlContext::DrawLines(Renderer& renderer)
 {
+    if (rowsNo == 0)
+    {
+        return;
+    }
+
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
     for (auto i = START(offsetX, cWidth); i < END(Layout.Width, offsetX, cWidth, columnsNo) + 1; i++)
     {
@@ -1105,11 +1115,11 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     {
         const auto x    = offsetX + i * cWidth;
         const auto y    = offsetY - GetHeaderHeight();
-        const auto endY = offsetY + GetHeaderHeight();
+        const auto endY = offsetY;
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
-            renderer.DrawVerticalLine(x, y, endY + 10, lineColor, true);
+            renderer.DrawVerticalLine(x, y, endY - 1, lineColor, true);
         }
     }
 
