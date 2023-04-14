@@ -110,8 +110,8 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
         {
             context->selectedCellsIndexes.clear();
             context->duplicatedCellsIndexes.clear();
-            context->anchorCellIndex  = 0xFFFFFFFFU;
-            context->hoveredCellIndex = 0xFFFFFFFFU;
+            context->anchorCellIndex  = InvalidCellIndex;
+            context->hoveredCellIndex = InvalidCellIndex;
 
             return true;
         }
@@ -473,11 +473,11 @@ void Controls::Grid::SetFilterOnCurrentColumn(const std::u16string& filter)
     const auto context        = reinterpret_cast<GridControlContext*>(Context);
     context->shouldPaintError = true;
     uint32 columnIndex;
-    if (context->anchorCellIndex != 0xFFFFFFFFU)
+    if (context->anchorCellIndex != InvalidCellIndex)
     {
         columnIndex = context->anchorCellIndex % context->columnsNo;
     }
-    else if (context->hoveredCellIndex != 0xFFFFFFFFU)
+    else if (context->hoveredCellIndex != InvalidCellIndex)
     {
         columnIndex = context->hoveredCellIndex % context->columnsNo;
     }
@@ -689,16 +689,16 @@ void Controls::Grid::Filter()
     if ((context->flags & GridFlags::Filter) != GridFlags::None)
     {
         uint32 columnIndex;
-        if (context->anchorCellIndex != 0xFFFFFFFFU)
+        if (context->anchorCellIndex != InvalidCellIndex)
         {
             columnIndex               = context->anchorCellIndex % context->columnsNo;
-            context->anchorCellIndex  = 0xFFFFFFFFU;
-            context->hoveredCellIndex = 0xFFFFFFFFU;
+            context->anchorCellIndex  = InvalidCellIndex;
+            context->hoveredCellIndex = InvalidCellIndex;
         }
-        else if (context->hoveredCellIndex != 0xFFFFFFFFU)
+        else if (context->hoveredCellIndex != InvalidCellIndex)
         {
             columnIndex               = context->hoveredCellIndex % context->columnsNo;
-            context->hoveredCellIndex = 0xFFFFFFFFU;
+            context->hoveredCellIndex = InvalidCellIndex;
         }
         else
         {
