@@ -663,7 +663,7 @@ struct ColumnsHeaderViewControlContext : public ControlContext
         CopyToClipboard.flags  = CopyClipboardFlags::None;
     }
 };
-enum class ListViewFilterMode: uint8
+enum class ListViewFilterMode : uint8
 {
     None,
     Search,
@@ -732,7 +732,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     void EnableCustomHighlightingMode();
     uint32 GetCheckedItemsCount();
 
-    bool HighlightText(ItemHandle item,uint32 subItemIndex, uint32 offset, uint32 charactersCount);
+    bool HighlightText(ItemHandle item, uint32 subItemIndex, uint32 offset, uint32 charactersCount);
 
     void DeleteAllItems();
 
@@ -990,7 +990,8 @@ class GridControlContext : public ControlContext
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 
-    bool startedMoving = false;
+    bool startedMoving    = false;
+    bool shouldPaintError = false;
 
     Point lastLocationDraggedRightClicked{ 0, 0 };
 

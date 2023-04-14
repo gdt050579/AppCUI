@@ -1,4 +1,9 @@
 #include "ControlContext.hpp"
+
+#ifdef MessageBox
+#    undef MessageBox
+#endif
+
 #define START(offset, dim) (std::max<>(0, -offset - (int) dim) / (int) dim)
 #define END(layoutDim, offset, dim, maxSize)                                                                           \
     (std::min<>((int) maxSize, (layoutDim - offset + (int) dim - 1) / (int) dim))
@@ -44,7 +49,6 @@ void Grid::Paint(Renderer& renderer)
     context->UpdateGridParameters(true);
 
     renderer.Clear(' ');
-
     context->DrawHeader(renderer);
 
     if ((context->flags & GridFlags::TransparentBackground) == GridFlags::None)
@@ -106,6 +110,9 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
         {
             context->selectedCellsIndexes.clear();
             context->duplicatedCellsIndexes.clear();
+            context->anchorCellIndex  = 0xFFFFFFFFU;
+            context->hoveredCellIndex = 0xFFFFFFFFU;
+
             return true;
         }
         break;
@@ -463,7 +470,8 @@ void Controls::Grid::SetGridDimensions(const Graphics::Size& dimensions)
 
 void Controls::Grid::SetFilterOnCurrentColumn(const std::u16string& filter)
 {
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
+    const auto context        = reinterpret_cast<GridControlContext*>(Context);
+    context->shouldPaintError = true;
     uint32 columnIndex;
     if (context->anchorCellIndex != 0xFFFFFFFFU)
     {
@@ -683,17 +691,25 @@ void Controls::Grid::Filter()
         uint32 columnIndex;
         if (context->anchorCellIndex != 0xFFFFFFFFU)
         {
-            columnIndex = context->anchorCellIndex % context->columnsNo;
+            columnIndex               = context->anchorCellIndex % context->columnsNo;
+            context->anchorCellIndex  = 0xFFFFFFFFU;
+            context->hoveredCellIndex = 0xFFFFFFFFU;
         }
         else if (context->hoveredCellIndex != 0xFFFFFFFFU)
         {
-            columnIndex = context->hoveredCellIndex % context->columnsNo;
+            columnIndex               = context->hoveredCellIndex % context->columnsNo;
+            context->hoveredCellIndex = 0xFFFFFFFFU;
         }
         else
         {
+            if (context->shouldPaintError)
+            {
+                AppCUI::Dialogs::MessageBox::ShowError("Error!", "No cell selected!");
+                context->shouldPaintError = false;
+            }
             return;
         }
-
+        context->shouldPaintError = false;
         context->FilterColumn(columnIndex);
     }
 }
@@ -717,6 +733,7 @@ void GridControlContext::FilterColumn(int columnIndex)
 
     if (filteredRows.empty())
     {
+        AppCUI::Dialogs::MessageBox::ShowError("Error!", "No results found!");
         return;
     }
 
