@@ -713,6 +713,27 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
 }
 
+void WindowsTerminal::Update()
+{
+    OnFlushToScreen();
+
+    if ((screenCanvas.GetCursorVisibility() != lastCursorVisibility) || (screenCanvas.GetCursorX() != lastCursorX) ||
+        (screenCanvas.GetCursorY() != lastCursorY) || screenCanvas.GetWidth() != lastWidth ||
+        screenCanvas.GetHeight() != lastHeight)
+    {
+        if (this->OnUpdateCursor())
+        {
+            // update last cursor information
+            lastCursorX          = screenCanvas.GetCursorX();
+            lastCursorY          = screenCanvas.GetCursorY();
+            lastCursorVisibility = screenCanvas.GetCursorVisibility();
+
+            lastWidth  = screenCanvas.GetWidth();
+            lastHeight = screenCanvas.GetHeight();
+        }
+    }
+}
+
 bool WindowsTerminal::IsEventAvailable()
 {
     DWORD eventsRead = 0;

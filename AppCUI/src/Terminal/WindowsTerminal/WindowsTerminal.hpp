@@ -16,6 +16,7 @@ namespace Internal
         DWORD64 startTime;
         unique_ptr<CHAR_INFO> consoleBuffer;
         uint32 consoleBufferCount;
+        uint32 lastWidth, lastHeight;
         struct
         {
             uint32 x, y;
@@ -47,6 +48,7 @@ namespace Internal
         virtual void OnFlushToScreen(const Graphics::Rect& r) override;
         virtual bool OnUpdateCursor() override;
         virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
+        virtual void Update() override;
         virtual bool IsEventAvailable() override;
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
         virtual ~WindowsTerminal();

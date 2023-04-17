@@ -49,6 +49,7 @@ void Grid::Paint(Renderer& renderer)
     context->UpdateGridParameters(true);
 
     renderer.Clear(' ');
+    renderer.HideCursor();
     context->DrawHeader(renderer);
 
     if ((context->flags & GridFlags::TransparentBackground) == GridFlags::None)

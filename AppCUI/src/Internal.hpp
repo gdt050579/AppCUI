@@ -224,12 +224,12 @@ namespace Internal
         virtual void GetSystemEvent(Internal::SystemEvent& evnt)              = 0;
         virtual bool IsEventAvailable()                                       = 0;
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) = 0;
+        virtual void Update();
 
         virtual ~AbstractTerminal();
 
         bool Init(const Application::InitializationData& initData);
         void UnInit();
-        void Update();
     };
 
     namespace Config
