@@ -1,6 +1,12 @@
 #include "ControlContext.hpp"
-#define START(offset, dim)          (std::max<>(0, -offset - (int) dim) / (int) dim)
-#define END(layoutDim, offset, dim, maxSize) (std::min<>((int) maxSize, (layoutDim - offset + (int) dim - 1) / (int) dim))
+
+#ifdef MessageBox
+#    undef MessageBox
+#endif
+
+#define START(offset, dim) (std::max<>(0, -offset - (int) dim) / (int) dim)
+#define END(layoutDim, offset, dim, maxSize)                                                                           \
+    (std::min<>((int) maxSize, (layoutDim - offset + (int) dim - 1) / (int) dim))
 
 namespace AppCUI
 {
@@ -43,7 +49,7 @@ void Grid::Paint(Renderer& renderer)
     context->UpdateGridParameters(true);
 
     renderer.Clear(' ');
-
+    renderer.HideCursor();
     context->DrawHeader(renderer);
 
     if ((context->flags & GridFlags::TransparentBackground) == GridFlags::None)
@@ -105,6 +111,9 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
         {
             context->selectedCellsIndexes.clear();
             context->duplicatedCellsIndexes.clear();
+            context->anchorCellIndex  = InvalidCellIndex;
+            context->hoveredCellIndex = InvalidCellIndex;
+
             return true;
         }
         break;
@@ -453,18 +462,31 @@ void Controls::Grid::SetGridDimensions(const Graphics::Size& dimensions)
     context->UpdateGridParameters();
 
     context->columnsSort.insert(context->columnsSort.end(), context->columnsNo, true);
-    (*context->cells).clear();
+    context->ReserveMap();
+
+    context->columnsFilter.clear();
+    context->columnsFilter.reserve(context->columnsNo);
+    context->columnsFilter.insert(context->columnsFilter.end(), context->columnsNo, u"");
 }
 
 void Controls::Grid::SetFilterOnCurrentColumn(const std::u16string& filter)
 {
-    const auto context = reinterpret_cast<GridControlContext*>(Context);
-    if (context->selectedCellsIndexes.empty())
+    const auto context        = reinterpret_cast<GridControlContext*>(Context);
+    context->shouldPaintError = true;
+    uint32 columnIndex;
+    if (context->anchorCellIndex != InvalidCellIndex)
+    {
+        columnIndex = context->anchorCellIndex % context->columnsNo;
+    }
+    else if (context->hoveredCellIndex != InvalidCellIndex)
+    {
+        columnIndex = context->hoveredCellIndex % context->columnsNo;
+    }
+    else
     {
         return;
     }
 
-    const auto columnIndex              = context->selectedCellsIndexes[0] % context->columnsNo;
     context->columnsFilter[columnIndex] = filter;
 }
 
@@ -667,11 +689,29 @@ void Controls::Grid::Filter()
     auto context = reinterpret_cast<GridControlContext*>(Context);
     if ((context->flags & GridFlags::Filter) != GridFlags::None)
     {
-        if (context->selectedCellsIndexes.size() == 1)
+        uint32 columnIndex;
+        if (context->anchorCellIndex != InvalidCellIndex)
         {
-            const auto columnIndex = context->selectedCellsIndexes[0] % context->columnsNo;
-            context->FilterColumn(columnIndex);
+            columnIndex               = context->anchorCellIndex % context->columnsNo;
+            context->anchorCellIndex  = InvalidCellIndex;
+            context->hoveredCellIndex = InvalidCellIndex;
         }
+        else if (context->hoveredCellIndex != InvalidCellIndex)
+        {
+            columnIndex               = context->hoveredCellIndex % context->columnsNo;
+            context->hoveredCellIndex = InvalidCellIndex;
+        }
+        else
+        {
+            if (context->shouldPaintError)
+            {
+                AppCUI::Dialogs::MessageBox::ShowError("Error!", "No cell selected!");
+                context->shouldPaintError = false;
+            }
+            return;
+        }
+        context->shouldPaintError = false;
+        context->FilterColumn(columnIndex);
     }
 }
 
@@ -680,16 +720,12 @@ void GridControlContext::FilterColumn(int columnIndex)
     std::vector<uint32> filteredRows;
     filteredRows.reserve(rowsNo);
 
-    const auto filterColumnIndex = selectedCellsIndexes[0] % columnsNo;
-    const auto filterRowIndex    = selectedCellsIndexes[0] / columnsNo;
-    
     ProgressStatus::Init("Searching...", rowsNo);
     LocalString<512> ls;
     const char* format = "Reading [%d/%d] rows...";
     for (auto rowIndex = 0; rowIndex < rowsNo; rowIndex++)
     {
-        ProgressStatus::Update(rowIndex, ls.Format(format, rowIndex, rowsNo)); 
-        auto va = (*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]);
+        ProgressStatus::Update(rowIndex, ls.Format(format, rowIndex, rowsNo));
         if ((*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]) != std::u16string::npos)
         {
             filteredRows.push_back(rowIndex);
@@ -698,6 +734,7 @@ void GridControlContext::FilterColumn(int columnIndex)
 
     if (filteredRows.empty())
     {
+        AppCUI::Dialogs::MessageBox::ShowError("Error!", "No results found!");
         return;
     }
 
@@ -720,6 +757,11 @@ void GridControlContext::FilterColumn(int columnIndex)
 
 void GridControlContext::DrawBoxes(Renderer& renderer)
 {
+    if (rowsNo == 0)
+    {
+        return;
+    }
+
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None &&
         (flags & GridFlags::HideVerticalLines) == GridFlags::None)
@@ -806,6 +848,11 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
 
 void GridControlContext::DrawLines(Renderer& renderer)
 {
+    if (rowsNo == 0)
+    {
+        return;
+    }
+
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
     for (auto i = START(offsetX, cWidth); i < END(Layout.Width, offsetX, cWidth, columnsNo) + 1; i++)
     {
@@ -1086,11 +1133,11 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     {
         const auto x    = offsetX + i * cWidth;
         const auto y    = offsetY - GetHeaderHeight();
-        const auto endY = offsetY + GetHeaderHeight();
+        const auto endY = offsetY;
 
         if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
         {
-            renderer.DrawVerticalLine(x, y, endY + 10, lineColor, true);
+            renderer.DrawVerticalLine(x, y, endY - 1, lineColor, true);
         }
     }
 
@@ -1694,9 +1741,11 @@ void GridControlContext::FindDuplicates()
     const auto cellRow    = selectedCellsIndexes[0] / columnsNo;
 
     const auto& content = (*cells)[cellColumn][cellRow].content;
-    for (auto columnIndex = START(offsetX, cWidth); columnIndex < END(Layout.Width, offsetX, cWidth, columnsNo); columnIndex++)
+    for (auto columnIndex = START(offsetX, cWidth); columnIndex < END(Layout.Width, offsetX, cWidth, columnsNo);
+         columnIndex++)
     {
-        for (auto rowIndex = START(offsetY, cHeight); rowIndex < END(Layout.Height, offsetY, cHeight, rowsNo); rowIndex++)
+        for (auto rowIndex = START(offsetY, cHeight); rowIndex < END(Layout.Height, offsetY, cHeight, rowsNo);
+             rowIndex++)
         {
             if (content.compare((*cells)[columnIndex][rowIndex].content) == 0)
             {

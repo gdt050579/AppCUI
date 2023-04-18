@@ -993,7 +993,8 @@ class GridControlContext : public ControlContext
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 
-    bool startedMoving = false;
+    bool startedMoving    = false;
+    bool shouldPaintError = false;
 
     Point lastLocationDraggedRightClicked{ 0, 0 };
 
