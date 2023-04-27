@@ -84,11 +84,11 @@ constexpr int KEY_LOCK_COMBO_MODE = ' ';
 constexpr int KEY_ESCAPE          = '\x1B'; // ESC key
 constexpr int KEY_TAB             = '\t';
 
-const static size_t MAX_TTY_COL = 65535;
-const static size_t MAX_TTY_ROW = 65535;
+constexpr size_t MAX_TTY_COL = 65535;
+constexpr size_t MAX_TTY_ROW = 65535;
 
-const static ColorPair defaultColorPair = { Color::White, Color::DarkBlue };
-const static ColorPair pressedColorPair = { Color::Green, Color::Red };
+constexpr ColorPair DEFAULT_COMBO_COLOR{ Color::White, Color::DarkBlue };
+constexpr ColorPair PRESSED_COMBO_COLOR{ Color::Green, Color::Red };
 
 bool NcursesTerminal::OnInit(const Application::InitializationData&)
 {
@@ -145,7 +145,6 @@ void NcursesTerminal::OnFlushToScreen()
     const size_t comboBoxBottom      = height - 1;
     const size_t comboBoxRight       = width - 1;
 
-    cchar_t t;
     if (mode == TerminalMode::TerminalCombo)
     {
         if (canvasState == nullptr)
@@ -161,10 +160,10 @@ void NcursesTerminal::OnFlushToScreen()
             }
         }
 
-        screenCanvas.FillRect(comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, ' ', defaultColorPair);
+        screenCanvas.FillRect(comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, ' ', DEFAULT_COMBO_COLOR);
         screenCanvas.DrawRect(
-              comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, defaultColorPair, LineType::Double);
-        DrawModifiers(comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, defaultColorPair, pressedColorPair);
+              comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, DEFAULT_COMBO_COLOR, LineType::Double);
+        DrawModifiers(comboBoxLeft, comboBoxTop, comboBoxRight, comboBoxBottom, DEFAULT_COMBO_COLOR, PRESSED_COMBO_COLOR);
     }
     else if (canvasState != nullptr)
     {
@@ -185,7 +184,14 @@ void NcursesTerminal::OnFlushToScreen()
         for (size_t x = 0; x < width; x++)
         {
             const Graphics::Character ch = charsBuffer[y * width + x];
-            t                            = { 0, { ch.Code, 0 } };
+            const cchar_t t              
+            { 
+                .attr = 0, 
+                .chars = { ch.Code, 0 },
+#if __APPLE__
+                .ext_color = {}
+#endif
+            };
             colors.SetColor(ch.Color.Foreground, ch.Color.Background);
             mvadd_wch(y, x, &t);
             colors.UnsetColor(ch.Color.Foreground, ch.Color.Background);
@@ -335,6 +341,14 @@ bool NcursesTerminal::InitInput()
         // If we press F1 + shift => it generates F13
         keyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<uint32>(Key::F1) + i) | Key::Shift;
     }
+
+#if __APPLE__
+    // some of these will be overwritten - it's ok
+    for (size_t i = 1; i < 'Z' - 'A' + 2; i++)
+    {
+        keyTranslationMatrix[i] = Key::Alt | static_cast<Key>((static_cast<uint32>(Key::A) + i - 1));
+    }
+#endif
 
     keyTranslationMatrix[KEY_ENTER]     = Key::Enter;
     keyTranslationMatrix[13]            = Key::Enter;
