@@ -3,6 +3,7 @@
 #include <stdio.h>
 #if __APPLE__
 #    include <mach-o/dyld.h>
+#    include <sys/syslimits.h>
 #elif __linux__
 #    include <linux/limits.h>
 #endif
