@@ -973,6 +973,8 @@ class GridControlContext : public ControlContext
   public:
     uint32 columnsNo        = 0;
     uint32 rowsNo           = 0;
+    int32 deltaX            = 0;
+    int32 deltaY            = 0;
     GridFlags flags         = GridFlags::None;
     uint32 hoveredCellIndex = 0xFFFFFFFF;
     uint32 anchorCellIndex  = 0xFFFFFFFF;
@@ -1016,6 +1018,7 @@ class GridControlContext : public ControlContext
     void DrawCellsBackground(Graphics::Renderer& renderer);
     bool DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex);
     bool DrawHeader(Graphics::Renderer& renderer);
+    bool DrawIndexesColumn(Graphics::Renderer& renderer);
     void UpdateGridParameters(bool dontRecomputeDimensions = false);
     void UpdateDimensions(int32 offsetX, int32 offsetY);
     void ResetMatrixPosition();

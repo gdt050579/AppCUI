@@ -51,6 +51,7 @@ void Grid::Paint(Renderer& renderer)
     renderer.Clear(' ');
     renderer.HideCursor();
     context->DrawHeader(renderer);
+    context->DrawIndexesColumn(renderer);
 
     if ((context->flags & GridFlags::TransparentBackground) == GridFlags::None)
     {
@@ -558,6 +559,8 @@ bool Grid::UpdateHeaderValues(const std::vector<ConstString>& headerValues, Text
     const auto context = reinterpret_cast<GridControlContext*>(Context);
 
     context->headers.clear();
+    context->headers.push_back({ TextAlignament::Center, LocalUnicodeStringBuilder<1024>("Index") });
+
     for (const auto& value : headerValues)
     {
         LocalUnicodeStringBuilder<1024> lusb{ value };
@@ -788,6 +791,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
             renderer.DrawVerticalLine(x, y1, y2, color);
         }
     }
+    
 
     if (hoveredCellIndex != InvalidCellIndex && ((flags & GridFlags::HideHoveredCell) == GridFlags::None))
     {
@@ -1119,17 +1123,19 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
 
 bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 {
+    const auto augmentedColumnsNo = columnsNo + 1;
+    offsetX -= cWidth;
     renderer.FillRect(
           offsetX + 1,
           offsetY - GetHeaderHeight() + 1,
-          cWidth * columnsNo + offsetX - 1,
+          cWidth * augmentedColumnsNo + offsetX - 1,
           offsetY - 1,
           ' ',
           Cfg->Header.Text.Normal);
 
     const auto lineColor = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
 
-    for (auto i = 0U; i <= columnsNo; i++)
+    for (auto i = 0U; i <= augmentedColumnsNo; i++)
     {
         const auto x    = offsetX + i * cWidth;
         const auto y    = offsetY - GetHeaderHeight();
@@ -1144,14 +1150,14 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
     {
         renderer.DrawHorizontalLine(
-              offsetX, offsetY - GetHeaderHeight(), cWidth * columnsNo + offsetX, lineColor, true);
+              offsetX, offsetY - GetHeaderHeight(), cWidth * augmentedColumnsNo + offsetX, lineColor, true);
     }
 
     if ((flags & GridFlags::HideBoxes) == GridFlags::None)
     {
         if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
         {
-            for (auto i = 0U; i <= columnsNo; i++)
+            for (auto i = 0U; i <= augmentedColumnsNo; i++)
             {
                 const auto x = offsetX + i * cWidth;
                 const auto y = offsetY - GetHeaderHeight();
@@ -1160,7 +1166,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
                 {
                     renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxTopLeftCornerSingleLine, lineColor);
                 }
-                else if (i == columnsNo)
+                else if (i == augmentedColumnsNo)
                 {
                     renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxTopRightCornerSingleLine, lineColor);
                 }
@@ -1177,7 +1183,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     wtp.Color = Cfg->Text.Normal;
 
     auto it = headers.begin();
-    for (auto i = 0U; i <= columnsNo && it != headers.end(); i++)
+    for (auto i = 0U; i <= augmentedColumnsNo && it != headers.end(); i++)
     {
         wtp.X     = offsetX + i * cWidth + 1; // 1 -> line
         wtp.Y     = offsetY - GetHeaderHeight() / 2;
@@ -1185,6 +1191,11 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
         wtp.Align = it->ta;
 
         renderer.WriteText(it->content, wtp);
+        if (i == 0)
+        {
+            std::advance(it, 1);
+            continue;
+        }
 
         if ((flags & GridFlags::Sort) != GridFlags::None)
         {
@@ -1197,6 +1208,57 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
         }
 
         std::advance(it, 1);
+    }
+
+    offsetX += cWidth;
+    return true;
+}
+
+bool GridControlContext::DrawIndexesColumn(Graphics::Renderer& renderer)
+{
+    int32 left = offsetX - cWidth + 1 + deltaX;
+    
+    renderer.FillRect(
+          left, offsetY, left + cWidth - 2, offsetY + cHeight * rowsNo - 1, ' ', Cfg->Header.Text.Normal);
+
+    const auto lineColor = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
+    renderer.DrawVerticalLine(offsetX - cWidth, offsetY, offsetY + cHeight * rowsNo, lineColor);
+
+    for (auto i = 0U; i <= rowsNo; i++)
+    {
+        const auto x    = offsetX - cWidth;
+        const auto y    = offsetY + cHeight * i;
+        const auto endX = offsetX;
+
+        if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
+        {
+            renderer.DrawHorizontalLine(x, y, endX - 1, lineColor, true);
+        }
+
+        if (i != rowsNo)
+        {
+            renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxMidleLeft, lineColor);
+        }
+        else
+        {
+            renderer.WriteSpecialCharacter(x, y, SpecialChars::BoxBottomLeftCornerSingleLine, lineColor);
+        }
+    }
+
+
+    WriteTextParams wtp;
+    wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
+    wtp.Color = Cfg->Text.Normal;
+
+    for (auto i = START(offsetY, cHeight); i < END(Layout.Height, offsetY, cHeight, rowsNo); i++)
+    {
+        wtp.X     = offsetX - cWidth + 1; // 1 -> line
+        wtp.Y     = offsetY + i * cHeight + 1;
+        wtp.Width = cWidth - 1; // 1 -> line
+        wtp.Align = TextAlignament::Center;
+
+        LocalString<10> ls;
+        renderer.WriteText(ls.Format("%d", i), wtp);
     }
 
     return true;
@@ -1268,7 +1330,8 @@ void GridControlContext::UpdateDimensions(int32 offsetX, int32 offsetY)
 
 void GridControlContext::ResetMatrixPosition()
 {
-    offsetX = -1;
+    offsetX = cWidth - 1;
+    deltaX  = 0;
     offsetY = GetHeaderHeight() - 1; /* header */
 }
 
@@ -1276,7 +1339,7 @@ void GridControlContext::UpdatePositions(int32 offsetX, int32 offsetY)
 {
     this->offsetX += offsetX;
     this->offsetY += offsetY;
-
+    
     UpdateGridParameters(true);
 }
 
@@ -1319,7 +1382,7 @@ bool GridControlContext::MoveSelectedCellByKeys(Input::Key keyCode)
             anchorCellIndex         = newCellIndex;
             selectedCellsIndexes[0] = newCellIndex;
 
-            const int xLeft  = offsetX + columnIndex * cWidth;
+            const int xLeft  = offsetX + columnIndex * cWidth  ;
             const int xRight = offsetX + (columnIndex + 1) * cWidth;
 
             const int yTop    = offsetY + rowIndex * cHeight;
@@ -1328,13 +1391,17 @@ bool GridControlContext::MoveSelectedCellByKeys(Input::Key keyCode)
             if (xLeft < 0)
             {
                 const auto partial = std::abs(offsetX) % cWidth;
-                offsetX += (partial != 0 ? partial : cWidth);
+                const auto currentDeltaX = (partial != 0 ? partial : cWidth);
+                offsetX += currentDeltaX;
+                deltaX -= cWidth;
                 startedMoving = true;
             }
 
             if (xRight > Layout.Width)
             {
-                offsetX -= xRight - Layout.Width + 1;
+                const auto currentDeltaX = xRight - Layout.Width + 1;
+                offsetX -= currentDeltaX;
+                deltaX += cWidth;
                 startedMoving = true;
             }
 
@@ -1668,6 +1735,10 @@ void GridControlContext::SetDefaultHeaderValues()
     headers.clear();
     LocalUnicodeStringBuilder<256> lusb;
     LocalString<256> ls;
+
+    lusb.Set("Index");
+    headers.push_back({ TextAlignament::Left, lusb });
+
     for (auto i = 0ULL; i < columnsNo; i++)
     {
         ls.SetFormat("Column_%llu", i);
