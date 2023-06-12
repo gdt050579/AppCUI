@@ -981,10 +981,12 @@ class GridControlContext : public ControlContext
     std::vector<uint32> selectedCellsIndexes;
     std::vector<uint32> duplicatedCellsIndexes;
 
-    uint32 cWidth  = 0U;
-    uint32 cHeight = 0U;
-    int32 offsetX  = 0;
-    int32 offsetY  = 0;
+    uint32 lastcWidth  = 0U;
+    uint32 lastcHeight = 0U;
+    uint32 cWidth      = 0U;
+    uint32 cHeight     = 0U;
+    int32 offsetX      = 0;
+    int32 offsetY      = 0;
 
     std::vector<std::vector<GridCellData>> cellsNormal;
     std::vector<std::vector<GridCellData>> cellsFiltered;
@@ -993,6 +995,7 @@ class GridControlContext : public ControlContext
     std::vector<GridCellData> headers;
 
     bool startedMoving    = false;
+    bool startedScrolling = false;
     bool shouldPaintError = false;
 
     Point lastLocationDraggedRightClicked{ 0, 0 };
