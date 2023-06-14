@@ -1022,6 +1022,7 @@ class GridControlContext : public ControlContext
     bool DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex);
     bool DrawHeader(Graphics::Renderer& renderer);
     bool DrawIndexesColumn(Graphics::Renderer& renderer);
+    bool DrawHeaderForIndexesColumn(Graphics::Renderer& renderer);
     void UpdateGridParameters(bool dontRecomputeDimensions = false);
     void UpdateDimensions(int32 offsetX, int32 offsetY);
     void ResetMatrixPosition();
