@@ -977,7 +977,11 @@ bool TreeViewItem::SetData(uint64 value)
 uint64 TreeViewItem::GetData(uint64 errorValue) const
 {
     CREATE_TREE_VIEW_ITEM_CONTEXT(errorValue);
-    return std::get<uint64>(cc->items.at(handle).data);
+    const auto& var = cc->items.at(handle).data;
+
+    if (std::holds_alternative<uint64>(var))
+        return std::get<uint64>(var);
+    return errorValue;
 }
 
 GenericRef TreeViewItem::GetItemDataAsPointer() const

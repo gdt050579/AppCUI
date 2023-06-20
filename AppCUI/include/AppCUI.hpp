@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.186.0"
+#define APPCUI_VERSION "1.203.0"
 
 #include <filesystem>
 #include <map>
@@ -667,7 +667,7 @@ namespace Utils
         template <typename C>
         constexpr inline Reference<C> ToObjectRef()
         {
-            return Reference<C>((C*) (this->ptr));
+            return Reference<C>(dynamic_cast<C*>(this->ptr));
         }
         constexpr inline operator size_t()
         {
@@ -1149,17 +1149,18 @@ namespace Utils
 
     class EXPORT String
     {
-        char* Text;
-        uint32 Size;
-        uint32 Allocated;
+        char* Text{ nullptr };
+        uint32 Size{ 0 };
+        uint32 Allocated{ 0 };
 
         bool Grow(uint32 newSize);
 
       public:
-        String(void);
+        String() = default;
+        String(const std::string_view& text);
         String(const String& s);
         String(String&& s);
-        ~String(void);
+        ~String();
 
         // Static functions
         static uint32 Len(const char* string);
@@ -3125,7 +3126,8 @@ namespace Controls
             Emphasized_2       = 6,
             Emphasized_3       = 7,
             Category           = 8,
-            Colored            = 9
+            Colored            = 9,
+            SubItemColored     = 10
         };
 
       public:
@@ -3150,6 +3152,7 @@ namespace Controls
         bool SetXOffset(uint32 value);
         uint32 GetXOffset() const;
         bool SetColor(Graphics::ColorPair color);
+        bool SetColor(uint32 subItemIndex, Graphics::ColorPair color);
         bool SetSelected(bool select);
         bool IsSelected() const;
         bool IsCurrent() const;
@@ -5545,6 +5548,8 @@ namespace Application
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
     EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
+    EXPORT Controls::ItemHandle AddWindow(
+          unique_ptr<Controls::Window> wnd, Utils::Reference<Controls::Window> referalWindow);
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);

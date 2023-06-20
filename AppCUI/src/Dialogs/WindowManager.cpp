@@ -14,7 +14,7 @@ constexpr int BUTTON_ID_CANCEL     = 10004;
 
 struct WinItemInfo
 {
-    ItemHandle Referal;
+    ItemHandle referal;
     Window* wnd;
     bool added;
 };
@@ -24,7 +24,7 @@ class InternalWindowManager : public Controls::Window
     Reference<TreeView> tree;
     Reference<Button> btnGoTo, btnClose, btnCloseAll, btnCloseDescendands, btnCancel;
     std::map<ItemHandle, WinItemInfo> rel;
-    ItemHandle focusedItem;
+    ItemHandle focusedItem{ InvalidItemHandle };
 
   public:
     InternalWindowManager() : Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::None)
@@ -59,7 +59,7 @@ void InternalWindowManager::UpdateButtonsStatus()
     // check if there is at least one descendent
     for (const auto& itm : rel)
     {
-        if (itm.second.Referal == wcc->windowItemHandle)
+        if (itm.second.referal == wcc->windowItemHandle)
         {
             btnCloseDescendands->SetEnabled(true);
             break;
@@ -72,7 +72,7 @@ void InternalWindowManager::CloseDescendants(ItemHandle id)
     rel[id].wnd->RemoveMe();
     for (const auto& itm : rel)
     {
-        if (itm.second.Referal == id)
+        if (itm.second.referal == id)
         {
             CloseDescendants(itm.first);
         }
@@ -127,10 +127,7 @@ bool InternalWindowManager::RemoveCurrentWindowAndDescendents()
 
 bool InternalWindowManager::CloseAll()
 {
-    if (MessageBox::ShowOkCancel("Close", "Close all existing windows ?") != Result::Ok)
-    {
-        return false;
-    }
+    CHECK(MessageBox::ShowOkCancel("Close", "Close all existing windows ?") == Result::Ok, false, "");
 
     const auto count = tree->GetItemsCount();
     for (auto i = 0U; i < count; i++)
@@ -218,14 +215,21 @@ bool InternalWindowManager::AddItem(Window* w, TreeViewItem& parent, TreeViewIte
     const auto wcc = reinterpret_cast<WindowControlContext*>(w->Context);
     if (parent.GetHandle() == TreeView::RootHandle)
     {
-        child = tree->AddItem(wcc->Text.operator std::string(), true);
+        child = tree->AddItem(wcc->Text.operator std::string(), false);
     }
     else
     {
-        child = parent.AddChild(wcc->Text.operator std::string(), true);
+        CHECK(parent.SetExpandable(true), false, "");
+        child = parent.AddChild(wcc->Text.operator std::string(), false);
     }
     child.SetValues({ w->GetTag().operator std::string() });
     child.SetData(Reference<Window>(w));
+
+    if (w && w->HasFocus())
+    {
+        this->focusedItem = child.GetHandle();
+    }
+
     return true;
 }
 
@@ -239,7 +243,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
     // search for all children
     for (const auto& i : rel)
     {
-        if (i.second.Referal == id)
+        if (i.second.referal == id)
         {
             Process(rel, i.first, child.GetHandle());
         }
@@ -291,7 +295,7 @@ bool InternalWindowManager::Create()
 
         for (const auto& [handle, info] : rel)
         {
-            if (rel.contains(info.Referal))
+            if (rel.contains(info.referal))
             {
                 continue;
             }
@@ -302,6 +306,9 @@ bool InternalWindowManager::Create()
     }
 
     UpdateButtonsStatus();
+
+    tree->GetCurrentItem().UnfoldAll();
+    tree->GetItemByHandle(this->focusedItem).SetCurrent();
 
     return true;
 }

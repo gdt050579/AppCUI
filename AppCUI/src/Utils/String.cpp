@@ -293,10 +293,10 @@ int32 String::Compare(const char* sir1, const char* sir2, bool ignoreCase)
 
 //--------------------------------------------------- CONSTRUCTORI OBIECT
 //----------------------------------------------------------------
-String::String(void)
+
+String::String(const std::string_view& text)
 {
-    Text = nullptr;
-    Size = Allocated = 0;
+    Add(text);
 }
 
 String::String(const String& s)

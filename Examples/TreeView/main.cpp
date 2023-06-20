@@ -124,9 +124,10 @@ class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterfac
         return false;
     }
 
-    bool OnTreeViewItemToggle(Reference<Controls::TreeView> /*tree*/, TreeViewItem& item, bool /*recursiveCall*/) override
+    bool OnTreeViewItemToggle(
+          Reference<Controls::TreeView> /*tree*/, TreeViewItem& item, bool /*recursiveCall*/) override
     {
-        auto data         = item.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
+        auto data         = item.GetData<Reference<std::u16string>>().ToGenericRef().ToReference<std::u16string>();
         const auto fsPath = std::filesystem::path(data->c_str());
         try
         {
