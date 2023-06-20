@@ -4737,6 +4737,7 @@ namespace Controls
         void ToggleVerticalLines();
         void Sort();
         void Filter();
+        optional<AppCUI::Utils::String> GetSelectedCellContent();
 
       private:
         friend Factory::Grid;

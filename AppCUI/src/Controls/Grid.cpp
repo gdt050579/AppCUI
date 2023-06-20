@@ -46,6 +46,9 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->headers.reserve(context->columnsNo);
     context->SetDefaultHeaderValues();
     context->ReserveMap();
+
+    Application::Config* cfg = Application::GetAppConfig();
+
     Sort();
     Filter();
 }
@@ -212,6 +215,7 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
             if (START_DRAW_REL(context->offsetX, context->deltaX, context->cWidth) 
                 < END_DRAW(context->offsetX, 0, context->cWidth) - (int) context->cWidth + 3)
             {
+                context->UpdatePositions(-1, 0);
                 break;
             }
 
@@ -746,6 +750,33 @@ void Controls::Grid::Filter()
     }
 }
 
+optional<AppCUI::Utils::String> Grid::GetSelectedCellContent()
+{
+    auto context = reinterpret_cast<GridControlContext*>(Context);
+    uint32 cellIndex;
+    if (context->anchorCellIndex != InvalidCellIndex)
+    {
+        cellIndex = context->anchorCellIndex;
+    }
+    else if (context->hoveredCellIndex != InvalidCellIndex)
+    {
+        cellIndex = context->hoveredCellIndex;
+    }
+    else
+    {
+        return {};
+    }
+
+    const auto cellColumn = cellIndex % context->columnsNo;
+    const auto cellRow    = cellIndex / context->columnsNo;
+    std::u16string_view u16strView((*context->cells)[cellColumn][cellRow].content);
+
+    std::string contentAsString = { u16strView.begin(), u16strView.end() };
+
+    AppCUI::Utils::String cellContent(contentAsString);
+    return cellContent;
+}
+
 void GridControlContext::FilterColumn(int columnIndex)
 {
     std::vector<uint32> filteredRows;
@@ -834,7 +865,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         const auto yTop    = offsetY + rowIndex * cHeight;
         const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
 
-        const auto color = Cfg->Lines.GetColor(GetComponentState(ControlStateFlags::All, true, false));
+        const auto color = Cfg->Cursor.Inactive;
 
         renderer.WriteSpecialCharacter(xLeft, yTop, SpecialChars::BoxTopLeftCornerSingleLine, color);
         renderer.WriteSpecialCharacter(xRight, yTop, SpecialChars::BoxTopRightCornerSingleLine, color);
@@ -847,7 +878,7 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
 
     if (selectedCellsIndexes.size() > 0 && ((flags & GridFlags::HideSelectedCell) == GridFlags::None))
     {
-        const auto color = Cfg->Lines.GetColor(GetComponentState(ControlStateFlags::All, false, true));
+        const auto color = Cfg->Cursor.Inactive;
 
         // we assume these are already sorted
         const auto startCellIndex = selectedCellsIndexes[0];
@@ -921,13 +952,12 @@ void GridControlContext::DrawLines(Renderer& renderer)
     const auto drawLines = [&](uint32 cellIndex, GridCellStatus cellType)
     {
         ColorPair vertical, horizontal;
-        horizontal = vertical = Cfg->Lines.GetColor(GetComponentState(
-              ControlStateFlags::All, cellType == GridCellStatus::Hovered, cellType == GridCellStatus::Selected));
+        horizontal = vertical = Cfg->Cursor.Inactive;
 
-        if (cellType == GridCellStatus::Duplicate)
+        /*if (cellType == GridCellStatus::Duplicate)
         {
             vertical = horizontal = Cfg->Selection.SimilarText;
-        }
+        }*/
 
         const auto columnIndex = cellIndex % columnsNo;
         const auto rowIndex    = cellIndex / columnsNo;
@@ -1082,10 +1112,23 @@ void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCe
     const auto yTop    = offsetY + j * cHeight;
     const auto yBottom = offsetY + (j + 1) * cHeight;
 
-    const ColorPair color = Cfg->Lines.GetColor(GetComponentState(
-          ControlStateFlags::All, cellType == GridCellStatus::Hovered, cellType == GridCellStatus::Selected));
-
-    renderer.FillRect(xLeft + 1, yTop + 1, xRight - 1, yBottom - 1, ' ', color);
+    int cellIndex   = j * columnsNo + i;
+    ColorPair color = Cfg->Cursor.Inactive;
+    if (cellIndex == anchorCellIndex)
+    {
+        color = Cfg->Cursor.OverInactiveItem;
+ 
+    }
+    
+    for (auto& selectedCellIndex : selectedCellsIndexes)
+    {
+        if (selectedCellIndex == cellIndex)
+        {
+            color = Cfg->Cursor.OverInactiveItem;
+        }
+    }
+   
+     renderer.FillRect(xLeft + 1, yTop + 1, xRight - 1, yBottom - 1, ' ', color);
 }
 
 void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 cellIndex)
@@ -1122,13 +1165,13 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
         color = Cfg->Text.Focused;
         break;
     case ControlState::Hovered:
-        color = Cfg->Text.Hovered;
+        color = Cfg->Text.Focused;
         break;
     case ControlState::Inactive:
         color = Cfg->Text.Inactive;
         break;
     case ControlState::PressedOrSelected:
-        color = Cfg->Selection.Text;
+        color = this->Cfg->Cursor.Normal;
         break;
     default:
         color = Cfg->Text.Normal;
@@ -1136,9 +1179,9 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
     }
 
     if (std::find(duplicatedCellsIndexes.begin(), duplicatedCellsIndexes.end(), cellIndex) !=
-        duplicatedCellsIndexes.end())
+        duplicatedCellsIndexes.end() && state != ControlState::PressedOrSelected)
     {
-        color = Cfg->Selection.SimilarText;
+        color = this->Cfg->Cursor.Normal;
     }
 
     WriteTextParams wtp;
@@ -1229,7 +1272,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
     wtp.Color = Cfg->Text.Normal;
 
-    for (auto i = beginAdd; i < headers.size(); i++)
+    for (auto i = beginAdd + 1; i < headers.size(); i++)
     {
         const auto it = headers[i];
         wtp.X         = offsetX + (i - 1) * cWidth + 1; // 1 -> line
@@ -1262,7 +1305,7 @@ bool GridControlContext::DrawIndexesColumn(Graphics::Renderer& renderer)
     const int32 left  = START_DRAW_REL(offsetX, deltaX, cWidth);
     const int32 right = END_DRAW_REL(left, cWidth);
 
-    renderer.FillRect(left, top, right, bottom, ' ', Cfg->Header.Text.Normal);
+    renderer.FillRect(left, top, right, bottom, ' ', Cfg->Text.Normal);
     const auto lineColor = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
     renderer.DrawVerticalLine(left - 1, top, bottom, lineColor);
     renderer.DrawVerticalLine(right + 1, top, bottom, lineColor);
@@ -1351,7 +1394,15 @@ void GridControlContext::UpdateGridParameters(bool dontRecomputeDimensions)
 
     if (((flags & GridFlags::DisableMove) != GridFlags::DisableMove) && startedScrolling == true)
     {
-        ResetMatrixPosition();
+
+        int offset = offsetX - (int) cWidth + 1;
+
+        offsetX = cWidth - 1 + offset / (int) cWidth * (int) cWidth;
+        deltaX  = offsetX - cWidth + 1;
+
+        offset  = offsetY - (int) cHeight + 1;
+        offsetY = cHeight - 1 + offset / (int) cHeight * (int) cHeight; 
+        deltaY  = offsetY - cHeight + 1;
     }
 
     // sort selected cells for better drawing
