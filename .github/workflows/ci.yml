@@ -37,12 +37,21 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
-    - name: Install sdl
-      run: brew install sdl2
-    - name: Install sdl2_ttf
-      run: brew install sdl2_ttf
-    - name: Install updated ncurses
-      run: brew install ncurses
+
+    # https://github.com/dotnet/runtime/issues/82240
+    # temporarily install pkg-config via brew
+    - name: Install pkg-config
+      run: |
+        # brew update
+        brew install pkg-config
+        # brew upgrade
+      
+    # - name: Install sdl
+    #   run: brew install sdl2
+    # - name: Install sdl2_ttf
+    #   run: brew install sdl2_ttf
+    # - name: Install updated ncurses
+    #   run: brew install ncurses
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH=/usr/local/Cellar/ncurses/6.2
     - name: Build

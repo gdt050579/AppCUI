@@ -454,6 +454,8 @@ constexpr uint32 MAX_LISTVIEW_HEADER_TEXT = 32;
 struct InternalListViewItem
 {
     CharacterBuffer SubItem[MAX_LISTVIEW_COLUMNS];
+    bool subItemsColored[MAX_LISTVIEW_COLUMNS]{ false };
+    ColorPair subItemsColor[MAX_LISTVIEW_COLUMNS]{ ColorPair{ Color::Transparent, Color::Transparent } };
     ListViewItem::Type Type;
     uint16 Flags;
     uint32 XOffset;
@@ -721,6 +723,7 @@ class ListViewControlContext : public ColumnsHeaderViewControlContext
     bool SetItemCheck(ItemHandle item, bool check);
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
+    bool SetItemColor(ItemHandle item, uint32 subItemIndex, ColorPair color);
     bool SetItemType(ItemHandle item, ListViewItem::Type type);
     bool IsItemChecked(ItemHandle item);
     bool IsItemSelected(ItemHandle item);

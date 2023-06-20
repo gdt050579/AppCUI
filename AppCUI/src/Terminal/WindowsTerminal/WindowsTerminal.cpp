@@ -553,7 +553,7 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         DWORD diff    = 33;
         if (cTime >= this->startTime)
         {
-            diff -= (cTime - this->startTime);
+            diff -= (static_cast<DWORD64>(cTime) - this->startTime);
             if (diff > 33)
                 diff = 0;
         }

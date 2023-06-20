@@ -176,6 +176,19 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
     ptrWin->SetFocus();
     return resultHandle;
 }
+
+ItemHandle Application::AddWindow(unique_ptr<Controls::Window> wnd, Reference<Controls::Window> referalWindow)
+{
+    if (!referalWindow.IsValid())
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+
+    const auto winMembers = reinterpret_cast<WindowControlContext*>(referalWindow->Context);
+    if (!winMembers)
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+
+    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
+}
+
 ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow)
 {
     if (!referalWindow)
