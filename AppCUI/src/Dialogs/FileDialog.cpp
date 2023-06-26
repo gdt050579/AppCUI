@@ -145,23 +145,23 @@ FileDialogWindow::FileDialogWindow(
       const ConstString& fileName,
       const ConstString& extensionsFilter,
       const std::filesystem::path& specifiedPath)
-    : Window(open ? "Open" : "Save", "w:78,h:23,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
+    : Window(open ? "Open" : "Save", "w:50%,h:75%,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
 {
     const std::filesystem::path initialPath = CanonizePath(specifiedPath.empty() ? "." : specifiedPath);
 
-    lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10");
-    lbPath     = Factory::Label::Create(this, "", "x:11,y:0,w:62");
+    lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10%");
+    lbPath     = Factory::Label::Create(this, "", "x:11%,y:0,w:88%");
 
-    splitListView = Factory::Splitter::Create(this, "x:0,y:2,w:76,h:14", SplitterFlags::Vertical);
-    splitListView->SetSecondPanelSize(55);
-    splitPanelLeft  = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
-    splitPanelRight = Factory::Panel::Create(splitListView, "x:0,y:0,w:100%,h:100%");
+    splitListView = Factory::Splitter::Create(this, "x:1,y:2,w:98%,h:88%", SplitterFlags::Vertical);
+    splitListView->SetSecondPanelSize(static_cast<uint32>(0.75 * this->GetWidth()));
+    splitPanelLeft  = Factory::Panel::Create(splitListView, "x:1,y:0,w:100%,h:100%");
+    splitPanelRight = Factory::Panel::Create(splitListView, "x:1,y:0,w:100%,h:100%");
 
     ListViewFlags specialPathsFlags = ListViewFlags::HideColumnsSeparator |
                                       ListViewFlags::HideCurrentItemWhenNotFocused | ListViewFlags::HideBorder |
                                       ListViewFlags::PopupSearchBar;
     lSpecialPaths = Factory::ListView::Create(
-          splitPanelLeft, "x:0,y:0,w:100%,h:100%", { "n:Special,a:l,w:20" }, specialPathsFlags);
+          splitPanelLeft, "x:1,y:0,w:100%,h:100%", { "n:Special,a:l,w:20" }, specialPathsFlags);
 
     // TODO: Future option for back and front
     // btnBack.Create(&wnd, "<", "x:1,y:0,w:3", 1, ButtonFlags::Flat);
@@ -177,8 +177,8 @@ FileDialogWindow::FileDialogWindow(
 
     files = Factory::ListView::Create(
           splitPanelRight,
-          "x:0,y:0,w:100%,h:100%",
-          { "n:&Name,w:26,a:l", "n:&Size,w:14,a:r", "n:&Modified,w:19,a:c" },
+          "x:1,y:0,w:100%,h:100%",
+          { "n:&Name,w:60%,a:l", "n:&Size,w:10%,a:r", "n:&Modified,w:30%,a:c" },
           ListViewFlags::Sortable | ListViewFlags::HideBorder | ListViewFlags::PopupSearchBar |
                 ListViewFlags::HideScrollBar);
     files->Handlers()->ComparereItem =
@@ -202,15 +202,15 @@ FileDialogWindow::FileDialogWindow(
     };
     files->Sort(0, SortDirection::Ascendent); // sort after the first column, ascendent
 
-    lbName = Factory::Label::Create(this, "File &Name", "x:2,y:17,w:11");
-    txName = Factory::TextField::Create(this, fileName, "x:15,y:17,w:45", TextFieldFlags::ProcessEnter);
+    lbName = Factory::Label::Create(this, "File &Name", "x:1,y:94%,w:10%");
+    txName = Factory::TextField::Create(this, fileName, "x:11%,y:94%,w:75%", TextFieldFlags::ProcessEnter);
     txName->SetHotKey('N');
-    lbExt = Factory::Label::Create(this, "File &Type", "x:2,y:19,w:11");
+    lbExt = Factory::Label::Create(this, "File &Type", "x:1,y:98%,w:10%");
 
-    btnOK     = Factory::Button::Create(this, "&Ok", "x:62,y:17,w:13", (int) Dialogs::Result::Ok);
-    btnCancel = Factory::Button::Create(this, "&Cancel", "x:62,y:19,w:13", (int) Dialogs::Result::Cancel);
+    btnOK     = Factory::Button::Create(this, "&Ok", "x:87%,y:94%,w:12%", (int) Dialogs::Result::Ok);
+    btnCancel = Factory::Button::Create(this, "&Cancel", "x:87%,y:98%,w:12%", (int) Dialogs::Result::Cancel);
 
-    comboType = Factory::ComboBox::Create(this, "x:15,y:19,w:45");
+    comboType = Factory::ComboBox::Create(this, "x:11%,y:98%,w:75%");
     comboType->SetHotKey('T');
     ProcessExtensionFilter(extensionsFilter);
     if (comboType->GetItemsCount() > 0)
@@ -429,36 +429,59 @@ void FileDialogWindow::ReloadCurrentPath()
     {
         for (const auto& fileEntry : std::filesystem::directory_iterator(currentPath))
         {
-            if (fileEntry.is_directory())
+            bool isDirectory = false;
+            bool failed      = false;
+            try
             {
-                Utils::String::Set(size, "Folder", 32, 6);
-            }
-            else
-            {
-                // check filter first
-                if (extFilter)
+                isDirectory = fileEntry.is_directory();
+                if (isDirectory)
                 {
-                    // a filter is set - let's check the extention
-                    auto ext16          = fileEntry.path().extension().u16string();
-                    auto ext16Start     = ext16.data();
-                    const auto ext16End = ext16.data() + ext16.size();
-
-                    if (ext16.length() > 1 && ext16[0] == '.')
-                    {
-                        ext16Start++;
-                    }
-                    if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
-                    {
-                        continue; // extension is filtered
-                    }
+                    Utils::String::Set(size, "Folder", 32, 6);
                 }
-                ConvertSizeToString((uint64) fileEntry.file_size(), size);
             }
+            catch (...)
+            {
+                MessageBox::ShowError("Error", u"Unable to read location: "s + fileEntry.path().u16string());
+                Utils::String::Set(size, "Unknown", 32, 7);
+				failed = true; // not really - maybe reparse point
+            }
+
+			if (isDirectory == false)
+			{
+				// check filter first
+				if (extFilter)
+				{
+					// a filter is set - let's check the extention
+					auto ext16 = fileEntry.path().extension().u16string();
+					auto ext16Start = ext16.data();
+					const auto ext16End = ext16.data() + ext16.size();
+
+					if (ext16.length() > 1 && ext16[0] == '.')
+					{
+						ext16Start++;
+					}
+					if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
+					{
+						continue; // extension is filtered
+					}
+				}
+
+				if (failed == false)
+				{
+					ConvertSizeToString((uint64)fileEntry.file_size(), size);
+				}
+			}
 
             dt.CreateFrom(fileEntry);
             auto item =
                   this->files->AddItem({ fileEntry.path().filename().u16string(), size, dt.GetStringRepresentation() });
-            if (fileEntry.is_directory())
+            
+			if (failed)
+			{
+				item.SetType(ListViewItem::Type::ErrorInformation);
+				item.SetData(2);
+			}
+			else if (isDirectory)
             {
                 item.SetType(ListViewItem::Type::Highlighted);
                 item.SetData(1);
