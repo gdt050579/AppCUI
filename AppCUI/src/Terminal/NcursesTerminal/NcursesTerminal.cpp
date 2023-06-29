@@ -84,9 +84,6 @@ constexpr int KEY_LOCK_COMBO_MODE = ' ';
 constexpr int KEY_ESCAPE          = '\x1B'; // ESC key
 constexpr int KEY_TAB             = '\t';
 
-constexpr size_t MAX_TTY_COL = 65535;
-constexpr size_t MAX_TTY_ROW = 65535;
-
 constexpr ColorPair DEFAULT_COMBO_COLOR{ Color::White, Color::DarkBlue };
 constexpr ColorPair PRESSED_COMBO_COLOR{ Color::Green, Color::Red };
 
@@ -247,8 +244,15 @@ void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
     else if (c == KEY_RESIZE)
     {
-        // one day, but this day is not today
-        // evnt.eventType = SystemEvents::APP_RESIZED;
+        int32 width  = 0;
+        int32 height = 0;
+        getmaxyx(stdscr, height, width);
+        CHECKRET(height != ERR || width != ERR, "Failed to get window sizes");
+        
+        evnt.newWidth = static_cast<uint32>(width);
+        evnt.newHeight = static_cast<uint32>(height);
+        evnt.eventType = Internal::SystemEventType::AppResized;
+        
         return;
     }
     else
@@ -256,6 +260,7 @@ void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         HandleKey(evnt, c);
         return;
     }
+    
     refresh();
 }
 bool NcursesTerminal::IsEventAvailable()
@@ -301,21 +306,22 @@ bool NcursesTerminal::InitScreen()
 
     colors.Init();
 
-    size_t width  = 0;
-    size_t height = 0;
+    int32 width  = 0;
+    int32 height = 0;
     getmaxyx(stdscr, height, width);
-    CHECK(height < MAX_TTY_ROW || width < MAX_TTY_COL, false, "Failed to get window sizes");
-    // create canvases
+    CHECK(height != ERR || width != ERR, false, "Failed to get window sizes");
+
     CHECK(screenCanvas.Create(width, height),
           false,
           "Fail to create an internal canvas of %d x %d size",
-          width,
-          height);
+          static_cast<uint32>(width),
+          static_cast<uint32>(height));
+    
     CHECK(originalScreenCanvas.Create(width, height),
           false,
           "Fail to create the original screen canvas of %d x %d size",
-          width,
-          height);
+          static_cast<uint32>(width),
+          static_cast<uint32>(height));
 
     return true;
 }
