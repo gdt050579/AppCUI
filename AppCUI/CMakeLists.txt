@@ -15,10 +15,6 @@ get_filename_component(SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src" ABSOLUTE)
 get_filename_component(LIBS_DIR "${CMAKE_CURRENT_LIST_DIR}/libs" ABSOLUTE)
 get_filename_component(MAIN_HEADER "${INCLUDE_DIR}/AppCUI.hpp" ABSOLUTE)
 
-set(LIBRARIES # add all the libraries here from "libs" folder (LIBS_DIR) here
-    "${LIBS_DIR}/lodepng"
-)
-
 message("${PROJECT_NAME} INCLUDE_DIR: ${INCLUDE_DIR}")
 message("${PROJECT_NAME} SRC_DIR: ${SRC_DIR}")
 message("${PROJECT_NAME} LIBS_DIR: ${LIBS_DIR}")
@@ -122,6 +118,18 @@ message("FONT_LIB_NAME => ${FONT_LIB_NAME}")
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FONT_LIB_NAME})
+
+if (APPLE AND NOT APPCUI_ENABLE_OUTPUT_LOCATION)
+    if (CMAKE_GENERATOR STREQUAL "Xcode")
+        set_target_properties(${FONT_LIB_NAME} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}")
+    endif()
+endif()
 
 # NCURSES
 if (UNIX)
