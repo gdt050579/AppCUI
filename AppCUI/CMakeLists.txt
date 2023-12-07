@@ -77,7 +77,7 @@ if (UNIX)
 
     	include(FindX11)
 	if (X11_FOUND)
-            message("X11_LIBRARIES => ${X11_LIBRARIES}")
+        message("X11_LIBRARIES => ${X11_LIBRARIES}")
 	    target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
 	 else()
                message(" *****************************************************************************")
@@ -98,6 +98,7 @@ message("BROTLIDEC_LIBRARIES => ${BROTLIDEC_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${BROTLIDEC__LIBRARIES} ${BROTLICOMMON_LIBRARIES})
 
 message("PNG_LIBRARIES => ${PNG_LIBRARIES}")
+target_include_directories(${PROJECT_NAME} PRIVATE ${PNG_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PNG_LIBRARIES})
 
 message("FREETYPE_LIBRARIES => ${FREETYPE_LIBRARIES}")
