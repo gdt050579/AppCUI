@@ -976,31 +976,31 @@ class GridControlContext : public ControlContext
   public:
     uint32 columnsNo        = 0;
     uint32 rowsNo           = 0;
-    int32 deltaX            = 0;
-    int32 deltaY            = 0;
     GridFlags flags         = GridFlags::None;
     uint32 hoveredCellIndex = 0xFFFFFFFF;
     uint32 anchorCellIndex  = 0xFFFFFFFF;
     std::vector<uint32> selectedCellsIndexes;
     std::vector<uint32> duplicatedCellsIndexes;
 
-    uint32 lastcWidth  = 0U;
-    uint32 lastcHeight = 0U;
-    uint32 cWidth      = 0U;
-    uint32 cHeight     = 0U;
-    int32 offsetX      = 0;
-    int32 offsetY      = 0;
+    int32 deltaX = 0U;
+    int32 deltaY = 0U;
 
+    uint32 cWidth     = 0U;
+    uint32 cHeight    = 0U;
+    int32 offsetX     = 0;
+    int32 offsetY     = 0;
+    int32 lastcWidth  = 0;
+    int32 lastcHeight = 0;
     std::vector<std::vector<GridCellData>> cellsNormal;
     std::vector<std::vector<GridCellData>> cellsFiltered;
     std::vector<std::vector<GridCellData>>* cells = &cellsNormal;
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 
-    bool startedMoving    = false;
-    bool startedScrolling = false;
-    bool shouldPaintError = false;
-
+    bool startedMoving          = false;
+    bool shouldPaintError       = false;
+    bool startedScrolling       = false;
+    bool isCellContentRequested = false;
     Point lastLocationDraggedRightClicked{ 0, 0 };
 
     std::vector<bool> columnsSort;
@@ -1013,6 +1013,8 @@ class GridControlContext : public ControlContext
   public:
     void DrawBoxes(Graphics::Renderer& renderer);
     void DrawLines(Graphics::Renderer& renderer);
+    bool DrawIndexesColumn(Graphics::Renderer& renderer);
+    bool DrawHeaderForIndexesColumn(Graphics::Renderer& renderer);
     uint32 ComputeCellNumber(int32 x, int32 y);
     Graphics::SpecialChars ComputeBoxType(
           uint32 colIndex,
@@ -1024,8 +1026,6 @@ class GridControlContext : public ControlContext
     void DrawCellsBackground(Graphics::Renderer& renderer);
     bool DrawCellContent(Graphics::Renderer& renderer, uint32 cellIndex);
     bool DrawHeader(Graphics::Renderer& renderer);
-    bool DrawIndexesColumn(Graphics::Renderer& renderer);
-    bool DrawHeaderForIndexesColumn(Graphics::Renderer& renderer);
     void UpdateGridParameters(bool dontRecomputeDimensions = false);
     void UpdateDimensions(int32 offsetX, int32 offsetY);
     void ResetMatrixPosition();
