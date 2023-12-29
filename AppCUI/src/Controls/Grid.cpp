@@ -22,9 +22,9 @@ using namespace Input;
 using namespace Graphics;
 
 constexpr auto InvalidCellIndex = 0xFFFFFFFFU;
-
 constexpr auto minCellWidth  = 0x03U;
 constexpr auto minCellHeight = 0x02U;
+constexpr size_t maxContentDisplayLength = 0x02U;
 
 Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
@@ -1301,19 +1301,19 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
     if (data.content.ends_with(u"_BL"))
     {
         std::u16string partialStr = u"BLOB ";
-        auto theLength            = std::min<>(10ULL, data.content.size() / 4);
-        for (auto lengthIndex = 0; lengthIndex < theLength; lengthIndex++)
+        auto dataContentLength            = std::min<>(maxContentDisplayLength, data.content.size() / 4);
+        for (auto lengthIndex = 0; lengthIndex < dataContentLength; lengthIndex++)
         {
             std::bitset<4> bitset(data.content.substr(lengthIndex * 4, 4));
             partialStr +=
                   static_cast<char>(bitset.to_ulong() < 10 ? '0' + bitset.to_ulong() : 'A' + bitset.to_ulong() - 10);
-            if (lengthIndex % 2 == 1 && lengthIndex != theLength - 1)
+            if (lengthIndex % 2 == 1 && lengthIndex != dataContentLength - 1)
             {
                 partialStr += u" ";
             }
         }
 
-        if (10ULL < data.content.size())
+        if (maxContentDisplayLength < data.content.size())
         {
             partialStr.append(u"...");
         }
