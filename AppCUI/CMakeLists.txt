@@ -15,10 +15,6 @@ get_filename_component(SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/src" ABSOLUTE)
 get_filename_component(LIBS_DIR "${CMAKE_CURRENT_LIST_DIR}/libs" ABSOLUTE)
 get_filename_component(MAIN_HEADER "${INCLUDE_DIR}/AppCUI.hpp" ABSOLUTE)
 
-set(LIBRARIES # add all the libraries here from "libs" folder (LIBS_DIR) here
-    "${LIBS_DIR}/lodepng"
-)
-
 message("${PROJECT_NAME} INCLUDE_DIR: ${INCLUDE_DIR}")
 message("${PROJECT_NAME} SRC_DIR: ${SRC_DIR}")
 message("${PROJECT_NAME} LIBS_DIR: ${LIBS_DIR}")
@@ -81,7 +77,7 @@ if (UNIX)
 
     	include(FindX11)
 	if (X11_FOUND)
-            message("X11_LIBRARIES => ${X11_LIBRARIES}")
+        message("X11_LIBRARIES => ${X11_LIBRARIES}")
 	    target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
 	 else()
                message(" *****************************************************************************")
@@ -102,6 +98,7 @@ message("BROTLIDEC_LIBRARIES => ${BROTLIDEC_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${BROTLIDEC__LIBRARIES} ${BROTLICOMMON_LIBRARIES})
 
 message("PNG_LIBRARIES => ${PNG_LIBRARIES}")
+target_include_directories(${PROJECT_NAME} PRIVATE ${PNG_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PNG_LIBRARIES})
 
 message("FREETYPE_LIBRARIES => ${FREETYPE_LIBRARIES}")
@@ -122,6 +119,18 @@ message("FONT_LIB_NAME => ${FONT_LIB_NAME}")
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FONT_LIB_NAME})
+
+if (APPLE AND NOT APPCUI_ENABLE_OUTPUT_LOCATION)
+    if (CMAKE_GENERATOR STREQUAL "Xcode")
+        set_target_properties(${FONT_LIB_NAME} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}"
+            RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/../bin/${CMAKE_BUILD_TYPE}")
+    endif()
+endif()
 
 # NCURSES
 if (UNIX)

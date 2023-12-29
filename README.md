@@ -124,4 +124,4 @@ Contributors can install sphinx using `pip install -r requirements.txt`, this wi
 
 After the command executes successfully, the html pages can be found in the `build` folder.
 
-On every commit to `main`, a compiled version of the Sphinx documentation is published to `gh-pages` and then to _https://gdt050579.github.io/AppCUI/_
+On every commit to `main`, a compiled version of the Sphinx documentation is published to `gh-pages`.
