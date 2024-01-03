@@ -1112,19 +1112,19 @@ bool TextArea::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
-void TextArea::OnMousePressed(int x, int y, Input::MouseButton button)
+void TextArea::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     WRAPPER->OnMousePressed(x, y, button);
 }
-void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button)
+void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key)
 {
     WRAPPER->OnMouseReleased(x, y, button);
 }
-bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key)
 {
     return WRAPPER->OnMouseDrag(x, y, button);
 }
-bool TextArea::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool TextArea::OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key)
 {
     return WRAPPER->OnMouseWheel(x, y, direction);
 }

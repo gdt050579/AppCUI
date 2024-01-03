@@ -480,7 +480,7 @@ void TreeView::OnFocus()
     cc->Header.RecomputeColumnsSizes();
 }
 
-void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
+void TreeView::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
@@ -515,16 +515,16 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
     switch (button)
     {
     case Input::MouseButton::None:
-        return ColumnsHeaderView::OnMousePressed(x, y, button);
+        return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
     case Input::MouseButton::Left:
         switch (cc->isMouseOn)
         {
         case TreeControlContext::IsMouseOn::Border:
-            return ColumnsHeaderView::OnMousePressed(x, y, button);
+            return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
         case TreeControlContext::IsMouseOn::ColumnHeader:
-            return ColumnsHeaderView::OnMousePressed(x, y, button);
+            return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
         case TreeControlContext::IsMouseOn::ColumnSeparator:
-            return ColumnsHeaderView::OnMousePressed(x, y, button);
+            return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
         case TreeControlContext::IsMouseOn::ToggleSymbol:
         {
             const uint32 index    = y - 2;
@@ -562,21 +562,21 @@ void TreeView::OnMousePressed(int x, int y, Input::MouseButton button)
         }
         break;
         default:
-            return ColumnsHeaderView::OnMousePressed(x, y, button);
+            return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
         }
         break;
     case Input::MouseButton::Center:
-        return ColumnsHeaderView::OnMousePressed(x, y, button);
+        return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
     case Input::MouseButton::Right:
-        return ColumnsHeaderView::OnMousePressed(x, y, button);
+        return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
     case Input::MouseButton::DoubleClicked:
-        return ColumnsHeaderView::OnMousePressed(x, y, button);
+        return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
     default:
-        return ColumnsHeaderView::OnMousePressed(x, y, button);
+        return ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
     }
 }
 
-bool TreeView::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
+bool TreeView::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction, Input::Key)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);

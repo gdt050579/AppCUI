@@ -392,12 +392,12 @@ bool Splitter::OnBeforeAddControl(Reference<Control> c)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     return (Members->ControlsCount < 2);
 }
-void Splitter::OnMousePressed(int x, int y, Input::MouseButton)
+void Splitter::OnMousePressed(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, true);
 }
-void Splitter::OnMouseReleased(int x, int y, Input::MouseButton)
+void Splitter::OnMouseReleased(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, false);
@@ -408,7 +408,7 @@ void Splitter::OnMouseReleased(int x, int y, Input::MouseButton)
 
     Members->mouseStatus = SplitterMouseStatus::None;
 }
-bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton)
+bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if (Members->mouseStatus == SplitterMouseStatus::Drag)

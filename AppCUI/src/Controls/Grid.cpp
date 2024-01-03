@@ -252,7 +252,7 @@ bool Grid::OnKeyEvent(Input::Key keyCode, char16_t /*UnicodeChar*/)
     return false;
 }
 
-void Grid::OnMousePressed(int x, int y, MouseButton button)
+void Grid::OnMousePressed(int x, int y, MouseButton button, Input::Key)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -298,7 +298,7 @@ void Grid::OnMousePressed(int x, int y, MouseButton button)
     }
 }
 
-void Grid::OnMouseReleased(int /*x*/, int /*y*/, MouseButton button)
+void Grid::OnMouseReleased(int /*x*/, int /*y*/, MouseButton button, Input::Key)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
     switch (button)
@@ -319,7 +319,7 @@ void Grid::OnMouseReleased(int /*x*/, int /*y*/, MouseButton button)
     }
 }
 
-bool Grid::OnMouseDrag(int x, int y, MouseButton button)
+bool Grid::OnMouseDrag(int x, int y, MouseButton button, Input::Key)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 
@@ -414,7 +414,7 @@ bool Grid::OnMouseDrag(int x, int y, MouseButton button)
     return false;
 }
 
-bool Controls::Grid::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
+bool Controls::Grid::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction, Input::Key)
 {
     auto context = reinterpret_cast<GridControlContext*>(Context);
 

@@ -96,7 +96,7 @@ bool Button::OnKeyEvent(Key KeyCode, char16)
     }
     return false;
 }
-bool Button::OnMouseDrag(int x, int y, Input::MouseButton)
+bool Button::OnMouseDrag(int x, int y, Input::MouseButton, Input::Key)
 {
     if (IsChecked() == false)
         return false;
@@ -107,13 +107,13 @@ bool Button::OnMouseDrag(int x, int y, Input::MouseButton)
     }
     return false;
 }
-void Button::OnMouseReleased(int x, int y, Input::MouseButton)
+void Button::OnMouseReleased(int x, int y, Input::MouseButton, Input::Key)
 {
     SetChecked(false);
     if (IsMouseInControl(x, y))
         OnHotKey();
 }
-void Button::OnMousePressed(int, int, Input::MouseButton)
+void Button::OnMousePressed(int, int, Input::MouseButton, Input::Key)
 {
     SetChecked(true);
 }

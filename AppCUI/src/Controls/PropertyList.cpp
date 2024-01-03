@@ -2011,19 +2011,19 @@ bool PropertyList::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return reinterpret_cast<PropertyListContext*>(this->Context)->OnKeyEvent(keyCode, UnicodeChar);
 }
-void PropertyList::OnMouseReleased(int x, int y, Input::MouseButton button)
+void PropertyList::OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key)
 {
     reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseReleased(x, y, button);
 }
-void PropertyList::OnMousePressed(int x, int y, Input::MouseButton button)
+void PropertyList::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     reinterpret_cast<PropertyListContext*>(this->Context)->OnMousePressed(x, y, button);
 }
-bool PropertyList::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool PropertyList::OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key)
 {
     return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseDrag(x, y, button);
 }
-bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key)
 {
     return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseWheel(x, y, direction);
 }

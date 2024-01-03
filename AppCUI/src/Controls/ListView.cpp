@@ -1484,14 +1484,14 @@ uint32 ListView::GetCheckedItemsCount()
     return WRAPPER->GetCheckedItemsCount();
 }
 
-void ListView::OnMousePressed(int x, int y, Input::MouseButton button)
+void ListView::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode)
 {
-    ColumnsHeaderView::OnMousePressed(x, y, button);
+    ColumnsHeaderView::OnMousePressed(x, y, button, keyCode);
     if (!this->HeaderHasMouseCaption())
         WRAPPER->OnMousePressed(x, y, button);
 }
 
-bool ListView::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool ListView::OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key)
 {
     return WRAPPER->OnMouseWheel(x, y, direction);
 }
