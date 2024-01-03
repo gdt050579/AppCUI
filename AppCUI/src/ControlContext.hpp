@@ -982,20 +982,25 @@ class GridControlContext : public ControlContext
     std::vector<uint32> selectedCellsIndexes;
     std::vector<uint32> duplicatedCellsIndexes;
 
-    uint32 cWidth  = 0U;
-    uint32 cHeight = 0U;
-    int32 offsetX  = 0;
-    int32 offsetY  = 0;
+    int32 deltaX = 0U;
+    int32 deltaY = 0U;
 
+    uint32 cWidth     = 0U;
+    uint32 cHeight    = 0U;
+    int32 offsetX     = 0;
+    int32 offsetY     = 0;
+    int32 lastcWidth  = 0;
+    int32 lastcHeight = 0;
     std::vector<std::vector<GridCellData>> cellsNormal;
     std::vector<std::vector<GridCellData>> cellsFiltered;
     std::vector<std::vector<GridCellData>>* cells = &cellsNormal;
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 
-    bool startedMoving    = false;
-    bool shouldPaintError = false;
-
+    bool startedMoving          = false;
+    bool shouldPaintError       = false;
+    bool startedScrolling       = false;
+    bool isCellContentRequested = false;
     Point lastLocationDraggedRightClicked{ 0, 0 };
 
     std::vector<bool> columnsSort;
@@ -1008,6 +1013,8 @@ class GridControlContext : public ControlContext
   public:
     void DrawBoxes(Graphics::Renderer& renderer);
     void DrawLines(Graphics::Renderer& renderer);
+    bool DrawIndexesColumn(Graphics::Renderer& renderer);
+    bool DrawHeaderForIndexesColumn(Graphics::Renderer& renderer);
     uint32 ComputeCellNumber(int32 x, int32 y);
     Graphics::SpecialChars ComputeBoxType(
           uint32 colIndex,

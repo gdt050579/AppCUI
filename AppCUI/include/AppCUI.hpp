@@ -4695,7 +4695,7 @@ namespace Controls
         Filter                = 0x040000
     };
 
-    class EXPORT Grid : public Control
+     class EXPORT Grid : public Control
     {
       protected:
         Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags);
@@ -4740,6 +4740,8 @@ namespace Controls
         void ToggleVerticalLines();
         void Sort();
         void Filter();
+        std::optional<std::string> GetSelectedCellContent();
+        std::optional<std::pair<std::string, std::vector<std::string>>> GetSelectedColumnContent();
 
       private:
         friend Factory::Grid;

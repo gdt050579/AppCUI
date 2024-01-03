@@ -718,8 +718,9 @@ void WindowsTerminal::Update()
     OnFlushToScreen();
 
     if ((screenCanvas.GetCursorVisibility() != lastCursorVisibility) || (screenCanvas.GetCursorX() != lastCursorX) ||
-        (screenCanvas.GetCursorY() != lastCursorY) || screenCanvas.GetWidth() != lastWidth ||
-        screenCanvas.GetHeight() != lastHeight)
+        (screenCanvas.GetCursorY() != lastCursorY) ||
+        (screenCanvas.GetWidth() != lastWidth || screenCanvas.GetHeight() != lastHeight) &&
+              screenCanvas.GetCursorVisibility() == false)
     {
         if (this->OnUpdateCursor())
         {
