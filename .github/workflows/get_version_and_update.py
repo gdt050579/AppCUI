@@ -45,6 +45,7 @@ with open(header_location, 'r') as f:
                 line = '#define APPCUI_VERSION "{}"\n'.format(version)
                 found_version = True
                 os.putenv('APPCUI_VERSION', version)
+                print(version)
             g.write(line)
 
 if not found_version:

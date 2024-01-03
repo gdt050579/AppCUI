@@ -488,7 +488,7 @@ class ConfigProperty : public PropertiesInterface
         r.WriteCharacter(2, 8, 'C', obj.Menu.HotKey.Hovered);
         r.WriteSingleLineText(19, 8, "F10 ", obj.Menu.ShortCut.Hovered, TextAlignament::Right);
     }
-    void PaintParentMenusAndCommandBar(Graphics::Renderer& r, Size sz)
+    void PaintParentMenusAndCommandBar(Graphics::Renderer& r, Size /*sz*/)
     {
         r.FillRect(2, 1, 22, 9, ' ', obj.ParentMenu.Text.Normal);
         r.DrawRect(2, 1, 22, 9, obj.ParentMenu.Text.Normal, LineType::Single);
@@ -624,7 +624,7 @@ class ConfigProperty : public PropertiesInterface
         r.WriteSpecialCharacter(7, cy, SpecialChars::TriangleUp, obj.Symbol.Hovered);
         r.WriteSpecialCharacter(9, cy, SpecialChars::TriangleDown, obj.Symbol.Pressed);
     }
-    void PaintScrollBars(Graphics::Renderer& r, Size sz)
+    void PaintScrollBars(Graphics::Renderer& r, Size /*sz*/)
     {
         DrawPreviewWindow(r, 2, 3, 16, 10, " Scroll ");
         r.FillHorizontalLineWithSpecialChar(4, 10, 14, SpecialChars::Block25, obj.ScrollBar.Bar.Normal);
@@ -1851,10 +1851,10 @@ class ConfigProperty : public PropertiesInterface
         error.SetFormat("Invalid property id (%d)", propertyID);
         return false;
     }
-    void SetCustomPropertyValue(uint32 propertyID) override
+    void SetCustomPropertyValue(uint32 /*propertyID*/) override
     {
     }
-    bool IsPropertyValueReadOnly(uint32 propertyID) override
+    bool IsPropertyValueReadOnly(uint32 /*propertyID*/) override
     {
         NOT_IMPLEMENTED(false);
     }
@@ -2159,11 +2159,11 @@ class ThemeEditorDialog : public Window
             switch (ID)
             {
             case BUTTON_CMD_CLOSE:
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Cancel);
                 return true;
             case BUTTON_CMD_APPLY:
                 (*Application::GetAppConfig()) = cfg.GetConfig();
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return true;
             case BUTTON_CMD_SAVE:
                 SaveTheme();

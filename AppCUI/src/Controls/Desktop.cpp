@@ -1,5 +1,4 @@
 ﻿#include "ControlContext.hpp"
-#include <AppCUI.hpp>
 
 namespace AppCUI::Controls
 {
@@ -58,8 +57,9 @@ bool Desktop::OnKeyEvent(Input::Key keyCode, char16 /*UnicodeChar*/)
     // check controls hot keys
     if ((((uint32) keyCode) & (uint32) (Key::Shift | Key::Alt | Key::Ctrl)) == ((uint32) Key::Alt))
     {
-        auto* b = Members->Controls;
-        auto* e = b + Members->ControlsCount;
+        auto* b        = Members->Controls;
+        auto* e        = b + Members->ControlsCount;
+        uint32 ctrlIdx = 0U;
         if (b)
         {
             while (b < e)
@@ -67,11 +67,12 @@ bool Desktop::OnKeyEvent(Input::Key keyCode, char16 /*UnicodeChar*/)
                 const auto winMembers = reinterpret_cast<ControlContext*>((*b)->Context);
                 if ((winMembers) && (winMembers->HotKey == keyCode))
                 {
-                    if ((b - Members->Controls) != (size_t) Members->CurrentControlIndex)
+                    if (ctrlIdx != Members->CurrentControlIndex)
                         (*b)->SetFocus();
                     return true;
                 }
                 b++;
+                ctrlIdx++;
             }
         }
     }

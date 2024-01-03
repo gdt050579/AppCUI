@@ -14,7 +14,7 @@ using namespace AppCUI::Dialogs;
 using namespace AppCUI::Graphics;
 using namespace AppCUI::Controls;
 
-class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
+class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterface
 {
     enum class ControlIds : uint32
     {
@@ -38,15 +38,14 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         horizontal = Factory::Splitter::Create(this, "x:1%, y:15%, w:99%, h:5%");
         currentFolder =
               Factory::TextField::Create(this, std::filesystem::current_path().u8string(), "x:12%, y:1%, h:15%, w:87%");
+
         tree = Factory::TreeView::Create(
               this,
               "x:1%, y:20%, w:99%, h:80%",
-              { { u"&Path", TextAlignament::Left, 100 },
-                { u"&Last Write Time", TextAlignament::Right, 25 },
-                { u"&Size (bytes)", TextAlignament::Right, 25 } },
-              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable));
+              { "n:&Path,a:l,w:100", "n:&Last Write Time,a:r,w:25", "n:&Size (bytes),a:r,w:25" },
+              (TreeViewFlags::DynamicallyPopulateNodeChildren | TreeViewFlags::Sortable | TreeViewFlags::Searchable));
 
-        tree->Handlers()->OnTreeItemToggle = this;
+        tree->Handlers()->OnItemToggle = this;
 
         tree->ClearItems();
         const auto path              = std::filesystem::current_path().u16string();
@@ -71,7 +70,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         root.SetData(Reference<std::u16string>(&cpath));
     }
 
-    bool OnEvent(Reference<Control>, Event eventType, int controlID) override
+    bool OnEvent(Reference<Control> control, Event eventType, int controlID) override
     {
         switch (eventType)
         {
@@ -114,7 +113,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
                     auto& localPath = pieces.emplace_back(path.u16string());
                     root.SetData(Reference<std::u16string>(&localPath));
 
-                    OnTreeItemToggle(root);
+                    OnTreeViewItemToggle(control.ToObjectRef<TreeView>(), root, std::filesystem::is_directory(path));
                 }
 
                 return true;
@@ -125,9 +124,10 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
         return false;
     }
 
-    bool OnTreeItemToggle(TreeViewItem& item) override
+    bool OnTreeViewItemToggle(
+          Reference<Controls::TreeView> /*tree*/, TreeViewItem& item, bool /*recursiveCall*/) override
     {
-        auto data         = item.GetData<Reference<std::u16string>>().ToObjectRef<std::u16string>();
+        auto data         = item.GetData<Reference<std::u16string>>().ToGenericRef().ToReference<std::u16string>();
         const auto fsPath = std::filesystem::path(data->c_str());
         try
         {
@@ -155,6 +155,7 @@ class TreeExample : public Window, public Handlers::OnTreeItemToggleInterface
 #ifdef _DEBUG
             LOG_ERROR("%s", e.what());
 #endif
+            return false;
         }
 
         return true;

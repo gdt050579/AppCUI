@@ -13,9 +13,10 @@ namespace Internal
         HANDLE hstdIn;
         DWORD originalStdMode;
         DWORD stdMode;
-        DWORD startTime;
-        unique_ptr<CHAR_INFO> ConsoleBuffer;
-        uint32 ConsoleBufferCount;
+        DWORD64 startTime;
+        unique_ptr<CHAR_INFO> consoleBuffer;
+        uint32 consoleBufferCount;
+        uint32 lastWidth, lastHeight;
         struct
         {
             uint32 x, y;
@@ -42,11 +43,12 @@ namespace Internal
         WindowsTerminal();
         virtual bool OnInit(const Application::InitializationData& initData) override;
         virtual void RestoreOriginalConsoleSettings() override;
-        virtual void OnUninit() override;
+        virtual void OnUnInit() override;
         virtual void OnFlushToScreen() override;
         virtual void OnFlushToScreen(const Graphics::Rect& r) override;
         virtual bool OnUpdateCursor() override;
         virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
+        virtual void Update() override;
         virtual bool IsEventAvailable() override;
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
         virtual ~WindowsTerminal();

@@ -6,7 +6,7 @@ using namespace Controls;
 using namespace Graphics;
 using namespace Input;
 
-RadioBox::RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID)
+RadioBox::RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID, bool checked)
     : Control(new ControlContext(), caption, layout, true)
 {
     auto Members              = reinterpret_cast<ControlContext*>(this->Context);
@@ -15,6 +15,8 @@ RadioBox::RadioBox(const ConstString& caption, string_view layout, int groupID, 
     Members->Flags            = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
     this->SetControlID(controlID);
     this->SetGroup(groupID);
+    if (checked)
+        this->OnHotKey();
 }
 
 void RadioBox::Paint(Graphics::Renderer& renderer)
@@ -99,7 +101,7 @@ bool RadioBox::OnKeyEvent(Input::Key KeyCode, char16)
     }
     return false;
 }
-void RadioBox::OnMouseReleased(int x, int y, Input::MouseButton)
+void RadioBox::OnMouseReleased(int x, int y, Input::MouseButton, Input::Key)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();

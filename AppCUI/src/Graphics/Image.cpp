@@ -1,6 +1,4 @@
-#include "AppCUI.hpp"
 #include "ImageLoader.hpp"
-#include "string.h"
 
 namespace AppCUI::Graphics
 {

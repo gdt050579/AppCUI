@@ -71,20 +71,23 @@ REFERENCE<CheckBox> Factory::CheckBox::Create(
 }
 
 //======[RADIOBOX]===================================================================================
-POINTER<RadioBox> Factory::RadioBox::Create(const ConstString& caption, string_view layout, int groupID, int controlID)
+POINTER<RadioBox> Factory::RadioBox::Create(
+      const ConstString& caption, string_view layout, int groupID, int controlID, bool checked)
 {
-    return POINTER<Controls::RadioBox>(new Controls::RadioBox(caption, layout, groupID, controlID));
+    return POINTER<Controls::RadioBox>(new Controls::RadioBox(caption, layout, groupID, controlID, checked));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control* parent, const ConstString& caption, string_view layout, int groupID, int controlID)
+      Control* parent, const ConstString& caption, string_view layout, int groupID, int controlID, bool checked)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::RadioBox>(Factory::RadioBox::Create(caption, layout, groupID, controlID));
+    return parent->AddControl<Controls::RadioBox>(
+          Factory::RadioBox::Create(caption, layout, groupID, controlID, checked));
 }
 REFERENCE<RadioBox> Factory::RadioBox::Create(
-      Control& parent, const ConstString& caption, string_view layout, int groupID, int controlID)
+      Control& parent, const ConstString& caption, string_view layout, int groupID, int controlID, bool checked)
 {
-    return parent.AddControl<Controls::RadioBox>(Factory::RadioBox::Create(caption, layout, groupID, controlID));
+    return parent.AddControl<Controls::RadioBox>(
+          Factory::RadioBox::Create(caption, layout, groupID, controlID, checked));
 }
 
 //======[SPLITTER]===================================================================================
@@ -294,14 +297,14 @@ REFERENCE<ImageView> Factory::ImageView::Create(
 
 //======[LISTVIEW]===================================================================================
 POINTER<Controls::ListView> Factory::ListView::Create(
-      string_view layout, std::initializer_list<ColumnBuilder> columns, Controls::ListViewFlags flags)
+      string_view layout, std::initializer_list<ConstString> columns, Controls::ListViewFlags flags)
 {
     return POINTER<Controls::ListView>(new Controls::ListView(layout, columns, flags));
 }
 REFERENCE<ListView> Factory::ListView::Create(
       Controls::Control* parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       Controls::ListViewFlags flags)
 {
     VALIDATE_PARENT;
@@ -310,7 +313,7 @@ REFERENCE<ListView> Factory::ListView::Create(
 REFERENCE<ListView> Factory::ListView::Create(
       Controls::Control& parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       Controls::ListViewFlags flags)
 {
     return parent.AddControl<Controls::ListView>(Factory::ListView::Create(layout, columns, flags));
@@ -369,7 +372,7 @@ POINTER<Controls::Desktop> Factory::Desktop::Create()
 
 //======[TREE]=======================================================================================
 POINTER<Controls::TreeView> Factory::TreeView::Create(
-      string_view layout, std::initializer_list<ColumnBuilder> columns, TreeViewFlags flags)
+      string_view layout, std::initializer_list<ConstString> columns, TreeViewFlags flags)
 {
     return POINTER<Controls::TreeView>(new Controls::TreeView(layout, columns, flags));
 }
@@ -377,7 +380,7 @@ POINTER<Controls::TreeView> Factory::TreeView::Create(
 REFERENCE<TreeView> Factory::TreeView::Create(
       Controls::Control* parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       const TreeViewFlags flags)
 {
     VALIDATE_PARENT;
@@ -387,7 +390,7 @@ REFERENCE<TreeView> Factory::TreeView::Create(
 REFERENCE<TreeView> Factory::TreeView::Create(
       Controls::Control& parent,
       string_view layout,
-      std::initializer_list<ColumnBuilder> columns,
+      std::initializer_list<ConstString> columns,
       const TreeViewFlags flags)
 {
     return parent.AddControl<Controls::TreeView>(Factory::TreeView::Create(layout, columns, flags));

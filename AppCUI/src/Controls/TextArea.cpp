@@ -1,5 +1,4 @@
 #include "ControlContext.hpp"
-#include "Internal.hpp"
 
 #define CLEAR_SELECTION                                                                                                \
     if ((!selected) && (Selection.Start != INVALID_SELECTION))                                                         \
@@ -936,7 +935,7 @@ void TextAreaControlContext::MousePosToFilePos(int x, int y, uint32& lineIndex, 
         return;
     }
 }
-void TextAreaControlContext::OnMouseReleased(int x, int y, Input::MouseButton button)
+void TextAreaControlContext::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton /*button*/)
 {
 }
 void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton button)
@@ -968,7 +967,7 @@ void TextAreaControlContext::OnMousePressed(int x, int y, Input::MouseButton but
             {
                 textAreaContexMenu = new Internal::TextControlDefaultMenu();
             }
-            textAreaContexMenu->Show(this->Host, x, y + 1, this->Selection.Start >= 0);
+            textAreaContexMenu->Show(this->Host, x, y + 1, true /*this->Selection.Start >= 0 (always true as .Start is uint32*/);
         }
     }
 }
@@ -982,7 +981,7 @@ bool TextAreaControlContext::OnMouseDrag(int x, int y, Input::MouseButton button
     }
     return true;
 }
-bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool TextAreaControlContext::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction)
 {
     switch (direction)
     {
@@ -995,7 +994,7 @@ bool TextAreaControlContext::OnMouseWheel(int x, int y, Input::MouseWheel direct
     }
     return false;
 }
-bool TextAreaControlContext::OnMouseOver(int x, int y)
+bool TextAreaControlContext::OnMouseOver(int /*x*/, int /*y*/)
 {
     NOT_IMPLEMENTED(false);
 }
@@ -1113,19 +1112,19 @@ bool TextArea::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return WRAPPER->OnKeyEvent(keyCode, UnicodeChar);
 }
-void TextArea::OnMousePressed(int x, int y, Input::MouseButton button)
+void TextArea::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     WRAPPER->OnMousePressed(x, y, button);
 }
-void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button)
+void TextArea::OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key)
 {
     WRAPPER->OnMouseReleased(x, y, button);
 }
-bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool TextArea::OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key)
 {
     return WRAPPER->OnMouseDrag(x, y, button);
 }
-bool TextArea::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool TextArea::OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key)
 {
     return WRAPPER->OnMouseWheel(x, y, direction);
 }
@@ -1170,6 +1169,19 @@ void TextArea::SetTabCharacter(char tabCharacter)
 {
     WRAPPER->SetTabCharacter(tabCharacter);
 }
+bool TextArea::HasSelection() const
+{
+    return WRAPPER->HasSelection();
+}
+bool TextArea::GetSelection(uint32& start, uint32& size) const
+{
+    if (WRAPPER->HasSelection()==false)
+        return false;
+    start = WRAPPER->Selection.Start;
+    size  = WRAPPER->Selection.End - WRAPPER->Selection.Start;
+    return true;
+}
+
 Handlers::TextControl* TextArea::Handlers()
 {
     GET_CONTROL_HANDLERS(Handlers::TextControl);

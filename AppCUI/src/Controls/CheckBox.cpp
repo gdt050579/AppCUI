@@ -81,7 +81,7 @@ bool CheckBox::OnKeyEvent(Input::Key KeyCode, char16)
     }
     return false;
 }
-void CheckBox::OnMouseReleased(int x, int y, Input::MouseButton)
+void CheckBox::OnMouseReleased(int x, int y, Input::MouseButton, Input::Key)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();

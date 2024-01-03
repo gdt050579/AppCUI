@@ -1,0 +1,38 @@
+{
+  "name": "appcui",
+  "version-string": "0.1.0",
+  "dependencies": [
+        {
+            "name": "ncurses",
+            "platform": "linux | osx"
+        },
+        {
+            "name": "libiconv",
+            "platform": "osx"
+        },
+        {
+            "name": "brotli",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "bzip2",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "freetype",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "libpng",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "sdl2",
+            "platform": "windows | linux | osx"
+        },
+        {
+            "name": "sdl2-ttf",
+            "platform": "windows | linux | osx"
+        }
+    ]
+}

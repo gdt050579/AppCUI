@@ -29,7 +29,7 @@ void MainMenuState::Init()
     data->tab->SetCurrentTabPage(page);
 }
 
-bool MainMenuState::HandleEvent(Reference<Control> ctrl, Event eventType, int controlID)
+bool MainMenuState::HandleEvent(Reference<Control> /*ctrl*/, Event eventType, int controlID)
 {
     switch (eventType)
     {
@@ -88,7 +88,7 @@ bool MainMenuState::DoActionForControl(int controlID)
     return true;
 }
 
-bool MainMenuState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar)
+bool MainMenuState::OnKeyEvent(Reference<Control> control, Key keyCode, char16_t /*unicodeChar*/)
 {
     switch (keyCode)
     {

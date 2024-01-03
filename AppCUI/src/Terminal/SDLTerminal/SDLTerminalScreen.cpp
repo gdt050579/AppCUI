@@ -1,12 +1,8 @@
-#include "SDL.h"
-#include "SDL_ttf.h"
 #include "SDLTerminal.hpp"
 #include "cmrc/cmrc.hpp"
 #include <algorithm>
 #include <array>
-#include <filesystem>
 #include <fstream>
-#include <string>
 
 CMRC_DECLARE(font);
 
@@ -68,7 +64,7 @@ constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
 //
 // After the font is successfully loaded, let's see how wide and high are the characters,
 // that will be our cell width and cell height.
-bool SDLTerminal::initFont(const InitializationData& initData)
+bool SDLTerminal::InitFont(const InitializationData& initData)
 {
     size_t fontSize = 0;
     switch (initData.CharSize)
@@ -92,19 +88,19 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     default:
         break;
     }
-    TTF_Init();
+
+    CHECK(TTF_WasInit() == 0 && TTF_Init() == 0, false, "Failed to initialize true type support: %s", TTF_GetError());
 
     // Load font resource
     auto fs           = cmrc::font::get_filesystem();
     auto fontResource = fs.open(FONT_PATH);
 
-    // Drop font to disk
-    const fs::path fontFilePath = fs::temp_directory_path() / "AppCUI_Font.ttf";
-    std::ofstream fontFile(fontFilePath, std::ios::binary | std::ios::trunc);
-    std::copy(fontResource.begin(), fontResource.end(), std::ostream_iterator<uint8_t>(fontFile));
+    const auto filesize = static_cast<int>(std::distance(fontResource.begin(), fontResource.end()));
+    this->fontBuffer.reset(new char[filesize]);
+    std::copy(fontResource.begin(), fontResource.end(), fontBuffer.get());
 
-    // Load font file as TTF
-    this->font = TTF_OpenFont(fontFilePath.string().c_str(), fontSize);
+    // Load font buffer as TTF
+    this->font = TTF_OpenFontRW(SDL_RWFromMem(fontBuffer.get(), filesize), 1, fontSize);
     CHECK(font, false, "Failed to init font");
 
     int fontCharWidth  = 0;
@@ -122,14 +118,14 @@ bool SDLTerminal::initFont(const InitializationData& initData)
     return true;
 }
 
-bool SDLTerminal::initScreen(const InitializationData& initData)
+bool SDLTerminal::InitScreen(const InitializationData& initData)
 {
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    CHECK(initFont(initData), false, "Unable to init font");
+    CHECK(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) == 0, false, "Failed to initialize SDL: %s", SDL_GetError());
+    CHECK(InitFont(initData), false, "Unable to init font");
 
     // Default size is half the screen
     SDL_DisplayMode DM;
-    SDL_GetCurrentDisplayMode(0, &DM);
+    CHECK(SDL_GetCurrentDisplayMode(0, &DM) == 0, false, "Failed getting SDL current display mode: %s", SDL_GetError());
     size_t pixelWidth  = DM.w / 2;
     size_t pixelHeight = DM.h / 2;
 
@@ -156,25 +152,30 @@ bool SDLTerminal::initScreen(const InitializationData& initData)
         pixelHeight = charWidth * initData.Height;
     }
 
+    const auto cp = std::filesystem::current_path();
+
     window = SDL_CreateWindow(
-          "AppCUI", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, pixelWidth, pixelHeight, windowFlags);
+          "AppCUI",
+          SDL_WINDOWPOS_CENTERED,
+          SDL_WINDOWPOS_CENTERED,
+          static_cast<int>(pixelWidth),
+          static_cast<int>(pixelHeight),
+          windowFlags);
     CHECK(window, false, "Failed to initialize SDL Window: %s", SDL_GetError());
     windowID = SDL_GetWindowID(window);
 
-    // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     CHECK(renderer, false, "Failed to initialize SDL Renderer: %s", SDL_GetError());
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
     const size_t widthInChars  = pixelWidth / charWidth;
     const size_t heightInChars = pixelHeight / charHeight;
-    CHECK(ScreenCanvas.Create(widthInChars, heightInChars),
+    CHECK(screenCanvas.Create(widthInChars, heightInChars),
           false,
           "Fail to create an internal canvas of %d x %d size",
           widthInChars,
           heightInChars);
-    CHECK(OriginalScreenCanvas.Create(widthInChars, heightInChars),
+    CHECK(originalScreenCanvas.Create(widthInChars, heightInChars),
           false,
           "Fail to create the original screen canvas of %d x %d size",
           widthInChars,
@@ -214,7 +215,7 @@ int codePageConversions(const int ch)
     return ch;
 }
 
-SDL_Texture* SDLTerminal::renderCharacter(
+SDL_Texture* SDLTerminal::RenderCharacter(
       const uint32 charPacked, const char16_t charCode, const SDL_Color& fg, const SDL_Color& bg)
 {
     if (characterCache.find(charPacked) != characterCache.end())
@@ -228,7 +229,7 @@ SDL_Texture* SDLTerminal::renderCharacter(
         return nullptr;
     }
     SDL_Texture* glyphTexture = SDL_CreateTextureFromSurface(renderer, glyphSurface);
-    SDL_FreeSurface(glyphSurface);
+    // SDL_FreeSurface(glyphSurface);
     characterCache[charPacked] = glyphTexture;
     return glyphTexture;
 }
@@ -239,9 +240,9 @@ SDL_Texture* SDLTerminal::renderCharacter(
 void SDLTerminal::OnFlushToScreen()
 {
     SDL_RenderClear(renderer);
-    Graphics::Character* charsBuffer = this->ScreenCanvas.GetCharactersBuffer();
-    const std::size_t width          = ScreenCanvas.GetWidth();
-    const std::size_t height         = ScreenCanvas.GetHeight();
+    Graphics::Character* charsBuffer = screenCanvas.GetCharactersBuffer();
+    const std::size_t width          = screenCanvas.GetWidth();
+    const std::size_t height         = screenCanvas.GetHeight();
 
     SDL_Rect WindowRect;
     WindowRect.w = charWidth;
@@ -253,7 +254,7 @@ void SDLTerminal::OnFlushToScreen()
         {
             Graphics::Character ch = charsBuffer[y * width + x];
 
-            SDL_Texture* glyphTexture = renderCharacter(
+            SDL_Texture* glyphTexture = RenderCharacter(
                   ch.PackedValue,
                   codePageConversions(ch.Code),
                   appcuiColorToSDLColor[(char) ch.Color.Foreground],
@@ -269,7 +270,7 @@ void SDLTerminal::OnFlushToScreen()
     }
     SDL_RenderPresent(renderer);
 }
-void SDLTerminal::OnFlushToScreen(const Graphics::Rect& r)
+void SDLTerminal::OnFlushToScreen(const Graphics::Rect& /*r*/)
 {
     // No implementation for the moment, copy the entire screem
     OnFlushToScreen();
@@ -284,12 +285,12 @@ bool SDLTerminal::OnUpdateCursor()
     // Currently no cursor for sdl
     return true;
 }
-bool SDLTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
+bool SDLTerminal::HasSupportFor(Application::SpecialCharacterSetType /*type*/)
 {
     // SDL based terminal supports all special character set types
     return true;
 }
-void SDLTerminal::uninitScreen()
+void SDLTerminal::UnInitScreen()
 {
     for (const auto& cacheItem : characterCache)
     {
@@ -301,4 +302,4 @@ void SDLTerminal::uninitScreen()
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
-}
+} // namespace AppCUI::Internal

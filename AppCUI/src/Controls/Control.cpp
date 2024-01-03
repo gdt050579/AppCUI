@@ -1,353 +1,23 @@
 #include "ControlContext.hpp"
-#include "Internal.hpp"
+
 #include <cstring>
-#include <string.h>
 
 namespace AppCUI
 {
 #define CTRLC ((ControlContext*) Context)
 
-constexpr uint8 CHAR_TYPE_EOS       = 0;
-constexpr uint8 CHAR_TYPE_OTHER     = 1;
-constexpr uint8 CHAR_TYPE_WORD      = 2;
-constexpr uint8 CHAR_TYPE_NUMBER    = 3;
-constexpr uint8 CHAR_TYPE_SPACE     = 4;
-constexpr uint8 CHAR_TYPE_EQ        = 5;
-constexpr uint8 CHAR_TYPE_SEPARATOR = 6;
-constexpr uint8 CHAR_TYPE_POINT     = 7;
-constexpr uint8 CHAR_TYPE_MINUS     = 8;
-
-//=========================================
-// THIS CODE WAS AUTOMATICALLY GENERATED !
-//=========================================
-
-constexpr uint8 LAYOUT_KEY_NONE     = 0;
-constexpr uint16 LAYOUT_KEY_X       = 1;
 constexpr uint16 LAYOUT_FLAG_X      = 0x0001;
-constexpr uint16 LAYOUT_KEY_Y       = 2;
 constexpr uint16 LAYOUT_FLAG_Y      = 0x0002;
-constexpr uint16 LAYOUT_KEY_LEFT    = 3;
 constexpr uint16 LAYOUT_FLAG_LEFT   = 0x0004;
-constexpr uint16 LAYOUT_KEY_RIGHT   = 4;
 constexpr uint16 LAYOUT_FLAG_RIGHT  = 0x0008;
-constexpr uint16 LAYOUT_KEY_TOP     = 5;
 constexpr uint16 LAYOUT_FLAG_TOP    = 0x0010;
-constexpr uint16 LAYOUT_KEY_BOTTOM  = 6;
 constexpr uint16 LAYOUT_FLAG_BOTTOM = 0x0020;
-constexpr uint16 LAYOUT_KEY_WIDTH   = 7;
 constexpr uint16 LAYOUT_FLAG_WIDTH  = 0x0040;
-constexpr uint16 LAYOUT_KEY_HEIGHT  = 8;
 constexpr uint16 LAYOUT_FLAG_HEIGHT = 0x0080;
-constexpr uint16 LAYOUT_KEY_ALIGN   = 9;
 constexpr uint16 LAYOUT_FLAG_ALIGN  = 0x0100;
-constexpr uint16 LAYOUT_KEY_DOCK    = 10;
 constexpr uint16 LAYOUT_FLAG_DOCK   = 0x0200;
 
-constexpr uint8 _layout_translate_map_[116] = {
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_ALIGN, LAYOUT_KEY_BOTTOM, LAYOUT_KEY_NONE,   LAYOUT_KEY_DOCK,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_HEIGHT, LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_LEFT,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_RIGHT, LAYOUT_KEY_NONE,  LAYOUT_KEY_TOP,    LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_WIDTH,
-    LAYOUT_KEY_X,     LAYOUT_KEY_Y,     LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_DOCK,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_LEFT,  LAYOUT_KEY_NONE,   LAYOUT_KEY_TOP,    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_ALIGN,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_RIGHT, LAYOUT_KEY_NONE,
-    LAYOUT_KEY_WIDTH, LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_HEIGHT, LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,   LAYOUT_KEY_NONE,  LAYOUT_KEY_NONE,
-    LAYOUT_KEY_NONE,  LAYOUT_KEY_BOTTOM
-};
-
 Control* currentControlBeingFocused = nullptr;
-
-inline uint8 HashToLayoutKey(uint32 hash)
-{
-    if (hash >= 116)
-        return LAYOUT_KEY_NONE;
-    return _layout_translate_map_[hash];
-};
-
-constexpr uint8 _align_translate_map_[258] = { 0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::Bottom,
-                                               (uint8) Alignament::Center,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::Left,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::BottomLeft,
-                                               0xFF,
-                                               (uint8) Alignament::Right,
-                                               0xFF,
-                                               (uint8) Alignament::Top,
-                                               0xFF,
-                                               (uint8) Alignament::BottomRight,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::TopLeft,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::TopRight,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::Left,
-                                               0xFF,
-                                               (uint8) Alignament::Top,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::Right,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::Center,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::Bottom,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::TopLeft,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::TopRight,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::BottomLeft,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               0xFF,
-                                               (uint8) Alignament::BottomRight };
-
-inline bool HashToAlignament(uint32 hash, Alignament& align)
-{
-    if (hash >= 258)
-        return false;
-    auto ch = _align_translate_map_[hash];
-    if (ch == 0xFF)
-        return false;
-    align = static_cast<Alignament>(ch);
-    return true;
-};
-
-//=========================================
-// END OF AUTOMATICALLY GENERATED CODE
-//=========================================
 
 // for gcc, building a field should look like var.field, not var.##field
 // http://gcc.gnu.org/onlinedocs/cpp/Concatenation.html
@@ -363,161 +33,354 @@ inline bool HashToAlignament(uint32 hash, Alignament& align)
         result = from * size / 10000;                                                                                  \
     else                                                                                                               \
         result = from;
-
-struct LayoutKeyValueData
-{
-    const char* HashName;
-    uint32 Hash;
-    int n1, n2;
-    uint32 StringValueHash;
-    bool IsNegative;
-    char ValueType;
-};
-
-uint8 __char_types__[256] = {
-    CHAR_TYPE_EOS,    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_SPACE,  CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_SPACE,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_SEPARATOR, CHAR_TYPE_MINUS,  CHAR_TYPE_POINT,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,
-    CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER, CHAR_TYPE_NUMBER,    CHAR_TYPE_NUMBER, CHAR_TYPE_EQ,     CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_EQ,     CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,
-    CHAR_TYPE_WORD,   CHAR_TYPE_WORD,   CHAR_TYPE_WORD,      CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,
-    CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,  CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER
-};
-
 // <xxx> (Arrow left, 3 character, Arrow right)
 constexpr uint32 MINIM_SCORLL_BAR_LENGTH = 5;
+namespace ControlLayout
+{
 
-bool ProcessLayoutKeyValueData(LayoutKeyValueData& l, LayoutInformation& inf, Application::Config*)
-{
-    int value = 0;
-    LayoutValueType valueType;
-    switch (l.ValueType)
+    enum class Type : uint8
     {
-    case 0:
-        // characters
-        CHECK(l.n2 == 0, false, "Character offset values can not be floating values !");
-        CHECK(l.n1 <= 30000, false, "A character offset must be smaller than 30000 (current value is: %d)", l.n1);
-        CHECK(l.n1 >= -30000, false, "A character offset must be bigger than -30000 (current value is: %d)", l.n1);
-        value     = l.n1;
-        valueType = LayoutValueType::CharacterOffset;
-        break;
-    case '%':
-        // percentage
-        CHECK(l.n1 <= 300, false, "A percentage must be smaller than 300% (current value is: %d)", l.n1);
-        CHECK(l.n1 >= -300, false, "A percentage offset must be bigger than -300% (current value is: %d)", l.n1);
-        value     = l.n1 * 100 + l.n2;
-        valueType = LayoutValueType::Percentage;
-        break;
-    default:
-        RETURNERROR(false, "Invalid value format: %d (%c)", l.ValueType, l.ValueType);
-    }
-    if (l.IsNegative)
-        value = -value;
-    uint8 layoutKey = HashToLayoutKey(l.Hash);
-    switch (layoutKey)
-    {
-    case LAYOUT_KEY_X:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_X, x);
-        break;
-    case LAYOUT_KEY_Y:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_Y, y);
-        break;
-    case LAYOUT_KEY_LEFT:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_LEFT, a_left);
-        break;
-    case LAYOUT_KEY_RIGHT:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_RIGHT, a_right);
-        break;
-    case LAYOUT_KEY_TOP:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_TOP, a_top);
-        break;
-    case LAYOUT_KEY_BOTTOM:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_BOTTOM, a_bottom);
-        break;
-    case LAYOUT_KEY_WIDTH:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_WIDTH, width);
-        break;
-    case LAYOUT_KEY_HEIGHT:
-        SET_LAYOUT_INFO(LAYOUT_FLAG_HEIGHT, height);
-        break;
-    case LAYOUT_KEY_ALIGN:
-        CHECK(HashToAlignament(l.StringValueHash, inf.align), false, "Fail to compute align value !");
-        inf.flags |= LAYOUT_FLAG_ALIGN;
-        break;
-    case LAYOUT_KEY_DOCK:
-        CHECK(HashToAlignament(l.StringValueHash, inf.dock), false, "Fail to compute dock value !");
-        inf.flags |= LAYOUT_FLAG_DOCK;
-        break;
-    default:
-        RETURNERROR(false, "Unknown key (hash:%08x) ==> %s", l.Hash, l.HashName);
-    }
-    return true;
-}
-inline const uint8* SkipSpaces(const uint8* start, const uint8* end)
-{
-    while ((start < end) && (__char_types__[*start] == CHAR_TYPE_SPACE))
-        start++;
-    return start;
-}
-inline const uint8* ComputeValueHash(const uint8* s, const uint8* e, uint32& hashValue)
-{
-    hashValue    = 0;
-    uint32 index = 0;
-    while ((s < e) && (__char_types__[*s] == CHAR_TYPE_WORD))
-    {
-        // hashValue = ((hashValue) << 2) ^ ((uint32) (('Z' + 1) - (((*start) & ((uint8) (~0x20))))));
-        // hashValue += (uint32) ((uint32) (('Z' + 1) - (((*s) & ((uint8) (~0x20))))));
-        hashValue += ((*s) & ((uint8) (~0x20))) - ((uint8) 'A') + 1;
-        hashValue += index;
-        s++;
-        index += 2;
-    }
-    return s;
-}
-bool AnalyzeLayout(string_view layout, LayoutInformation& inf, Application::Config* Cfg)
-{
-    // format: key:value,[key:value],....
-    const uint8* p     = (const uint8*) layout.data();
-    const uint8* p_end = p + layout.size();
-    CHECK(p, false, "Expecting a valid (non-null) layout string !");
+        X      = 0,
+        Y      = 1,
+        Left   = 2,
+        Right  = 3,
+        Top    = 4,
+        Bottom = 5,
+        Width  = 6,
+        Height = 7,
+        Align  = 8,
+        Dock   = 9,
 
-    LayoutKeyValueData lkv;
+    };
+
+    static constexpr uint8 Values[47] = {
+        0xFF,
+        static_cast<uint8>(Type::Bottom),
+        0xFF,
+        static_cast<uint8>(Type::Dock),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Align),
+        static_cast<uint8>(Type::Top),
+        0xFF,
+        static_cast<uint8>(Type::Bottom),
+        0xFF,
+        static_cast<uint8>(Type::Left),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Height),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Left),
+        static_cast<uint8>(Type::Top),
+        static_cast<uint8>(Type::Width),
+        static_cast<uint8>(Type::Align),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Right),
+        static_cast<uint8>(Type::Width),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Y),
+        static_cast<uint8>(Type::X),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Right),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Type::Dock),
+        0xFF,
+        static_cast<uint8>(Type::Height),
+        0xFF,
+    };
+    static constexpr uint64 Hashes[47] = {
+        0x0,
+        0xE117B24625D0110A,
+        0x0,
+        0xAF63D94C8601E773,
+        0x0,
+        0x0,
+        0xAF63DC4C8601EC8C,
+        0x56F9BC194465A83C,
+        0x0,
+        0xAF63DF4C8601F1A5,
+        0x0,
+        0xAF63E14C8601F50B,
+        0x0,
+        0x0,
+        0x0,
+        0xAF63E54C8601FBD7,
+        0x0,
+        0x0,
+        0x24B070ADA2041CB0,
+        0xAF63E94C860202A3,
+        0xAF63EA4C86020456,
+        0x509903BB65AC341E,
+        0x0,
+        0x0,
+        0x0,
+        0xAF63EF4C86020CD5,
+        0xDBDACD932FD1E9BF,
+        0x0,
+        0x0,
+        0x0,
+        0xAF63F44C86021554,
+        0xAF63F54C86021707,
+        0x0,
+        0x0,
+        0x76AAAA535714D805,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0xDC48156761F5463A,
+        0x0,
+        0x17720BF67D347222,
+        0x0,
+    };
+    inline bool HashToType(uint64 hash, Type& resultedType)
+    {
+        const auto entry = hash % 47;
+        if (Hashes[entry] != hash)
+            return false;
+        const auto res = Values[entry];
+        if (res == 0xFF) // invalid value
+            return false;
+        resultedType = static_cast<Type>(res);
+        return true;
+    }
+}; // namespace ControlLayout
+namespace ControlAlignament
+{
+
+    static constexpr uint8 Values[95] = {
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::BottomLeft),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::TopRight),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::TopRight),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::Center),
+        static_cast<uint8>(Alignament::BottomLeft),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::BottomLeft),
+        static_cast<uint8>(Alignament::TopLeft),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::Right),
+        0xFF,
+        static_cast<uint8>(Alignament::TopLeft),
+        static_cast<uint8>(Alignament::Left),
+        0xFF,
+        static_cast<uint8>(Alignament::Top),
+        static_cast<uint8>(Alignament::Top),
+        static_cast<uint8>(Alignament::Left),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::BottomRight),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::TopLeft),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::BottomRight),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::TopRight),
+        0xFF,
+        static_cast<uint8>(Alignament::BottomRight),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::TopLeft),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::Center),
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::BottomRight),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::Right),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::Bottom),
+        0xFF,
+        0xFF,
+        0xFF,
+        static_cast<uint8>(Alignament::Bottom),
+        static_cast<uint8>(Alignament::TopRight),
+        static_cast<uint8>(Alignament::BottomLeft),
+        0xFF,
+        0xFF,
+        0xFF,
+        0xFF,
+    };
+    static constexpr uint64 Hashes[95] = {
+        0x0,
+        0x0,
+        0x0,
+        0x8AD3E07B554016B,
+        0x0,
+        0x0,
+        0x0,
+        0x8DC4007B57B7593,
+        0x0,
+        0x0,
+        0x8C83E07B56AC923,
+        0x0,
+        0x0,
+        0xAF63DE4C8601EFF2,
+        0x5F016149CAD46553,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0xC531399B902BDCA7,
+        0x8248819F5F9365CD,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x76AAAA535714D805,
+        0x0,
+        0xD3AB2E45320FD0B,
+        0x24B070ADA2041CB0,
+        0x0,
+        0xAF63E94C860202A3,
+        0x56F9BC194465A83C,
+        0xAF63E14C8601F50B,
+        0x0,
+        0x0,
+        0x8A64607B54DF055,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x8AD5407B55426CD,
+        0x0,
+        0x0,
+        0x0,
+        0x8DC5607B57B9AF5,
+        0x0,
+        0x0,
+        0x78AEE42ECD39B9C,
+        0x0,
+        0x7599DC3C1513C3EA,
+        0x0,
+        0x0,
+        0x0,
+        0x8C83C07B56AC5BD,
+        0x0,
+        0x0,
+        0x0,
+        0x6F4B7EC4DCAA8AC4,
+        0x0,
+        0x0,
+        0x1396C5DBB548C758,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+        0xAF63EF4C86020CD5,
+        0x0,
+        0x0,
+        0x0,
+        0xAF63DF4C8601F1A5,
+        0x0,
+        0x0,
+        0x0,
+        0xE117B24625D0110A,
+        0xB58CAB573F8DB2C6,
+        0x8A63807B54DD88B,
+        0x0,
+        0x0,
+        0x0,
+        0x0,
+    };
+    inline bool HashToType(uint64 hash, Alignament& resultedType)
+    {
+        const auto entry = hash % 95;
+        if (Hashes[entry] != hash)
+            return false;
+        const auto res = Values[entry];
+        if (res == 0xFF) // invalid value
+            return false;
+        resultedType = static_cast<Alignament>(res);
+        return true;
+    }
+}; // namespace ControlAlignament
+
+bool AnalyzeLayout(string_view layout, LayoutInformation& inf)
+{
+    AppCUI::Utils::KeyValueParser parser;
+    ControlLayout::Type layoutType;
+    LayoutValueType valueType = LayoutValueType::CharacterOffset;
+    LocalString<256> error;
+
+    // reset inf
     inf.a_left   = { 0, LayoutValueType::CharacterOffset };
     inf.a_bottom = { 0, LayoutValueType::CharacterOffset };
     inf.a_top    = { 0, LayoutValueType::CharacterOffset };
@@ -530,76 +393,73 @@ bool AnalyzeLayout(string_view layout, LayoutInformation& inf, Application::Conf
     inf.dock     = Alignament::TopLeft;
     inf.flags    = 0;
 
-    int cnt;
-
-    p = SkipSpaces(p, p_end); // skip initial spaces
-    while (p < p_end)
+    ASSERT(parser.Parse(layout), parser.GetErrorName().data());
+    for (auto idx = 0U; idx < parser.GetCount(); idx++)
     {
-        // compute value name hash
-        lkv.HashName = (const char*) p;
-        p            = ComputeValueHash(p, p_end, lkv.Hash);
-        CHECK(lkv.Hash, false, "Invalid hash (expecting a valid key: %s)", p);
-        p = SkipSpaces(p, p_end);
-        CHECK(p < p_end, false, "Premature end of layout string --> expecting a ':' or '=' after key");
-        CHECK(__char_types__[*p] == CHAR_TYPE_EQ, false, "Expecting ':' or '=' character (%s)", p);
-        p++;
-        p = SkipSpaces(p, p_end);
-        CHECK(p < p_end, false, "Premature end of layout string --> expecting a value after ':' or '=' delimiter");
-
-        // extract value
-        lkv.n1 = lkv.n2     = 0;
-        lkv.StringValueHash = 0;
-        lkv.IsNegative      = false;
-        lkv.ValueType       = 0;
-        if ((*p) == '-')
+        const auto& item = parser[idx];
+        if (ControlLayout::HashToType(item.Key.hash, layoutType) == false)
         {
-            lkv.IsNegative = true;
-            p++;
-            CHECK(p < p_end,
-                  false,
-                  "Premature end of layout string --> expecting a value after '-' (minus) declatartor");
+            error.Set("Unknwon layout item: ");
+            error.Add((const char*) item.Key.data, item.Key.dataSize);
+            ASSERT(false, error.GetText());
         }
-        if ((!lkv.IsNegative) && (__char_types__[*p] == CHAR_TYPE_WORD))
+        const bool isNumericalValue =
+              (item.Value.type == KeyValuePair::Type::Number) || (item.Value.type == KeyValuePair::Type::Percentage);
+        int32 value = item.Value.number;
+        valueType   = (item.Value.type == KeyValuePair::Type::Percentage) ? LayoutValueType::Percentage
+                                                                          : LayoutValueType::CharacterOffset;
+        switch (layoutType)
         {
-            p = ComputeValueHash(p, p_end, lkv.StringValueHash);
-            CHECK(lkv.StringValueHash, false, "Invalid value hash (expecting a valid key: %s)", p);
+        case ControlLayout::Type::X:
+            ASSERT(isNumericalValue, "Field 'X' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_X, x);
+            break;
+        case ControlLayout::Type::Y:
+            ASSERT(isNumericalValue, "Field 'XY' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_Y, y);
+            break;
+        case ControlLayout::Type::Left:
+            ASSERT(isNumericalValue, "Field 'Left' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_LEFT, a_left);
+            break;
+        case ControlLayout::Type::Right:
+            ASSERT(isNumericalValue, "Field 'Right' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_RIGHT, a_right);
+            break;
+        case ControlLayout::Type::Top:
+            ASSERT(isNumericalValue, "Field 'Top' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_TOP, a_top);
+            break;
+        case ControlLayout::Type::Bottom:
+            ASSERT(isNumericalValue, "Field 'Bottom' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_BOTTOM, a_bottom);
+            break;
+        case ControlLayout::Type::Width:
+            ASSERT(isNumericalValue, "Field 'Width' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_WIDTH, width);
+            break;
+        case ControlLayout::Type::Height:
+            ASSERT(isNumericalValue, "Field 'Height' must be a valid number or percentage");
+            SET_LAYOUT_INFO(LAYOUT_FLAG_HEIGHT, height);
+            break;
+        case ControlLayout::Type::Align:
+            ASSERT(item.Value.type == KeyValuePair::Type::String, "Align parameter requires a string value");
+            ASSERT(ControlAlignament::HashToType(item.Value.hash, inf.align), "Unknwon align value");
+            inf.flags |= LAYOUT_FLAG_ALIGN;
+            break;
+        case ControlLayout::Type::Dock:
+            ASSERT(item.Value.type == KeyValuePair::Type::String, "Dock parameter requires a string value");
+            ASSERT(ControlAlignament::HashToType(item.Value.hash, inf.dock), "Unknwon dock value");
+            inf.flags |= LAYOUT_FLAG_DOCK;
+            break;
+        default:
+            error.Set("Internal error - fail to parse item: ");
+            error.Add((const char*) item.Key.data, item.Key.dataSize);
+            ASSERT(false, error.GetText());
+            return false;
         }
-        else
-        {
-            while ((p < p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
-            {
-                lkv.n1 = lkv.n1 * 10 + ((*p) - '0');
-                p++;
-            }
-            if ((p < p_end) && ((*p) == '.'))
-            {
-                p++;
-                cnt = 0;
-                while ((p < p_end) && (__char_types__[*p] == CHAR_TYPE_NUMBER))
-                {
-                    if (cnt < 2)
-                    {
-                        lkv.n2 = lkv.n2 * 10 + ((*p) - '0');
-                        cnt++;
-                    }
-                    p++;
-                }
-                if (cnt == 1)
-                    lkv.n2 *= 10;
-            }
-        }
-        p = SkipSpaces(p, p_end);
-        if ((p < p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
-        {
-            lkv.ValueType = *p;
-            while ((p < p_end) && (__char_types__[*p] != CHAR_TYPE_SEPARATOR))
-                p++;
-        }
-        if ((p < p_end) && (__char_types__[*p] == CHAR_TYPE_SEPARATOR))
-            p++;
-        p = SkipSpaces(p, p_end);
-        CHECK(ProcessLayoutKeyValueData(lkv, inf, Cfg), false, "Invalid layout params !");
     }
+    // all good
     return true;
 }
 
@@ -910,7 +770,7 @@ bool ControlContext::ProcessLTRBAnchors(LayoutInformation& inf)
 bool ControlContext::UpdateLayoutFormat(string_view format)
 {
     LayoutInformation inf;
-    CHECK(AnalyzeLayout(format, inf, this->Cfg), false, "Fail to load format data !");
+    CHECK(AnalyzeLayout(format, inf), false, "Fail to load format data !");
 
     // check if layout params are OK
     // Step 1 ==> if dock option is present
@@ -1180,11 +1040,12 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     {
         if (Layout.Height >= (int) (ScrollBars.TopMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
         {
+            ControlState state = ScrollBars.MaxVerticalValue > 0 ? ControlState::Normal : ControlState::Inactive;
             renderer.FillVerticalLineWithSpecialChar(
-                  x, ScrollBars.TopMargin, y - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.Normal);
+                  x, ScrollBars.TopMargin, y - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.GetColor(state));
             renderer.WriteSpecialCharacter(
-                  x, ScrollBars.TopMargin, SpecialChars::TriangleUp, Cfg->ScrollBar.Arrows.Normal);
-            renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows.Normal);
+                  x, ScrollBars.TopMargin, SpecialChars::TriangleUp, Cfg->ScrollBar.Arrows.GetColor(state));
+            renderer.WriteSpecialCharacter(x, y - 2, SpecialChars::TriangleDown, Cfg->ScrollBar.Arrows.GetColor(state));
             if (ScrollBars.MaxVerticalValue)
             {
                 const auto sz  = static_cast<uint32>(y - (2 + ScrollBars.TopMargin + 2 /*two arrows*/));
@@ -1198,11 +1059,13 @@ void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
     {
         if (Layout.Width >= (int) (ScrollBars.LeftMargin + 2 + MINIM_SCORLL_BAR_LENGTH))
         {
+            ControlState state = ScrollBars.MaxHorizontalValue > 0 ? ControlState::Normal : ControlState::Inactive;
             renderer.FillHorizontalLineWithSpecialChar(
-                  ScrollBars.LeftMargin, y, x - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.Normal);
+                  ScrollBars.LeftMargin, y, x - 2, SpecialChars::Block25, Cfg->ScrollBar.Bar.GetColor(state));
             renderer.WriteSpecialCharacter(
-                  ScrollBars.LeftMargin, y, SpecialChars::TriangleLeft, Cfg->ScrollBar.Arrows.Normal);
-            renderer.WriteSpecialCharacter(x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows.Normal);
+                  ScrollBars.LeftMargin, y, SpecialChars::TriangleLeft, Cfg->ScrollBar.Arrows.GetColor(state));
+            renderer.WriteSpecialCharacter(
+                  x - 2, y, SpecialChars::TriangleRight, Cfg->ScrollBar.Arrows.GetColor(state));
             if (ScrollBars.MaxHorizontalValue)
             {
                 const auto sz  = static_cast<uint32>(x - (2 + ScrollBars.LeftMargin + 2 /*two arrows*/));
@@ -1654,6 +1517,14 @@ void Controls::Control::UpdateVScrollBar(uint64 value, uint64 maxValue)
     CTRLC->ScrollBars.VerticalValue    = value;
     CTRLC->ScrollBars.MaxVerticalValue = maxValue;
 }
+void Controls::Control::SetVScrollBarTopMargin(uint32 space)
+{
+    CTRLC->ScrollBars.TopMargin = space;
+}
+void Controls::Control::SetHScrollBarLeftMarging(uint32 space)
+{
+    CTRLC->ScrollBars.LeftMargin = space;
+}
 int Controls::Control::GetGroup()
 {
     return CTRLC->GroupID;
@@ -1715,7 +1586,7 @@ int Controls::Control::GetControlID()
 
 Reference<Control> Controls::Control::GetFocusedChild()
 {
-    CHECK(CTRLC->CurrentControlIndex >= 0, nullptr, "");
+    //CHECK(CTRLC->CurrentControlIndex >= 0, nullptr, ""); // not necesary as CurrentControlIndex is unsigned int
     CHECK(CTRLC->CurrentControlIndex < CTRLC->ControlsCount, nullptr, "");
     auto child = CTRLC->Controls[CTRLC->CurrentControlIndex];
     if ((CTRLC->Focused) && (child->HasFocus()))
@@ -1831,7 +1702,7 @@ bool Controls::Control::OnKeyEvent(Input::Key, char16)
 {
     return false;
 }
-void Controls::Control::OnFocusRequested(Reference<Control> control)
+void Controls::Control::OnFocusRequested(Reference<Control>)
 {
 }
 void Controls::Control::OnFocus()
@@ -1840,13 +1711,13 @@ void Controls::Control::OnFocus()
 void Controls::Control::OnLoseFocus()
 {
 }
-void Controls::Control::OnMouseReleased(int, int, Input::MouseButton)
+void Controls::Control::OnMouseReleased(int, int, Input::MouseButton, Input::Key keyCode)
 {
 }
-void Controls::Control::OnMousePressed(int, int, Input::MouseButton)
+void Controls::Control::OnMousePressed(int, int, Input::MouseButton, Input::Key keyCode)
 {
 }
-bool Controls::Control::OnMouseDrag(int, int, Input::MouseButton)
+bool Controls::Control::OnMouseDrag(int, int, Input::MouseButton, Input::Key keyCode)
 {
     return false;
 }
@@ -1862,7 +1733,7 @@ bool Controls::Control::OnMouseLeave()
 {
     return false;
 }
-bool Controls::Control::OnMouseWheel(int, int, Input::MouseWheel)
+bool Controls::Control::OnMouseWheel(int, int, Input::MouseWheel, Input::Key keyCode)
 {
     return false;
 }

@@ -1,0 +1,186 @@
+name: build-and-deploy-release
+
+on:
+  push:
+    branches:
+      - main
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build-win:
+    runs-on: [windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+        
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Add tag data to enviroment
+      run: |
+        $output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
+        echo "APPCUI_VERSION=$output" | Out-File -FilePath $env:GITHUB_ENV -Append
+        
+    - name: Copy static libs from VCPKG
+      working-directory: "D:/a/AppCUI/AppCUI/bin"
+      run: cp -R ../build/vcpkg_installed/x64-windows/lib/*.lib .
+            
+    - name: List bin artefacts
+      shell: cmd
+      run: dir /s "D:/a/AppCUI/AppCUI/bin"
+    
+    - name: Create archive
+      run: |
+        $output=$(7z a "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.exe)
+        echo "$output"
+        $output=$(7z a "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" D:/a/AppCUI/AppCUI/bin/Release/*.dll)
+        echo "$output"
+    
+    - name: Store Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows_artifacts
+        path: "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+        retention-days: 1
+
+  build-ubuntu:
+    runs-on: [ubuntu-latest]
+    env:
+      CC: gcc-10
+      CXX: g++-10
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+        
+    - name: Update
+      run: sudo apt-get update
+        
+    - name: Install libx11-dev
+      run: sudo apt-get install libx11-dev
+        
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Add tag data to enviroment
+      run: |
+        output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
+        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+
+    - name: Copy static libs from VCPKG
+      working-directory: /home/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-linux/lib/*.a .
+      
+    - name: Copy terminfo from VCPKG
+      working-directory: /home/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-linux/share/terminfo .
+      
+    - name: List bin artefacts
+      run: ls -R /home/runner/work/AppCUI/AppCUI/bin
+
+    - name: Create archive
+      working-directory: /home/runner/work/AppCUI/AppCUI/bin
+      run: |
+        output=$(zip -9 -r "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" .)
+        echo "$output"
+    
+    - name: Store Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux_artifacts
+        path: "/home/runner/work/AppCUI/AppCUI/bin/AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+        retention-days: 1  
+
+  build-osx:
+    runs-on: [macos-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+        
+    # https://github.com/dotnet/runtime/issues/82240
+    # temporarily install pkg-config via brew
+    - name: Install pkg-config
+      run: |
+        # brew update
+        brew install pkg-config
+        # brew upgrade
+    
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Add tag data to enviroment
+      run: |
+        output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
+        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+        
+    - name: Copy static libs from VCPKG
+      working-directory: /Users/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-osx/lib/*.a .
+      
+    - name: Copy terminfo from VCPKG
+      working-directory: /Users/runner/work/AppCUI/AppCUI/bin
+      run: cp -R ../build/vcpkg_installed/x64-osx/share/terminfo .
+      
+    - name: List bin artefacts
+      run: ls -R /Users/runner/work/AppCUI/AppCUI/bin
+
+    - name: Create archive
+      working-directory: /Users/runner/work/AppCUI/AppCUI/bin
+      run: |
+        output=$(zip -9 -r "AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip" .)
+        echo "$output"
+    
+    - name: Store Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: apple_artifacts
+        path: "/Users/runner/work/AppCUI/AppCUI/bin/AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+        retention-days: 1  
+
+  publish_job:
+    name: "Publish to release"
+    runs-on: [ubuntu-latest]
+    needs: [build-win, build-ubuntu, build-osx]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add tag data to enviroment
+      run: |
+        output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
+        echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: windows_artifacts
+        path: artifacts
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: linux_artifacts
+        path: artifacts
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: apple_artifacts
+        path: artifacts
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "${{env.APPCUI_VERSION}}"
+        prerelease: true # ${{ github.event.inputs.isPreRelease }}
+        title: Build ${{env.APPCUI_VERSION}}
+        files: |
+            artifacts/*.zip

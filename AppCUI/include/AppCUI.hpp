@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.49.0"
+#define APPCUI_VERSION "1.218.0"
 
 #include <filesystem>
 #include <map>
@@ -367,6 +367,7 @@ namespace Graphics
         }
         static EXPORT optional<Size> FromString(string_view text);
     };
+
     struct Point
     {
         int32 X, Y;
@@ -569,6 +570,10 @@ namespace Utils
     class EXPORT String;
     using CharacterView = std::basic_string_view<Graphics::Character>;
     using ConstString   = variant<string_view, u8string_view, u16string_view, CharacterView>;
+
+    template <typename T>
+    class Reference;
+
     template <typename T>
     class Pointer : public unique_ptr<T>
     {
@@ -576,13 +581,15 @@ namespace Utils
         Pointer(T* obj) : unique_ptr<T>(obj)
         {
         }
-        operator T*()
+        inline operator T*()
+        {
+            return this->get();
+        }
+        inline Reference<T> ToReference() const
         {
             return this->get();
         }
     };
-    template <typename T>
-    class Reference;
 
     class GenericRef
     {
@@ -660,7 +667,7 @@ namespace Utils
         template <typename C>
         constexpr inline Reference<C> ToObjectRef()
         {
-            return Reference<C>((C*) (this->ptr));
+            return Reference<C>(dynamic_cast<C*>(this->ptr));
         }
         constexpr inline operator size_t()
         {
@@ -793,6 +800,52 @@ namespace Utils
             return callback(data, args...);
         }
     };
+
+    template <typename T, size_t stackAllocated = 128>
+    class PointerArrayStorage
+    {
+        static_assert(stackAllocated >= 1, "Expected a size bigger than one elements !");
+        T* stack[stackAllocated];
+        T** elements;
+        size_t size;
+
+      public:
+        PointerArrayStorage(size_t elementsCount)
+        {
+            if (elementsCount <= stackAllocated)
+                elements = stack;
+            else
+                elements = new T*[elementsCount];
+            size = elementsCount;
+        }
+        ~PointerArrayStorage()
+        {
+            if (size > stackAllocated)
+                delete[] elements;
+            elements = nullptr;
+            size     = 0;
+        }
+        inline size_t GetLength() const
+        {
+            return size;
+        }
+        inline T*& operator[](size_t index) const
+        {
+            return elements[index];
+        }
+        inline T** GetArray() const
+        {
+            return elements;
+        }
+        inline T** begin() const
+        {
+            return elements;
+        }
+        inline T** end() const
+        {
+            return elements + size;
+        }
+    };
 } // namespace Utils
 using Utils::ConstString;
 namespace Application
@@ -813,6 +866,11 @@ namespace Dialogs
 }
 namespace Utils
 {
+    enum class SortDirection : uint8
+    {
+        Ascendent  = 1,
+        Descendent = 0
+    };
     class EXPORT Array32
     {
         uint32* Data;
@@ -860,8 +918,14 @@ namespace Utils
         bool Get(uint32 index, uint32& value);
         bool Get(uint32 index, int32& value);
 
-        bool Sort(int32 (*compare)(int32 elem1, int32 elem2, void* Context), bool ascendent, void* Context = nullptr);
-        bool Sort(int32 (*compare)(uint32 elem1, uint32 elem2, void* Context), bool ascendent, void* Context = nullptr);
+        bool Sort(
+              int32 (*compare)(int32 elem1, int32 elem2, void* Context),
+              SortDirection direction,
+              void* Context = nullptr);
+        bool Sort(
+              int32 (*compare)(uint32 elem1, uint32 elem2, void* Context),
+              SortDirection direction,
+              void* Context = nullptr);
     };
 
     class BufferView
@@ -935,45 +999,53 @@ namespace Utils
     {
         uint8* data;
         size_t length;
+        size_t allocated;
+
+        size_t Add(const void* p, size_t size, uint32 times);
 
       public:
         ~Buffer();
-        Buffer() : data(nullptr), length(0)
+        Buffer() : data(nullptr), length(0), allocated(0)
         {
         }
-        Buffer(size_t size);
         Buffer(const Buffer& buf);
 
         Buffer(void*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(char*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(uint8*& ptr, size_t size)
         {
-            data   = (uint8*) ptr;
-            length = size;
-            ptr    = nullptr;
+            data      = (uint8*) ptr;
+            length    = size;
+            allocated = size;
+            ptr       = nullptr;
         }
         Buffer(Buffer&& buf) noexcept
         {
-            data       = buf.data;
-            length     = buf.length;
-            buf.data   = nullptr;
-            buf.length = 0;
+            data          = buf.data;
+            length        = buf.length;
+            allocated     = buf.allocated;
+            buf.data      = nullptr;
+            buf.length    = 0;
+            buf.allocated = 0;
         }
 
         inline Buffer& operator=(Buffer&& b) noexcept
         {
             std::swap(data, b.data);
             std::swap(length, b.length);
+            std::swap(allocated, b.allocated);
             return *this;
         }
         inline uint8& operator[](size_t index) const
@@ -996,6 +1068,10 @@ namespace Utils
         {
             return length;
         }
+        inline size_t GetAllocatedSpace() const
+        {
+            return allocated;
+        }
         inline uint8* GetData() const
         {
             return data;
@@ -1008,21 +1084,83 @@ namespace Utils
             return reinterpret_cast<T*>(data + offset);
         }
         void Resize(size_t newSize);
-        Buffer& operator=(const Buffer& b);
+        void Reserve(size_t newSize);
+
+        // add
+        inline size_t Add(const Buffer& b)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), 1);
+        }
+        inline size_t Add(BufferView b)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), 1);
+        }
+        inline size_t Add(string_view s)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size(), 1);
+        }
+        inline size_t Add(u16string_view s)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size() * 2, 1);
+        }
+        // add multiple times
+        inline size_t AddMultipleTimes(const Buffer& b, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), times);
+        }
+        inline size_t AddMultipleTimes(BufferView b, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(b.GetData()), b.GetLength(), times);
+        }
+        inline size_t AddMultipleTimes(string_view s, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size(), times);
+        }
+        inline size_t AddMultipleTimes(u16string_view s, uint32 times)
+        {
+            return Add(reinterpret_cast<const void*>(s.data()), s.size() * 2, times);
+        }
+        // seters
+        inline Buffer& operator=(const Buffer& b)
+        {
+            this->length = 0;
+            Add(b.data, b.length, 1);
+            return *this;
+        }
+        inline Buffer& operator=(BufferView b)
+        {
+            this->length = 0;
+            Add(b.GetData(), b.GetLength(), 1);
+            return *this;
+        }
+        inline Buffer& operator=(string_view s)
+        {
+            this->length = 0;
+            Add(s.data(), s.size(), 1);
+            return *this;
+        }
+        inline Buffer& operator=(u16string_view s)
+        {
+            this->length = 0;
+            Add(s.data(), s.size() * 2, 1);
+            return *this;
+        }
     };
 
     class EXPORT String
     {
-        char* Text;
-        uint32 Size;
-        uint32 Allocated;
+        char* Text{ nullptr };
+        uint32 Size{ 0 };
+        uint32 Allocated{ 0 };
 
         bool Grow(uint32 newSize);
 
       public:
-        String(void);
+        String() = default;
+        String(const std::string_view& text);
         String(const String& s);
-        ~String(void);
+        String(String&& s);
+        ~String();
 
         // Static functions
         static uint32 Len(const char* string);
@@ -1118,11 +1256,31 @@ namespace Utils
             this->Set(s);
             return *this;
         }
+        inline String& operator=(String&& s)
+        {
+            if (s.Allocated & 0x80000000)
+            {
+                // we need to copy
+                Set(s.Text, s.Size);
+            }
+            else
+            {
+                Text      = s.Text;
+                Size      = s.Size;
+                Allocated = s.Allocated;
+
+                s.Text      = nullptr;
+                s.Size      = 0;
+                s.Allocated = 0;
+            }
+            return *this;
+        }
         inline String& operator=(const char* text)
         {
             this->Set(text);
             return *this;
         }
+
         inline operator char*() const
         {
             return Text;
@@ -1773,6 +1931,7 @@ namespace Utils
         static bool ToString(Input::Key keyCode, char* text, uint32 maxTextSize);
         static bool ToString(Input::Key keyCode, Utils::String& text);
         static Input::Key FromString(string_view stringRepresentation);
+        static Input::Key KeyModifiersFromString(string_view stringRepresentation);
 
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };
@@ -2012,7 +2171,7 @@ namespace Utils
         bool DeleteSection(string_view name);
         bool DeleteValue(string_view valuePath);
 
-        string_view ToString();
+        string_view ToString(bool sorted = true);
     };
 
 }; // namespace Utils
@@ -2028,7 +2187,7 @@ namespace OS
         static bool Clear();
         static bool HasText();
     };
-    class EXPORT IFile
+    class EXPORT DataObject
     {
       protected:
         // virtual methods (protected)
@@ -2036,7 +2195,7 @@ namespace OS
         virtual bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten);
 
       public:
-        virtual ~IFile();
+        virtual ~DataObject();
 
         // virtual methods (public)
         virtual uint64 GetSize();
@@ -2077,7 +2236,7 @@ namespace OS
         }
     };
 
-    class EXPORT File : public IFile
+    class EXPORT File : public DataObject
     {
         union
         {
@@ -2099,12 +2258,12 @@ namespace OS
          * Opens a file for Read/Write. The file MUST exists. The file pointer will be set at the end of the file.
          * @param[in] filePath is the full path to an existing file.
          */
-        bool OpenWrite(const std::filesystem::path& path);
+        bool OpenWrite(const std::filesystem::path& filePath);
         /**
          * Opens a file for Read. The file MUST exists. The file pointer will be set at the begining of the file.
          * @param[in] filePath is the full path to an existing file.
          */
-        bool OpenRead(const std::filesystem::path& path);
+        bool OpenRead(const std::filesystem::path& filePath);
         /**
          * Creates a new file. If the file exists and overwriteExisting parameter is set to true, it will be
          * overwritten.
@@ -2112,7 +2271,7 @@ namespace OS
          * @param[in] overwriteExisting - if set to true and the file exists it will overwrite the file. If set to false
          * and a file exists, will fail to overwrite and the method will return false.
          */
-        bool Create(const std::filesystem::path& path, bool overwriteExisting = true);
+        bool Create(const std::filesystem::path& filePath, bool overwriteExisting = true);
 
         uint64 GetSize() override;
         uint64 GetCurrentPos() override;
@@ -2123,6 +2282,71 @@ namespace OS
         static Utils::Buffer ReadContent(const std::filesystem::path& path);
         static bool WriteContent(const std::filesystem::path& path, Utils::BufferView buf);
         static bool WriteContent(const std::filesystem::path& path, string_view text);
+    };
+
+    class EXPORT MemoryFile : public DataObject
+    {
+        uint8* buffer;
+        uint64 size;
+        uint64 allocated;
+        uint64 pos;
+
+      protected:
+        bool ReadBuffer(void* buffer, uint32 bufferSize, uint32& bytesRead) override;
+        bool WriteBuffer(const void* buffer, uint32 bufferSize, uint32& bytesWritten) override;
+
+      public:
+        MemoryFile();
+        ~MemoryFile();
+
+        bool Create(uint64 allocatedMemory = 0);
+        bool Create(const void* buffer, uint64 size);
+
+        uint64 GetSize() override;
+        uint64 GetCurrentPos() override;
+        bool SetSize(uint64 newSize) override;
+        bool SetCurrentPos(uint64 newPosition) override;
+        void Close() override;
+    };
+
+    class EXPORT DateTime
+    {
+        uint32 year, month, day, hour, minute, second;
+        char strFormat[32];
+
+      public:
+        DateTime();
+        void Reset();
+        bool CreateFrom(const std::filesystem::directory_entry& entry);
+        bool CreateFromFileTime(const uint32 low, const uint32 high);
+        bool CreateFromFileTime(const uint64 entry);
+        bool CreateFromFATUTC(const uint32 entry);
+        bool CreateFromTimestamp(const uint64 timestamp);
+        std::string_view GetStringRepresentation();
+        inline uint32 GetYear() const
+        {
+            return year;
+        }
+        inline uint32 GetMonth() const
+        {
+            return month;
+        }
+        inline uint32 GetDay() const
+        {
+            return day;
+        }
+        inline uint32 GetHour() const
+        {
+            return hour;
+        }
+        inline uint32 GetMinute() const
+        {
+            return minute;
+        }
+        inline uint32 GetSecond() const
+        {
+            return second;
+        }
     };
 
     class EXPORT Library
@@ -2139,6 +2363,7 @@ namespace OS
             return reinterpret_cast<T>(GetFunction(functionName));
         }
     };
+
     enum class SpecialFolder : uint32
     {
         AppPath = 0,
@@ -2734,6 +2959,7 @@ namespace Graphics
 
         // Clipping
         bool SetClipMargins(int leftMargin, int topMargin, int rightMargin, int bottomMargin);
+        bool SetClipRect(const Rect& r);
         bool ResetClip();
 
         // Cursor
@@ -2843,7 +3069,7 @@ namespace Controls
         ListViewCurrentItemChanged,
         ListViewSelectionChanged,
         ListViewItemChecked,
-        ListViewItemClicked,
+        ListViewItemPressed,
         ComboBoxSelectedItemChanged,
         ComboBoxClosed,
         ColorPickerSelectedColorChanged,
@@ -2864,6 +3090,7 @@ namespace Controls
     class EXPORT Button;
     class EXPORT TextField;
     class EXPORT ListViewItem;
+    class EXPORT ComboBox;
     class EXPORT ListView;
     class EXPORT TreeViewItem;
     class EXPORT TreeView;
@@ -2874,6 +3101,78 @@ namespace Controls
 
     using namespace Utils;
 
+    class EXPORT ListViewItem
+    {
+      private:
+        GenericRef GetItemDataAsPointer() const;
+        bool SetItemDataAsPointer(GenericRef obj);
+
+        void* context;
+        ItemHandle item;
+
+        ListViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
+        {
+        }
+
+      public:
+        enum class Type : uint16
+        {
+            Normal             = 0,
+            Highlighted        = 1,
+            GrayedOut          = 2,
+            ErrorInformation   = 3,
+            WarningInformation = 4,
+            Emphasized_1       = 5,
+            Emphasized_2       = 6,
+            Emphasized_3       = 7,
+            Category           = 8,
+            Colored            = 9,
+            SubItemColored     = 10
+        };
+
+      public:
+        ListViewItem() : context(nullptr), item(0)
+        {
+        }
+
+        inline bool IsValid() const
+        {
+            return context != nullptr;
+        }
+
+        bool SetData(uint64 value);
+        uint64 GetData(uint64 errorValue) const;
+        bool SetCheck(bool value);
+        bool IsChecked() const;
+        bool SetType(ListViewItem::Type type);
+        bool SetText(uint32 subItemIndex, const ConstString& text);
+        bool HighlightText(uint32 subItemIndex, uint32 offset, uint32 charactersCount);
+        bool SetValues(std::initializer_list<ConstString> value);
+        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
+        bool SetXOffset(uint32 value);
+        uint32 GetXOffset() const;
+        bool SetColor(Graphics::ColorPair color);
+        bool SetColor(uint32 subItemIndex, Graphics::ColorPair color);
+        bool SetSelected(bool select);
+        bool IsSelected() const;
+        bool IsCurrent() const;
+        bool SetHeight(uint32 Height);
+        uint32 GetHeight() const;
+
+        template <typename T>
+        constexpr inline bool SetData(Reference<T> obj)
+        {
+            return this->SetItemDataAsPointer(obj.ToGenericRef());
+        }
+        template <typename T>
+        constexpr inline Reference<T> GetData() const
+        {
+            return this->GetItemDataAsPointer().ToReference<T>();
+        }
+
+        friend class ListView;
+    };
+
     namespace Handlers
     {
         using namespace Graphics;
@@ -2882,25 +3181,39 @@ namespace Controls
 
         using OnButtonPressedHandler = void (*)(Reference<Controls::Button> r);
         using PaintControlHandler    = void (*)(Reference<Controls::Control> control, Renderer& renderer);
-        using OnEventHandler     = bool (*)(Reference<Controls::Control> control, Controls::Event eventType, int ID);
-        using OnKeyEventHandler  = bool (*)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
-        using OnCheckHandler     = void (*)(Reference<Controls::Control> control, bool value);
-        using OnFocusHandler     = void (*)(Reference<Controls::Control> control);
-        using OnLoseFocusHandler = void (*)(Reference<Controls::Control> control);
-        using OnStartHandler     = void (*)(Reference<Controls::Control> control);
-        using OnTreeItemToggleHandler    = bool (*)(TreeViewItem& item);
-        using OnAfterSetTextHandler      = void (*)(Reference<Controls::Control> control);
+        using OnEventHandler        = bool (*)(Reference<Controls::Control> control, Controls::Event eventType, int ID);
+        using OnKeyEventHandler     = bool (*)(Reference<Controls::Control> control, Key keyCode, char16 unicodeChar);
+        using OnCheckHandler        = void (*)(Reference<Controls::Control> control, bool value);
+        using OnFocusHandler        = void (*)(Reference<Controls::Control> control);
+        using OnLoseFocusHandler    = void (*)(Reference<Controls::Control> control);
+        using OnStartHandler        = void (*)(Reference<Controls::Control> control);
+        using OnAfterSetTextHandler = void (*)(Reference<Controls::Control> control);
         using OnTextRightClickHandler    = void (*)(Reference<Controls::Control> control, int x, int y);
         using OnTextColorHandler         = void (*)(Reference<Controls::Control> control, Character* chars, uint32 len);
         using OnValidateCharacterHandler = bool (*)(Reference<Controls::Control> control, char16 character);
+        // ListView
         using ListViewItemCompareHandler = int (*)(
               Reference<Controls::ListView> control,
               const Controls::ListViewItem& item1,
               const Controls::ListViewItem& item2);
-        using OnListViewItemSelectedHandler =
-              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
-        using OnListViewItemCheckedHandler =
-              int (*)(Reference<Controls::ListView> lst, const Controls::ListViewItem& item);
+        using OnListViewItemSelectedHandler = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewItemCheckedHandler  = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewItemPressedHandler  = void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+        using OnListViewCurrentItemChangedHandler =
+              void (*)(Reference<Controls::ListView> lst, Controls::ListViewItem item);
+
+        // combobox
+        using OnComboBoxCurrentItemChangedHandler = void (*)(Reference<Controls::ComboBox> cbox);
+
+        // TreeView
+        using TreeViewItemCompareHandler = int (*)(
+              Reference<Controls::TreeView> control,
+              const Controls::TreeViewItem& item1,
+              const Controls::TreeViewItem& item2);
+        using OnTreeViewItemToggleHandler =
+              bool (*)(Reference<Controls::TreeView> tree, TreeViewItem& item, bool recursiveCall);
+        using OnTreeViewCurrentItemChangedHandler = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
+        using OnTreeViewItemPressedHandler        = void (*)(Reference<Controls::TreeView> tree, TreeViewItem& item);
 
         struct OnButtonPressedInterface
         {
@@ -3046,17 +3359,19 @@ namespace Controls
             };
         };
 
-        struct OnTreeItemToggleInterface
+        struct OnTreeViewItemToggleInterface
         {
-            virtual bool OnTreeItemToggle(TreeViewItem& item) = 0;
+            virtual bool OnTreeViewItemToggle(
+                  Reference<Controls::TreeView> tree, TreeViewItem& item, bool recursiveCall) = 0;
         };
-        struct OnTreeItemToggleCallback : public OnTreeItemToggleInterface
+        struct OnTreeViewItemToggleCallback : public OnTreeViewItemToggleInterface
         {
-            OnTreeItemToggleHandler callback;
+            OnTreeViewItemToggleHandler callback;
 
-            virtual bool OnTreeItemToggle(TreeViewItem& item) override
+            virtual bool OnTreeViewItemToggle(
+                  Reference<Controls::TreeView> tree, TreeViewItem& item, bool recursiveCall) override
             {
-                return callback(item);
+                return callback(tree, item, recursiveCall);
             };
         };
 
@@ -3094,16 +3409,70 @@ namespace Controls
 
         struct OnListViewItemSelectedInterface
         {
-            virtual int OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) = 0;
+            virtual void OnListViewItemSelected(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
         };
         struct OnListViewItemSelectedCallback : public OnListViewItemSelectedInterface
         {
             OnListViewItemSelectedHandler callback;
-            virtual int OnListViewItemSelected(
-                  Reference<Controls::ListView> lv, const Controls::ListViewItem& item) override
+            virtual void OnListViewItemSelected(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
             {
-                return callback(lv, item);
+                callback(lv, item);
+            };
+        };
+
+        struct OnListViewItemCheckedInterface
+        {
+            virtual void OnListViewItemChecked(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+        };
+        struct OnListViewItemCheckedCallback : public OnListViewItemCheckedInterface
+        {
+            OnListViewItemCheckedHandler callback;
+            virtual void OnListViewItemChecked(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            {
+                callback(lv, item);
+            };
+        };
+
+        struct OnListViewItemPressedInterface
+        {
+            virtual void OnListViewItemPressed(Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+        };
+        struct OnListViewItemPressedCallback : public OnListViewItemPressedInterface
+        {
+            OnListViewItemPressedHandler callback;
+            virtual void OnListViewItemPressed(Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            {
+                callback(lv, item);
+            };
+        };
+
+        // OnListViewCurrentItemChangedHandler
+        struct OnListViewCurrentItemChangedInterface
+        {
+            virtual void OnListViewCurrentItemChanged(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) = 0;
+        };
+        struct OnListViewCurrentItemChangedCallback : public OnListViewCurrentItemChangedInterface
+        {
+            OnListViewCurrentItemChangedHandler callback;
+            virtual void OnListViewCurrentItemChanged(
+                  Reference<Controls::ListView> lv, Controls::ListViewItem item) override
+            {
+                callback(lv, item);
+            };
+        };
+
+        // OnListViewCurrentItemChangedHandler
+        struct OnComboBoxCurrentItemChangedInterface
+        {
+            virtual void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) = 0;
+        };
+        struct OnComboBoxCurrentItemChangedCallback : public OnComboBoxCurrentItemChangedInterface
+        {
+            OnComboBoxCurrentItemChangedHandler callback;
+            virtual void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override
+            {
+                callback(cbox);
             };
         };
 
@@ -3164,34 +3533,88 @@ namespace Controls
                   ComparereItem;
             Wrapper<OnListViewItemSelectedInterface, OnListViewItemSelectedCallback, OnListViewItemSelectedHandler>
                   OnItemSelected;
+            Wrapper<OnListViewItemCheckedInterface, OnListViewItemCheckedCallback, OnListViewItemCheckedHandler>
+                  OnItemChecked;
+            Wrapper<OnListViewItemPressedInterface, OnListViewItemPressedCallback, OnListViewItemPressedHandler>
+                  OnItemPressed;
+            Wrapper<
+                  OnListViewCurrentItemChangedInterface,
+                  OnListViewCurrentItemChangedCallback,
+                  OnListViewCurrentItemChangedHandler>
+                  OnCurrentItemChanged;
+        };
+
+        struct ComboBox : public Control
+        {
+            Wrapper<
+                  OnComboBoxCurrentItemChangedInterface,
+                  OnComboBoxCurrentItemChangedCallback,
+                  OnComboBoxCurrentItemChangedHandler>
+                  OnCurrentItemChanged;
+        };
+
+        struct TreeViewItemCompareInterface
+        {
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) = 0;
+        };
+        struct TreeViewItemCompareCallback : public TreeViewItemCompareInterface
+        {
+            TreeViewItemCompareHandler callback;
+            virtual int CompareItems(
+                  Reference<Controls::TreeView> control,
+                  const Controls::TreeViewItem& item1,
+                  const Controls::TreeViewItem& item2) override
+            {
+                return callback(control, item1, item2);
+            };
+        };
+
+        struct OnTreeViewCurrentItemChangedInterface
+        {
+            virtual void OnTreeViewCurrentItemChanged(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
+        };
+        struct OnTreeViewCurrentItemChangedCallback : public OnTreeViewCurrentItemChangedInterface
+        {
+            OnTreeViewCurrentItemChangedHandler callback;
+
+            virtual void OnTreeViewCurrentItemChanged(Reference<Controls::TreeView> tree, TreeViewItem& item) override
+            {
+                return callback(tree, item);
+            };
+        };
+
+        struct OnTreeViewItemPressedInterface
+        {
+            virtual void OnTreeViewItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) = 0;
+        };
+        struct OnTreeViewItemPressedCallback : public OnTreeViewItemPressedInterface
+        {
+            OnTreeViewItemPressedHandler callback;
+
+            virtual void OnTreeViewItemPressed(Reference<Controls::TreeView> tree, TreeViewItem& item) override
+            {
+                return callback(tree, item);
+            };
         };
 
         struct TreeView : public Control
         {
-            Wrapper<OnTreeItemToggleInterface, OnTreeItemToggleCallback, OnTreeItemToggleHandler> OnTreeItemToggle;
+            Wrapper<OnTreeViewItemToggleInterface, OnTreeViewItemToggleCallback, OnTreeViewItemToggleHandler>
+                  OnItemToggle;
+            Wrapper<
+                  OnTreeViewCurrentItemChangedInterface,
+                  OnTreeViewCurrentItemChangedCallback,
+                  OnTreeViewCurrentItemChangedHandler>
+                  OnCurrentItemChanged;
+            Wrapper<TreeViewItemCompareInterface, TreeViewItemCompareCallback, TreeViewItemCompareHandler> CompareItems;
+            Wrapper<OnTreeViewItemPressedInterface, OnTreeViewItemPressedCallback, OnTreeViewItemPressedHandler>
+                  OnItemPressed;
         };
 
     } // namespace Handlers
-
-    struct ColumnBuilder
-    {
-        ConstString name;
-        Graphics::TextAlignament align;
-        uint32 width;
-
-        static constexpr uint32 AUTO_SIZE = 0xFFFFFFFF;
-
-        ColumnBuilder(ConstString Name) : name(Name), align(Graphics::TextAlignament::Left), width(AUTO_SIZE)
-        {
-        }
-        ColumnBuilder(ConstString Name, Graphics::TextAlignament Align) : name(Name), align(Align), width(AUTO_SIZE)
-        {
-        }
-        ColumnBuilder(ConstString Name, Graphics::TextAlignament Align, uint32 Width)
-            : name(Name), align(Align), width(Width)
-        {
-        }
-    };
 
     class EXPORT Control
     {
@@ -3307,6 +3730,8 @@ namespace Controls
         // Scroll bars
         void UpdateHScrollBar(uint64 value, uint64 maxValue);
         void UpdateVScrollBar(uint64 value, uint64 maxValue);
+        void SetVScrollBarTopMargin(uint32 space);
+        void SetHScrollBarLeftMarging(uint32 space);
 
         // handlers
         virtual Handlers::Control* Handlers();
@@ -3324,14 +3749,14 @@ namespace Controls
         virtual void OnLoseFocus();
         virtual bool OnFrameUpdate();
 
-        virtual void OnMousePressed(int x, int y, Input::MouseButton button);
-        virtual void OnMouseReleased(int x, int y, Input::MouseButton button);
-        virtual bool OnMouseDrag(int x, int y, Input::MouseButton button);
+        virtual void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        virtual void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        virtual bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode);
 
         virtual bool OnMouseEnter();
         virtual bool OnMouseOver(int x, int y);
         virtual bool OnMouseLeave();
-        virtual bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
+        virtual bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode);
 
         virtual bool OnEvent(Reference<Control> sender, Event eventType, int controlID);
         virtual bool OnUpdateCommandBar(Application::CommandBar& commandBar);
@@ -3406,16 +3831,16 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
         void RemoveMe();
 
-        int Show();
-        int GetDialogResult();
+        Dialogs::Result Show();
+        Dialogs::Result GetDialogResult();
         bool MaximizeRestore();
         void SetTag(const ConstString& name, const ConstString& toolTipText);
         const Graphics::CharacterBuffer& GetTag();
@@ -3424,8 +3849,7 @@ namespace Controls
         bool CenterScreen();
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKeyChanged() override;
-        bool Exit(int dialogResult);
-        bool Exit(Dialogs::Result dialogResult);
+        bool Exit(Dialogs::Result dialogResult = Dialogs::Result::None);
         bool IsWindowInResizeMode();
         bool EnableResizeMode();
 
@@ -3446,7 +3870,6 @@ namespace Controls
         friend Factory::Label;
         friend Control;
     };
-
     enum class ButtonFlags : uint32
     {
         None = 0,
@@ -3458,9 +3881,9 @@ namespace Controls
         Button(const ConstString& caption, string_view layout, int controlID, ButtonFlags flags);
 
       public:
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
@@ -3479,7 +3902,7 @@ namespace Controls
         CheckBox(const ConstString& caption, string_view layout, int controlID);
 
       public:
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
@@ -3495,10 +3918,10 @@ namespace Controls
     class EXPORT RadioBox : public Control
     {
       protected:
-        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID);
+        RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID, bool checked);
 
       public:
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
@@ -3537,10 +3960,10 @@ namespace Controls
         void OnFocusRequested(Reference<Control> control) override;
         bool OnBeforeAddControl(Reference<Control> ctrl) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
@@ -3560,9 +3983,9 @@ namespace Controls
         Password(const ConstString& caption, string_view layout);
 
       public:
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseEnter() override;
@@ -3584,10 +4007,11 @@ namespace Controls
     };
     enum class TextFieldFlags : uint32
     {
-        None               = 0,
-        ProcessEnter       = 0x000100,
-        Readonly           = 0x000200,
-        SyntaxHighlighting = 0x000400,
+        None                     = 0,
+        ProcessEnter             = 0x000100,
+        Readonly                 = 0x000200,
+        SyntaxHighlighting       = 0x000400,
+        DisableAutoSelectOnFocus = 0x000800,
     };
     class EXPORT TextField : public Control
     {
@@ -3599,9 +4023,9 @@ namespace Controls
         void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
@@ -3636,7 +4060,6 @@ namespace Controls
         SyntaxHighlighting       = 0x002000,
         DisableAutoSelectOnFocus = 0x004000,
     };
-
     class EXPORT TextArea : public Control
     {
       protected:
@@ -3648,16 +4071,19 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnAfterSetText() override;
         void SetReadOnly(bool value);
         bool IsReadOnly();
+        bool HasSelection() const;
+        bool GetSelection(uint32& start, uint32& size) const;
+
         void SetTabCharacter(char tabCharacter);
         virtual ~TextArea();
 
@@ -3667,7 +4093,6 @@ namespace Controls
         friend Factory::TextArea;
         friend Control;
     };
-
     enum class TabFlags : uint32
     {
         TopTabs               = 0x000000, // default mode
@@ -3708,7 +4133,7 @@ namespace Controls
         bool SetTabPageName(uint32 index, const ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
@@ -3719,11 +4144,19 @@ namespace Controls
         friend Factory::Tab;
         friend Control;
     };
+    enum class UserControlFlags : uint32
+    {
+        /* 0 -> 0x40 (GATTR) */
+        None                    = 0x000000,
+        ShowVerticalScrollBar   = 0x000100,
+        ShowHorizontalScrollBar = 0x000200,
+        ScrollBarOutsideControl = 0x000400,
+    };
     class EXPORT UserControl : public Control
     {
       protected:
-        UserControl(const ConstString& caption, string_view layout);
-        UserControl(string_view layout);
+        UserControl(const ConstString& caption, string_view layout, UserControlFlags flags = UserControlFlags::None);
+        UserControl(string_view layout, UserControlFlags flags = UserControlFlags::None);
     };
     enum class ViewerFlags : uint32
     {
@@ -3748,10 +4181,10 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void OnUpdateScrollBars() override;
         Reference<Graphics::Canvas> GetCanvas();
 
@@ -3770,6 +4203,109 @@ namespace Controls
         friend Factory::ImageView;
         friend Control;
     };
+
+    class EXPORT Column
+    {
+        void* context;
+        uint32 index;
+        Column(void* _context, uint32 _index) : context(_context), index(_index)
+        {
+        }
+
+      public:
+        bool IsValid() const;
+        bool SetText(const ConstString& text);
+        const Graphics::CharacterBuffer& GetText() const;
+        bool SetAlignament(Graphics::TextAlignament Align);
+        bool SetWidth(uint32 width);
+        bool SetWidth(float percentage);
+        bool SetWidth(double percentage);
+        bool SetSearchable(bool searchable);
+        bool SetClipboardCopyable(bool clipboardCopyable);
+        bool IsColumnValueSearchable() const;
+        bool IsColumnValueCopyable() const;
+        bool SetVisible(bool value);
+        uint32 GetWidth() const;
+
+        friend class ColumnsHeaderView;
+    };
+    enum class ColumnsHeaderViewFlags : uint32
+    {
+        None           = 0,
+        Clickable      = 0x00001,
+        Sortable       = 0x00002,
+        HideSeparators = 0x00004,
+        FixedSized     = 0x00008,
+        HideHeader     = 0x00010,
+    };
+    enum class CopyClipboardFormat : uint8
+    {
+        TextWithTabs = 0,
+        CSV,
+        HTML
+    };
+    enum class CopyClipboardFlags : uint32
+    {
+        None       = 0,
+        CopyHeader = 0x00000001,
+    };
+    class EXPORT ColumnsHeaderView : public Control
+    {
+      public:
+        class TableBuilder
+        {
+            void* Context;
+            UnicodeStringBuilder& output;
+            uint8 state;
+
+          public:
+            TableBuilder(ColumnsHeaderView* obj, UnicodeStringBuilder& output);
+            bool Start();
+            bool AddNewRow();
+            bool AddString(uint32 columnIndex, ConstString text);
+            bool Finalize();
+        };
+
+      protected:
+        ColumnsHeaderView(
+              string_view layout, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags);
+        ColumnsHeaderView(void* context, string_view layout);
+        bool HeaderHasMouseCaption() const;
+        bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
+
+      public:
+        // virtual methods
+        virtual void OnColumnClicked(uint32 columnIndex)               = 0;
+        virtual Graphics::Rect GetHeaderLayout()                       = 0;
+        virtual uint32 ComputeColumnsPreferedWidth(uint32 columnIndex) = 0;
+
+      public:
+        bool AddColumns(std::initializer_list<ConstString> list);
+        Column AddColumn(const ConstString columnFormat);
+        Column GetColumn(uint32 index);
+        uint32 GetColumnCount() const;
+        void DeleteAllColumns();
+        void DeleteColumn(uint32 columnIndex);
+        void SetFrozenColumnsCount(uint32 count = 0);
+        std::optional<uint32> GetSortColumnIndex() const;
+        Column GetSortColumn();
+
+        void SetClipboardFormat(CopyClipboardFormat format, CopyClipboardFlags flags);
+
+        void Paint(Graphics::Renderer& renderer) override;
+        bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseOver(int x, int y) override;
+        bool OnMouseLeave() override;
+        void OnLoseFocus() override;
+        void OnAfterResize(int newWidth, int newHeight) override;
+
+        virtual ~ColumnsHeaderView();
+        friend Control;
+    };
+
     enum class ListViewFlags : uint32
     {
         None                          = 0,
@@ -3783,129 +4319,29 @@ namespace Controls
         SearchMode                    = 0x008000,
         HideSearchBar                 = 0x010000,
         HideBorder                    = 0x020000,
-        HideScrollBar                 = 0x040000
+        HideScrollBar                 = 0x040000,
+        PopupSearchBar                = 0x080000
     };
 
-    class EXPORT ListViewColumn
-    {
-        void* context;
-        uint32 index;
-
-        ListViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
-        {
-        }
-
-      public:
-        bool SetText(const ConstString& text);
-        bool SetAlignament(Graphics::TextAlignament Align);
-        bool SetWidth(uint32 width);
-        bool SetClipboardCopyState(bool allowCopy);
-        bool SetFilterMode(bool allowFilterForThisColumn);
-        friend class ListView;
-    };
-    class EXPORT ListViewItem
-    {
-      private:
-        GenericRef GetItemDataAsPointer() const;
-        bool SetItemDataAsPointer(GenericRef obj);
-
-        void* context;
-        ItemHandle item;
-
-        ListViewItem(void* _context, ItemHandle _item) : context(_context), item(_item)
-        {
-        }
-
-      public:
-        enum class Type : uint16
-        {
-            Normal             = 0,
-            Highlighted        = 1,
-            GrayedOut          = 2,
-            ErrorInformation   = 3,
-            WarningInformation = 4,
-            Emphasized_1       = 5,
-            Emphasized_2       = 6,
-            Category           = 7,
-            Colored            = 8
-        };
-
-      public:
-        ListViewItem() : context(nullptr), item(0)
-        {
-        }
-
-        inline bool IsValid() const
-        {
-            return context != nullptr;
-        }
-
-        bool SetData(uint64 value);
-        uint64 GetData(uint64 errorValue) const;
-        bool SetCheck(bool value);
-        bool IsChecked() const;
-        bool SetType(ListViewItem::Type type);
-        bool SetText(uint32 subItemIndex, const ConstString& text);
-        const Graphics::CharacterBuffer& GetText(uint32 subItemIndex) const;
-        bool SetXOffset(uint32 value);
-        uint32 GetXOffset() const;
-        bool SetColor(Graphics::ColorPair color);
-        bool SetSelected(bool select);
-        bool IsSelected() const;
-        bool IsCurrent() const;
-        bool SetHeight(uint32 Height);
-        uint32 GetHeight() const;
-
-        template <typename T>
-        constexpr inline bool SetData(Reference<T> obj)
-        {
-            return this->SetItemDataAsPointer(obj.ToGenericRef());
-        }
-        template <typename T>
-        constexpr inline Reference<T> GetData() const
-        {
-            return this->GetItemDataAsPointer().ToReference<T>();
-        }
-
-        friend class ListView;
-    };
-    class EXPORT ListView : public Control
+    class EXPORT ListView : public ColumnsHeaderView
     {
       protected:
-        ListView(string_view layout, std::initializer_list<ColumnBuilder> columns, ListViewFlags flags);
+        ListView(string_view layout, std::initializer_list<ConstString> columns, ListViewFlags flags);
+
+        // Columns header view interface
+        void OnColumnClicked(uint32 columnIndex) override;
+        Graphics::Rect GetHeaderLayout() override;
+        uint32 ComputeColumnsPreferedWidth(uint32 columnIndex) override;
 
       public:
         bool Reserve(uint32 itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
-        bool OnMouseOver(int x, int y) override;
-        bool OnMouseLeave() override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
+
         void OnFocus() override;
         void OnUpdateScrollBars() override;
-
-        // coloane
-        ListViewColumn GetColumn(uint32 index);
-        ListViewColumn AddColumn(
-              const ConstString& text,
-              Graphics::TextAlignament align = Graphics::TextAlignament::Left,
-              uint32 width                   = ColumnBuilder::AUTO_SIZE);
-        inline ListViewColumn AddColumn(ColumnBuilder column)
-        {
-            return AddColumn(column.name, column.align, column.width);
-        }
-        void AddColumns(std::initializer_list<ColumnBuilder> columns);
-        uint32 GetColumnsCount();
-        uint32 GetSortColumnIndex();
-        inline ListViewColumn GetSortColumn()
-        {
-            return GetColumn(GetSortColumnIndex());
-        }
-        void DeleteAllColumns();
-        bool DeleteColumn(uint32 columnIndex);
 
         // Items
         ListViewItem AddItem(const ConstString& text);
@@ -3921,13 +4357,11 @@ namespace Controls
         uint32 GetItemsCount();
         uint32 GetCheckedItemsCount();
         bool SetCurrentItem(ListViewItem item);
-
-        // misc
-        void SetClipboardSeparator(char ch);
+        void SetSearchString(const ConstString& text);
 
         // sort
         bool Sort();
-        bool Sort(uint32 columnIndex, bool ascendent);
+        bool Sort(uint32 columnIndex, SortDirection direction);
 
         // handlers covariant
         Handlers::ListView* Handlers() override;
@@ -4002,11 +4436,15 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
+
+        // handlers covariant
+        Handlers::ComboBox* Handlers() override;
+
         virtual ~ComboBox();
 
         friend Factory::ComboBox;
@@ -4055,12 +4493,12 @@ namespace Controls
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         void OnLoseFocus() override;
 
@@ -4106,42 +4544,16 @@ namespace Controls
         // Reserved_800000                 = 0x800000
     };
 
-    class EXPORT TreeViewColumn
-    {
-        void* context;
-        uint32 index;
-
-        TreeViewColumn(void* _context, uint32 _index) : context(_context), index(_index)
-        {
-        }
-
-      public:
-        bool SetText(const ConstString& text);
-        bool SetAlignament(Graphics::TextAlignament Align);
-        bool SetWidth(uint32 width);
-
-        friend class TreeView;
-    };
-
     class EXPORT TreeViewItem
     {
       private:
+        void* obj;
+        ItemHandle handle;
+
         GenericRef GetItemDataAsPointer() const;
         bool SetItemDataAsPointer(GenericRef ref);
 
-#ifdef _MSC_VER
-        // 'TreeViewItem::obj': class 'Reference<TreeView>' needs to have dll-interface to be used by clients of class
-        // 'TreeViewItem'
-#    pragma warning(push)
-#    pragma warning(disable : 4251)
-#endif
-        Reference<TreeView> obj;
-#ifdef _MSC_VER
-#    pragma warning(pop)
-#endif
-        ItemHandle handle;
-
-        TreeViewItem(Reference<TreeView> _obj, ItemHandle _handle) : obj(_obj), handle(_handle)
+        TreeViewItem(void* _obj, ItemHandle _handle) : obj(_obj), handle(_handle)
         {
         }
 
@@ -4182,21 +4594,23 @@ namespace Controls
         bool SetColor(const Graphics::ColorPair& color);
         bool SetCurrent();
         bool IsCurrent() const;
-        bool SetExpanded(bool expanded);
-        bool GetExpanded();
+        bool SetFolding(bool expanded);
+        bool IsFolded();
         bool SetExpandable(bool expandable);
         bool IsExpandable() const;
         uint32 GetChildrenCount() const;
         TreeViewItem GetChild(uint32 index);
         bool DeleteChildren();
         ItemHandle GetHandle() const;
-        bool Toggle();
+        bool Toggle(bool recursiveCall = false);
         bool ToggleRecursively();
         bool Fold();
         bool Unfold();
         bool FoldAll();
         bool UnfoldAll();
         TreeViewItem GetParent() const;
+        uint32 GetPriority() const;
+        bool SetPriority(uint32 priority) const;
 
         template <typename T>
         constexpr inline bool SetData(Reference<T> obj)
@@ -4210,11 +4624,16 @@ namespace Controls
             return this->GetItemDataAsPointer().ToReference<T>();
         }
 
+        inline bool operator==(const TreeViewItem& other) const
+        {
+            return obj == other.obj && handle == other.handle;
+        }
+
       public:
         friend TreeView;
     };
 
-    class EXPORT TreeView : public Control
+    class EXPORT TreeView : public ColumnsHeaderView
     {
       public:
         const static auto RootHandle = InvalidItemHandle;
@@ -4222,19 +4641,22 @@ namespace Controls
       protected:
         TreeView(
               string_view layout,
-              std::initializer_list<ColumnBuilder> columns,
+              std::initializer_list<ConstString> columns,
               TreeViewFlags flags = TreeViewFlags::None);
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnFocus() override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseOver(int x, int y) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
-        bool OnMouseDrag(int x, int, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
+
+        // columns header view
+        void OnColumnClicked(uint32 columnIndex) override;
+        Graphics::Rect GetHeaderLayout() override;
+        uint32 ComputeColumnsPreferedWidth(uint32 columnIndex) override;
 
         // handlers covariant
         Handlers::TreeView* Handlers() override;
@@ -4248,25 +4670,8 @@ namespace Controls
         TreeViewItem GetItemByHandle(ItemHandle handle);
         TreeViewItem AddItem(ConstString name, bool isExpandable = false);
 
-        // columns
-        TreeViewColumn GetColumn(uint32 index);
-        TreeViewColumn AddColumn(
-              const ConstString& title,
-              Graphics::TextAlignament align = Graphics::TextAlignament::Left,
-              uint32 width                   = ColumnBuilder::AUTO_SIZE);
-        inline TreeViewColumn AddColumn(ColumnBuilder column)
-        {
-            return AddColumn(column.name, column.align, column.width);
-        }
-        bool AddColumns(std::initializer_list<ColumnBuilder> columns);
-        uint32 GetColumnsCount();
-        uint32 GetSortColumnIndex();
-        inline TreeViewColumn GetSortColumn()
-        {
-            return GetColumn(GetSortColumnIndex());
-        }
-        bool DeleteAllColumns();
-        bool DeleteColumn(uint32 index);
+        bool Sort();
+        bool Sort(uint32 columnIndex, SortDirection direction);
 
       private:
         friend Factory::TreeView;
@@ -4290,7 +4695,7 @@ namespace Controls
         Filter                = 0x040000
     };
 
-    class EXPORT Grid : public Control
+     class EXPORT Grid : public Control
     {
       protected:
         Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags);
@@ -4298,10 +4703,10 @@ namespace Controls
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnLoseFocus() override;
@@ -4309,6 +4714,7 @@ namespace Controls
 
         uint32 GetCellsCount() const;
         void SetGridDimensions(const Graphics::Size& dimensions);
+        void SetFilterOnCurrentColumn(const std::u16string& filter);
         Graphics::Size GetGridDimensions() const;
         bool UpdateCell(
               uint32 index,
@@ -4334,6 +4740,8 @@ namespace Controls
         void ToggleVerticalLines();
         void Sort();
         void Filter();
+        std::optional<std::string> GetSelectedCellContent();
+        std::optional<std::pair<std::string, std::vector<std::string>>> GetSelectedColumnContent();
 
       private:
         friend Factory::Grid;
@@ -4359,10 +4767,10 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnUpdateScrollBars() override;
@@ -4420,7 +4828,7 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
         virtual ~ColorPicker();
@@ -4443,8 +4851,8 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         void OnUpdateScrollBars() override;
 
         void SetCharacter(char16 character);
@@ -4519,19 +4927,21 @@ namespace Controls
 
           public:
             static Pointer<Controls::RadioBox> Create(
-                  const ConstString& caption, string_view layout, int groupID, int controlID = 0);
+                  const ConstString& caption, string_view layout, int groupID, int controlID = 0, bool checked = false);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control* parent,
                   const ConstString& caption,
                   string_view layout,
                   int groupID,
-                  int controlID = 0);
+                  int controlID = 0,
+                  bool checked  = false);
             static Reference<Controls::RadioBox> Create(
                   Controls::Control& parent,
                   const ConstString& caption,
                   string_view layout,
                   int groupID,
-                  int controlID = 0);
+                  int controlID = 0,
+                  bool checked  = false);
         };
         class EXPORT Splitter
         {
@@ -4706,17 +5116,17 @@ namespace Controls
           public:
             static Pointer<Controls::ListView> Create(
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control* parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
             static Reference<Controls::ListView> Create(
                   Controls::Control& parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   Controls::ListViewFlags flags = Controls::ListViewFlags::None);
         };
         class EXPORT ComboBox
@@ -4782,17 +5192,17 @@ namespace Controls
           public:
             static Pointer<Controls::TreeView> Create(
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control* parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
             static Reference<Controls::TreeView> Create(
                   Control& parent,
                   string_view layout,
-                  std::initializer_list<ColumnBuilder> columns,
+                  std::initializer_list<ConstString> columns,
                   const Controls::TreeViewFlags flags = Controls::TreeViewFlags::None);
         };
         class EXPORT Grid
@@ -4998,7 +5408,8 @@ namespace Application
         Default        = 0,
         SDL            = 1,
         Terminal       = 2,
-        WindowsConsole = 3
+        WindowsConsole = 3,
+        Tests          = 4,
     };
     enum class ThemeType : uint32
     {
@@ -5065,7 +5476,7 @@ namespace Application
         struct
         {
             Graphics::ColorPair Normal, HotKey, Inactive, Error, Warning, Hovered, Focused, Highlighted, Emphasized1,
-                  Emphasized2;
+                  Emphasized2, Emphasized3;
         } Text;
         struct
         {
@@ -5126,11 +5537,21 @@ namespace Application
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(InitializationData& initData);
 
+    NODISCARD("Check the return of the InitForTests function. If false, AppCUI has not been initialized properly")
+    EXPORT bool InitForTests(
+          uint32 width,
+          uint32 height,
+          Application::InitializationFlags flags = Application::InitializationFlags::None,
+          bool asciiMode                         = false);
+
     EXPORT bool Run();
+    EXPORT bool RunTestScript(std::string_view script);
     EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
     EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
+    EXPORT Controls::ItemHandle AddWindow(
+          unique_ptr<Controls::Window> wnd, Utils::Reference<Controls::Window> referalWindow);
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
@@ -5363,6 +5784,8 @@ ADD_FLAG_OPERATORS(AppCUI::Input::MouseButton, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::WriteTextFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Graphics::TextAlignament, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Graphics::ProgressStatus::Flags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ColumnsHeaderViewFlags, AppCUI::uint32);
+ADD_FLAG_OPERATORS(AppCUI::Controls::CopyClipboardFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextAreaFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::ListViewFlags, AppCUI::uint32);
 ADD_FLAG_OPERATORS(AppCUI::Controls::TabFlags, AppCUI::uint32)
@@ -5370,11 +5793,11 @@ ADD_FLAG_OPERATORS(AppCUI::Controls::WindowFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::ButtonFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TextFieldFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::SplitterFlags, AppCUI::uint32)
+ADD_FLAG_OPERATORS(AppCUI::Controls::ViewerFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumberParseFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Utils::NumericFormatFlags, AppCUI::uint16)
 ADD_FLAG_OPERATORS(AppCUI::Controls::TreeViewFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::GridFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::PropertyListFlags, AppCUI::uint32)
 ADD_FLAG_OPERATORS(AppCUI::Controls::KeySelectorFlags, AppCUI::uint32)
-
-#undef ADD_FLAG_OPERATORS
+ADD_FLAG_OPERATORS(AppCUI::Controls::UserControlFlags, AppCUI::uint32)

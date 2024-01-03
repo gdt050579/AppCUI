@@ -11,7 +11,7 @@ class SimpleWin : public AppCUI::Controls::Window
                       AppCUI::Controls::WindowFlags::Maximized)
     {
         auto grid = AppCUI::Controls::Factory::Grid::Create(
-              this, "d:c,w:100%,h:100%", 10, 14, AppCUI::Controls::GridFlags::None);
+              this, "d:c,w:100%,h:100%", 13, 13, AppCUI::Controls::GridFlags::None);
 
         const auto dimensions = grid->GetGridDimensions();
         for (auto i = 0U; i < dimensions.Width; i++)

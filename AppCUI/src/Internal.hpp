@@ -1,23 +1,22 @@
 #pragma once
 
 #include "AppCUI.hpp"
+
 #ifdef _WIN32
 #    include <windows.h>
 #    include <Shlobj.h>
 #else
-#    include <iostream>
-#    include <string.h>
 #    include <unistd.h>
 #    include <sys/ioctl.h>
 #    include <stdlib.h>
 #    include <cstdlib>
-#    include <stdio.h>
 #    include <fcntl.h>
 #    include <errno.h>
 #    include <sys/stat.h>
-
 #endif
-#include <memory>
+
+#include <stdio.h>
+#include <iostream>
 
 namespace AppCUI
 {
@@ -212,25 +211,25 @@ namespace Internal
         AbstractTerminal();
 
       public:
-        uint32 LastCursorX, LastCursorY;
-        Graphics::Canvas OriginalScreenCanvas, ScreenCanvas;
-        bool Inited, LastCursorVisibility;
+        uint32 lastCursorX, lastCursorY;
+        Graphics::Canvas originalScreenCanvas, screenCanvas;
+        bool inited, lastCursorVisibility;
 
         virtual bool OnInit(const Application::InitializationData& initData)  = 0;
         virtual void RestoreOriginalConsoleSettings()                         = 0;
-        virtual void OnUninit()                                               = 0;
+        virtual void OnUnInit()                                               = 0;
         virtual void OnFlushToScreen()                                        = 0;
         virtual void OnFlushToScreen(const Graphics::Rect& r)                 = 0;
         virtual bool OnUpdateCursor()                                         = 0;
         virtual void GetSystemEvent(Internal::SystemEvent& evnt)              = 0;
         virtual bool IsEventAvailable()                                       = 0;
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) = 0;
+        virtual void Update();
 
         virtual ~AbstractTerminal();
 
         bool Init(const Application::InitializationData& initData);
-        void Uninit();
-        void Update();
+        void UnInit();
     };
 
     namespace Config
@@ -245,6 +244,7 @@ namespace Internal
         Application::Config config;
         Utils::IniObject settings;
         unique_ptr<AbstractTerminal> terminal;
+        Application::FrontendType frontend;
         unique_ptr<CommandBarController> cmdBar;
         unique_ptr<MenuBar> menu;
         vector<Controls::Control*> toDelete;
@@ -272,6 +272,9 @@ namespace Internal
         ApplicationImpl();
         ~ApplicationImpl();
 
+        
+        Application::FrontendType GetFrontendType() const;
+
         void Destroy();
         void ComputePositions();
         void ProcessKeyPress(Input::Key keyCode, char16_t unicodeCharacter);
@@ -279,10 +282,10 @@ namespace Internal
         void ProcessMenuMouseClick(Controls::Menu* mnu, int x, int y);
         void ProcessMenuMouseReleased(Controls::Menu* mnu, int x, int y);
         bool ProcessMenuAndCmdBarMouseMove(int x, int y);
-        void OnMouseDown(int x, int y, Input::MouseButton button);
-        void OnMouseUp(int x, int y, Input::MouseButton button);
-        void OnMouseMove(int x, int y, Input::MouseButton button);
-        void OnMouseWheel(int x, int y, Input::MouseWheel direction);
+        void OnMouseDown(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        void OnMouseUp(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        void OnMouseMove(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        void OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode);
         void SendCommand(int command);
         void Terminate();
 
@@ -298,17 +301,17 @@ namespace Internal
         void LoadSettingsFile(Application::InitializationData& initData);
         bool LoadThemeFile(Application::InitializationData& initData);
         bool Init(Application::InitializationData& initData);
-        bool Uninit();
+        bool UnInit();
         void CheckIfAppShouldClose();
-        bool ExecuteEventLoop(Controls::Control* control = nullptr);
+        bool ExecuteEventLoop(Controls::Control* control = nullptr, bool resetState = false);
         void Paint();
         void RaiseEvent(
               Utils::Reference<Controls::Control> control,
               Utils::Reference<Controls::Control> sourceControl,
               Controls::Event eventType,
               int controlID);
-        bool SetToolTip(Controls::Control* control, const ConstString& text);
-        bool SetToolTip(Controls::Control* control, const ConstString& text, int x, int y);
+        bool SetToolTip(Utils::Reference<Controls::Control> control, const ConstString& text);
+        bool SetToolTip(Utils::Reference<Controls::Control> control, const ConstString& text, int x, int y);
 
         void ArrangeWindows(Application::ArrangeWindowsMethod method);
     };
@@ -329,8 +332,62 @@ namespace Utils
         uint8 Values[8];
         uint32 Length;
     };
-    bool ConvertUTF8CharToUnicodeChar(const char8_t* p, const char8_t* end, UnicodeChar& result);
+    bool ConvertUTF8CharToUnicodeChar(const char8* p, const char8* end, UnicodeChar& result);
     bool ConvertUnicodeCharToUTF8Chat(char16 ch, UTF8Char& result);
+    struct KeyValuePair
+    {
+        enum class Type : uint8
+        {
+            None,
+            String,
+            Number,
+            Percentage
+        };
+        struct
+        {
+            const void* data;
+            uint32 dataSize;
+            uint64 hash;
+            int32 number;
+            Type type;
+        } Key, Value;
+    };
+    class KeyValueParser
+    {
+        constexpr static uint32 MAX_ITEMS = 32;
+        constexpr static uint32 NO_ERRORS = 0xFFFFFFFF;
+        KeyValuePair items[MAX_ITEMS];
+        uint32 errorPos;
+        string_view errorName;
+        uint32 count;
+
+      public:
+        KeyValueParser() : errorPos(NO_ERRORS), count(0)
+        {
+        }
+        bool Parse(std::string_view text);
+        bool Parse(std::u16string_view text);
+        inline bool HasError() const
+        {
+            return errorPos != NO_ERRORS;
+        }
+        inline uint32 GetErrorOffset() const
+        {
+            return errorPos;
+        }
+        inline std::string_view GetErrorName() const
+        {
+            return errorName;
+        }
+        inline uint32 GetCount() const
+        {
+            return count;
+        }
+        inline const KeyValuePair& operator[](int index) const
+        {
+            return items[index];
+        }
+    };
 } // namespace Utils
 namespace Log
 {
@@ -340,5 +397,10 @@ namespace Controls
 {
     void UninitTextFieldDefaultMenu();
     void UninitTextAreaDefaultMenu();
+    namespace ToolTip
+    {
+        void Hide();
+        bool Show(Reference<Control> host, const ConstString& caption, int x, int y);
+    }; // namespace ToolTip
 } // namespace Controls
 } // namespace AppCUI

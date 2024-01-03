@@ -1,4 +1,3 @@
-#include "AppCUI.hpp"
 #include "Internal.hpp"
 
 namespace AppCUI::Application

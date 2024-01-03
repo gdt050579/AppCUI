@@ -1,4 +1,5 @@
 #include "Internal.hpp"
+
 namespace AppCUI
 {
 using namespace Graphics;
@@ -26,8 +27,8 @@ void Config_SetDefaultTheme(Config& cfg)
           { Color::DarkGreen, Color::Transparent },
           { Color::DarkGreen, Color::Transparent },
           { Color::Gray, Color::Transparent },
-          { Color::Yellow, Color::Magenta },
-          { Color::Black, Color::White });
+          { Color::Gray, Color::Magenta },
+          { Color::Yellow, Color::Magenta });
 
     cfg.Editor.Set(
           { Color::White, Color::Black },
@@ -65,6 +66,7 @@ void Config_SetDefaultTheme(Config& cfg)
     cfg.Text.Highlighted = { Color::Yellow, Color::Transparent };
     cfg.Text.Emphasized1 = { Color::Aqua, Color::Transparent };
     cfg.Text.Emphasized2 = { Color::Green, Color::Transparent };
+    cfg.Text.Emphasized3 = { Color::Pink, Color::Transparent };
 
     cfg.Cursor.Normal           = { Color::Black, Color::White };
     cfg.Cursor.OverInactiveItem = { Color::Gray, Color::White };
@@ -246,6 +248,7 @@ void Config_SetDarkTheme(Config& cfg)
     cfg.Text.Highlighted        = { Color::Yellow, Color::Transparent };
     cfg.Text.Emphasized1        = { Color::Aqua, Color::Transparent };
     cfg.Text.Emphasized2        = { Color::Green, Color::Transparent };
+    cfg.Text.Emphasized3        = { Color::Pink, Color::Transparent };
     cfg.Symbol.Inactive         = { Color::DarkBlue, Color::Transparent };
     cfg.Symbol.Hovered          = { Color::Yellow, Color::Black };
     cfg.Symbol.Pressed          = { Color::Black, Color::Yellow };
@@ -438,6 +441,7 @@ void Config_SetLightTheme(Config& cfg)
     cfg.Text.Highlighted        = { Color::Olive, Color::Transparent };
     cfg.Text.Emphasized1        = { Color::Blue, Color::Transparent };
     cfg.Text.Emphasized2        = { Color::Pink, Color::Transparent };
+    cfg.Text.Emphasized3        = { Color::Magenta, Color::Transparent };
     cfg.Symbol.Inactive         = { Color::Gray, Color::Transparent };
     cfg.Symbol.Hovered          = { Color::Black, Color::Yellow };
     cfg.Symbol.Pressed          = { Color::Black, Color::Silver };

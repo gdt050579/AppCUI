@@ -80,7 +80,7 @@ class TicTacToeTable : public UserControl
         renderer.FillVerticalLineWithSpecialChar(
               9, 0, 13, SpecialChars::BoxVerticalSingleLine, ColorPair{ Color::White, Color::Black });
     }
-    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton) override
+    void OnMousePressed(int x, int y, AppCUI::Input::MouseButton, Input::Key) override
     {
         const int cell_x = std::min<>(x / 5, 2);
         const int cell_y = std::min<>(y / 5, 2);

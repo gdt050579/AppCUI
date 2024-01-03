@@ -69,11 +69,11 @@ class ContextMenuExample : public Window
         }
         return false;
     }
-    void OnMousePressed(int x, int y, MouseButton button) override
+    void OnMousePressed(int x, int y, MouseButton button, Input::Key keyCode) override
     {
         if ((button & MouseButton::Right) != MouseButton::None)
             ctxMenu.Show(this, x, y);
-        Window::OnMousePressed(x, y, button);
+        Window::OnMousePressed(x, y, button, keyCode);
     }
     bool OnUpdateCommandBar(CommandBar& cmd) override
     {

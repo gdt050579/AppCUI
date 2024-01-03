@@ -19,7 +19,7 @@ bool MessageBoxWindowEventHandler(Reference<Control> control, Controls::Event ev
         control.ToObjectRef<Window>()->Exit(Result::Cancel);
         return true;
     case Event::ButtonClicked:
-        control.ToObjectRef<Window>()->Exit(controlID);
+        control.ToObjectRef<Window>()->Exit(static_cast<Dialogs::Result>(controlID));
         return true;
     default:
         return false;

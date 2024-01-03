@@ -1,6 +1,4 @@
 #include "Internal.hpp"
-#include <string.h>
-
 namespace AppCUI::Graphics
 {
 using namespace Utils;
@@ -8,6 +6,7 @@ struct LineTypeChars
 {
     char16 TopLeft, Top, TopRight, Right, BottomRight, Bottom, BottomLeft, Left;
 };
+
 namespace UnicodeSpecialChars
 {
     int special_characters[(uint32) Graphics::SpecialChars::Count] = {
@@ -295,7 +294,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -336,7 +335,7 @@ inline bool ProcessMultiLinesString(const T& text, const WriteTextParams& params
             if (showHotKey)
             {
                 if (((lineStart - start) <= params.HotKeyPosition) && ((p - start) > params.HotKeyPosition))
-                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32)(lineStart - start);
+                    singleLineParams.HotKeyPosition = params.HotKeyPosition - (uint32) (lineStart - start);
                 else
                     singleLineParams.HotKeyPosition = 0xFFFFFFFF;
             }
@@ -378,7 +377,6 @@ Renderer::Renderer()
         SpecialCharacters = UnicodeSpecialChars::special_characters;
     if (LineSpecialChars == nullptr)
         LineSpecialChars = UnicodeSpecialChars::line_types_chars;
-
     this->Clip.Visible   = false;
     this->Cursor.Visible = false;
     this->Cursor.X = this->Cursor.Y = 0;
@@ -489,7 +487,7 @@ bool Renderer::_ClearEntireSurface(int character, ColorPair color)
         tmp.Color.Foreground = color.Foreground;
     tmp.Code = 32;
     if ((character >= 0) && (character <= 0xFFFF))
-        tmp.Code = (uint16)(character & 0xFFFF);
+        tmp.Code = (uint16) (character & 0xFFFF);
     while (s < e)
     {
         s->PackedValue = tmp.PackedValue;
@@ -955,13 +953,29 @@ bool Renderer::SetClipMargins(int leftMargin, int topMargin, int rightMargin, in
         this->ClipCopy          = this->Clip;
         this->ClipHasBeenCopied = true;
     }
-    if (!this->Clip.Visible)
+    if (!this->ClipCopy.Visible)
         return false;
 
     Clip.Left          = ClipCopy.Left + std::max<>(leftMargin, 0);
     Clip.Top           = ClipCopy.Top + std::max<>(topMargin, 0);
     Clip.Right         = ClipCopy.Right - std::max<>(rightMargin, 0);
     Clip.Bottom        = ClipCopy.Bottom - std::max<>(bottomMargin, 0);
+    this->Clip.Visible = (Clip.Left <= Clip.Right) && (Clip.Top <= Clip.Bottom);
+    return this->Clip.Visible;
+}
+bool Renderer::SetClipRect(const Rect& r)
+{
+    if (!this->ClipHasBeenCopied)
+    {
+        this->ClipCopy          = this->Clip;
+        this->ClipHasBeenCopied = true;
+    }
+    if (!this->ClipCopy.Visible)
+        return false;
+    Clip.Left          = ClipCopy.Left + std::max<>(r.GetLeft(), 0);
+    Clip.Top           = ClipCopy.Top + std::max<>(r.GetTop(), 0);
+    Clip.Right         = std::min<>(ClipCopy.Right, ClipCopy.Left + r.GetRight());
+    Clip.Bottom        = std::min<>(ClipCopy.Bottom, ClipCopy.Top + r.GetBottom());
     this->Clip.Visible = (Clip.Left <= Clip.Right) && (Clip.Top <= Clip.Bottom);
     return this->Clip.Visible;
 }
@@ -1097,7 +1111,7 @@ bool Renderer::_Compute_DrawTextInfo_SingleLine_(
     // Text fit
     if (TextFit)
     {
-        uint32 sz = (uint32)(output->TextEnd - output->TextStart);
+        uint32 sz = (uint32) (output->TextEnd - output->TextStart);
         if (sz > 4)
         {
             sz                   = std::min<>(sz - 3, 3U);
@@ -1306,7 +1320,7 @@ bool Renderer::WriteSingleLineCharacterBuffer(int x, int y, CharacterView charVi
         x = Clip.Left;
         if (buf >= end)
             return false; // ouside clip rect
-        sz = (uint32)(end - buf);
+        sz = (uint32) (end - buf);
     }
     if ((x + (int) sz) > Clip.Right)
     {
@@ -1494,7 +1508,15 @@ void Paint_SmallBlocks(Renderer& r, const Graphics::Image& img, int x, int y, ui
                 cp = { RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y, rap)),
                        RGB_to_16Color(img.ComputeSquareAverageColor(img_x, img_y + rap, rap)) };
 
-            r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
+            if (cp.Background == cp.Foreground)
+            {
+                if (cp.Background == Color::Black)
+                    r.WriteCharacter(px, y, ' ', cp);
+                else
+                    r.WriteSpecialCharacter(px, y, SpecialChars::Block100, cp);
+            }
+            else
+                r.WriteSpecialCharacter(px, y, SpecialChars::BlockUpperHalf, cp);
         }
     }
 }
@@ -1571,6 +1593,7 @@ Size Renderer::ComputeRenderingSize(const Image& img, ImageRenderingMethod metho
     h = std::max<>(h, 1U);
     return Size(w, h);
 }
+
 bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod method, ImageScaleMethod scale)
 {
     auto rap = static_cast<uint32>(scale);

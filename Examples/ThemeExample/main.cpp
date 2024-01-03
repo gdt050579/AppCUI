@@ -34,9 +34,7 @@ class ExampleWin : public Window
         auto lv = Factory::ListView::Create(
               this,
               "x:25,y:3,w:40,h:10",
-              { { "&Name", TextAlignament::Left, 15 },
-                { "&Grade", TextAlignament::Right, 10 },
-                { "&Class", TextAlignament::Left, 15 } },
+              { "n:&Name,a:l,w:15", "n:&Grade,a:r,w:10", "n:&Class,a:l,w:15" },
               ListViewFlags::Sortable | ListViewFlags::CheckBoxes);
 
         for (uint32 count = 0; count < 100; count++)

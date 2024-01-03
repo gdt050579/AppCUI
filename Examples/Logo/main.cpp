@@ -27,7 +27,7 @@ class LogoWin : public Window
             for (int x = 0; AppCuiLogo[y][x]; x++)
             {
                 SpecialChars sc{};
-                ColorPair col;
+                ColorPair col = NoColorPair;
                 switch (AppCuiLogo[y][x])
                 {
                 case 'X':
@@ -74,11 +74,12 @@ class LogoWin : public Window
     }
 
   public:
-    LogoWin() : Window("Canvas example", "d:c,w:80,h:22", WindowFlags::None)
+    LogoWin() : Window("Canvas example", "d:c,w:85,h:19", WindowFlags::None)
     {
         auto sp = Factory::Splitter::Create(this, "x:0,y:0,w:100%,h:100%", SplitterFlags::Vertical);
-        sp->SetSecondPanelSize(60);
-        auto viewLogo = Factory::CanvasViewer::Create(sp, "&Logo", "x:0,y:0,w:100%,h:100%", 28, 15);
+        sp->SetFirstPanelSize(35);
+        sp->SetSecondPanelSize(50);
+        auto viewLogo = Factory::CanvasViewer::Create(sp, "&Logo", "x:1,y:1,w:100%,h:100%", 28, 15);
 
         auto pn = Factory::Panel::Create(sp, "x:0,y:0,w:100%,h:100%");
         auto viewInactive =

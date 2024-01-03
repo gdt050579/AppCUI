@@ -91,6 +91,7 @@ class HexViewUserControl : public UserControl
               std::istream_iterator<uint8>(fileStream),
               std::istream_iterator<uint8>(),
               std::back_inserter(fileData));
+        fileSize = fileData.size();
 
         return true;
     }

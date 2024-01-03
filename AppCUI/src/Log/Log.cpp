@@ -1,8 +1,6 @@
-#include <AppCUI.hpp>
 #include "Internal.hpp"
-#include <iostream>
+
 #include <stdarg.h>
-#include <stdio.h>
 
 namespace AppCUI::Log
 {
@@ -89,7 +87,7 @@ void Report(
         va_end(args);
         CHECK_INTERNAL_CONDITION(len >= 0, "'vsnprinf' has returned an invalid value !");
         CHECK_INTERNAL_CONDITION(
-              len < CRITICAL_ERROR_STACK_BUFFER_SIZE - 2,
+              len < (int)(CRITICAL_ERROR_STACK_BUFFER_SIZE - 2),
               "Formatting buffer size is too large (max accepted is 0x10000 bytes)");
         va_start(args, format);
         len2 = vsnprintf(Text, CRITICAL_ERROR_STACK_BUFFER_SIZE - 2, format, args);

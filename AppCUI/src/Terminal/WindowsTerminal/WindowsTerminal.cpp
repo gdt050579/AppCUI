@@ -1,5 +1,4 @@
 #include "WindowsTerminal.hpp"
-#include <string.h>
 
 namespace AppCUI::Internal
 {
@@ -7,33 +6,36 @@ using namespace Application;
 using namespace Graphics;
 
 WindowsTerminal::WindowsTerminal()
+    : consoleBufferCount(0), fpsMode(false), lastMousePosition({ 0xFFFFFFFFu, 0xFFFFFFFFu })
 {
-    ConsoleBufferCount      = 0;
-    this->fpsMode           = false;
-    this->lastMousePosition = { 0xFFFFFFFFu, 0xFFFFFFFFu };
 }
+
 WindowsTerminal::~WindowsTerminal()
 {
-    ConsoleBufferCount = 0;
+    consoleBufferCount = 0;
 }
+
 bool WindowsTerminal::ResizeConsoleBuffer(uint32 width, uint32 height)
 {
     const uint32 newCount = ((width * height) | 0xFF) + 1;
-    if (newCount <= ConsoleBufferCount)
-        return true; // no need to resize
-    this->ConsoleBuffer.reset(new CHAR_INFO[newCount]);
-    CHECK(ConsoleBuffer.get(),
+    CHECK(newCount > consoleBufferCount, true, "No need to resize!");
+
+    consoleBuffer.reset(new CHAR_INFO[newCount]);
+    CHECK(consoleBuffer.get(),
           false,
           "Fail to allocate: %d characters for a %dx%d sized terminal",
           newCount,
           width,
           height);
-    this->ConsoleBufferCount = newCount;
+
+    consoleBufferCount = newCount;
+
     return true;
 }
+
 bool WindowsTerminal::CopyOriginalScreenBuffer(uint32 width, uint32 height, uint32 mouseX, uint32 mouseY)
 {
-    CHECK(this->OriginalScreenCanvas.Create(width, height),
+    CHECK(this->originalScreenCanvas.Create(width, height),
           false,
           "Fail to create the original screen canvas of %d x %d size",
           width,
@@ -41,21 +43,22 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(uint32 width, uint32 height, uint
     SMALL_RECT BufRect = { 0, 0, (SHORT) (width - 1), (SHORT) (height - 1) };
 
     // allocate memory for a console buffer
-    CHAR_INFO* temp = new CHAR_INFO[(size_t) width * (size_t) height];
-    CHECK(temp, false, "Fail to allocate %dx%d buffer to store the original screem buffer !", width, height);
+    std::unique_ptr<CHAR_INFO[]> temp(new CHAR_INFO[(size_t) width * (size_t) height]);
+    CHECK(temp.get(), false, "Fail to allocate %dx%d buffer to store the original screen buffer !", width, height);
 
     // make a copy of the original screem buffer into the canvas
     while (true)
     {
         CHECKBK(
-              ReadConsoleOutput(this->hstdOut, temp, { (SHORT) width, (SHORT) height }, { 0, 0 }, &BufRect),
+              ReadConsoleOutput(this->hstdOut, temp.get(), { (SHORT) width, (SHORT) height }, { 0, 0 }, &BufRect),
               "Unable to make a copy of the initial screen buffer !");
-        CHAR_INFO* p = temp;
+
+        CHAR_INFO* p = temp.get();
         for (uint32 y = 0; y < (uint32) height; y++)
         {
             for (uint32 x = 0; x < (uint32) width; x++, p++)
             {
-                this->OriginalScreenCanvas.WriteCharacter(
+                this->originalScreenCanvas.WriteCharacter(
                       x,
                       y,
                       p->Char.UnicodeChar,
@@ -63,21 +66,24 @@ bool WindowsTerminal::CopyOriginalScreenBuffer(uint32 width, uint32 height, uint
                                            static_cast<Graphics::Color>((p->Attributes & 0xF0) >> 4) });
             }
         }
-        delete[] temp;
-        temp = nullptr;
+
         // copy current cursor position
         CONSOLE_CURSOR_INFO cInfo;
         CHECKBK(GetConsoleCursorInfo(this->hstdOut, &cInfo), "Unable to read console cursor informations !");
         if (cInfo.bVisible)
-            this->OriginalScreenCanvas.HideCursor();
+        {
+            this->originalScreenCanvas.HideCursor();
+        }
         else
-            this->OriginalScreenCanvas.SetCursor(mouseX, mouseY);
-
+        {
+            this->originalScreenCanvas.SetCursor(mouseX, mouseY);
+        }
         return true;
     }
-    delete[] temp;
+
     return false;
 }
+
 bool WindowsTerminal::ResizeConsoleScreenBufferSize(uint32 width, uint32 height)
 {
     COORD coord = { 0, 0 };
@@ -94,6 +100,7 @@ bool WindowsTerminal::ResizeConsoleScreenBufferSize(uint32 width, uint32 height)
 
     return true;
 }
+
 bool WindowsTerminal::ResizeConsoleWindowSize(uint32 width, uint32 height)
 {
     SMALL_RECT rect;
@@ -120,6 +127,7 @@ Size WindowsTerminal::MaximizeTerminal()
     CHECK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), Size(), "Unable to read console screen buffer !");
     return Size(csbi.dwSize.X, csbi.dwSize.Y);
 }
+
 Size WindowsTerminal::FullScreenTerminal()
 {
     COORD coord = { 0, 0 };
@@ -132,6 +140,7 @@ Size WindowsTerminal::FullScreenTerminal()
           "Fail to set up input reader mode !");
     return Size(coord.X, coord.Y);
 }
+
 Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const Size& currentSize)
 {
     CHECK(initData.Width < 0xFFFF,
@@ -300,6 +309,7 @@ Size WindowsTerminal::UpdateTerminalSize(const InitializationData& initData, con
 
     return resultedSize;
 }
+
 bool WindowsTerminal::ComputeCharacterSize(const Application::InitializationData& initData)
 {
     if (initData.CharSize == CharacterSize::Default)
@@ -345,6 +355,7 @@ bool WindowsTerminal::ComputeCharacterSize(const Application::InitializationData
           GetLastError());
     return true;
 }
+
 void WindowsTerminal::BuildKeyTranslationMatrix()
 {
     // Build the key translation matrix [could be improved with a static vector]
@@ -375,6 +386,7 @@ void WindowsTerminal::BuildKeyTranslationMatrix()
 
     this->shiftState = Input::Key::None;
 }
+
 bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
 {
     CONSOLE_SCREEN_BUFFER_INFOEX csbi;
@@ -429,7 +441,7 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
     CHECK((terminalSize.Width > 0) && (terminalSize.Height > 0), false, "Fail to update terminal size !");
 
     // create canvases
-    CHECK(this->ScreenCanvas.Create(terminalSize.Width, terminalSize.Height),
+    CHECK(screenCanvas.Create(terminalSize.Width, terminalSize.Height),
           false,
           "Fail to create an internal canvas of %u x %u size",
           terminalSize.Width,
@@ -446,23 +458,26 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
     this->startTime = GetTickCount();
     return true;
 }
+
 void WindowsTerminal::RestoreOriginalConsoleSettings()
 {
 }
-void WindowsTerminal::OnUninit()
+
+void WindowsTerminal::OnUnInit()
 {
 }
+
 void WindowsTerminal::OnFlushToScreen()
 {
-    uint32 w      = this->ScreenCanvas.GetWidth();
-    uint32 h      = this->ScreenCanvas.GetHeight();
+    uint32 w      = screenCanvas.GetWidth();
+    uint32 h      = screenCanvas.GetHeight();
     COORD winSize = { (SHORT) w, (SHORT) h };
     SMALL_RECT sr = { 0, 0, winSize.X, winSize.Y };
     // copy the entire buffer
     // LOG_INFO("Flushing a buffer of size: %dx%d = %d chars, allocated = %d ",w,h,w*h,this->ConsoleBufferCount)
-    Graphics::Character* c = this->ScreenCanvas.GetCharactersBuffer();
+    Graphics::Character* c = screenCanvas.GetCharactersBuffer();
     Graphics::Character* e = c + ((size_t) w * (size_t) h);
-    CHAR_INFO* d           = this->ConsoleBuffer.get();
+    CHAR_INFO* d           = consoleBuffer.get();
     while (c < e)
     {
         d->Char.UnicodeChar = c->Code;
@@ -470,22 +485,28 @@ void WindowsTerminal::OnFlushToScreen()
         d++;
         c++;
     }
-    WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
+    WriteConsoleOutputW(hstdOut, consoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
-void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& r)
-{
-    const uint32 w         = r.GetWidth();
-    const uint32 h         = r.GetHeight();
-    const auto screenWidth = this->ScreenCanvas.GetWidth();
-    COORD winSize          = { (SHORT) w, (SHORT) h };
-    SMALL_RECT sr          = { (SHORT) r.GetLeft(), (SHORT) r.GetTop(), winSize.X, winSize.Y };
 
-    Graphics::Character* start = this->ScreenCanvas.GetCharactersBuffer() + screenWidth * r.GetTop();
-    CHAR_INFO* d               = this->ConsoleBuffer.get();
-    for (auto y = 0U; y < h; y++, start += screenWidth)
+void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& rect)
+{
+    const auto screenWidth = screenCanvas.GetWidth();
+    const int32 l          = std::max<>(0, rect.GetLeft());
+    const int32 r          = std::min<>((int32) screenWidth - 1, rect.GetRight());
+    const int32 t          = std::max<>(0, rect.GetTop());
+    const int32 b          = std::min<>((int32) screenCanvas.GetHeight() - 1, rect.GetBottom());
+    const auto szW         = (r + 1) - l;
+
+    if ((l > r) || (t > b))
+        return;
+
+    CHAR_INFO* d               = consoleBuffer.get();
+    Graphics::Character* start = screenCanvas.GetCharactersBuffer() + screenWidth * t + l;
+    auto y                     = t;
+    while (y <= b)
     {
-        Graphics::Character* c = start + r.GetLeft();
-        Graphics::Character* e = c + w;
+        Graphics::Character* c = start;
+        Graphics::Character* e = c + szW;
         while (c < e)
         {
             d->Char.UnicodeChar = c->Code;
@@ -493,14 +514,20 @@ void WindowsTerminal::OnFlushToScreen(const Graphics::Rect& r)
             d++;
             c++;
         }
+        y++;
+        start += screenWidth;
     }
-    WriteConsoleOutputW(this->hstdOut, this->ConsoleBuffer.get(), winSize, { 0, 0 }, &sr);
+
+    COORD winSize = { (SHORT) ((r + 1) - l), (SHORT) ((b + 1) - t) };
+    SMALL_RECT sr = { (SHORT) l, (SHORT) t, (SHORT) r, (SHORT) b };
+    WriteConsoleOutputW(hstdOut, consoleBuffer.get(), winSize, { 0, 0 }, &sr);
 }
+
 bool WindowsTerminal::OnUpdateCursor()
 {
-    if (this->ScreenCanvas.GetCursorVisibility())
+    if (screenCanvas.GetCursorVisibility())
     {
-        const COORD c = { (SHORT) this->ScreenCanvas.GetCursorX(), (SHORT) this->ScreenCanvas.GetCursorY() };
+        const COORD c = { (SHORT) screenCanvas.GetCursorX(), (SHORT) screenCanvas.GetCursorY() };
         CHECK(SetConsoleCursorPosition(this->hstdOut, c), false, "SetConsoleCursorPosition failed !");
         const static CONSOLE_CURSOR_INFO ci = { 10, TRUE };
         CHECK(SetConsoleCursorInfo(this->hstdOut, &ci), false, "SetConsoleCursorInfo failed !");
@@ -512,21 +539,21 @@ bool WindowsTerminal::OnUpdateCursor()
     }
     return true;
 }
+
 void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
 {
-    DWORD nrread;
-    INPUT_RECORD ir;
-    Input::Key eventShiftState;
-
     evnt.eventType    = SystemEventType::None;
     evnt.updateFrames = false;
+
+    INPUT_RECORD ir;
+    DWORD nrread;
     if (this->fpsMode)
     {
-        DWORD cTime = GetTickCount();
-        DWORD diff  = 33;
+        DWORD64 cTime = GetTickCount64();
+        DWORD diff    = 33;
         if (cTime >= this->startTime)
         {
-            diff -= (cTime - this->startTime);
+            diff -= (static_cast<DWORD64>(cTime) - this->startTime);
             if (diff > 33)
                 diff = 0;
         }
@@ -559,7 +586,7 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             {
                 if (result == WAIT_TIMEOUT)
                 {
-                    this->startTime   = GetTickCount();
+                    this->startTime   = GetTickCount64();
                     evnt.updateFrames = true;
                     return; // process framerate update;
                 }
@@ -580,6 +607,7 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     switch (ir.EventType)
     {
     case KEY_EVENT:
+    {
         if ((ir.Event.KeyEvent.uChar.UnicodeChar >= 32) && (ir.Event.KeyEvent.bKeyDown))
             evnt.unicodeCharacter = ir.Event.KeyEvent.uChar.UnicodeChar;
         else
@@ -589,7 +617,7 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         else
             evnt.keyCode = Input::Key::None;
 
-        eventShiftState = Input::Key::None;
+        auto eventShiftState = Input::Key::None;
         if ((ir.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)) != 0)
             eventShiftState |= Input::Key::Alt;
         if ((ir.Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED) != 0)
@@ -616,7 +644,8 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
                 evnt.eventType = SystemEventType::KeyPressed;
         }
         this->shiftState = eventShiftState;
-        break;
+    }
+    break;
     case MOUSE_EVENT:
 
         // for Windows 11
@@ -684,15 +713,36 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     }
 }
 
+void WindowsTerminal::Update()
+{
+    OnFlushToScreen();
+
+    if ((screenCanvas.GetCursorVisibility() != lastCursorVisibility) || (screenCanvas.GetCursorX() != lastCursorX) ||
+        (screenCanvas.GetCursorY() != lastCursorY) ||
+        (screenCanvas.GetWidth() != lastWidth || screenCanvas.GetHeight() != lastHeight) &&
+              screenCanvas.GetCursorVisibility() == false)
+    {
+        if (this->OnUpdateCursor())
+        {
+            // update last cursor information
+            lastCursorX          = screenCanvas.GetCursorX();
+            lastCursorY          = screenCanvas.GetCursorY();
+            lastCursorVisibility = screenCanvas.GetCursorVisibility();
+
+            lastWidth  = screenCanvas.GetWidth();
+            lastHeight = screenCanvas.GetHeight();
+        }
+    }
+}
+
 bool WindowsTerminal::IsEventAvailable()
 {
     DWORD eventsRead = 0;
     INPUT_RECORD ir;
-
-    if (PeekConsoleInput(this->hstdIn, &ir, 1, &eventsRead) == FALSE)
-        return false;
+    CHECK(PeekConsoleInput(hstdIn, &ir, 1, &eventsRead), false, "");
     return (eventsRead > 0);
 }
+
 bool WindowsTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
 {
     // Windows terminal supports all special character set types

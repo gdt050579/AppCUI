@@ -74,7 +74,7 @@ bool Password::OnKeyEvent(Key KeyCode, char16 characterCode)
 
     return false;
 }
-bool Password::OnMouseDrag(int x, int y, Input::MouseButton)
+bool Password::OnMouseDrag(int x, int y, Input::MouseButton, Input::Key)
 {
     if (IsChecked() == false)
         return false;
@@ -85,11 +85,11 @@ bool Password::OnMouseDrag(int x, int y, Input::MouseButton)
     }
     return false;
 }
-void Password::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton)
+void Password::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton, Input::Key)
 {
     SetChecked(false);
 }
-void Password::OnMousePressed(int, int, Input::MouseButton)
+void Password::OnMousePressed(int, int, Input::MouseButton, Input::Key)
 {
     SetChecked(true);
 }

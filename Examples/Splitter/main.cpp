@@ -86,8 +86,7 @@ class Example2 : public Window
         auto sp = Factory::Splitter::Create(p, "d:c", SplitterFlags::Vertical | SplitterFlags::AutoCollapsePanel2);
         sp->SetPanel2Bounderies(0, 25); // maximum 15 chars size on the right
         sp->SetDefaultPanelSize(20);
-        auto lv = Factory::ListView::Create(
-              sp, "d:c", { { "Name", TextAlignament::Left, 15 }, { "Grade", TextAlignament::Right, 10 } });
+        auto lv = Factory::ListView::Create(sp, "d:c", { "n:Name,a:l,w:15", "n:Grade,a:r,w:10" });
 
         lv->AddItems({ { "Dragos", "10" }, { "Raul", "9" }, { "Gheorghita", "10" }, { "Andrei", "7" } });
 
@@ -147,8 +146,7 @@ class Example3 : public Window
         sp_v->SetDefaultPanelSize(20);
         sp_h->SetPanel2Bounderies(2);
         sp_h->SetDefaultPanelSize(2);
-        auto lv = Factory::ListView::Create(
-              sp_v, "d:c", { { "Name", TextAlignament::Left, 15 }, { "Grade", TextAlignament::Right, 10 } });
+        auto lv = Factory::ListView::Create(sp_v, "d:c", { "n:Name,a:l,w:15", "n:Grade,a:r,w:10" });
 
         lv->AddItems({ { "Dragos", "10" }, { "Raul", "9" }, { "Gheorghita", "10" }, { "Andrei", "7" } });
 

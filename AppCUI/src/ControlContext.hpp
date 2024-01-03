@@ -1,10 +1,7 @@
 #pragma once
 
-#include "AppCUI.hpp"
 #include "Internal.hpp"
-#include <string.h>
-#include <vector>
-#include <map>
+#include <optional>
 #include <set>
 
 namespace AppCUI
@@ -275,7 +272,7 @@ struct WindowControlContext : public ControlContext
     WindowDragStatus dragStatus;
     int dragOffsetX, dragOffsetY;
     int TitleLeftMargin, TitleMaxWidth;
-    int DialogResult;
+    Dialogs::Result DialogResult;
     struct
     {
         WindowBarItem Items[MAX_WINDOWBAR_ITEMS];
@@ -312,7 +309,7 @@ enum class SplitterMouseStatus : unsigned char
     ClickOnButton2,
     Drag
 };
-constexpr uint32 SPLITTER_BAR_SIZE = 1;
+constexpr int32 SPLITTER_BAR_SIZE = 1;
 class SplitterControlContext : public ControlContext
 {
   public:
@@ -457,6 +454,8 @@ constexpr uint32 MAX_LISTVIEW_HEADER_TEXT = 32;
 struct InternalListViewItem
 {
     CharacterBuffer SubItem[MAX_LISTVIEW_COLUMNS];
+    bool subItemsColored[MAX_LISTVIEW_COLUMNS]{ false };
+    ColorPair subItemsColor[MAX_LISTVIEW_COLUMNS]{ ColorPair{ Color::Transparent, Color::Transparent } };
     ListViewItem::Type Type;
     uint16 Flags;
     uint32 XOffset;
@@ -471,43 +470,210 @@ struct InternalListViewItem
     InternalListViewItem(const InternalListViewItem& obj);
     InternalListViewItem(InternalListViewItem&& obj) noexcept;
 };
-
-struct InternalListViewColumn
+enum class InternalColumnWidthType : uint8
 {
-    CharacterBuffer Name;
-    uint32 HotKeyOffset;
-    uint32 Flags;
-    Key HotKeyCode;
-    uint16 Width;
-    TextAlignament Align;
+    Value,
+    Percentage,
+    MatchName,
+    Fill
+};
+enum class InternalColumnFlags : uint32
+{
+    None             = 0,
+    AllowValueCopy   = 0x00000001,
+    SearcheableValue = 0x00000002,
+    Hidden           = 0x00000004,
+};
+struct InternalColumn
+{
+    CharacterBuffer name;
+    uint32 hotKeyOffset;
+    InternalColumnFlags flags;
+    int32 x;
+    int32 leftClip, rightClip;
+    uint16 width;
+    uint16 widthTypeValue;
+    Key hotKeyCode;
+    TextAlignament align;
+    InternalColumnWidthType widthType;
+
+    // copy & move operator
+    void CopyObject(const InternalColumn& obj);
+    void SwapObject(InternalColumn& obj);
+    InternalColumn();
+    InternalColumn(const InternalColumn& obj);
+    InternalColumn(InternalColumn&& obj);
+    InternalColumn& operator=(const InternalColumn& obj);
+    InternalColumn& operator=(InternalColumn&& obj);
 
     void Reset();
     bool SetName(const ConstString& text);
     bool SetAlign(TextAlignament align);
     void SetWidth(uint32 width);
+    void SetWidth(float percentage);
+    void SetWidth(double percentage);
+    void AddFlags(InternalColumnFlags flags);
+    void RemoveFlags(InternalColumnFlags flags);
+    void SetVisible(bool value);
 };
 
-class ListViewControlContext : public ControlContext
+class ColumnsHeader
+{
+    constexpr static uint32 INVALID_COLUMN_INDEX = 0xFFFFFFFF;
+    std::vector<InternalColumn> columns;
+    Reference<ColumnsHeaderView> host;
+    Reference<AppCUI::Internal::ApplicationImpl> currentApp;
+
+    struct
+    {
+        int32 x, y, scrollX;
+        uint32 width;
+        uint32 totalWidth;
+        uint32 listHeight;
+    } Location;
+    uint32 hoveredColumnIndex, sortColumnIndex, resizeColumnIndex, toolTipColumnIndex, frozenColumns;
+    uint32 flags;
+    AppCUI::Utils::SortDirection sortDirection;
+    bool hasMouseCaption;
+
+    void ClearKeyboardAndMouseLocks();
+    bool Add(KeyValueParser& parser, bool unicodeText);
+    void ProcessColumnClickRequest(uint32 index);
+    void ResizeColumn(bool increase);
+
+  public:
+    ColumnsHeader(
+          Reference<ColumnsHeaderView> host, std::initializer_list<ConstString> list, ColumnsHeaderViewFlags flags);
+    bool AddColumn(const ConstString columnFormat);
+    bool AddColumns(std::initializer_list<ConstString> list);
+    void DeleteAllColumns();
+    void DeleteColumn(uint32 columnIndex);
+    void RecomputeColumnsSizes();
+    void Paint(Graphics::Renderer& renderer);
+    uint32 MouseToColumn(int x, int y);
+    uint32 MouseToColumnSeparator(int x, int y);
+    void SetPosition(int x, int y, uint32 width, uint32 listHeight);
+    bool SetSortColumn(uint32 colIndex);
+    bool SetSortColumn(uint32 colIndex, SortDirection direction);
+    bool OnKeyEvent(Key key, char16 character);
+    void SetFrozenColumnsCount(uint32 count);
+    bool SetColumnClipRect(Graphics::Renderer& renderer, uint32 columnIndex);
+    inline bool HasMouseCaption() const
+    {
+        return hasMouseCaption;
+    }
+    inline bool IsClickable() const
+    {
+        return flags && ColumnsHeaderViewFlags::Clickable;
+    }
+    inline bool IsSortable() const
+    {
+        return flags && ColumnsHeaderViewFlags::Sortable;
+    }
+    inline bool IsVisible() const
+    {
+        return !(flags && ColumnsHeaderViewFlags::HideHeader);
+    }
+    inline AppCUI::Utils::SortDirection GetSortDirection() const
+    {
+        return sortDirection;
+    }
+
+    // mouse related methods
+    void OnMouseReleased(int x, int y, Input::MouseButton button);
+    void OnMousePressed(int x, int y, Input::MouseButton button);
+    bool OnMouseDrag(int x, int y, Input::MouseButton button);
+    bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
+    bool OnMouseOver(int x, int y);
+    bool OnMouseLeave();
+    void OnLoseFocus();
+
+    inline int32 GetScrollX() const
+    {
+        return Location.scrollX;
+    }
+    inline void SetScrollX(int32 value)
+    {
+        if (Location.totalWidth > Location.width)
+        {
+            if (value > (int32) (Location.totalWidth - (Location.width + 1)))
+                value = (int32) (Location.totalWidth - (Location.width + 1));
+            if (value < 0)
+                value = 0;
+            Location.scrollX = value;
+        }
+        else
+        {
+            Location.scrollX = 0;
+        }
+        RecomputeColumnsSizes();
+    }
+    inline uint32 GetColumnsCount() const
+    {
+        return (uint32) columns.size();
+    }
+    inline uint32 GetColumnsWidth() const
+    {
+        return Location.totalWidth;
+    }
+    inline int32 GetX() const
+    {
+        return Location.x;
+    }
+    inline int32 GetY() const
+    {
+        return Location.y;
+    }
+    inline int32 GetHeaderWidth() const
+    {
+        return Location.width;
+    }
+    inline std::optional<uint32> GetSortColumnIndex() const
+    {
+        if (this->sortColumnIndex == INVALID_COLUMN_INDEX)
+            return std::nullopt;
+        return this->sortColumnIndex;
+    }
+    inline InternalColumn& operator[](uint32 index)
+    {
+        return this->columns[index];
+    }
+    inline const InternalColumn& operator[](uint32 index) const
+    {
+        return this->columns[index];
+    }
+    inline uint32 GetFrozenColumnsCount() const
+    {
+        return this->frozenColumns;
+    }
+};
+struct ColumnsHeaderViewControlContext : public ControlContext
+{
+    ColumnsHeader Header;
+    struct
+    {
+        CopyClipboardFormat format;
+        CopyClipboardFlags flags;
+    } CopyToClipboard;
+    ColumnsHeaderViewControlContext(
+          Reference<ColumnsHeaderView> host,
+          std::initializer_list<ConstString> columnsList,
+          ColumnsHeaderViewFlags flags)
+        : Header(host, columnsList, flags)
+    {
+        CopyToClipboard.format = CopyClipboardFormat::TextWithTabs;
+        CopyToClipboard.flags  = CopyClipboardFlags::None;
+    }
+};
+enum class ListViewFilterMode : uint8
+{
+    None,
+    Search,
+    CustomHighlight
+};
+class ListViewControlContext : public ColumnsHeaderViewControlContext
 {
   public:
-    struct
-    {
-        InternalListViewColumn List[MAX_LISTVIEW_COLUMNS];
-        uint32 Count;
-        uint32 TotalWidth;
-        uint32 ResizeColumnIndex;
-        uint32 HoverColumnIndex;
-        uint32 HoverSeparatorColumnIndex;
-        int XOffset;
-        bool ResizeModeEnabled;
-    } Columns;
-
-    struct
-    {
-        uint32 ColumnIndex;
-        bool Ascendent;
-    } SortParams;
-
     struct
     {
         vector<InternalListViewItem> List;
@@ -519,38 +685,36 @@ class ListViewControlContext : public ControlContext
     {
         Utils::UnicodeStringBuilder SearchText;
         int LastFoundItem;
-        bool FilterModeEnabled;
+        ListViewFilterMode filterMode;
     } Filter;
 
     struct
     {
         char Status[20];
         uint32 StatusLength;
+        uint32 Count;
     } Selection;
-    char clipboardSeparator;
 
     Controls::ListView* Host;
 
     InternalListViewItem* GetFilteredItem(uint32 index);
 
+    ListViewControlContext(
+          Reference<ListView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+        : ColumnsHeaderViewControlContext(host.ToBase<ColumnsHeaderView>(), columnsList, flags)
+    {
+    }
+
     int SearchItem(uint32 startPoz);
     void UpdateSearch(int startPoz);
     void UpdateSelectionInfo();
-    void DrawColumnSeparatorsForResizeMode(Graphics::Renderer& renderer);
-    void DrawColumn(Graphics::Renderer& renderer);
     void DrawItem(Graphics::Renderer& renderer, InternalListViewItem* item, int y, bool currentItem);
+    bool DrawSearchBar(Graphics::Renderer& renderer);
 
     // movement
     void UpdateSelection(int start, int end, bool select);
     void MoveTo(int newItem);
-    void ColumnSort(uint32 columnIndex);
-
-    // columns
-    void UpdateColumnsWidth();
-    bool AddColumn(const ConstString& text, TextAlignament Align, uint32 width = 10);
-    bool DeleteColumn(uint32 index);
-    void DeleteAllColumns();
-    int GetNrColumns();
+    void Sort(uint32 columnIndex);
 
     // itemuri
     ItemHandle AddItem(const ConstString& text);
@@ -559,24 +723,28 @@ class ListViewControlContext : public ControlContext
     bool SetItemCheck(ItemHandle item, bool check);
     bool SetItemSelect(ItemHandle item, bool select);
     bool SetItemColor(ItemHandle item, ColorPair color);
+    bool SetItemColor(ItemHandle item, uint32 subItemIndex, ColorPair color);
     bool SetItemType(ItemHandle item, ListViewItem::Type type);
-    void SetClipboardSeparator(char ch);
     bool IsItemChecked(ItemHandle item);
     bool IsItemSelected(ItemHandle item);
     void SelectAllItems();
     void UnSelectAllItems();
     void CheckAllItems();
     void UncheckAllItems();
+    void SetSearchString(const ConstString& text);
+    void EnableCustomHighlightingMode();
     uint32 GetCheckedItemsCount();
 
+    bool HighlightText(ItemHandle item, uint32 subItemIndex, uint32 offset, uint32 charactersCount);
+
     void DeleteAllItems();
-    bool SetColumnClipboardCopyState(uint32 columnIndex, bool allowCopy);
-    bool SetColumnFilterMode(uint32 columnIndex, bool allowFilterForThisColumn);
 
     bool SetCurrentIndex(ItemHandle item);
     int GetFirstVisibleLine();
     bool SetFirstVisibleLine(ItemHandle item);
     int GetVisibleItemsCount();
+
+    void CopyToClipboard(bool justCurrentItem);
 
     bool SetItemDataAsPointer(ItemHandle item, GenericRef Data);
     GenericRef GetItemDataAsPointer(const ItemHandle item) const;
@@ -588,20 +756,30 @@ class ListViewControlContext : public ControlContext
     uint32 GetItemHeight(ItemHandle item);
 
     void Paint(Graphics::Renderer& renderer);
-    void OnMouseReleased(int x, int y, Input::MouseButton button);
-    bool MouseToHeader(int x, int y, uint32& HeaderIndex, uint32& HeaderColumnIndex);
     void OnMousePressed(int x, int y, Input::MouseButton button);
-    bool OnMouseDrag(int x, int y, Input::MouseButton button);
     bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
-    bool OnMouseOver(int x, int y);
-    void SetSortColumn(uint32 colIndex);
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     void SendMsg(Event eventType);
     void TriggerSelectionChangeEvent(uint32 itemIndex);
+    void TriggerListViewItemChangedEvent();
+    void TriggerListViewItemPressedEvent();
+    void TriggerListViewItemCheckedEvent();
     bool Sort();
+    bool Sort(uint32 columnIndex, SortDirection direction);
+
+    uint32 ComputeColumnsPreferedWidth(uint32 columnIndex);
 
     bool FilterItem(InternalListViewItem& lvi, bool clearColorForAll);
     void FilterItems();
+
+    inline int GetLeftPos() const
+    {
+        return (this->Flags && ListViewFlags::HideBorder) ? -Header.GetScrollX() : 1 - Header.GetScrollX();
+    }
+    constexpr inline int GetColumnY() const
+    {
+        return (Flags && ListViewFlags::HideBorder) ? 0 : 1;
+    }
 };
 
 struct ComboBoxItem
@@ -668,18 +846,6 @@ class NumericSelectorControlContext : public ControlContext
     bool PaintValue(Renderer& renderer);
 };
 
-struct TreeColumnData
-{
-    uint32 x      = 0;
-    uint32 width  = 0;
-    uint32 height = 0;
-    CharacterBuffer title;
-    TextAlignament alignment = TextAlignament::Left;
-    bool customWidth         = false;
-    uint32 hotKeyOffset      = CharacterBuffer::INVALID_HOTKEY_OFFSET;
-    Key hotKeyCode           = Key::None;
-};
-
 struct TreeItem
 {
     ItemHandle parent{ InvalidItemHandle };
@@ -693,25 +859,27 @@ struct TreeItem
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
     TreeViewItem::Type type           = TreeViewItem::Type::Normal;
-    ColorPair color;                                               
+    ColorPair color;
+    uint32 priority = 0;
 };
 
-class TreeControlContext : public ControlContext
+class TreeControlContext : public ColumnsHeaderViewControlContext
 {
+  private:
+    ItemHandle currentItemHandle{ InvalidItemHandle };
+
   public:
+    Reference<TreeView> host;
     std::map<ItemHandle, TreeItem> items;
     vector<ItemHandle> itemsToDrew;
     vector<ItemHandle> orderedItems;
     ItemHandle nextItemHandle{ 1ULL };
-    ItemHandle currentSelectedItemHandle{ InvalidItemHandle };
     uint32 maxItemsToDraw  = 0;
     uint32 offsetTopToDraw = 0;
     uint32 offsetBotToDraw = 0;
     bool notProcessed      = true;
     vector<ItemHandle> roots;
-    vector<TreeColumnData> columns;
     uint32 treeFlags              = 0;
-    int32 separatorIndexSelected  = 0xFFFFFFFF;
     ItemHandle firstFoundInSearch = InvalidItemHandle;
     bool hidSearchBarOnResize     = false;
 
@@ -739,22 +907,29 @@ class TreeControlContext : public ControlContext
         FilterMode mode{ FilterMode::None };
     } filter{};
 
-    uint32 columnIndexToSortBy           = 0xFFFFFFFF;
-    bool sortAscendent                   = true;
     uint32 mouseOverColumnIndex          = 0xFFFFFFFF;
     uint32 mouseOverColumnSeparatorIndex = 0xFFFFFFFF;
+
+  public:
+    TreeControlContext(
+          Reference<TreeView> host, std::initializer_list<ConstString> columnsList, ColumnsHeaderViewFlags flags)
+        : ColumnsHeaderViewControlContext(host.ToBase<ColumnsHeaderView>(), columnsList, flags)
+    {
+    }
+
+  public:
+    void SetCurrentItemHandle(ItemHandle handle);
+    ItemHandle GetCurrentItemHandle() const;
+
     void ColumnSort(uint32 columnIndex);
-    void SetSortColumn(uint32 columnIndex);
-    void SelectColumnSeparator(int32 offset);
-    void Sort();
+    bool Sort();
     bool ProcessOrderedItems(const ItemHandle handle, const bool clear = true);
     bool SortByColumn(const ItemHandle handle);
 
-    bool ItemsPainting(Graphics::Renderer& renderer);
-    bool PaintColumnHeaders(Graphics::Renderer& renderer);
-    bool PaintColumnSeparators(Graphics::Renderer& renderer);
+    bool PaintItems(Graphics::Renderer& renderer);
     bool MoveUp();
     bool MoveDown();
+    bool JumpToCurrent();
     bool ProcessItemsToBeDrawn(const ItemHandle handle, bool clear = true);
     bool IsAncestorOfChild(const ItemHandle ancestor, const ItemHandle child);
     bool IsMouseOnToggleSymbol(int x, int y) const;
@@ -765,19 +940,21 @@ class TreeControlContext : public ControlContext
     bool IsMouseOnSearchField(int x, int y) const;
     bool AdjustElementsOnResize(const int newWidth, const int newHeight);
     bool AdjustItemsBoundsOnResize();
-    bool AddToColumnWidth(const uint32 columnIndex, const int32 value);
     bool SetColorForItems(const Graphics::ColorPair& color);
-    bool SearchItems(Reference<TreeView> tree);
+    bool SearchItems();
     bool MarkAllItemsAsNotFound();
     bool MarkAllAncestorsWithChildFoundInFilterSearch(const ItemHandle handle);
     bool RemoveItem(const ItemHandle handle);
-
-    bool AddColumn(const ConstString title, const Graphics::TextAlignament alignment, const uint32 width = 10);
 
     GenericRef GetItemDataAsPointer(ItemHandle handle) const;
     bool SetItemDataAsPointer(ItemHandle item, GenericRef value);
 
     ItemHandle AddItem(ItemHandle parent, const std::initializer_list<ConstString> values, bool isExpandable = false);
+
+    // trigers
+    void TriggerOnCurrentItemChanged();
+    void TriggerOnItemPressed();
+    bool TriggerOnItemToggled(TreeViewItem& item, bool recursiveCall);
 };
 
 enum class GridCellStatus
@@ -805,19 +982,25 @@ class GridControlContext : public ControlContext
     std::vector<uint32> selectedCellsIndexes;
     std::vector<uint32> duplicatedCellsIndexes;
 
-    uint32 cWidth  = 0U;
-    uint32 cHeight = 0U;
-    int32 offsetX  = 0;
-    int32 offsetY  = 0;
+    int32 deltaX = 0U;
+    int32 deltaY = 0U;
 
-    std::map<uint32, GridCellData> cellsNormal;
-    std::map<uint32, GridCellData> cellsFiltered;
-    std::map<uint32, GridCellData>* cells = &cellsNormal;
+    uint32 cWidth     = 0U;
+    uint32 cHeight    = 0U;
+    int32 offsetX     = 0;
+    int32 offsetY     = 0;
+    int32 lastcWidth  = 0;
+    int32 lastcHeight = 0;
+    std::vector<std::vector<GridCellData>> cellsNormal;
+    std::vector<std::vector<GridCellData>> cellsFiltered;
+    std::vector<std::vector<GridCellData>>* cells = &cellsNormal;
     std::u16string separator{ u"," };
     std::vector<GridCellData> headers;
 
-    bool startedMoving = false;
-
+    bool startedMoving          = false;
+    bool shouldPaintError       = false;
+    bool startedScrolling       = false;
+    bool isCellContentRequested = false;
     Point lastLocationDraggedRightClicked{ 0, 0 };
 
     std::vector<bool> columnsSort;
@@ -830,6 +1013,8 @@ class GridControlContext : public ControlContext
   public:
     void DrawBoxes(Graphics::Renderer& renderer);
     void DrawLines(Graphics::Renderer& renderer);
+    bool DrawIndexesColumn(Graphics::Renderer& renderer);
+    bool DrawHeaderForIndexesColumn(Graphics::Renderer& renderer);
     uint32 ComputeCellNumber(int32 x, int32 y);
     Graphics::SpecialChars ComputeBoxType(
           uint32 colIndex,
@@ -853,6 +1038,7 @@ class GridControlContext : public ControlContext
     void ReserveMap();
     void ToggleSorting(int x, int y);
     void SortColumn(int index);
+    void FilterColumn(int columnIndex);
     void FindDuplicates();
     uint32 GetHeaderHeight() const;
     uint32 GetColumnSelected() const;
@@ -1156,3 +1342,5 @@ struct CharacterTableContext : public ControlContext
         Context = nullptr;                                                                                             \
     }
 } // namespace AppCUI
+
+ADD_FLAG_OPERATORS(AppCUI::InternalColumnFlags, AppCUI::uint32);

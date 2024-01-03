@@ -1,5 +1,4 @@
 #include "AppCUI.hpp"
-#include <string.h>
 
 namespace AppCUI
 {
@@ -73,6 +72,30 @@ bool Utils::KeyUtils::ToString(Input::Key keyCode, Utils::String& text)
     CHECK(text.Add(k), false, "");
     return true;
 }
+Input::Key Utils::KeyUtils::KeyModifiersFromString(string_view stringRepresentation)
+{
+    auto k = FromString(stringRepresentation);
+    if (k!=Key::None)
+        return k & KeyUtils::KEY_SHIFT_MASK;
+    // check if it is just the name of the modifier
+    if (stringRepresentation.data() == nullptr)
+        return Input::Key::None;
+    if (stringRepresentation.length() == 0)
+        return Input::Key::None;
+    if (stringRepresentation.length() > 48)
+        return Input::Key::None;
+    // temporary solution
+    char Key[64];
+    memcpy(Key, stringRepresentation.data(), stringRepresentation.length());
+    Key[stringRepresentation.length()] = 0;
+    if (Utils::String::Equals(Key, "Alt", true))
+        return Key::Alt;
+    if (Utils::String::Equals(Key, "Ctrl", true))
+        return Key::Ctrl;
+    if (Utils::String::Equals(Key, "Shift", true))
+        return Key::Shift;
+    return Key::None;
+}
 Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
 {
     uint32 code     = 0;
@@ -94,19 +117,19 @@ Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
     // automat de stari - pentru modifier
     for (int tr = 0; tr < 3; tr++)
     {
-        if (Utils::String::StartsWith(key, "Alt+"))
+        if (Utils::String::StartsWith(key, "Alt+", true))
         {
             modifier |= 1;
             key += 4;
             continue;
         }
-        if (Utils::String::StartsWith(key, "Ctrl+"))
+        if (Utils::String::StartsWith(key, "Ctrl+", true))
         {
             modifier |= 2;
             key += 5;
             continue;
         }
-        if (Utils::String::StartsWith(key, "Shift+"))
+        if (Utils::String::StartsWith(key, "Shift+", true))
         {
             modifier |= 4;
             key += 6;

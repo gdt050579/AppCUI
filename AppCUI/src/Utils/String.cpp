@@ -1,9 +1,6 @@
-#include <AppCUI.hpp>
 #include "Internal.hpp"
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <stdarg.h>
-#include <string.h>
 
 using namespace AppCUI;
 
@@ -23,16 +20,12 @@ const uint8 string_lowercase_table[256] = {
 };
 constexpr uint32 STRING_FLAG_STACK_BUFFER = 0x80000000;
 
-constexpr uint32 STRING_FLAG_STATIC_BUFFER    = 1;
-constexpr uint32 STRING_FLAG_CONSTANT         = 2;
-constexpr uint32 STRING_FLAG_STATIC_WITH_GROW = 4;
-
 #define COMPUTE_TEXT_SIZE(text, textSize)                                                                              \
     if (textSize == 0xFFFFFFFF)                                                                                        \
     {                                                                                                                  \
         textSize = Len(text);                                                                                          \
     }
-#define PREPATE_STRING_SOURCE_DESTINATION_PARAMS                                                                       \
+#define PREPARE_STRING_SOURCE_DESTINATION_PARAMS                                                                       \
     CHECK(destination, false, "Expecting a valid (non-null) destination string");                                      \
     CHECK(source, false, "Expecting a valid (non-null) source parameter");                                             \
     CHECK(maxDestinationSize > 0,                                                                                      \
@@ -80,7 +73,7 @@ bool String::Add(
       uint32 sourceSize,
       uint32* resultedDestinationSize)
 {
-    PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
+    PREPARE_STRING_SOURCE_DESTINATION_PARAMS;
     COMPUTE_TEXT_SIZE(destination, destinationSize);
     CHECK(destinationSize + sourceSize < maxDestinationSize,
           false,
@@ -104,7 +97,7 @@ bool String::Set(
       uint32 sourceSize,
       uint32* resultedDestinationSize)
 {
-    PREPATE_STRING_SOURCE_DESTINATION_PARAMS;
+    PREPARE_STRING_SOURCE_DESTINATION_PARAMS;
 
     if (sourceSize > 0)
     {
@@ -300,10 +293,10 @@ int32 String::Compare(const char* sir1, const char* sir2, bool ignoreCase)
 
 //--------------------------------------------------- CONSTRUCTORI OBIECT
 //----------------------------------------------------------------
-String::String(void)
+
+String::String(const std::string_view& text)
 {
-    Text = nullptr;
-    Size = Allocated = 0;
+    Add(text);
 }
 
 String::String(const String& s)
@@ -317,6 +310,34 @@ String::String(const String& s)
             memcpy(this->Text, s.Text, s.Size + 1);
             this->Size = s.Size;
         }
+    }
+}
+String::String(String&& s)
+{
+    if (s.Allocated & STRING_FLAG_STACK_BUFFER)
+    {
+        // we need to copy
+        Text = nullptr;
+        Size = Allocated = 0;
+        if (Create(s.Size + 32))
+        {
+            if (s.Text)
+            {
+                memcpy(this->Text, s.Text, s.Size + 1);
+                this->Size = s.Size;
+            }
+        }
+    }
+    else
+    {
+        // we can move
+        Text      = s.Text;
+        Size      = s.Size;
+        Allocated = s.Allocated;
+
+        s.Text      = nullptr;
+        s.Size      = 0;
+        s.Allocated = 0;
     }
 }
 String::~String(void)
@@ -335,7 +356,7 @@ void String::Destroy()
 
 bool String::Create(uint32 initialAllocatedBufferSize)
 {
-    CHECK(initialAllocatedBufferSize == 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
+    CHECK(initialAllocatedBufferSize != 0, false, "initialAllocatedBufferSize must be bigger than 0 !");
     initialAllocatedBufferSize = ((initialAllocatedBufferSize | 15) + 1) & 0x7FFFFFFF;
     if (initialAllocatedBufferSize <= (Allocated & 0x7FFFFFFF))
     {
@@ -415,7 +436,7 @@ bool String::Grow(uint32 newSize)
     {
         memcpy(temp, Text, Size + 1);
         if ((Allocated & STRING_FLAG_STACK_BUFFER) == 0)
-            delete []Text;
+            delete[] Text;
     }
     Text      = temp;
     Allocated = newSize;

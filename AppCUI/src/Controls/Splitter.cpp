@@ -12,7 +12,7 @@ constexpr int SPLITTER_TOOLTIPTEXT_LEFT   = 3;
 constexpr int SPLITTER_TOOLTIPTEXT_TOP    = 4;
 
 
-constexpr uint32 SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET = 0xFFFFFFFF;
+constexpr int32 SPLITTER_DEFAULT_PANEL_SIZE_NOT_SET = -1;
 
 constexpr string_view splitterToolTipTexts[] = { "Drag to resize panels",
                                                  "Click to maximize right panel",
@@ -25,7 +25,7 @@ SplitterMouseStatus MousePozToSplitterMouseStatus(SplitterControlContext* Member
     int v = 0;
     if (Members->Flags && SplitterFlags::Vertical)
     {
-        if (x != (Members->Layout.Width - (Members->SecondPanelSize + SPLITTER_BAR_SIZE)))
+        if (x != (Members->Layout.Width - (Members->SecondPanelSize + (int)SPLITTER_BAR_SIZE)))
             return SplitterMouseStatus::None;
         if (Members->Layout.Height > MIN_SPLITTER_SIZE)
             v = ((y == 1) || (y == 2)) ? y : 0;
@@ -154,7 +154,7 @@ bool Splitter::SetSecondPanelSize(uint32 newSize)
     }
     // set the new value
     Members->SecondPanelSize = newSize;
-    if (newSize != Members->DefaultSecondPanelSize)
+    if ((int)newSize != Members->DefaultSecondPanelSize)
     {
         if ((Members->Flags && SplitterFlags::AutoCollapsePanel2) && (newSize > Members->Panel2.minSize))
             Members->DefaultSecondPanelSize = newSize;
@@ -210,8 +210,10 @@ void Splitter::Paint(Graphics::Renderer& renderer)
         c2 = Members->Cfg->Symbol.Hovered;
         break;
     case SplitterMouseStatus::OnBar:
-    case SplitterMouseStatus::Drag:
         col = Members->Cfg->Lines.Hovered;
+        break;
+    case SplitterMouseStatus::Drag:
+        col = Members->Cfg->Lines.PressedOrSelected;
         break;
     }
 
@@ -390,12 +392,12 @@ bool Splitter::OnBeforeAddControl(Reference<Control> c)
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     return (Members->ControlsCount < 2);
 }
-void Splitter::OnMousePressed(int x, int y, Input::MouseButton)
+void Splitter::OnMousePressed(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, true);
 }
-void Splitter::OnMouseReleased(int x, int y, Input::MouseButton)
+void Splitter::OnMouseReleased(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, );
     Members->mouseStatus = MousePozToSplitterMouseStatus(Members, x, y, false);
@@ -406,7 +408,7 @@ void Splitter::OnMouseReleased(int x, int y, Input::MouseButton)
 
     Members->mouseStatus = SplitterMouseStatus::None;
 }
-bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton)
+bool Splitter::OnMouseDrag(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(SplitterControlContext, Members, false);
     if (Members->mouseStatus == SplitterMouseStatus::Drag)

@@ -28,7 +28,7 @@ const ColorPair& Fruit::GetColor() const
 {
     return color;
 }
-const int Fruit::GetScore() const
+int Fruit::GetScore() const
 {
     return score;
 }

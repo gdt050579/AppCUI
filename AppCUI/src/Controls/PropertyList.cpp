@@ -1,6 +1,4 @@
 #include "ControlContext.hpp"
-#include <string.h>
-#include <set>
 
 #ifdef MessageBox
 #    undef MessageBox
@@ -91,7 +89,8 @@ class PropertyEditDialog : public Window
 
     PropertyEditDialog(
           string_view layout, const PropertyInfo& _prop, Reference<PropertiesInterface> _object, bool readOnly)
-        : Window("Edit", layout, WindowFlags::NoCloseButton), prop(_prop), object(_object), isReadOnly(readOnly)
+        : Window("Edit", layout, WindowFlags::NoCloseButton | WindowFlags::ProcessReturn), prop(_prop), object(_object),
+          isReadOnly(readOnly)
     {
         if (readOnly)
         {
@@ -119,15 +118,15 @@ class PropertyEditDialog : public Window
         switch (eventType)
         {
         case Event::WindowClose:
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Cancel);
             return true;
         case Event::WindowAccept:
             if (this->isReadOnly)
-                this->Exit(1);
+                this->Exit(Dialogs::Result::Ok);
             else
                 Validate();
             return true;
-        case Event::ListViewItemClicked:
+        case Event::ListViewItemPressed:
             if (!this->isReadOnly)
                 Validate();
             return true;
@@ -137,12 +136,12 @@ class PropertyEditDialog : public Window
             else if (id == BUTTON_COMMAND_OK)
             {
                 if (this->isReadOnly)
-                    this->Exit(1);
+                    this->Exit(Dialogs::Result::Ok);
                 else
                     Validate();
             }
             else if (id == BUTTON_COMMAND_CANCEL)
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Cancel);
             return true;
         }
         return false;
@@ -198,7 +197,7 @@ class PropertyCharEditDialog : public PropertyEditDialog
         {
             if (object->SetPropertyValue(prop.id, (char8) ch, error))
             {
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
         }
@@ -206,7 +205,7 @@ class PropertyCharEditDialog : public PropertyEditDialog
         {
             if (object->SetPropertyValue(prop.id, (char16) ch, error))
             {
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
         }
@@ -255,7 +254,7 @@ class PropertyColorEditDialog : public PropertyEditDialog
 
         if (object->SetPropertyValue(prop.id, col->GetColor(), error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -287,7 +286,7 @@ class PropertyColorPairEditDialog : public PropertyEditDialog, public AppCUI::Co
         if (!isReadOnly)
             colFore->SetFocus();
     }
-    void PaintControl(Reference<Control>, AppCUI::Graphics::Renderer& r)
+    void PaintControl(Reference<Control>, AppCUI::Graphics::Renderer& r) override
     {
         r.Clear(' ', { Color::Transparent, colBack->GetColor() });
         r.WriteSingleLineText(1, 1, "Preview", { colFore->GetColor(), colBack->GetColor() });
@@ -316,7 +315,7 @@ class PropertyColorPairEditDialog : public PropertyEditDialog, public AppCUI::Co
 
         if (object->SetPropertyValue(prop.id, ColorPair{ colFore->GetColor(), colBack->GetColor() }, error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -365,7 +364,7 @@ class PropertyKeyEditDialog : public PropertyEditDialog
 
         if (object->SetPropertyValue(prop.id, key->GetSelectedKey(), error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -394,7 +393,7 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
         lv = Factory::ListView::Create(
               this,
               "l:1,t:1,r:1,b:3",
-              { { "", TextAlignament::Left, 100 } },
+              { "w:100,a:l" },
               ListViewFlags::HideColumns | ListViewFlags::CheckBoxes | ListViewFlags::SearchMode);
 
         if (prop.listValues.size() > 0)
@@ -461,7 +460,7 @@ class PropertyFlagsEditDialog : public PropertyEditDialog
         }
         if (object->SetPropertyValue(prop.id, value, error))
         {
-            this->Exit(0);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         // error
@@ -488,10 +487,7 @@ class PropertyListEditDialog : public PropertyEditDialog
     void OnInitPropertyDialog() override
     {
         lv = Factory::ListView::Create(
-              this,
-              "l:1,t:1,r:1,b:3",
-              { { "", TextAlignament::Left, 100 } },
-              ListViewFlags::HideColumns | ListViewFlags::SearchMode);
+              this, "l:1,t:1,r:1,b:3", { "a:l,w:100" }, ListViewFlags::HideColumns | ListViewFlags::SearchMode);
         if (prop.listValues.size() > 0)
         {
             items   = new ListViewItem[prop.listValues.size()];
@@ -555,7 +551,7 @@ class PropertyListEditDialog : public PropertyEditDialog
         {
             if (object->SetPropertyValue(prop.id, result, error))
             {
-                this->Exit(0);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
             // error
@@ -668,7 +664,7 @@ class PropertyTextEditDialog : public PropertyEditDialog
             if (object->SetPropertyValue(prop.id, value.value(), error))
             {
                 // all good
-                this->Exit(1);
+                this->Exit(Dialogs::Result::Ok);
                 return;
             }
             else
@@ -692,7 +688,7 @@ class PropertyTextEditDialog : public PropertyEditDialog
         if (object->SetPropertyValue(prop.id, value, error))
         {
             // all good
-            this->Exit(1);
+            this->Exit(Dialogs::Result::Ok);
             return;
         }
         else
@@ -1120,7 +1116,7 @@ void PropertyListContext::DrawProperty(uint32 index, int32 y, Graphics::Renderer
         NumericFormatter n;
         LocalString<32> tmpString;
         Size tmpSize;
-        char16 tmpCh16;
+        char16 tmpCh16 = 0;
         ColorPair cp;
         switch (prop.type)
         {
@@ -1868,7 +1864,7 @@ void PropertyListContext::Refilter()
     // sort the data
     if (this->showCategories)
     {
-        this->items.Sort(SortWithCategories, true, this);
+        this->items.Sort(SortWithCategories, SortDirection::Ascendent, this);
         // clear categories filtered items;
         for (auto& cat : this->categories)
             cat.filteredItems = 0;
@@ -1913,7 +1909,7 @@ void PropertyListContext::Refilter()
     }
     else
     {
-        this->items.Sort(SortWithoutCategories, true, this);
+        this->items.Sort(SortWithoutCategories, SortDirection::Ascendent, this);
     }
 }
 
@@ -2009,28 +2005,25 @@ void PropertyList::Paint(Graphics::Renderer& renderer)
 void PropertyList::OnAfterResize(int newWidth, int)
 {
     auto* Members = (PropertyListContext*) this->Context;
-    if (Members->propertyNameWidth == 0)
-        Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
-    else
-        Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
+    Members->SetPropertyNameWidth((int32) (newWidth * Members->propetyNamePercentage), false);
 }
 bool PropertyList::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return reinterpret_cast<PropertyListContext*>(this->Context)->OnKeyEvent(keyCode, UnicodeChar);
 }
-void PropertyList::OnMouseReleased(int x, int y, Input::MouseButton button)
+void PropertyList::OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key)
 {
     reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseReleased(x, y, button);
 }
-void PropertyList::OnMousePressed(int x, int y, Input::MouseButton button)
+void PropertyList::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     reinterpret_cast<PropertyListContext*>(this->Context)->OnMousePressed(x, y, button);
 }
-bool PropertyList::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool PropertyList::OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key)
 {
     return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseDrag(x, y, button);
 }
-bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+bool PropertyList::OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key)
 {
     return reinterpret_cast<PropertyListContext*>(this->Context)->OnMouseWheel(x, y, direction);
 }

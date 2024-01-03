@@ -1,12 +1,7 @@
 #include "../TerminalFactory.hpp"
-
-#ifdef APPCUI_HAS_SDL
-#    include "../SDLTerminal/SDLTerminal.hpp"
-#endif
-
-#ifdef APPCUI_HAS_NCURSES
-#    include "../NcursesTerminal/NcursesTerminal.hpp"
-#endif
+#include "../TestTerminal/TestTerminal.hpp"
+#include "../SDLTerminal/SDLTerminal.hpp"
+#include "../NcursesTerminal/NcursesTerminal.hpp"
 
 namespace AppCUI::Internal
 {
@@ -17,29 +12,12 @@ static unique_ptr<AbstractTerminal> GetTerminalImpl(FrontendType frontend)
     switch (frontend)
     {
     case FrontendType::Default:
-        if (auto term = GetTerminalImpl(FrontendType::SDL))
-        {
-            return term;
-        }
-        if (auto term = GetTerminalImpl(FrontendType::Terminal))
-        {
-            return term;
-        }
-        break;
-    case FrontendType::SDL:
-#ifdef APPCUI_HAS_SDL
-        return std::make_unique<SDLTerminal>();
-#else
-        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install SDL2", (uint32) frontend);
-#endif
-        break;
     case FrontendType::Terminal:
-#ifdef APPCUI_HAS_NCURSES
         return std::make_unique<NcursesTerminal>();
-#else
-        RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d): Please install ncurses", (uint32) frontend);
-#endif
-        break;
+    case FrontendType::SDL:
+        return std::make_unique<SDLTerminal>();
+    case FrontendType::Tests:
+        return std::make_unique<TestTerminal>();
     }
     RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (uint32) frontend);
 }
