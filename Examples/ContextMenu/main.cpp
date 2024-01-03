@@ -32,7 +32,7 @@ class MyUserControl : public AppCUI::Controls::UserControl
   public:
     MyUserControl();
     void Paint(AppCUI::Graphics::Renderer& renderer) override;
-    void OnMousePressed(int x, int y, MouseButton button) override;
+    void OnMousePressed(int x, int y, MouseButton button, Input::Key) override;
 };
 MyUserControl::MyUserControl() : UserControl("x:50%,y:50%,w:2,h:1")
 {
@@ -67,7 +67,7 @@ MyUserControl::MyUserControl() : UserControl("x:50%,y:50%,w:2,h:1")
     ctxMenu.AddCommandItem(
           "An item with a large caption with multiple characters", 1234, Key::Q | Key::Ctrl | Key::Alt);
 }
-void MyUserControl::OnMousePressed(int x, int y, MouseButton button)
+void MyUserControl::OnMousePressed(int x, int y, MouseButton button, Input::Key)
 {
     if ((button & MouseButton::Right) != MouseButton::None)
     {
