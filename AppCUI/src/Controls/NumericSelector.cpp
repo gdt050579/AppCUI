@@ -256,7 +256,7 @@ bool NumericSelector::OnKeyEvent(Key keyCode, char16 unicodeChar)
     return false;
 }
 
-void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
+void NumericSelector::OnMousePressed(int x, int y, MouseButton button, Input::Key)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -321,7 +321,7 @@ void NumericSelector::OnMousePressed(int x, int y, MouseButton button)
     }
 }
 
-void NumericSelector::OnMouseReleased(int, int, MouseButton)
+void NumericSelector::OnMouseReleased(int, int, MouseButton, Input::Key)
 {
     CHECKRET(Context != nullptr, "");
     const auto cc               = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -338,7 +338,7 @@ void NumericSelector::OnLoseFocus()
     cc->isMouseOn          = NumericSelectorControlContext::IsMouseOn::None;
 }
 
-bool NumericSelector::OnMouseWheel(int, int, MouseWheel direction)
+bool NumericSelector::OnMouseWheel(int, int, MouseWheel direction, Input::Key)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);
@@ -375,7 +375,7 @@ bool NumericSelector::OnMouseLeave()
     return true;
 }
 
-bool NumericSelector::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool NumericSelector::OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key)
 {
     CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<NumericSelectorControlContext*>(Context);

@@ -995,7 +995,7 @@ bool ApplicationImpl::ProcessMenuAndCmdBarMouseMove(int x, int y)
 
     return processed;
 }
-void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button)
+void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button, Input::Key keyCode)
 {
     // Hide ToolTip
     this->ToolTip.Hide();
@@ -1030,7 +1030,7 @@ void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button)
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
 
         MouseLockedControl->OnMousePressed(
-              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button, keyCode);
 
         // MouseLockedControl can be null afte OnMousePress if and Exit() call happens
         if (MouseLockedControl)
@@ -1044,7 +1044,7 @@ void ApplicationImpl::OnMouseDown(int x, int y, Input::MouseButton button)
     // else no object locked
     mouseLockedObject = MouseLockedObject::None;
 }
-void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button)
+void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button, Input::Key keyCode)
 {
     int commandID;
     // check contextual menus
@@ -1066,14 +1066,14 @@ void ApplicationImpl::OnMouseUp(int x, int y, Input::MouseButton button)
     case MouseLockedObject::Control:
         ControlContext* cc = ((ControlContext*) (MouseLockedControl->Context));
         MouseLockedControl->OnMouseReleased(
-              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button);
+              x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, button, keyCode);
         RepaintStatus |= REPAINT_STATUS_DRAW;
         break;
     }
     MouseLockedControl = nullptr;
     mouseLockedObject  = MouseLockedObject::None;
 }
-void ApplicationImpl::OnMouseMove(int x, int y, Input::MouseButton button)
+void ApplicationImpl::OnMouseMove(int x, int y, Input::MouseButton button, Input::Key keyCode)
 {
     Controls::Control* ctrl;
     LastMouseX = x;
@@ -1087,7 +1087,7 @@ void ApplicationImpl::OnMouseMove(int x, int y, Input::MouseButton button)
         if (MouseLockedControl->OnMouseDrag(
                   x - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.X,
                   y - ((ControlContext*) (MouseLockedControl->Context))->ScreenClip.ScreenPosition.Y,
-                  button))
+                  button, keyCode))
             RepaintStatus |= (REPAINT_STATUS_DRAW | REPAINT_STATUS_COMPUTE_POSITION);
         break;
     case MouseLockedObject::None:
@@ -1136,7 +1136,7 @@ void ApplicationImpl::OnMouseMove(int x, int y, Input::MouseButton button)
         break;
     }
 }
-void ApplicationImpl::OnMouseWheel(int x, int y, Input::MouseWheel direction)
+void ApplicationImpl::OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode)
 {
     if (this->VisibleMenu)
     {
@@ -1155,7 +1155,7 @@ void ApplicationImpl::OnMouseWheel(int x, int y, Input::MouseWheel direction)
     if (ctrl)
     {
         ControlContext* cc = ((ControlContext*) (ctrl->Context));
-        if (ctrl->OnMouseWheel(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, direction))
+        if (ctrl->OnMouseWheel(x - cc->ScreenClip.ScreenPosition.X, y - cc->ScreenClip.ScreenPosition.Y, direction, keyCode))
             RepaintStatus |= REPAINT_STATUS_DRAW;
     }
 }
@@ -1320,16 +1320,16 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
             }
             break;
         case SystemEventType::MouseDown:
-            OnMouseDown(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
+            OnMouseDown(evnt.mouseX, evnt.mouseY, evnt.mouseButton, evnt.keyCode);
             break;
         case SystemEventType::MouseUp:
-            OnMouseUp(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
+            OnMouseUp(evnt.mouseX, evnt.mouseY, evnt.mouseButton, evnt.keyCode);
             break;
         case SystemEventType::MouseMove:
-            OnMouseMove(evnt.mouseX, evnt.mouseY, evnt.mouseButton);
+            OnMouseMove(evnt.mouseX, evnt.mouseY, evnt.mouseButton, evnt.keyCode);
             break;
         case SystemEventType::MouseWheel:
-            OnMouseWheel(evnt.mouseX, evnt.mouseY, evnt.mouseWheel);
+            OnMouseWheel(evnt.mouseX, evnt.mouseY, evnt.mouseWheel, evnt.keyCode);
             break;
         case SystemEventType::KeyPressed:
             ProcessKeyPress(evnt.keyCode, evnt.unicodeCharacter);

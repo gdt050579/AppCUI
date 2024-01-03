@@ -1025,7 +1025,7 @@ bool Window::CenterScreen()
     UpdateWindowsButtonsPoz(Members);
     return true;
 }
-void Window::OnMousePressed(int x, int y, Input::MouseButton button)
+void Window::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->dragStatus                      = WindowDragStatus::None;
@@ -1094,7 +1094,7 @@ bool Window::ProcessControlBarItem(uint32 index)
     }
     return false;
 }
-void Window::OnMouseReleased(int, int, Input::MouseButton)
+void Window::OnMouseReleased(int, int, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
     Members->ControlBar.IsCurrentItemPressed = false;
@@ -1117,7 +1117,7 @@ void Window::OnMouseReleased(int, int, Input::MouseButton)
     //		return;
     //}
 }
-bool Window::OnMouseDrag(int x, int y, Input::MouseButton)
+bool Window::OnMouseDrag(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
     Members->ResizeMoveMode = false;

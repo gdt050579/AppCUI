@@ -262,15 +262,15 @@ bool ColumnsHeaderView::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
     return ICH->Header.OnKeyEvent(keyCode, UnicodeChar);
 }
-void ColumnsHeaderView::OnMouseReleased(int x, int y, Input::MouseButton button)
+void ColumnsHeaderView::OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key)
 {
     ICH->Header.OnMouseReleased(x, y, button);
 }
-void ColumnsHeaderView::OnMousePressed(int x, int y, Input::MouseButton button)
+void ColumnsHeaderView::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     ICH->Header.OnMousePressed(x, y, button);
 }
-bool ColumnsHeaderView::OnMouseDrag(int x, int y, Input::MouseButton button)
+bool ColumnsHeaderView::OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key)
 {
     return ICH->Header.OnMouseDrag(x, y, button);
 }

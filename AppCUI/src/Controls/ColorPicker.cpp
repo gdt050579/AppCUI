@@ -283,7 +283,7 @@ bool ColorPicker::OnMouseOver(int x, int y)
 {
     return reinterpret_cast<ColorPickerContext*>(this->Context)->OnMouseOver(x, y);
 }
-void ColorPicker::OnMousePressed(int x, int y, Input::MouseButton button)
+void ColorPicker::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     reinterpret_cast<ColorPickerContext*>(this->Context)->OnMousePressed(x, y, button);
     OnHotKey();

@@ -173,7 +173,7 @@ bool CanvasViewer::OnKeyEvent(Input::Key KeyCode, char16)
     }
     return false;
 }
-bool Controls::CanvasViewer::OnMouseWheel(int, int, Input::MouseWheel direction)
+bool Controls::CanvasViewer::OnMouseWheel(int, int, Input::MouseWheel direction, Input::Key)
 {
     switch (direction)
     {
@@ -196,14 +196,14 @@ bool Controls::CanvasViewer::OnMouseLeave()
 {
     return true;
 }
-void Controls::CanvasViewer::OnMousePressed(int x, int y, Input::MouseButton)
+void Controls::CanvasViewer::OnMousePressed(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
     Members->mouseDragX      = Members->CanvasScrollX - x;
     Members->mouseDragY      = Members->CanvasScrollY - y;
     Members->dragModeEnabled = true;
 }
-bool Controls::CanvasViewer::OnMouseDrag(int x, int y, Input::MouseButton)
+bool Controls::CanvasViewer::OnMouseDrag(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, false);
     if (!Members->dragModeEnabled)
@@ -211,10 +211,10 @@ bool Controls::CanvasViewer::OnMouseDrag(int x, int y, Input::MouseButton)
     Members->MoveScrollTo(Members->mouseDragX + x, Members->mouseDragY + y);
     return true;
 }
-void Controls::CanvasViewer::OnMouseReleased(int x, int y, Input::MouseButton button)
+void Controls::CanvasViewer::OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode)
 {
     // last update
-    OnMouseDrag(x, y, button);
+    OnMouseDrag(x, y, button, keyCode);
     CREATE_TYPECONTROL_CONTEXT(CanvasControlContext, Members, );
     Members->dragModeEnabled = false;
 }

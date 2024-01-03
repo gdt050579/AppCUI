@@ -456,7 +456,7 @@ void ComboBox::OnHotKey()
         RaiseEvent(Event::ComboBoxClosed);
     }
 }
-void ComboBox::OnMousePressed(int x, int y, Input::MouseButton)
+void ComboBox::OnMousePressed(int x, int y, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, );
     uint32 idx = ComboBox_MousePosToIndex(this, x, y);
@@ -464,7 +464,7 @@ void ComboBox::OnMousePressed(int x, int y, Input::MouseButton)
         ComboBox_SetCurrentIndex(this, idx);
     OnHotKey();
 }
-bool ComboBox::OnMouseWheel(int, int, Input::MouseWheel direction)
+bool ComboBox::OnMouseWheel(int, int, Input::MouseWheel direction, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(ComboBoxControlContext, Members, false);
 

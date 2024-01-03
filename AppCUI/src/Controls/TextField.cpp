@@ -608,7 +608,7 @@ bool TextField::OnMouseLeave()
 {
     return true;
 }
-void TextField::OnMousePressed(int x, int y, Input::MouseButton button)
+void TextField::OnMousePressed(int x, int y, Input::MouseButton button, Input::Key)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
     if (button == (MouseButton::DoubleClicked | MouseButton::Left))
@@ -678,12 +678,12 @@ bool TextField::OnEvent(Reference<Control> /*sender*/, Event eventType, int cont
     }
     return false;
 }
-bool TextField::OnMouseDrag(int x, int y, Input::MouseButton /*button*/)
+bool TextField::OnMouseDrag(int x, int y, Input::MouseButton /*button*/, Input::Key)
 {
     TextField_MoveTo(this, TextField_MouseToTextPos(this, x, y), true);
     return true;
 }
-void TextField::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton /*button*/)
+void TextField::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButton /*button*/, Input::Key)
 {
     CREATE_TYPE_CONTEXT(TextFieldControlContext, this, Members, );
 }

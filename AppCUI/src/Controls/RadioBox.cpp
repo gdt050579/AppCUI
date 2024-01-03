@@ -101,7 +101,7 @@ bool RadioBox::OnKeyEvent(Input::Key KeyCode, char16)
     }
     return false;
 }
-void RadioBox::OnMouseReleased(int x, int y, Input::MouseButton)
+void RadioBox::OnMouseReleased(int x, int y, Input::MouseButton, Input::Key)
 {
     if (IsMouseInControl(x, y))
         OnHotKey();

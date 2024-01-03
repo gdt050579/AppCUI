@@ -3749,14 +3749,14 @@ namespace Controls
         virtual void OnLoseFocus();
         virtual bool OnFrameUpdate();
 
-        virtual void OnMousePressed(int x, int y, Input::MouseButton button);
-        virtual void OnMouseReleased(int x, int y, Input::MouseButton button);
-        virtual bool OnMouseDrag(int x, int y, Input::MouseButton button);
+        virtual void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        virtual void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        virtual bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode);
 
         virtual bool OnMouseEnter();
         virtual bool OnMouseOver(int x, int y);
         virtual bool OnMouseLeave();
-        virtual bool OnMouseWheel(int x, int y, Input::MouseWheel direction);
+        virtual bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode);
 
         virtual bool OnEvent(Reference<Control> sender, Event eventType, int controlID);
         virtual bool OnUpdateCommandBar(Application::CommandBar& commandBar);
@@ -3831,9 +3831,9 @@ namespace Controls
 
       public:
         void Paint(Graphics::Renderer& renderer) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         bool OnEvent(Reference<Control> sender, Event eventType, int controlID) override;
@@ -3881,9 +3881,9 @@ namespace Controls
         Button(const ConstString& caption, string_view layout, int controlID, ButtonFlags flags);
 
       public:
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
@@ -3902,7 +3902,7 @@ namespace Controls
         CheckBox(const ConstString& caption, string_view layout, int controlID);
 
       public:
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
@@ -3921,7 +3921,7 @@ namespace Controls
         RadioBox(const ConstString& caption, string_view layout, int groupID, int controlID, bool checked);
 
       public:
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnHotKey() override;
@@ -3960,10 +3960,10 @@ namespace Controls
         void OnFocusRequested(Reference<Control> control) override;
         bool OnBeforeAddControl(Reference<Control> ctrl) override;
         void OnAfterAddControl(Reference<Control> ctrl) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
 
@@ -3983,9 +3983,9 @@ namespace Controls
         Password(const ConstString& caption, string_view layout);
 
       public:
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseEnter() override;
@@ -4023,9 +4023,9 @@ namespace Controls
         void OnAfterSetText() override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnFocus() override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
@@ -4071,10 +4071,10 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnUpdateScrollBars() override;
         void OnFocus() override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
         void OnAfterResize(int newWidth, int newHeight) override;
@@ -4133,7 +4133,7 @@ namespace Controls
         bool SetTabPageName(uint32 index, const ConstString& name);
         void OnAfterResize(int newWidth, int newHeight) override;
         void OnFocus() override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseLeave() override;
         bool OnMouseOver(int x, int y) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
@@ -4181,10 +4181,10 @@ namespace Controls
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void OnUpdateScrollBars() override;
         Reference<Graphics::Canvas> GetCanvas();
 
@@ -4294,9 +4294,9 @@ namespace Controls
 
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnLoseFocus() override;
@@ -4337,8 +4337,8 @@ namespace Controls
         bool Reserve(uint32 itemsCount);
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
 
         void OnFocus() override;
         void OnUpdateScrollBars() override;
@@ -4436,8 +4436,8 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         void Paint(Graphics::Renderer& renderer) override;
         void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
@@ -4493,12 +4493,12 @@ namespace Controls
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseEnter() override;
         bool OnMouseLeave() override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         void OnLoseFocus() override;
 
@@ -4648,8 +4648,8 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
         void OnFocus() override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
 
@@ -4703,10 +4703,10 @@ namespace Controls
       public:
         void Paint(Graphics::Renderer& renderer) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnLoseFocus() override;
@@ -4767,10 +4767,10 @@ namespace Controls
         void Paint(Graphics::Renderer& renderer) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override;
-        void OnMouseReleased(int x, int y, Input::MouseButton button) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseDrag(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMouseReleased(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseDrag(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         bool OnMouseOver(int x, int y) override;
         bool OnMouseLeave() override;
         void OnUpdateScrollBars() override;
@@ -4828,7 +4828,7 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         void OnExpandView(Graphics::Clip& expandedClip) override;
         void OnPackView() override;
         virtual ~ColorPicker();
@@ -4851,8 +4851,8 @@ namespace Controls
         bool OnMouseLeave() override;
         bool OnMouseEnter() override;
         bool OnMouseOver(int x, int y) override;
-        void OnMousePressed(int x, int y, Input::MouseButton button) override;
-        bool OnMouseWheel(int x, int y, Input::MouseWheel direction) override;
+        void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
+        bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
         void OnUpdateScrollBars() override;
 
         void SetCharacter(char16 character);

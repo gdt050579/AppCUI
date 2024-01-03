@@ -356,7 +356,7 @@ bool Tab::OnMouseOver(int x, int y)
     }
     return false;
 }
-void Tab::OnMouseReleased(int, int, Input::MouseButton)
+void Tab::OnMouseReleased(int, int, Input::MouseButton, Input::Key)
 {
     CREATE_TYPECONTROL_CONTEXT(TabControlContext, Members, );
     if (Members->HoveredTabIndex >= 0)

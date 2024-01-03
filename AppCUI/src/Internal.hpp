@@ -282,10 +282,10 @@ namespace Internal
         void ProcessMenuMouseClick(Controls::Menu* mnu, int x, int y);
         void ProcessMenuMouseReleased(Controls::Menu* mnu, int x, int y);
         bool ProcessMenuAndCmdBarMouseMove(int x, int y);
-        void OnMouseDown(int x, int y, Input::MouseButton button);
-        void OnMouseUp(int x, int y, Input::MouseButton button);
-        void OnMouseMove(int x, int y, Input::MouseButton button);
-        void OnMouseWheel(int x, int y, Input::MouseWheel direction);
+        void OnMouseDown(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        void OnMouseUp(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        void OnMouseMove(int x, int y, Input::MouseButton button, Input::Key keyCode);
+        void OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode);
         void SendCommand(int command);
         void Terminate();
 
