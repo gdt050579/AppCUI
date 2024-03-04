@@ -13,7 +13,7 @@ using namespace std::literals;
 
 constexpr uint32 ALL_FILES_INDEX = 0xFFFFFFFFU;
 
-void ConvertSizeToString(uint64 size, char result[32])
+static void ConvertSizeToString(uint64 size, char result[32])
 {
     result[31] = 0;
     int poz    = 30;
@@ -36,7 +36,7 @@ void ConvertSizeToString(uint64 size, char result[32])
     }
 }
 
-uint32 __compute_hash__(const char16* start, const char16* end)
+static uint32 __compute_hash__(const char16* start, const char16* end)
 {
     // use FNV algorithm ==> https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
     uint32 hash           = 0x811c9dc5;
@@ -56,7 +56,7 @@ uint32 __compute_hash__(const char16* start, const char16* end)
 }
 
 // https://www.cppstories.com/2018/07/string-view-perf-followup/
-vector<u16string_view> splitSV(u16string_view strv, u16string_view delims = u" ")
+static vector<u16string_view> splitSV(u16string_view strv, u16string_view delims = u" ")
 {
     vector<u16string_view> output;
     size_t first = 0;
@@ -145,12 +145,12 @@ FileDialogWindow::FileDialogWindow(
       const ConstString& fileName,
       const ConstString& extensionsFilter,
       const std::filesystem::path& specifiedPath)
-    : Window(open ? "Open" : "Save", "w:50%,h:75%,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
+    : Window(open ? "Open" : "Save", "w:120,h:40,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
 {
     const std::filesystem::path initialPath = CanonizePath(specifiedPath.empty() ? "." : specifiedPath);
 
     lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10%");
-    lbPath     = Factory::Label::Create(this, "", "x:11%,y:0,w:88%");
+    lbPath     = Factory::Label::Create(this, "", "x:11%,y:0,w:86%");
 
     splitListView = Factory::Splitter::Create(this, "x:1,y:2,w:98%,h:88%", SplitterFlags::Vertical);
     splitListView->SetSecondPanelSize(static_cast<uint32>(0.75 * this->GetWidth()));
@@ -317,6 +317,7 @@ void FileDialogWindow::FileListItemClicked()
         ProcessTextFieldInput();
     }
 }
+
 void FileDialogWindow::FileListItemChanged()
 {
     auto current = files->GetCurrentItem();
@@ -605,6 +606,7 @@ optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
         return dlg.GetResultedPath();
     return std::nullopt;
 }
+
 optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(
       const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path)
 {
