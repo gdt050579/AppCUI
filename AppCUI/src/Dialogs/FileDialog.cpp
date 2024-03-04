@@ -444,45 +444,45 @@ void FileDialogWindow::ReloadCurrentPath()
             {
                 MessageBox::ShowError("Error", u"Unable to read location: "s + fileEntry.path().u16string());
                 Utils::String::Set(size, "Unknown", 32, 7);
-				failed = true; // not really - maybe reparse point
+                failed = true; // not really - maybe reparse point
             }
 
-			if (isDirectory == false)
-			{
-				// check filter first
-				if (extFilter)
-				{
-					// a filter is set - let's check the extention
-					auto ext16 = fileEntry.path().extension().u16string();
-					auto ext16Start = ext16.data();
-					const auto ext16End = ext16.data() + ext16.size();
+            if (isDirectory == false)
+            {
+                // check filter first
+                if (extFilter)
+                {
+                    // a filter is set - let's check the extention
+                    auto ext16          = fileEntry.path().extension().u16string();
+                    auto ext16Start     = ext16.data();
+                    const auto ext16End = ext16.data() + ext16.size();
 
-					if (ext16.length() > 1 && ext16[0] == '.')
-					{
-						ext16Start++;
-					}
-					if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
-					{
-						continue; // extension is filtered
-					}
-				}
+                    if (ext16.length() > 1 && ext16[0] == '.')
+                    {
+                        ext16Start++;
+                    }
+                    if (!extFilter->contains(__compute_hash__(ext16Start, ext16End)))
+                    {
+                        continue; // extension is filtered
+                    }
+                }
 
-				if (failed == false)
-				{
-					ConvertSizeToString((uint64)fileEntry.file_size(), size);
-				}
-			}
+                if (failed == false)
+                {
+                    ConvertSizeToString((uint64) fileEntry.file_size(), size);
+                }
+            }
 
             dt.CreateFrom(fileEntry);
             auto item =
                   this->files->AddItem({ fileEntry.path().filename().u16string(), size, dt.GetStringRepresentation() });
-            
-			if (failed)
-			{
-				item.SetType(ListViewItem::Type::ErrorInformation);
-				item.SetData(2);
-			}
-			else if (isDirectory)
+
+            if (failed)
+            {
+                item.SetType(ListViewItem::Type::ErrorInformation);
+                item.SetData(2);
+            }
+            else if (isDirectory)
             {
                 item.SetType(ListViewItem::Type::Highlighted);
                 item.SetData(1);
