@@ -31,6 +31,8 @@ file(READ "${MAIN_HEADER}" appcui_content)
 string(REGEX MATCH "#define APPCUI_VERSION \"([0-9]+.[0-9]+.[0-9]+)\"" _ ${appcui_content})
 set(APPCUI_VERSION ${CMAKE_MATCH_1})
 message("${PROJECT_NAME} version: ${APPCUI_VERSION}")
+string(REPLACE "." "," VERSION_LIST ${APPCUI_VERSION})
+set(APPCUI_VERSION_LIST ${VERSION_LIST},0)
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${APPCUI_VERSION} SOVERSION ${APPCUI_VERSION})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "lib")
