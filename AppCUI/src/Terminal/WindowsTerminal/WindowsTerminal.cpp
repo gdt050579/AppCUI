@@ -122,10 +122,13 @@ bool WindowsTerminal::ResizeConsoleWindowSize(uint32 width, uint32 height)
 
 Size WindowsTerminal::MaximizeTerminal()
 {
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    CONSOLE_SCREEN_BUFFER_INFO csbi{};
     CHECK(::ShowWindow(GetConsoleWindow(), SW_MAXIMIZE), Size(), "Fail to maximize the console !");
     CHECK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), Size(), "Unable to read console screen buffer !");
-    return Size(csbi.dwSize.X, csbi.dwSize.Y);
+
+    const auto x = csbi.srWindow.Right + 1;
+    const auto y = csbi.srWindow.Bottom + 1;
+    return Size(x, y);
 }
 
 Size WindowsTerminal::FullScreenTerminal()
@@ -155,8 +158,8 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
     if ((currentSize.Width == initData.Width) && (currentSize.Height == initData.Height))
         return currentSize;
 
-    CONSOLE_SCREEN_BUFFER_INFOEX csbi;
-    CONSOLE_FONT_INFOEX fnt;
+    CONSOLE_SCREEN_BUFFER_INFOEX csbi{};
+    CONSOLE_FONT_INFOEX fnt{};
 
     // check if size is not smaller than the maximum allowed
     fnt.cbSize = sizeof(fnt);
@@ -187,20 +190,24 @@ Size WindowsTerminal::ResizeTerminal(const InitializationData& initData, const S
           Size(),
           "Unable to get console screen buffer info (LastError = 0x%08X)",
           GetLastError());
-    CHECK(csbi.dwSize.X == initData.Width,
+
+    const auto x = csbi.srWindow.Right + 1;
+    const auto y = csbi.srWindow.Bottom + 1;
+
+    CHECK(x == initData.Width,
           Size(),
           "Console screen buffer width has not changed (curently is %u, expected value is %u)",
-          csbi.dwSize.X,
+          x,
           initData.Width);
     CHECK((csbi.srWindow.Right + 1 - csbi.srWindow.Left) == initData.Width,
           Size(),
           "Console window width has not changed (curently is %u, expected value is %u)",
           (csbi.srWindow.Right + 1 - csbi.srWindow.Left),
           initData.Width);
-    CHECK(csbi.dwSize.Y == initData.Height,
+    CHECK(y == initData.Height,
           Size(),
           "Console screen buffer width has not changed (curently is %u, expected value is %u)",
-          csbi.dwSize.Y,
+          y,
           initData.Height);
     CHECK((csbi.srWindow.Bottom + 1 - csbi.srWindow.Top) == initData.Height,
           Size(),
@@ -389,7 +396,7 @@ void WindowsTerminal::BuildKeyTranslationMatrix()
 
 bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
 {
-    CONSOLE_SCREEN_BUFFER_INFOEX csbi;
+    CONSOLE_SCREEN_BUFFER_INFOEX csbi{};
 
     this->hstdOut = GetStdHandle(STD_OUTPUT_HANDLE);
     this->hstdIn  = GetStdHandle(STD_INPUT_HANDLE);
@@ -401,6 +408,14 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
     CHECK(GetConsoleScreenBufferInfoEx(this->hstdOut, &csbi), false, "Unable to read console screen buffer !");
     CHECK(csbi.dwSize.X > 0, false, "Received invalid screen width from the system --> exiting");
     CHECK(csbi.dwSize.Y > 0, false, "Received invalid screen height from the system --> exiting");
+
+    CHECK(csbi.srWindow.Top >= 0, false, "Received invalid window top from the system --> exiting");
+    CHECK(csbi.srWindow.Top <= csbi.srWindow.Bottom,
+          false,
+          "Received invalid window bottom from the system --> exiting");
+
+    const auto x = csbi.srWindow.Right;
+    const auto y = csbi.srWindow.Bottom;
 
     // set the colors
     csbi.ColorTable[0]  = 0x000000;
@@ -420,16 +435,10 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
     csbi.ColorTable[14] = 0x00FFFF;
     csbi.ColorTable[15] = 0xFFFFFF;
 
-    // recompute window size
-    csbi.srWindow.Left   = 0;
-    csbi.srWindow.Top    = 0;
-    csbi.srWindow.Right  = csbi.dwSize.X;
-    csbi.srWindow.Bottom = csbi.dwSize.Y;
-
     auto res = SetConsoleScreenBufferInfoEx(this->hstdOut, &csbi);
 
     // copy original screen buffer information
-    CHECK(CopyOriginalScreenBuffer(csbi.dwSize.X, csbi.dwSize.Y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y),
+    CHECK(CopyOriginalScreenBuffer(x, y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y),
           false,
           "Fail to copy original screen buffer");
 
@@ -437,7 +446,7 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
     CHECK(ComputeCharacterSize(initData), false, "Fail to change character size");
 
     // computer terminal size
-    Size terminalSize = UpdateTerminalSize(initData, Size(csbi.dwSize.X, csbi.dwSize.Y));
+    Size terminalSize = UpdateTerminalSize(initData, Size(x, y));
     CHECK((terminalSize.Width > 0) && (terminalSize.Height > 0), false, "Fail to update terminal size !");
 
     // create canvases
@@ -696,20 +705,28 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         }
         break;
     case WINDOW_BUFFER_SIZE_EVENT:
-        if (ResizeConsoleBuffer(ir.Event.WindowBufferSizeEvent.dwSize.X, ir.Event.WindowBufferSizeEvent.dwSize.Y))
+    {
+        // discard ir.Event.WindowBufferSizeEvent.dwSize
+        // we only want to draw on visible area
+
+        CONSOLE_SCREEN_BUFFER_INFO csbi{};
+        CHECKBK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), "Unable to read console screen buffer !");
+
+        const auto x = csbi.srWindow.Right + 1;
+        const auto y = csbi.srWindow.Bottom + 1;
+
+        if (ResizeConsoleBuffer(x, y))
         {
-            evnt.newWidth  = ir.Event.WindowBufferSizeEvent.dwSize.X;
-            evnt.newHeight = ir.Event.WindowBufferSizeEvent.dwSize.Y;
+            evnt.newWidth  = x;
+            evnt.newHeight = y;
             evnt.eventType = SystemEventType::AppResized;
         }
         else
         {
-            LOG_ERROR(
-                  "Internal error - fail to resize console buffer to %dx%d",
-                  ir.Event.WindowBufferSizeEvent.dwSize.X,
-                  ir.Event.WindowBufferSizeEvent.dwSize.Y);
+            LOG_ERROR("Internal error - fail to resize console buffer to %dx%d", x, y);
         }
-        break;
+    }
+    break;
     }
 }
 
