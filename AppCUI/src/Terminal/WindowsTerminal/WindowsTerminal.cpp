@@ -126,9 +126,17 @@ Size WindowsTerminal::MaximizeTerminal()
     CHECK(::ShowWindow(GetConsoleWindow(), SW_MAXIMIZE), Size(), "Fail to maximize the console !");
     CHECK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), Size(), "Unable to read console screen buffer !");
 
-    const auto x = csbi.srWindow.Right + 1;
-    const auto y = csbi.srWindow.Bottom + 1;
-    return Size(x, y);
+    const int16 w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    const int16 h = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+    const Size s(w, h);
+
+    SMALL_RECT sr{ .Left = 0, .Top = 0, .Right = w - 1, .Bottom = h - 1 };
+    CHECK(SetConsoleWindowInfo(this->hstdOut, TRUE, &sr), s, "Failed resizing window!");
+
+    COORD cb{ w, h };
+    CHECK(SetConsoleScreenBufferSize(this->hstdOut, cb), s, "Failed resizing screen buffer!");
+
+    return s;
 }
 
 Size WindowsTerminal::FullScreenTerminal()
@@ -414,8 +422,14 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
           false,
           "Received invalid window bottom from the system --> exiting");
 
-    const auto x = csbi.srWindow.Right;
-    const auto y = csbi.srWindow.Bottom;
+    const int16 w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    const int16 h = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    SMALL_RECT sr{ .Left = 0, .Top = 0, .Right = w - 1, .Bottom = h - 1 };
+    CHECK(SetConsoleWindowInfo(this->hstdOut, TRUE, &sr), false, "Failed resizing window!");
+
+    COORD cb{ w, h };
+    CHECK(SetConsoleScreenBufferSize(this->hstdOut, cb), false, "Failed resizing screen buffer!");
 
     // set the colors
     csbi.ColorTable[0]  = 0x000000;
@@ -435,10 +449,8 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
     csbi.ColorTable[14] = 0x00FFFF;
     csbi.ColorTable[15] = 0xFFFFFF;
 
-    auto res = SetConsoleScreenBufferInfoEx(this->hstdOut, &csbi);
-
     // copy original screen buffer information
-    CHECK(CopyOriginalScreenBuffer(x, y, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y),
+    CHECK(CopyOriginalScreenBuffer(w, h, csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y),
           false,
           "Fail to copy original screen buffer");
 
@@ -446,7 +458,7 @@ bool WindowsTerminal::OnInit(const Application::InitializationData& initData)
     CHECK(ComputeCharacterSize(initData), false, "Fail to change character size");
 
     // computer terminal size
-    Size terminalSize = UpdateTerminalSize(initData, Size(x, y));
+    Size terminalSize = UpdateTerminalSize(initData, Size(w, h));
     CHECK((terminalSize.Width > 0) && (terminalSize.Height > 0), false, "Fail to update terminal size !");
 
     // create canvases
@@ -562,7 +574,7 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         DWORD diff    = 33;
         if (cTime >= this->startTime)
         {
-            diff -= (static_cast<DWORD64>(cTime) - this->startTime);
+            diff -= static_cast<DWORD>(static_cast<DWORD64>(cTime) - this->startTime);
             if (diff > 33)
                 diff = 0;
         }
@@ -712,18 +724,24 @@ void WindowsTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
         CONSOLE_SCREEN_BUFFER_INFO csbi{};
         CHECKBK(GetConsoleScreenBufferInfo(this->hstdOut, &csbi), "Unable to read console screen buffer !");
 
-        const auto x = csbi.srWindow.Right + 1;
-        const auto y = csbi.srWindow.Bottom + 1;
+        const int16 w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        const int16 h = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
-        if (ResizeConsoleBuffer(x, y))
+        SMALL_RECT sr{ .Left = 0, .Top = 0, .Right = w - 1, .Bottom = h - 1 };
+        CHECKBK(SetConsoleWindowInfo(this->hstdOut, TRUE, &sr), "Failed resizing window!");
+
+        COORD cb{ w, h };
+        CHECKBK(SetConsoleScreenBufferSize(this->hstdOut, cb), "Failed resizing screen buffer!");
+
+        if (ResizeConsoleBuffer(w, h))
         {
-            evnt.newWidth  = x;
-            evnt.newHeight = y;
+            evnt.newWidth  = w;
+            evnt.newHeight = h;
             evnt.eventType = SystemEventType::AppResized;
         }
         else
         {
-            LOG_ERROR("Internal error - fail to resize console buffer to %dx%d", x, y);
+            LOG_ERROR("Internal error - fail to resize console buffer to %dx%d", w, h);
         }
     }
     break;
