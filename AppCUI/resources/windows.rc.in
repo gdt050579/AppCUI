@@ -1,6 +1,60 @@
+// Microsoft Visual C++ generated resource script.
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
+
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,0,0,0
- PRODUCTVERSION 0,0,0,0
+ FILEVERSION @APPCUI_VERSION_LIST@
+ PRODUCTVERSION @APPCUI_VERSION_LIST@
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -8,25 +62,41 @@ VS_VERSION_INFO VERSIONINFO
  FILEFLAGS 0x0L
 #endif
  FILEOS 0x40004L
- FILETYPE 0x2L
+ FILETYPE 0x1L
  FILESUBTYPE 0x0L
-{
-  BLOCK "StringFileInfo"
-  {
-    BLOCK "040904E4"
-    {
-      VALUE "CompanyName", "AppCUI Group (2021-2022)"
-      VALUE "FileDescription", "AppCUI Framework library"
-      VALUE "FileVersion", "@APPCUI_VERSION@"
-      VALUE "ProductVersion", "@APPCUI_VERSION@"
-      VALUE "LegalCopyright", "Copyright various authors. Released under the MIT License."
-      VALUE "ProductName", "AppCUI"
-      VALUE "InternalName", "libAppCUI.dll"
-      VALUE "OriginalFilename", "libAppCUI.dll"
-    }
-  }
-  BLOCK "VarFileInfo"
-  {
-    VALUE "Translation", 0x0409, 1252
-  }
-}
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "0c0004b0"
+        BEGIN
+            VALUE "CompanyName", "AppCUI Group (2021-2022)"
+            VALUE "FileDescription", "AppCUI Framework library"
+            VALUE "FileVersion", "@APPCUI_VERSION@"
+            VALUE "InternalName", "libAppCUI.dll"
+            VALUE "LegalCopyright", "Copyright various authors. Released under the MIT License."
+            VALUE "OriginalFilename", "libAppCUI.dll"
+            VALUE "ProductName", "AppCUI"
+            VALUE "ProductVersion", "@APPCUI_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0xc00, 1200
+    END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
