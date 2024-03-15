@@ -4650,6 +4650,7 @@ namespace Controls
         void OnFocus() override;
         void OnMousePressed(int x, int y, Input::MouseButton button, Input::Key keyCode) override;
         bool OnMouseWheel(int x, int y, Input::MouseWheel direction, Input::Key keyCode) override;
+        bool OnMouseOver(int x, int y) override;
         void OnUpdateScrollBars() override;
         void OnAfterResize(int newWidth, int newHeight) override;
 
