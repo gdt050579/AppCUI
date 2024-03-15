@@ -1208,6 +1208,7 @@ bool Controls::Control::RemoveControlByID(uint32 index)
     Control** lst = CTRLC->Controls;
     CHECK(lst != nullptr, false, "Expecting a non-nullptr list of control !");
     this->OnControlRemoved(lst[index]);
+    delete lst[index];
     uint32 count = CTRLC->ControlsCount;
     index++;
     while (index < count)
