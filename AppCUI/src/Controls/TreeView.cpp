@@ -602,11 +602,15 @@ bool TreeView::OnMouseWheel(int /*x*/, int /*y*/, Input::MouseWheel direction, I
 
 bool TreeView::OnMouseOver(int x, int y)
 {
-    CHECKRET(Context != nullptr, "");
+    CHECK(Context != nullptr, false, "");
     const auto cc = reinterpret_cast<TreeControlContext*>(Context);
     if (cc->IsMouseOnSearchField(x, y))
     {
-        this->ShowToolTip("Search/Filter");
+        this->ShowToolTip("Search/Filter", x, cc->Layout.Height - 1);
+    }
+    else
+    {
+        this->HideToolTip();
     }
     return true;
 }
