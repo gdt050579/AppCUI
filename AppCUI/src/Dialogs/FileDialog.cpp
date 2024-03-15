@@ -152,14 +152,14 @@ FileDialogWindow::FileDialogWindow(
     lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10%");
     lbPath     = Factory::Label::Create(this, "", "x:11%,y:0,w:86%");
 
-    splitListView = Factory::Splitter::Create(this, "x:1,y:2,w:98%,h:88%", SplitterFlags::Vertical);
+    splitListView = Factory::Splitter::Create(this, "x:1,y:2,w:98%,h:82%", SplitterFlags::Vertical);
     splitListView->SetSecondPanelSize(static_cast<uint32>(0.75 * this->GetWidth()));
     splitPanelLeft  = Factory::Panel::Create(splitListView, "x:1,y:0,w:100%,h:100%");
     splitPanelRight = Factory::Panel::Create(splitListView, "x:1,y:0,w:100%,h:100%");
 
     ListViewFlags specialPathsFlags = ListViewFlags::HideColumnsSeparator |
                                       ListViewFlags::HideCurrentItemWhenNotFocused | ListViewFlags::HideBorder |
-                                      ListViewFlags::PopupSearchBar;
+                                      ListViewFlags::PopupSearchBar | ListViewFlags::HideScrollBar;
     lSpecialPaths = Factory::ListView::Create(
           splitPanelLeft, "x:1,y:0,w:100%,h:100%", { "n:Special,a:l,w:20" }, specialPathsFlags);
 
@@ -172,7 +172,8 @@ FileDialogWindow::FileDialogWindow(
     uint64 idx = 0;
     for (const auto& locationInfo : locations)
     {
-        lSpecialPaths->AddItem(locationInfo.locationName).SetData(idx++);
+        auto item = lSpecialPaths->AddItem(locationInfo.locationName);
+        item.SetData(idx++);
     }
 
     files = Factory::ListView::Create(
@@ -202,15 +203,15 @@ FileDialogWindow::FileDialogWindow(
     };
     files->Sort(0, SortDirection::Ascendent); // sort after the first column, ascendent
 
-    lbName = Factory::Label::Create(this, "File &Name", "x:1,y:94%,w:10%");
-    txName = Factory::TextField::Create(this, fileName, "x:11%,y:94%,w:75%", TextFieldFlags::ProcessEnter);
+    lbName = Factory::Label::Create(this, "File &Name", "x:1,y:90%,w:10%");
+    txName = Factory::TextField::Create(this, fileName, "x:11%,y:90%,w:75%", TextFieldFlags::ProcessEnter);
     txName->SetHotKey('N');
-    lbExt = Factory::Label::Create(this, "File &Type", "x:1,y:98%,w:10%");
+    btnOK = Factory::Button::Create(this, "&Ok", "x:87%,y:90%,w:12%", (int) Dialogs::Result::Ok);
 
-    btnOK     = Factory::Button::Create(this, "&Ok", "x:87%,y:94%,w:12%", (int) Dialogs::Result::Ok);
-    btnCancel = Factory::Button::Create(this, "&Cancel", "x:87%,y:98%,w:12%", (int) Dialogs::Result::Cancel);
+    lbExt     = Factory::Label::Create(this, "File &Type", "x:1,y:96%,w:10%");
+    btnCancel = Factory::Button::Create(this, "&Cancel", "x:87%,y:96%,w:12%", (int) Dialogs::Result::Cancel);
 
-    comboType = Factory::ComboBox::Create(this, "x:11%,y:98%,w:75%");
+    comboType = Factory::ComboBox::Create(this, "x:11%,y:96%,w:75%");
     comboType->SetHotKey('T');
     ProcessExtensionFilter(extensionsFilter);
     if (comboType->GetItemsCount() > 0)
