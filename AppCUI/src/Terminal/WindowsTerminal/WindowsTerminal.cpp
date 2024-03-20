@@ -18,7 +18,8 @@ WindowsTerminal::~WindowsTerminal()
 bool WindowsTerminal::ResizeConsoleBuffer(uint32 width, uint32 height)
 {
     const uint32 newCount = ((width * height) | 0xFF) + 1;
-    CHECK(newCount > consoleBufferCount, true, "No need to resize!");
+    if (newCount <= consoleBufferCount)
+        return true;
 
     consoleBuffer.reset(new CHAR_INFO[newCount]);
     CHECK(consoleBuffer.get(),
