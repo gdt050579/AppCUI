@@ -1215,6 +1215,7 @@ void Window::RemoveMe()
         return;
     // all good -> I am a top level window --> remove me
     app->AppDesktop->RemoveControl(this);
+    app->MouseOverControl = nullptr;
     app->CheckIfAppShouldClose();
 }
 bool Window::OnEvent(Reference<Control>, Event eventType, int)
