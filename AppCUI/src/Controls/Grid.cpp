@@ -983,8 +983,8 @@ void GridControlContext::DrawLines(Renderer& renderer)
     int minX = cWidth - 1;
     int minY = cHeight - 1;
 
-    const int toAddColumn = std::max<>(0, deltaX / (int) cWidth);
-    const int toAddRow    = std::max<>(0, deltaY / (int) cHeight);
+    const uint32 toAddColumn = std::max<>(0, deltaX / (int) cWidth);
+    const uint32 toAddRow    = std::max<>(0, deltaY / (int) cHeight);
 
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
     for (auto i = toAddColumn; i < END(Layout.Width, offsetX, cWidth, columnsNo) + 1; i++)

@@ -1813,7 +1813,7 @@ namespace Utils
         }
     };
     template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>
-    class GenericFixSizeString
+    class EXPORT GenericFixSizeString
     {
         static constexpr uint16 ACTUAL_SIZE = Size != 0xFFFF ? Size : 61 + (sizeof(T) - 1) * 2;
         static_assert(ACTUAL_SIZE > 0);
