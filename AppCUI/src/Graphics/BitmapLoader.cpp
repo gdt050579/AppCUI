@@ -47,7 +47,7 @@ bool Paint_32bits_DIB(Image& img, DIBPaintBuffer& d, bool bottomUp)
     uint32 rowPadding = 0;
     while (d.px + 4 <= d.end)
     {
-        CHECK(img.SetPixel(x, y, Pixel(d.px[0], d.px[1], d.px[2])),
+        CHECK(img.SetPixel(x, y, Pixel(d.px[2], d.px[1], d.px[0])),
               false,
               "Fail to set pixel on %u,%u coordonates",
               x,
@@ -210,7 +210,7 @@ bool LoadDIBToImage(Image& img, const uint8* buffer, uint32 size, bool isIcon)
           false,
           "Only BI_RGB compression method is supported");
     CHECK(h->width > 0, false, "Width can not be a negative or 0 value value !");
-    auto width = (uint32)h->width;
+    auto width  = (uint32) h->width;
     auto height = h->height >= 0 ? (uint32) h->height : (uint32) (-h->height);
     if (isIcon)
     {
@@ -239,7 +239,7 @@ bool LoadDIBToImage(Image& img, const uint8* buffer, uint32 size, bool isIcon)
     switch (h->bitsPerPixel)
     {
     case 1:
-        return Paint_monochrome_DIB(img, dpb, h->height>=0);
+        return Paint_monochrome_DIB(img, dpb, h->height >= 0);
     case 4:
         // set color table
         dpb.px += 64; // 16 entries x 4 (RGBA)
