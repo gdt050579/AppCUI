@@ -341,7 +341,7 @@ void FileDialogWindow::FileListItemChanged()
 
 void FileDialogWindow::ProcessTextFieldInput()
 {
-    if (currentPath.empty() || txName->GetText().Len() == 0)
+    if (currentPath.empty())
     {
         return;
     }
@@ -349,7 +349,10 @@ void FileDialogWindow::ProcessTextFieldInput()
     std::filesystem::path candidateResultedPath = currentPath;
     try
     {
-        candidateResultedPath /= txName->GetText();
+        if (!txName->GetText().IsEmpty())
+        {
+            candidateResultedPath /= txName->GetText();
+        }
     }
     catch (...)
     {
