@@ -60,7 +60,7 @@ jobs:
 
   build-macos:
     name: "Build MacOS"
-    runs-on: [macos-latest]
+    runs-on: [macos-13] # avoid ARM for now - https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources 
 
     env:
       CMKAKE_OUT_DIRECTORY: "${{github.workspace}}/binaries_out"
@@ -109,7 +109,7 @@ jobs:
 
   build-ubuntu:
     name: "Build Linux"
-    runs-on: [ubuntu-latest]
+    runs-on: [ubuntu-20.04]
     env:
       CC: gcc-10
       CXX: g++-10

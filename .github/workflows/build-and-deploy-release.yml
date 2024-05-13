@@ -49,7 +49,7 @@ jobs:
         retention-days: 1
 
   build-ubuntu:
-    runs-on: [ubuntu-latest]
+    runs-on: [ubuntu-20.04]
     env:
       CC: gcc-10
       CXX: g++-10
@@ -100,7 +100,7 @@ jobs:
         retention-days: 1  
 
   build-osx:
-    runs-on: [macos-latest]
+    runs-on: [macos-13] # avoid ARM for now - https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources 
     steps:
     - uses: actions/checkout@v2
       with:
