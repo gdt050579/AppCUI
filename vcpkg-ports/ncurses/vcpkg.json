@@ -5,10 +5,5 @@
   "description": "Free software emulation of curses in System V Release 4.0, and more",
   "homepage": "https://invisible-island.net/ncurses/announce.html",
   "license": "MIT",
-  "supports": "!windows | mingw",
-  "features": {
-    "wide-characters": {
-      "description": "Compile with wide-character code."
-    }
-  }
+  "supports": "!windows | mingw"
 }

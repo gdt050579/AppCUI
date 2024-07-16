@@ -13,23 +13,7 @@ vcpkg_extract_source_archive(
     ARCHIVE "${ARCHIVE_PATH}"
 )
 
-vcpkg_check_features(
-    OUT_FEATURE_OPTIONS FEATURE_OPTIONS
-    FEATURES
-        wide-characters --enable-widec
-)
-
 vcpkg_list(SET OPTIONS)
-
-# message(FATAL_ERROR("${FEATURE_OPTIONS}"))
-
-if("-D--enable-widec=ON" IN_LIST FEATURE_OPTIONS)
-    list(APPEND OPTIONS
-        --enable-widec
-    )
-endif()
-
-# message(FATAL_ERROR("${OPTIONS}"))
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     list(APPEND OPTIONS
@@ -39,11 +23,6 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     )
 endif()
 
-if(NOT VCPKG_TARGET_IS_MINGW)
-    list(APPEND OPTIONS
-        --enable-mixed-case
-    )
-endif()
 
 if(VCPKG_TARGET_IS_MINGW)
     list(APPEND OPTIONS
@@ -59,15 +38,17 @@ vcpkg_configure_make(
     NO_ADDITIONAL_PATHS
     OPTIONS
         ${OPTIONS}
-        --disable-db-install
+        --enable-widec
+        # --disable-db-install
         --enable-pc-files
         --without-ada
         --without-debug # "lib model"
         --without-manpages
-        --without-progs
+        # --without-progs
         --without-tack
         --without-tests
         --with-pkg-config-libdir=libdir
+        --with-terminfo-dirs=/usr/share/terminfo:/usr/lib/terminfo:/etc/terminfo
 )
 vcpkg_install_make()
 
