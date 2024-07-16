@@ -103,7 +103,7 @@ void TabControlContext::PaintTopBottomPanelTab(Graphics::Renderer& renderer, boo
 
     if ((this->Flags & TabFlags::TransparentBackground) != TabFlags::TransparentBackground)
         renderer.FillRectSize(0, onTop ? 1 : 0, this->Layout.Width, this->Layout.Height - 1, ' ', this->GetPageColor());
- 
+
     if ((this->Flags & TabFlags::TabsBar) == TabFlags::TabsBar)
         renderer.FillHorizontalLineSize(0, params.Y, this->Layout.Width, ' ', this->GetTabBarColor());
 
@@ -261,6 +261,11 @@ TabPage::TabPage(const ConstString& caption) : Control(new ControlContext(), cap
 {
     auto Members   = reinterpret_cast<ControlContext*>(this->Context);
     Members->Flags = GATTR_ENABLE | GATTR_VISIBLE | GATTR_TABSTOP;
+}
+
+TabPage::TabPage(const ConstString& caption, int32 controlID) : TabPage(caption)
+{
+    this->SetControlID(controlID);
 }
 
 bool TabPage::OnBeforeResize(int, int)

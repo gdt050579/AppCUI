@@ -34,5 +34,8 @@
             "name": "sdl2-ttf",
             "platform": "windows | linux | osx"
         }
-    ]
+    ],
+    "vcpkg-configuration": {
+      "overlay-ports": [ "./vcpkg-ports/ncurses"]
+    }
 }

@@ -170,18 +170,18 @@ POINTER<Controls::TextArea> Factory::TextArea::Create(
 }
 
 //======[TABPAGE]====================================================================================
-REFERENCE<TabPage> Factory::TabPage::Create(Controls::Control* parent, const ConstString& caption)
+REFERENCE<TabPage> Factory::TabPage::Create(Controls::Control* parent, const ConstString& caption, int32 controlID)
 {
     VALIDATE_PARENT;
-    return parent->AddControl<Controls::TabPage>(Factory::TabPage::Create(caption));
+    return parent->AddControl<Controls::TabPage>(Factory::TabPage::Create(caption, controlID));
 }
-REFERENCE<TabPage> Factory::TabPage::Create(Controls::Control& parent, const ConstString& caption)
+REFERENCE<TabPage> Factory::TabPage::Create(Controls::Control& parent, const ConstString& caption, int32 controlID)
 {
-    return parent.AddControl<Controls::TabPage>(Factory::TabPage::Create(caption));
+    return parent.AddControl<Controls::TabPage>(Factory::TabPage::Create(caption, controlID));
 }
-POINTER<Controls::TabPage> Factory::TabPage::Create(const ConstString& caption)
+POINTER<Controls::TabPage> Factory::TabPage::Create(const ConstString& caption, int32 controlID)
 {
-    return POINTER<Controls::TabPage>(new Controls::TabPage(caption));
+    return POINTER<Controls::TabPage>(new Controls::TabPage(caption, controlID));
 }
 
 //======[TAB]========================================================================================

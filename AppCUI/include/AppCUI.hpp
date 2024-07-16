@@ -1813,7 +1813,7 @@ namespace Utils
         }
     };
     template <uint16 Size = 0xFFFF, typename T = char, typename T_view = std::string_view>
-    class GenericFixSizeString
+    class EXPORT GenericFixSizeString
     {
         static constexpr uint16 ACTUAL_SIZE = Size != 0xFFFF ? Size : 61 + (sizeof(T) - 1) * 2;
         static_assert(ACTUAL_SIZE > 0);
@@ -4107,6 +4107,7 @@ namespace Controls
     {
       protected:
         TabPage(const ConstString& caption);
+        TabPage(const ConstString& caption, int32 controlID);
 
       public:
         bool OnBeforeResize(int newWidth, int newHeight);
@@ -4696,7 +4697,7 @@ namespace Controls
         Filter                = 0x040000
     };
 
-     class EXPORT Grid : public Control
+    class EXPORT Grid : public Control
     {
       protected:
         Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags);
@@ -5015,9 +5016,11 @@ namespace Controls
             TabPage() = delete;
 
           public:
-            static Reference<Controls::TabPage> Create(Controls::Control* parent, const ConstString& caption);
-            static Reference<Controls::TabPage> Create(Controls::Control& parent, const ConstString& caption);
-            static Pointer<Controls::TabPage> Create(const ConstString& caption);
+            static Reference<Controls::TabPage> Create(
+                  Controls::Control* parent, const ConstString& caption, int32 controlID = 0);
+            static Reference<Controls::TabPage> Create(
+                  Controls::Control& parent, const ConstString& caption, int32 controlID = 0);
+            static Pointer<Controls::TabPage> Create(const ConstString& caption, int32 controlID = 0);
         };
         class EXPORT Tab
         {
