@@ -51,6 +51,7 @@ include(FindSDL2TTF)
 
 find_package(unofficial-brotli CONFIG REQUIRED)
 find_package(BZip2 REQUIRED)
+find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED) 
 find_package(Freetype REQUIRED) 
 find_package(SDL2 CONFIG REQUIRED)
@@ -102,6 +103,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${BROTLIDEC__LIBRARIES} ${BROTLICO
 message("PNG_LIBRARIES => ${PNG_LIBRARIES}")
 target_include_directories(${PROJECT_NAME} PRIVATE ${PNG_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PNG_LIBRARIES})
+
+message("JPEG_LIBRARIES => ${JPEG_LIBRARIES}")
+target_include_directories(${PROJECT_NAME} PRIVATE ${JPEG_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${JPEG_LIBRARIES})
 
 message("FREETYPE_LIBRARIES => ${FREETYPE_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FREETYPE_LIBRARIES})

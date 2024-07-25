@@ -6,6 +6,7 @@ target_sources(AppCUI PRIVATE
 	CodePage.cpp
 	Image.cpp 
 	ProgressStatus.cpp 
+	JPGLoader.cpp
 	PNGLoader.cpp
 	Rect.cpp 
 	Renderer.cpp )
