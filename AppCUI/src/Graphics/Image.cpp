@@ -4,6 +4,7 @@ namespace AppCUI::Graphics
 {
 constexpr uint32 IMAGE_PNG_MAGIC = 0x474E5089;
 constexpr uint16 IMAGE_BMP_MAGIC = 0x4D42;
+constexpr uint16 IMAGE_JPG_MAGIC = 0xD8FF;
 
 static const Pixel Image_ConsoleColors[16] = {
     Pixel(0, 0, 0),       // Black
@@ -252,6 +253,10 @@ bool Image::Create(const uint8* imageBuffer, uint32 size)
     if (magic16 == IMAGE_BMP_MAGIC)
     {
         return LoadBMPToImage(*this, imageBuffer, size);
+    }
+    if (magic16 == IMAGE_JPG_MAGIC)
+    {
+        return LoadJPGToImage(*this, imageBuffer, size);
     }
 
     // unknwon type

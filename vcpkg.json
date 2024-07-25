@@ -33,6 +33,10 @@
         {
             "name": "sdl2-ttf",
             "platform": "windows | linux | osx"
+        },
+        {
+            "name": "libjpeg-turbo",
+            "platform": "windows | linux | osx"
         }
     ],
     "vcpkg-configuration": {
