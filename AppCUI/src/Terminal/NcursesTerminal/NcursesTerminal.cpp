@@ -292,7 +292,7 @@ bool NcursesTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
         // ascii always works
         return true;
     default:
-        RETURNERROR(false, "Unknwon special character set --> this is a fallback case, it should not be reached !");
+        RETURNERROR(false, "Unknown special character set --> this is a fallback case, it should not be reached !");
         break;
     }
 }
