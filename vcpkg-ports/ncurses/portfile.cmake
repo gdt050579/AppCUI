@@ -23,7 +23,6 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
     )
 endif()
 
-
 if(VCPKG_TARGET_IS_MINGW)
     list(APPEND OPTIONS
         --disable-home-terminfo
