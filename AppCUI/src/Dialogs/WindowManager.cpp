@@ -27,7 +27,7 @@ class InternalWindowManager : public Controls::Window
     ItemHandle focusedItem{ InvalidItemHandle };
 
   public:
-    InternalWindowManager() : Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::None)
+    InternalWindowManager() : Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::Sizeable)
     {
     }
     bool Create();
