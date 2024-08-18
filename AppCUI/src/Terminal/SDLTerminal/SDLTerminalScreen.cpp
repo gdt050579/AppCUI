@@ -126,8 +126,8 @@ bool SDLTerminal::InitScreen(const InitializationData& initData)
     // Default size is half the screen
     SDL_DisplayMode DM;
     CHECK(SDL_GetCurrentDisplayMode(0, &DM) == 0, false, "Failed getting SDL current display mode: %s", SDL_GetError());
-    size_t pixelWidth  = DM.w / 2;
-    size_t pixelHeight = DM.h / 2;
+    size_t pixelWidth  = DM.w;
+    size_t pixelHeight = DM.h;
 
     Uint32 windowFlags = 0;
     if ((initData.Flags & InitializationFlags::FixedSize) == InitializationFlags::None)
@@ -137,22 +137,16 @@ bool SDLTerminal::InitScreen(const InitializationData& initData)
     if ((initData.Flags & InitializationFlags::Maximized) != InitializationFlags::None)
     {
         windowFlags |= SDL_WindowFlags::SDL_WINDOW_MAXIMIZED;
-        pixelWidth  = DM.w;
-        pixelHeight = DM.h;
     }
     else if ((initData.Flags & InitializationFlags::Fullscreen) != InitializationFlags::None)
     {
         windowFlags |= SDL_WindowFlags::SDL_WINDOW_FULLSCREEN;
-        pixelWidth  = DM.w;
-        pixelHeight = DM.h;
     }
     else if ((initData.Width != 0) && (initData.Height != 0))
     {
         pixelWidth  = charWidth * initData.Width;
         pixelHeight = charWidth * initData.Height;
     }
-
-    const auto cp = std::filesystem::current_path();
 
     window = SDL_CreateWindow(
           "AppCUI",
@@ -172,15 +166,17 @@ bool SDLTerminal::InitScreen(const InitializationData& initData)
     const size_t heightInChars = pixelHeight / charHeight;
     CHECK(screenCanvas.Create(widthInChars, heightInChars),
           false,
-          "Fail to create an internal canvas of %d x %d size",
+          "Failed to create an internal canvas of %d x %d size",
           widthInChars,
           heightInChars);
     CHECK(originalScreenCanvas.Create(widthInChars, heightInChars),
           false,
-          "Fail to create the original screen canvas of %d x %d size",
+          "Failed to create the original screen canvas of %d x %d size",
           widthInChars,
           heightInChars);
+
     autoRedraw = (initData.Flags & InitializationFlags::EnableFPSMode) != InitializationFlags::None;
+
     return true;
 }
 

@@ -116,7 +116,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${FREETYPE_LIBRARIES})
 # Add font used by SDL 
 include(CMakeRC)
 
-set(FONT_NAME Courier.ttf)
+set(FONT_NAME JuliaMono-Regular.ttf)
 set(FONT_PATH resources/${FONT_NAME})
 target_compile_definitions(${PROJECT_NAME} PRIVATE FONT_PATH="${FONT_PATH}")
 cmrc_add_resource_library(font ${FONT_PATH})
