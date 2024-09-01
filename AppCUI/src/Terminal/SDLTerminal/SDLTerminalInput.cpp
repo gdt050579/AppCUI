@@ -32,9 +32,10 @@ bool SDLTerminal::InitInput(const Application::InitializationData&)
         KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_A + i)] = static_cast<Key>(((uint32) Key::A) + i);
     }
 
-    for (size_t i = 0; i < 10; i++)
+    KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0)] = static_cast<Key>((uint32) Key::N0);
+    for (size_t i = 1; i < 10; i++)
     {
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0 + i)] = static_cast<Key>(((uint32) Key::N0) + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_1 + i)] = static_cast<Key>(((uint32) Key::N1) + i);
     }
 
     for (size_t i = 0; i < 12; i++)
