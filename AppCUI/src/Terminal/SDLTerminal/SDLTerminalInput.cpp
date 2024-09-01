@@ -32,9 +32,10 @@ bool SDLTerminal::InitInput(const Application::InitializationData&)
         KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_A + i)] = static_cast<Key>(((uint32) Key::A) + i);
     }
 
-    for (size_t i = 0; i < 10; i++)
+    KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0)] = static_cast<Key>((uint32) Key::N0);
+    for (size_t i = 1; i < 10; i++)
     {
-        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_0 + i)] = static_cast<Key>(((uint32) Key::N0) + i);
+        KeyTranslation[static_cast<SDL_Scancode>(SDL_SCANCODE_1 + i)] = static_cast<Key>(((uint32) Key::N1) + i);
     }
 
     for (size_t i = 0; i < 12; i++)
@@ -45,19 +46,21 @@ bool SDLTerminal::InitInput(const Application::InitializationData&)
 
     KeyTranslation[SDL_SCANCODE_RETURN]    = Key::Enter;
     KeyTranslation[SDL_SCANCODE_ESCAPE]    = Key::Escape;
-    KeyTranslation[SDL_SCANCODE_INSERT]    = Key::Insert;
-    KeyTranslation[SDL_SCANCODE_DELETE]    = Key::Delete;
     KeyTranslation[SDL_SCANCODE_BACKSPACE] = Key::Backspace;
     KeyTranslation[SDL_SCANCODE_TAB]       = Key::Tab;
-    KeyTranslation[SDL_SCANCODE_LEFT]      = Key::Left;
-    KeyTranslation[SDL_SCANCODE_UP]        = Key::Up;
-    KeyTranslation[SDL_SCANCODE_DOWN]      = Key::Down;
-    KeyTranslation[SDL_SCANCODE_RIGHT]     = Key::Right;
-    KeyTranslation[SDL_SCANCODE_PAGEUP]    = Key::PageUp;
-    KeyTranslation[SDL_SCANCODE_PAGEDOWN]  = Key::PageDown;
-    KeyTranslation[SDL_SCANCODE_HOME]      = Key::Home;
-    KeyTranslation[SDL_SCANCODE_END]       = Key::End;
     KeyTranslation[SDL_SCANCODE_SPACE]     = Key::Space;
+
+    KeyTranslation[SDL_SCANCODE_INSERT]    = Key::Insert;
+    KeyTranslation[SDL_SCANCODE_HOME]      = Key::Home;
+    KeyTranslation[SDL_SCANCODE_PAGEUP]    = Key::PageUp;
+    KeyTranslation[SDL_SCANCODE_DELETE]    = Key::Delete;
+    KeyTranslation[SDL_SCANCODE_END]       = Key::End;
+
+    KeyTranslation[SDL_SCANCODE_PAGEDOWN]  = Key::PageDown;
+    KeyTranslation[SDL_SCANCODE_RIGHT]     = Key::Right;
+    KeyTranslation[SDL_SCANCODE_LEFT]      = Key::Left;
+    KeyTranslation[SDL_SCANCODE_DOWN]      = Key::Down;
+    KeyTranslation[SDL_SCANCODE_UP]        = Key::Up;
 
     lastFramesUpdate = std::chrono::high_resolution_clock::now();
     return true;
