@@ -2351,11 +2351,10 @@ namespace OS
 
     class EXPORT Library
     {
-        void* libraryHandle;
+        void* libraryHandle{ nullptr };
 
       public:
-        Library();
-        bool Load(const std::filesystem::path& path);
+        bool Load(const std::filesystem::path& path, std::string& errorMessage);
         void* GetFunction(const char* functionName) const;
         template <typename T>
         inline T GetFunction(const char* functionName) const
