@@ -22,15 +22,15 @@ bool Library::Load(const std::filesystem::path& path, std::string& errorMessage)
     return true;
 }
 
-void* Library::GetFunction(const char* functionName) const
+void* Library::GetFunction(const char* name) const
 {
-    CHECK(this->libraryHandle, nullptr, "Library was not loaded --> have you call Load(...) first ?");
-    CHECK(functionName, nullptr, "Expecting a valid (non-null) function name !");
-    CHECK(*functionName, nullptr, "Expecting a valid (non-empty) function name !");
+    CHECK(libraryHandle, nullptr, "Library was not loaded --> have you call Load(...) first ?");
+    CHECK(name, nullptr, "Expecting a valid (non-null) function name !");
+    CHECK(*name, nullptr, "Expecting a valid (non-empty) function name !");
 
     // all good
-    void* fnPtr = GetProcAddress((HMODULE) this->libraryHandle, functionName);
-    CHECK(fnPtr, nullptr, "Unable to find address of function: %s", functionName);
+    void* fnPtr = GetProcAddress((HMODULE) libraryHandle, name);
+    CHECK(fnPtr, nullptr, "Unable to find address of function: %s", name);
     return fnPtr;
 }
 } // namespace AppCUI::OS
