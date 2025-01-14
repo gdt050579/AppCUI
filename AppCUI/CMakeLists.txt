@@ -113,8 +113,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:libjpeg-turbo
 message("FREETYPE_LIBRARIES => ${FREETYPE_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FREETYPE_LIBRARIES})
 
-# Add font used by SDL 
-include(CMakeRC)
+# Add font used by SDL
+find_package(CMakeRC CONFIG REQUIRED)
 
 set(FONT_NAME JuliaMono-Regular.ttf)
 set(FONT_PATH resources/${FONT_NAME})
