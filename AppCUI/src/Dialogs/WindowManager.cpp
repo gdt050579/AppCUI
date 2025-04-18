@@ -27,7 +27,7 @@ class InternalWindowManager : public Controls::Window
     ItemHandle focusedItem{ InvalidItemHandle };
 
   public:
-    InternalWindowManager() : Controls::Window("Window manager", "d:c,w:72,h:20", WindowFlags::Sizeable)
+    InternalWindowManager() : Controls::Window("Window manager", "d:c,w:85,h:20", WindowFlags::Sizeable)
     {
     }
     bool Create();
@@ -222,7 +222,7 @@ bool InternalWindowManager::AddItem(Window* w, TreeViewItem& parent, TreeViewIte
         CHECK(parent.SetExpandable(true), false, "");
         child = parent.AddChild(wcc->Text.operator std::string(), false);
     }
-    child.SetValues({ w->GetTag().operator std::string() });
+    child.SetValues({ w->GetTag().operator std::string(), w->GetCreationProcess().operator std::string() });
     child.SetData(Reference<Window>(w));
 
     if (w && w->HasFocus())
@@ -253,7 +253,7 @@ void InternalWindowManager::Process(std::map<ItemHandle, WinItemInfo>& rel, Item
 bool InternalWindowManager::Create()
 {
     CHECK((tree = Factory::TreeView::Create(
-                 this, "l:1,t:1,r:1,b:3", { "n:Window,w:fill", "n:Tag,w:10" }, TreeViewFlags::Searchable))
+                 this, "l:1,t:1,r:1,b:3", { "n:Window,w:fill", "n:Tag,w:10", "n:Creation,w:30" }, TreeViewFlags::Searchable))
                 .IsValid(),
           false,
           "");

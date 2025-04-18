@@ -3844,6 +3844,8 @@ namespace Controls
         bool MaximizeRestore();
         void SetTag(const ConstString& name, const ConstString& toolTipText);
         const Graphics::CharacterBuffer& GetTag();
+        void SetCreationProcessDetails(const ConstString& creationProcess);
+        const Graphics::CharacterBuffer& GetCreationProcess();
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
@@ -5554,13 +5556,12 @@ namespace Application
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd,
           Controls::ItemHandle referal = Controls::InvalidItemHandle,
-          std::string creationProcess  = "");
+          const ConstString&  = "");
     EXPORT Controls::ItemHandle AddWindow(
-          unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow, std::string creationProcess = "");
+          unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow, const ConstString& = "");
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd,
-          Utils::Reference<Controls::Window> referalWindow,
-          std::string creationProcess = "");
+          Utils::Reference<Controls::Window> referalWindow, const ConstString& = "");
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);

@@ -282,7 +282,7 @@ struct WindowControlContext : public ControlContext
     } ControlBar;
     bool Maximized;
     bool ResizeMoveMode;
-    std::string creationProcess;
+    Graphics::CharacterBuffer creationProcess;
 
     ColorPair GetSymbolColor(Controls::ControlState state, ColorPair col)
     {

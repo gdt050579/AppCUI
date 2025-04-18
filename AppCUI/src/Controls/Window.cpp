@@ -1458,6 +1458,18 @@ const Graphics::CharacterBuffer& Window::GetTag()
     return tempReferenceChBuf;
 }
 
+void Window::SetCreationProcessDetails(const ConstString& creationProcess)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
+    Members->creationProcess.Set(creationProcess);
+}
+
+const Graphics::CharacterBuffer& Window::GetCreationProcess()
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, tempReferenceChBuf);
+    return Members->creationProcess;
+}
+
 bool Window::Exit(Dialogs::Result dialogResult)
 {
     //CHECK(dialogResult != Dialogs::Result::None, false, "Dialog result code must not be None !");
