@@ -89,6 +89,12 @@ int main()
             w->SetTag("Numbers", "Plenty of numbers ....");
         Application::AddWindow(std::move(w),nullptr, winName);
     }
+    winName[4] = 'C';
+    winName[5] = 'H';
+    auto childWin     = std::make_unique<MyWin>(winName,'-');
+    childWin->SetTag("Child", "Some window");
+    Application::AddWindow(std::move(childWin), GetCurrentWindow(), "CreatedFromBase");
+
     Application::Run();
     return 0;
 }

@@ -109,6 +109,17 @@ bool Application::GetDesktopSize(Graphics::Size& size)
     return true;
 }
 
+Utils::Reference<Controls::Window> Application::GetCurrentWindow()
+{
+    CHECK(app, nullptr, "Application has not been initialized !");
+    ControlContext* desktopControlContext = (ControlContext*) app->AppDesktop->Context;
+    if (desktopControlContext == nullptr)
+        return nullptr;
+    if (desktopControlContext->ControlsCount == 0 || desktopControlContext->Controls == nullptr)
+        return nullptr;
+    return (Window*)desktopControlContext->Controls[desktopControlContext->CurrentControlIndex];
+}
+
 void Application::ArrangeWindows(ArrangeWindowsMethod method)
 {
     if (app)
