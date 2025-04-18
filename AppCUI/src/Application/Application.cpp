@@ -119,7 +119,7 @@ void Application::Close()
     if (app)
         app->Terminate();
 }
-ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal, std::string creationProcess)
 {
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
@@ -132,6 +132,8 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
     CHECK(winMembers, InvalidItemHandle, "Invalid members !");
     winMembers->windowItemHandle  = resultHandle;
     winMembers->referalItemHandle = referal;
+    if (!creationProcess.empty())
+        winMembers->creationProcess = std::move(creationProcess);
     app->LastWindowID             = (app->LastWindowID + 1) % 0x7FFFFFFF;
     if (((app->InitFlags & InitializationFlags::AutoHotKeyForWindow) != InitializationFlags::None) &&
         (wnd->GetHotKey() == Key::None))
@@ -177,26 +179,27 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
     return resultHandle;
 }
 
-ItemHandle Application::AddWindow(unique_ptr<Controls::Window> wnd, Reference<Controls::Window> referalWindow)
+ItemHandle Application::AddWindow(
+      unique_ptr<Controls::Window> wnd, Reference<Controls::Window> referalWindow, std::string creationProcess)
 {
     if (!referalWindow.IsValid())
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, std::move(creationProcess));
 
     const auto winMembers = reinterpret_cast<WindowControlContext*>(referalWindow->Context);
     if (!winMembers)
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, std::move(creationProcess));
 
-    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
+    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle, std::move(creationProcess));
 }
 
-ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow, std::string creationProcess)
 {
     if (!referalWindow)
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, std::move(creationProcess));
     const auto winMembers = reinterpret_cast<WindowControlContext*>(referalWindow->Context);
     if (!winMembers)
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
-    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, std::move(creationProcess));
+    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle, std::move(creationProcess));
 }
 Controls::Menu* Application::AddMenu(const ConstString& name)
 {

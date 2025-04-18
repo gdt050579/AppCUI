@@ -5552,10 +5552,15 @@ namespace Application
     EXPORT bool RunTestScript(std::string_view script);
     EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
     EXPORT Controls::ItemHandle AddWindow(
-          unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
-    EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
+          unique_ptr<Controls::Window> wnd,
+          Controls::ItemHandle referal = Controls::InvalidItemHandle,
+          std::string creationProcess  = "");
     EXPORT Controls::ItemHandle AddWindow(
-          unique_ptr<Controls::Window> wnd, Utils::Reference<Controls::Window> referalWindow);
+          unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow, std::string creationProcess = "");
+    EXPORT Controls::ItemHandle AddWindow(
+          unique_ptr<Controls::Window> wnd,
+          Utils::Reference<Controls::Window> referalWindow,
+          std::string creationProcess = "");
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
