@@ -1458,6 +1458,69 @@ const Graphics::CharacterBuffer& Window::GetTag()
     return tempReferenceChBuf;
 }
 
+void Window::SetCreationProcessDetails(const ConstString& creationProcess)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
+    Members->creationProcess.Set(creationProcess);
+}
+
+const Graphics::CharacterBuffer& Window::GetCreationProcess()
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, tempReferenceChBuf);
+    return Members->creationProcess;
+}
+
+void Window::AddNote(const ConstString& note)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, );
+    CharacterBuffer cb;
+    cb.Set(note);
+    Members->notes.push_back(std::move(cb));
+}
+
+const Graphics::CharacterBuffer& Window::GetNote(uint32 index) const
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, tempReferenceChBuf);
+    if (index < Members->notes.size())
+        return Members->notes[index];
+    return tempReferenceChBuf;
+}
+
+bool Window::UpdateNote(uint32 index, const ConstString& note)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    if (index < Members->notes.size())
+    {
+        Members->notes[index].Set(note);
+        return true;
+    }
+    return false;
+
+}
+
+uint32 Window::GetNotesCount() const
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, 0);
+    return (uint32) Members->notes.size();
+}
+
+const std::vector<Graphics::CharacterBuffer>& Window::GetNotes() const
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, Members->notes);
+    return Members->notes;
+}
+
+bool Window::RemoveNote(uint32 index)
+{
+    CREATE_TYPECONTROL_CONTEXT(WindowControlContext, Members, false);
+    if (index < Members->notes.size())
+    {
+        Members->notes.erase(Members->notes.begin() + index);
+        return true;
+    }
+    return false;
+}
+
 bool Window::Exit(Dialogs::Result dialogResult)
 {
     //CHECK(dialogResult != Dialogs::Result::None, false, "Dialog result code must not be None !");

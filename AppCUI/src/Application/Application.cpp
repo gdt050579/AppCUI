@@ -109,6 +109,17 @@ bool Application::GetDesktopSize(Graphics::Size& size)
     return true;
 }
 
+Utils::Reference<Controls::Window> Application::GetCurrentWindow()
+{
+    CHECK(app, nullptr, "Application has not been initialized !");
+    ControlContext* desktopControlContext = (ControlContext*) app->AppDesktop->Context;
+    if (desktopControlContext == nullptr)
+        return nullptr;
+    if (desktopControlContext->ControlsCount == 0 || desktopControlContext->Controls == nullptr)
+        return nullptr;
+    return (Window*)desktopControlContext->Controls[desktopControlContext->CurrentControlIndex];
+}
+
 void Application::ArrangeWindows(ArrangeWindowsMethod method)
 {
     if (app)
@@ -119,7 +130,7 @@ void Application::Close()
     if (app)
         app->Terminate();
 }
-ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal, const ConstString& creationProcess)
 {
     CHECK(app, InvalidItemHandle, "Application has not been initialized !");
     CHECK(app->Inited, InvalidItemHandle, "Application has not been corectly initialized !");
@@ -132,6 +143,7 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
     CHECK(winMembers, InvalidItemHandle, "Invalid members !");
     winMembers->windowItemHandle  = resultHandle;
     winMembers->referalItemHandle = referal;
+    wnd->SetCreationProcessDetails(creationProcess);
     app->LastWindowID             = (app->LastWindowID + 1) % 0x7FFFFFFF;
     if (((app->InitFlags & InitializationFlags::AutoHotKeyForWindow) != InitializationFlags::None) &&
         (wnd->GetHotKey() == Key::None))
@@ -177,26 +189,27 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, ItemHandle referal)
     return resultHandle;
 }
 
-ItemHandle Application::AddWindow(unique_ptr<Controls::Window> wnd, Reference<Controls::Window> referalWindow)
+ItemHandle Application::AddWindow(
+      unique_ptr<Controls::Window> wnd, Reference<Controls::Window> referalWindow, const ConstString& creationProcess)
 {
     if (!referalWindow.IsValid())
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, creationProcess);
 
     const auto winMembers = reinterpret_cast<WindowControlContext*>(referalWindow->Context);
     if (!winMembers)
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, creationProcess);
 
-    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
+    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle, creationProcess);
 }
 
-ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow)
+ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow, const ConstString& creationProcess)
 {
     if (!referalWindow)
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, creationProcess);
     const auto winMembers = reinterpret_cast<WindowControlContext*>(referalWindow->Context);
     if (!winMembers)
-        return Application::AddWindow(std::move(wnd), InvalidItemHandle);
-    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle);
+        return Application::AddWindow(std::move(wnd), InvalidItemHandle, creationProcess);
+    return Application::AddWindow(std::move(wnd), winMembers->windowItemHandle, creationProcess);
 }
 Controls::Menu* Application::AddMenu(const ConstString& name)
 {

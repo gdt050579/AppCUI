@@ -3844,6 +3844,14 @@ namespace Controls
         bool MaximizeRestore();
         void SetTag(const ConstString& name, const ConstString& toolTipText);
         const Graphics::CharacterBuffer& GetTag();
+        void SetCreationProcessDetails(const ConstString& creationProcess);
+        const Graphics::CharacterBuffer& GetCreationProcess();
+        void AddNote(const ConstString& note);
+        const Graphics::CharacterBuffer& GetNote(uint32 index) const;
+        bool UpdateNote(uint32 index, const ConstString& note);
+        uint32 GetNotesCount() const;
+        const std::vector<Graphics::CharacterBuffer>& GetNotes() const;
+        bool RemoveNote(uint32 index);
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
@@ -5552,13 +5560,18 @@ namespace Application
     EXPORT bool RunTestScript(std::string_view script);
     EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
     EXPORT Controls::ItemHandle AddWindow(
-          unique_ptr<Controls::Window> wnd, Controls::ItemHandle referal = Controls::InvalidItemHandle);
-    EXPORT Controls::ItemHandle AddWindow(unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow);
+          unique_ptr<Controls::Window> wnd,
+          Controls::ItemHandle referal = Controls::InvalidItemHandle,
+          const ConstString&  = "");
     EXPORT Controls::ItemHandle AddWindow(
-          unique_ptr<Controls::Window> wnd, Utils::Reference<Controls::Window> referalWindow);
+          unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow, const ConstString& = "");
+    EXPORT Controls::ItemHandle AddWindow(
+          unique_ptr<Controls::Window> wnd,
+          Utils::Reference<Controls::Window> referalWindow, const ConstString& = "");
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
     EXPORT bool GetApplicationSize(Graphics::Size& size);
     EXPORT bool GetDesktopSize(Graphics::Size& size);
+    EXPORT Utils::Reference<Controls::Window> GetCurrentWindow();
     EXPORT void ArrangeWindows(ArrangeWindowsMethod method);
     EXPORT void RaiseEvent(
           Utils::Reference<Controls::Control> control,

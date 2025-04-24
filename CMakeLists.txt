@@ -174,6 +174,7 @@ if(APPCUI_ENABLE_EXAMPLES)
     add_subdirectory(Examples/WindowMoveBetweenControls)
     add_subdirectory(Examples/MemoryFile)
     add_subdirectory(Examples/TestScript)
+    add_subdirectory(Examples/WindowManager)
 endif()
 
 if (APPLE)
