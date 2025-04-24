@@ -40,11 +40,11 @@ jobs:
 
     # https://github.com/dotnet/runtime/issues/82240
     # temporarily install pkg-config via brew
-    - name: Install pkg-config
-      run: |
-        # brew update
-        brew install pkg-config
-        # brew upgrade
+    # - name: Install pkg-config
+    #   run: |
+    #     # brew update
+    #     brew install pkg-config
+    #     # brew upgrade
       
     # - name: Install sdl
     #   run: brew install sdl2
@@ -58,7 +58,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
   build-ubuntu:
-    runs-on: [ubuntu-20.04]
+    runs-on: [ubuntu-22.04]
     env:
       CC: gcc-10
       CXX: g++-10
