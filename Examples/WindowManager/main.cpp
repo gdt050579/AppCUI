@@ -10,12 +10,15 @@ using namespace AppCUI::Input;
 #define COMMAND_ID_VERTICAL     1002
 #define COMMAND_ID_HORIZONTAL   1003
 #define COMMAND_ID_GRID         1004
+#define COMMAND_ID_ADD_NOTES    1005
 
 class MyWin : public Window
 {
+    uint32 notes_index;
   public:
     MyWin(std::string_view name, char16 hotKey) : Window(name, "x:1,y:1,w:50,h:10", WindowFlags::Sizeable)
     {
+        notes_index = 0;
         Factory::Label::Create(this, "There are created 10 Windows", "l:1,t:1,w:40");
         Factory::Label::Create(this, "Look at them using WindowManager", "l:1,t:2,w:40");
         Factory::Label::Create(this, "Press '1' to look at WindowManager", "l:1,t:3,w:40");
@@ -28,6 +31,7 @@ class MyWin : public Window
         cmd.SetCommand(Key::F3, "Vertical", COMMAND_ID_VERTICAL);
         cmd.SetCommand(Key::F4, "Horizontal", COMMAND_ID_HORIZONTAL);
         cmd.SetCommand(Key::F5, "Grid", COMMAND_ID_GRID);
+        cmd.SetCommand(Key::F6, "AddNotes", COMMAND_ID_ADD_NOTES);
         return true;
     }
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override
@@ -62,6 +66,14 @@ class MyWin : public Window
             case COMMAND_ID_GRID:
                 Application::ArrangeWindows(ArrangeWindowsMethod::Grid);
                 break;
+            case COMMAND_ID_ADD_NOTES:
+            {
+                LocalString<128> noteText;
+                noteText.SetFormat("Note %d", notes_index++);
+                auto currentWindow = GetCurrentWindow();
+                currentWindow->AddNote(noteText.GetText());
+                break;
+            }
             default:
                 break;
             }

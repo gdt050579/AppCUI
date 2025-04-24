@@ -3846,6 +3846,12 @@ namespace Controls
         const Graphics::CharacterBuffer& GetTag();
         void SetCreationProcessDetails(const ConstString& creationProcess);
         const Graphics::CharacterBuffer& GetCreationProcess();
+        void AddNote(const ConstString& note);
+        const Graphics::CharacterBuffer& GetNote(uint32 index) const;
+        bool UpdateNote(uint32 index, const ConstString& note);
+        uint32 GetNotesCount() const;
+        const std::vector<Graphics::CharacterBuffer>& GetNotes() const;
+        bool RemoveNote(uint32 index);
         bool OnBeforeResize(int newWidth, int newHeight) override;
         void OnAfterResize(int newWidth, int newHeight) override;
         bool CenterScreen();
