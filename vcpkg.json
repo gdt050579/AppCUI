@@ -37,6 +37,10 @@
         {
             "name": "libjpeg-turbo",
             "platform": "windows | linux | osx"
+        },
+        {
+            "name": "cmakerc",
+            "platform": "windows | linux | osx"
         }
     ],
     "vcpkg-configuration": {

@@ -1,38 +1,36 @@
-#include <dlfcn.h>
 #include "Internal.hpp"
+#include <dlfcn.h>
 
 namespace AppCUI::OS
 {
-Library::Library()
+bool Library::Load(const std::filesystem::path& path, std::string& errorMessage)
 {
-    this->libraryHandle = nullptr;
-}
+    if (libraryHandle)
+    {
+        errorMessage = "Library already opened!";
+        RETURNERROR(false, errorMessage.c_str());
+    }
+    libraryHandle = dlopen(path.native().c_str(), RTLD_LAZY);
+    if (!libraryHandle)
+    {
+        const auto error = dlerror();
+        errorMessage     = "Fail to load library: " + path.generic_string() + " " + "[dlerror=" + error + "]!";
+        RETURNERROR(false, errorMessage.c_str());
+    }
 
-bool Library::Load(const std::filesystem::path& path)
-{
-    CHECK(this->libraryHandle == nullptr, false, "Library already opened !");
-    this->libraryHandle = dlopen(path.native().c_str(), RTLD_LAZY);
-    CHECK(this->libraryHandle,
-          false,
-          "Fail to load library: %s [dlerror=%s]",
-          path.generic_string().c_str(),
-          dlerror());
     return true;
 }
 
-void* Library::GetFunction(const char* functionName) const
+void* Library::GetFunction(const char* name) const
 {
-    CHECK(this->libraryHandle, nullptr, "Library was not loaded --> have you call Load(...) first ?");
-    CHECK(functionName, nullptr, "Expecting a valid (non-null) function name !");
-    CHECK(*functionName, nullptr, "Expecting a valid (non-empty) function name !");
+    CHECK(libraryHandle, nullptr, "Library was not loaded --> have you call Load(...) first ?");
+    CHECK(name, nullptr, "Expecting a valid (non-null) function name !");
+    CHECK(*name, nullptr, "Expecting a valid (non-empty) function name !");
+
     // all good
-    void* fnPtr             = dlsym(libraryHandle, functionName);
-    const char* dlsym_error = dlerror();
-    CHECK((dlsym_error == nullptr) && (fnPtr),
-          nullptr,
-          "Unable to find address of function: %s [dlerror=%s]",
-          functionName,	
-          dlsym_error);
+    void* fnPtr       = dlsym(libraryHandle, name);
+    const char* error = dlerror();
+    CHECK(!error && fnPtr, nullptr, "Unable to find address of function: %s [dlerror=%s]", name, error);
     return fnPtr;
 }
-}
+} // namespace AppCUI::OS

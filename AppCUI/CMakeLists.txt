@@ -56,7 +56,7 @@ find_package(libjpeg-turbo CONFIG REQUIRED)
 find_package(PNG REQUIRED) 
 find_package(Freetype REQUIRED) 
 find_package(SDL2 CONFIG REQUIRED)
-find_package(SDL2TTF REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
 
 if (UNIX)
     if (APPLE)
@@ -113,8 +113,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:libjpeg-turbo
 message("FREETYPE_LIBRARIES => ${FREETYPE_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FREETYPE_LIBRARIES})
 
-# Add font used by SDL 
-include(CMakeRC)
+# Add font used by SDL
+find_package(CMakeRC CONFIG REQUIRED)
 
 set(FONT_NAME JuliaMono-Regular.ttf)
 set(FONT_PATH resources/${FONT_NAME})
@@ -125,8 +125,18 @@ message("FONT_NAME => ${FONT_NAME}")
 message("FONT_PATH => ${FONT_PATH}")
 message("FONT_LIB_NAME => ${FONT_LIB_NAME}")
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE 
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2TTF_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE 
+    $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FONT_LIB_NAME})
 
 if (APPLE AND NOT APPCUI_ENABLE_OUTPUT_LOCATION)
