@@ -309,13 +309,13 @@ class MyUserControl : public UserControl, public PropertiesInterface
         };
     };
 };
-class PropertyWindowExmaple : public Window
+class PropertyWindowExample : public Window
 {
     Reference<MyUserControl> ct;
     Reference<PropertyList> pl;
 
   public:
-    PropertyWindowExmaple() : Window("Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
+    PropertyWindowExample() : Window("Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         auto sp = Factory::Splitter::Create(this, "d:c", SplitterFlags::Vertical);
         ct      = sp->CreateChildControl<MyUserControl>();
@@ -339,7 +339,7 @@ int main()
 {
     if (!Application::Init(InitializationFlags::EnableFPSMode))
         return 1;
-    Application::AddWindow(std::make_unique<PropertyWindowExmaple>());
+    Application::AddWindow(std::make_unique<PropertyWindowExample>());
     Application::Run();
     return 0;
 }
