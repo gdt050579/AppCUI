@@ -268,10 +268,6 @@ class MyUserControl : public UserControl, public PropertiesInterface
             return true;
         return false;
     }
-    bool IsPropertySerializable(uint32 propertyID) override
-    {
-        return false;
-    }
     const vector<Property> GetPropertiesList() override
     {
         return {
@@ -286,6 +282,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
               "Look & Feel",
               "Border Type",
               PropertyType::List,
+              false,
               "Single=1,Double=2,Thick=3" },
             { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
             { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
@@ -293,17 +290,20 @@ class MyUserControl : public UserControl, public PropertiesInterface
               "Animation",
               "Started",
               PropertyType::Boolean,
+              false,
               "Stopped,Running" },
             { (uint32) MyControlProperty::AnimationKey, "Animation", "Key for start/stop", PropertyType::Key },
             { (uint32) MyControlProperty::AnimationSpeed,
               "Animation",
               "Speed",
               PropertyType::List,
+              false,
               "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
             { (uint32) MyControlProperty::Flags,
               "General",
               "File flags",
               PropertyType::Flags,
+              false,
               "Read=1,Write=2,Execute=4,Shared=8" },
             { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
         };
