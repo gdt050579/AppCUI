@@ -268,6 +268,10 @@ class MyUserControl : public UserControl, public PropertiesInterface
             return true;
         return false;
     }
+    bool IsPropertySerializable(uint32 propertyID) override
+    {
+        return false;
+    }
     const vector<Property> GetPropertiesList() override
     {
         return {

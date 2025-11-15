@@ -2039,6 +2039,10 @@ class ConfigProperty : public PropertiesInterface
     {
         NOT_IMPLEMENTED(false);
     }
+    bool IsPropertySerializable(uint32 /*propertyID*/) override
+    {
+        return false;
+    }
     const vector<Property> GetPropertiesList() override
     {
 #define PT(t)  static_cast<uint32>(t)

@@ -790,15 +790,18 @@ namespace Utils
         string_view category, name, help;
         PropertyType type;
         ConstString values;
+        bool isSerializable;
 
         Property(uint32 ID, string_view _category, string_view _name, PropertyType _type)
-            : id(ID), category(_category), name(_name), type(_type)
-        {
-        }
-        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type, const ConstString _values)
-            : id(ID), category(_category), name(_name), type(_type), values(_values)
-        {
-        }
+            : id(ID), category(_category), name(_name), type(_type), isSerializable(false) {}
+        Property(
+              uint32 ID,
+              string_view _category,
+              string_view _name,
+              PropertyType _type,
+              const ConstString _values,
+              bool _serializable = false)
+            : id(ID), category(_category), name(_name), type(_type), values(_values), isSerializable(_serializable) {}
     };
     struct EXPORT PropertiesInterface
     {
@@ -807,6 +810,7 @@ namespace Utils
         virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
         virtual void SetCustomPropertyValue(uint32 propertyID)                                      = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
+        virtual bool IsPropertySerializable(uint32 propertyID)                                      = 0;
         virtual const vector<Property> GetPropertiesList()                                          = 0;
     };
 
