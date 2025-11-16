@@ -1858,7 +1858,7 @@ void PropertyListContext::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButt
 {
     this->separatorStatus = PropertySeparatorStatus::None;
 }
-bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
+bool PropertyListContext::IsItemFiltered(const PropertyInfo& p) const
 {
     if (this->filterText.Empty())
         return true;
@@ -1962,9 +1962,10 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
         for (auto& e : obj->GetPropertiesList())
         {
             auto& pi = Members->properties.emplace_back();
-            pi.name  = e.name;
-            pi.type  = e.type;
-            pi.id    = e.id;
+            pi.name           = e.name;
+            pi.type           = e.type;
+            pi.id             = e.id;
+            pi.isSerializable = e.isSerializable;
             if ((pi.type == PropertyType::Flags) || (pi.type == PropertyType::List) ||
                 (pi.type == PropertyType::Boolean))
             {

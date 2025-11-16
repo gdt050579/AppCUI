@@ -1175,6 +1175,7 @@ struct PropertyInfo
     uint32 category;
     uint32 id;
     PropertyType type;
+    bool isSerializable;
 };
 enum class PropertySeparatorStatus : uint8
 {
@@ -1247,7 +1248,7 @@ struct PropertyListContext : public ControlContext
     bool OnMouseOver(int x, int y, PropertyItemLocation& loc);
     bool OnMouseLeave();
     void OnMouseReleased(int x, int y, Input::MouseButton button);
-    bool IsItemFiltered(const PropertyInfo& prop);
+    bool IsItemFiltered(const PropertyInfo& prop) const;
     void Refilter();
     void EditAndUpdateText(const PropertyInfo& prop);
     void EditAndUpdateBool(const PropertyInfo& prop);
