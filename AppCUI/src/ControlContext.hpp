@@ -1215,6 +1215,14 @@ struct PropertyListContext : public ControlContext
     PropertyItemLocation hoveredItemStatus;
     uint32 hoveredItemIDX;
     Reference<PropertyList> host;
+    bool hasSerializableProperties;
+    inline int GetCurrentHeight() const
+    {
+        auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
+        if (hasSerializableProperties && h > 0)
+            --h;
+        return h;
+    }
 
     void ExecuteItemAction();
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);

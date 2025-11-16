@@ -1331,23 +1331,26 @@ void PropertyListContext::DrawFilterBar(Graphics::Renderer& renderer)
 {
     auto filterWidth = std::min<>(FILTER_PREFERED_WIDTH, this->Layout.Width - 7);
     auto col         = this->filteredMode ? Cfg->SearchBar.Focused : Cfg->SearchBar.Normal;
-    renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', col);
+    auto filterY     = this->Layout.Height - 1;
+    if (hasSerializableProperties)
+        --filterY;
+    renderer.FillHorizontalLine(2, filterY, 2 + filterWidth + 1, ' ', col);
 
     if (this->filterText.Len() <= filterWidth)
     {
-        renderer.WriteSingleLineText(3, this->Layout.Height - 1, this->filterText, col);
+        renderer.WriteSingleLineText(3, filterY, this->filterText, col);
         if (this->filteredMode)
-            renderer.SetCursor(3 + this->filterText.Len(), this->Layout.Height - 1);
+            renderer.SetCursor(3 + this->filterText.Len(), filterY);
     }
     else
     {
         renderer.WriteSingleLineText(
               3,
-              this->Layout.Height - 1,
+              filterY,
               string_view{ this->filterText.GetText() + this->filterText.Len() - filterWidth, (size_t) filterWidth },
               col);
         if (this->filteredMode)
-            renderer.SetCursor(3 + filterWidth, this->Layout.Height - 1);
+            renderer.SetCursor(3 + filterWidth, filterY);
     }
 }
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
@@ -1379,11 +1382,14 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Unchecked      = this->Cfg->Symbol.Unchecked;
     }
     renderer.Clear(' ', NoColorPair);
+    if (hasSerializableProperties)
+    {
+        max_y--;
+    }
     if (this->hasBorder)
     {
         const auto state = GetControlState(ControlStateFlags::ProcessHoverStatus);
-        renderer.DrawRectSize(
-              0, 0, this->Layout.Width, this->Layout.Height, Cfg->Border.GetColor(state), LineType::Single);
+        renderer.DrawRectSize(0, 0, this->Layout.Width, max_y, Cfg->Border.GetColor(state), LineType::Single);
         if ((this->Focused) && (this->Layout.Width > 9))
             DrawFilterBar(renderer);
         y++;
@@ -1439,7 +1445,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
     }
     if (newPos >= this->items.Len())
         newPos = this->items.Len() - 1;
-    auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
+    auto h = GetCurrentHeight();
     if (h < 1)
         return; // sanity check
     uint32 height = (uint32) h;
@@ -1464,7 +1470,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
 }
 void PropertyListContext::MoveScrollTo(uint32 newPos)
 {
-    auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
+    auto h = GetCurrentHeight();
     if (h < 1)
         return; // sanity check
     if (newPos + h <= items.Len())
@@ -1656,7 +1662,7 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
 }
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
-    auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
+    auto h = GetCurrentHeight() - 1;
 
     switch (keyCode)
     {
@@ -1966,6 +1972,8 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
             pi.type           = e.type;
             pi.id             = e.id;
             pi.isSerializable = e.isSerializable;
+            if (!Members->hasSerializableProperties && e.isSerializable)
+                Members->hasSerializableProperties = true;
             if ((pi.type == PropertyType::Flags) || (pi.type == PropertyType::List) ||
                 (pi.type == PropertyType::Boolean))
             {
