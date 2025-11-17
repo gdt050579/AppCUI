@@ -1195,10 +1195,12 @@ enum class PropertySelectionType : uint8
     Both
 };
 struct PropertyListContext;
-struct PropertyListCallbacksInjector : public AppCUI::Handlers::OnComboBoxCurrentItemChangedInterface
+struct PropertyListCallbacksInjector : public AppCUI::Handlers::OnComboBoxCurrentItemChangedInterface,
+                                       public AppCUI::Handlers::OnButtonPressedInterface
 {
     Reference<PropertyListContext> context;
     void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override;
+    void OnButtonPressed(Reference<Controls::Button> r) override;
 };
 struct PropertyListContext : public ControlContext
 {
@@ -1284,6 +1286,7 @@ struct PropertyListContext : public ControlContext
     void EditAndUpdateColor(const PropertyInfo& prop);
     void EditAndUpdateColorPair(const PropertyInfo& prop);
     void EditAndUpdateChar(const PropertyInfo& prop, bool isChar8);
+    void SaveSerializableFields();
 
     inline constexpr int32 GetSeparatorXPos() const
     {

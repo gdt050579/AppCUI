@@ -1546,6 +1546,25 @@ void PropertyListContext::EditAndUpdateChar(const PropertyInfo& prop, bool isCha
     PropertyCharEditDialog dlg(prop, object, IsPropertyReadOnly(prop), isChar8);
     dlg.ShowDialog();
 }
+void PropertyListContext::SaveSerializableFields()
+{
+    if (!hasSerializableProperties)
+        return;
+    IniObject ini = {};
+    for (uint32 i = 0; i < properties.size(); i++)
+    {
+        auto& prop = properties[i];
+        if (!prop.isSerializable)
+            continue;
+        PropertyValue value;
+        if (!object->GetPropertyValue(prop.id, value))
+            continue;
+        auto& catName = categories[prop.category].name;
+        auto sec      = ini[catName.GetText()];
+
+        // TODO: implement proper saving of all supported types
+    }
+}
 void PropertyListCallbacksInjector::OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox)
 {
     const auto newIndex = cbox->GetCurrentItemIndex();
@@ -1553,6 +1572,10 @@ void PropertyListCallbacksInjector::OnComboBoxCurrentItemChanged(Reference<Contr
     context->selectionType = static_cast<PropertySelectionType>(newIndex);
     context->Refilter();
     context->AdjustItemIndex();
+}
+void PropertyListCallbacksInjector::OnButtonPressed(Reference<Controls::Button> r)
+{
+    context->SaveSerializableFields();
 }
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
@@ -2048,8 +2071,9 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
         Members->selectionTypeLabel         = Factory::Label::Create(this, "Type:", "w:5,b:0,l:1");
         Members->selectionTypeComboBox      = Factory::ComboBox::Create(this, "w:13,b:0,l:6", "Runtime,Config,Both");
         Members->selectionTypeComboBox->SetCurentItemIndex(2); // Both
-        Members->saveButton = Factory::Button::Create(this, "Save", "w:6,b:0,l:21", 0, ButtonFlags::Flat);
         Members->selectionTypeComboBox->Handlers()->OnCurrentItemChanged = Members->callbacksInjector;
+        Members->saveButton = Factory::Button::Create(this, "Save", "w:6,b:0,l:21", 0, ButtonFlags::Flat);
+        Members->saveButton->Handlers()->OnButtonPressed = Members->callbacksInjector;
     }
 }
 PropertyList::~PropertyList()
