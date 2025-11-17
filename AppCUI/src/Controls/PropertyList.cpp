@@ -1,4 +1,5 @@
 #include "ControlContext.hpp"
+#include <cassert>
 
 #ifdef MessageBox
 #    undef MessageBox
@@ -1545,6 +1546,14 @@ void PropertyListContext::EditAndUpdateChar(const PropertyInfo& prop, bool isCha
     PropertyCharEditDialog dlg(prop, object, IsPropertyReadOnly(prop), isChar8);
     dlg.ShowDialog();
 }
+void PropertyListCallbacksInjector::OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox)
+{
+    const auto newIndex = cbox->GetCurrentItemIndex();
+    assert(newIndex <= static_cast<uint32>(PropertySelectionType::Both));
+    context->selectionType = static_cast<PropertySelectionType>(newIndex);
+    context->Refilter();
+    context->AdjustItemIndex();
+}
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
     if (IsPropertyReadOnly(prop))
@@ -1626,16 +1635,11 @@ void PropertyListContext::ExecuteItemAction()
 }
 bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar)
 {
-    uint32 idx;
-    auto hasIndex = this->items.Get(this->currentPos, idx);
     if ((UnicodeChar >= 32) && (UnicodeChar < 127))
     {
         this->filterText.AddChar((char) UnicodeChar);
         Refilter();
-        if (hasIndex)
-            MoveToPropetyIndex(idx);
-        else
-            MoveTo(0); // first index
+        AdjustItemIndex();
         this->filteredMode = true;
         return true;
     }
@@ -1645,10 +1649,7 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
         {
             this->filterText.Truncate(this->filterText.Len() - 1);
             Refilter();
-            if (hasIndex)
-                MoveToPropetyIndex(idx);
-            else
-                MoveTo(0); // first index
+            AdjustItemIndex();
         }
         this->filteredMode = true;
         return true;
@@ -1659,6 +1660,15 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
         return true;
     }
     return false;
+}
+void PropertyListContext::AdjustItemIndex()
+{
+    uint32 idx;
+    const auto hasIndex = this->items.Get(this->currentPos, idx);
+    if (hasIndex)
+        MoveToPropetyIndex(idx);
+    else
+        MoveTo(0); // first index
 }
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
@@ -1867,8 +1877,26 @@ void PropertyListContext::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButt
 bool PropertyListContext::IsItemFiltered(const PropertyInfo& p) const
 {
     if (this->filterText.Empty())
+    {
+        if (hasSerializableProperties)
+        {
+            if (selectionType == PropertySelectionType::Serializable && !p.isSerializable ||
+                selectionType == PropertySelectionType::NonSerializable && p.isSerializable)
+                return false;
+        }
         return true;
-    return String::Contains(p.name.GetText(), this->filterText.GetText(), true);
+    }
+    if (String::Contains(p.name.GetText(), this->filterText.GetText(), true))
+    {
+        if (hasSerializableProperties)
+        {
+            if (selectionType == PropertySelectionType::Serializable && !p.isSerializable ||
+                selectionType == PropertySelectionType::NonSerializable && p.isSerializable)
+                return false;
+        }
+        return true;
+    }
+    return false;
 }
 void PropertyListContext::Refilter()
 {
@@ -1951,7 +1979,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->hoveredItemIDX            = INVALID_ITEM;
     Members->ScrollBars.OutsideControl = !Members->hasBorder;
     Members->host                      = this;
-
+    
     SetObject(obj);
 }
 void PropertyList::SetObject(Reference<PropertiesInterface> obj)
@@ -2013,6 +2041,16 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
 
     Members->items.Resize((uint32) Members->properties.size() * 2); // assume that each item has its own category
     Members->Refilter();
+
+    if (Members->hasSerializableProperties)
+    {
+        Members->callbacksInjector->context = Members;
+        Members->selectionTypeLabel         = Factory::Label::Create(this, "Type:", "w:5,b:0,l:1");
+        Members->selectionTypeComboBox      = Factory::ComboBox::Create(this, "w:13,b:0,l:6", "Runtime,Config,Both");
+        Members->selectionTypeComboBox->SetCurentItemIndex(2); // Both
+        Members->saveButton = Factory::Button::Create(this, "Save", "w:6,b:0,l:21", 0, ButtonFlags::Flat);
+        Members->selectionTypeComboBox->Handlers()->OnCurrentItemChanged = Members->callbacksInjector;
+    }
 }
 PropertyList::~PropertyList()
 {

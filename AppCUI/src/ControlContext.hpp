@@ -1188,6 +1188,18 @@ enum class PropertyItemLocation : uint8
     None,
     CollapseExpandButton
 };
+enum class PropertySelectionType : uint8
+{
+    NonSerializable,
+    Serializable,
+    Both
+};
+struct PropertyListContext;
+struct PropertyListCallbacksInjector : public AppCUI::Handlers::OnComboBoxCurrentItemChangedInterface
+{
+    Reference<PropertyListContext> context;
+    void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override;
+};
 struct PropertyListContext : public ControlContext
 {
     struct
@@ -1215,7 +1227,12 @@ struct PropertyListContext : public ControlContext
     PropertyItemLocation hoveredItemStatus;
     uint32 hoveredItemIDX;
     Reference<PropertyList> host;
+    Reference<ComboBox> selectionTypeComboBox;
+    Reference<Label> selectionTypeLabel;
+    Reference<Button> saveButton;
     bool hasSerializableProperties;
+    PropertySelectionType selectionType = PropertySelectionType::Both;
+    Pointer<PropertyListCallbacksInjector> callbacksInjector = new PropertyListCallbacksInjector();
     inline int GetCurrentHeight() const
     {
         auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
@@ -1248,6 +1265,7 @@ struct PropertyListContext : public ControlContext
     void DrawFilterBar(Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
+    void AdjustItemIndex();
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     bool MouseToItem(int x, int y, uint32& itemIndex, PropertyItemLocation& loc);
     void OnMousePressed(int x, int y, Input::MouseButton button);
