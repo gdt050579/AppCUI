@@ -1550,7 +1550,12 @@ void PropertyListContext::SaveSerializableFields()
 {
     if (!hasSerializableProperties)
         return;
-    IniObject ini = {};
+    auto *ini = AppCUI::Application::GetAppSettings();
+    if (!ini)
+    {
+        AppCUI::Dialogs::MessageBox::ShowError("Error", "Failed to obtain AppSettings!");
+        return;
+    }
     for (uint32 i = 0; i < properties.size(); i++)
     {
         auto& prop = properties[i];
@@ -1560,9 +1565,56 @@ void PropertyListContext::SaveSerializableFields()
         if (!object->GetPropertyValue(prop.id, value))
             continue;
         auto& catName = categories[prop.category].name;
-        auto sec      = ini[catName.GetText()];
+        auto sec      = (*ini)[catName.GetText()];
 
         // TODO: implement proper saving of all supported types
+        std::visit(
+              [&](const auto& v)
+              {
+                  using T = std::decay_t<decltype(v)>;
+
+                  if constexpr (std::is_same_v<T, std::monostate>)
+                  {
+                      // do nothing
+                  }
+                  else if constexpr (std::is_same_v<T, u8string_view>)
+                  {
+                      sec.UpdateValue(
+                            prop.name.GetText(),
+                            string_view{ reinterpret_cast<const char*>(v.data()), v.size() },
+                            false);
+                  }
+                  else if constexpr (std::is_same_v<T, u16string_view>)
+                  {
+                      UnicodeStringBuilder sb = {};
+                      sb.Add(v.data());
+                      std::string result;
+                      sb.ToString(result);
+                      sec.UpdateValue(prop.name.GetText(), result, false);
+                  }
+                  else if constexpr (std::is_same_v<T, CharacterView>)
+                  {
+                      UnicodeStringBuilder sb = {};
+                      sb.Resize(v.size());
+                      for (const auto&c : v)
+                      {
+                          sb.AddChar(c.Code);
+                      }
+                      std::string result;
+                      sb.ToString(result);
+                      sec.UpdateValue(prop.name.GetText(), result, false);
+                  }
+                  else
+                  {
+                      sec[prop.name.GetText()] = v;
+                  }
+              },
+              value);
+    }
+    const auto configPath = OS::GetCurrentApplicationPath().replace_extension("ini");
+    if (!ini->Save(configPath))
+    {
+        Dialogs::MessageBox::ShowError("Error", "Failed to save settings to file!");
     }
 }
 void PropertyListCallbacksInjector::OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox)
@@ -1572,6 +1624,9 @@ void PropertyListCallbacksInjector::OnComboBoxCurrentItemChanged(Reference<Contr
     context->selectionType = static_cast<PropertySelectionType>(newIndex);
     context->Refilter();
     context->AdjustItemIndex();
+
+    const bool enableButton = context->selectionType != PropertySelectionType::NonSerializable;
+    context->saveButton->SetEnabled(enableButton);
 }
 void PropertyListCallbacksInjector::OnButtonPressed(Reference<Controls::Button> r)
 {
