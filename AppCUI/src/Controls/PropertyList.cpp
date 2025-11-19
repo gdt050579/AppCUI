@@ -1564,8 +1564,17 @@ void PropertyListContext::SaveSerializableFields()
         PropertyValue value;
         if (!object->GetPropertyValue(prop.id, value))
             continue;
-        auto& catName = categories[prop.category].name;
-        auto sec      = (*ini)[catName.GetText()];
+        auto catName     = object->GetCategoryNameForSerialization();
+        auto sec          = (*ini)[(const char*)catName.data()];
+
+        std::string propName = prop.name.GetText();
+        std::erase(propName, ' ');
+        if (object->AddCategoryBeforePropertyNameWhenSerializing())
+        {
+            auto propCatName = std::string(categories[prop.category].name.GetText());
+            std::erase(propCatName, ' ');
+            propName = std::format("{}.{}", propCatName, propName);
+        }
 
         // TODO: implement proper saving of all supported types
         std::visit(
@@ -1580,7 +1589,7 @@ void PropertyListContext::SaveSerializableFields()
                   else if constexpr (std::is_same_v<T, u8string_view>)
                   {
                       sec.UpdateValue(
-                            prop.name.GetText(),
+                            propName,
                             string_view{ reinterpret_cast<const char*>(v.data()), v.size() },
                             false);
                   }
@@ -1590,7 +1599,7 @@ void PropertyListContext::SaveSerializableFields()
                       sb.Add(v.data());
                       std::string result;
                       sb.ToString(result);
-                      sec.UpdateValue(prop.name.GetText(), result, false);
+                      sec.UpdateValue(propName, result, false);
                   }
                   else if constexpr (std::is_same_v<T, CharacterView>)
                   {
@@ -1602,11 +1611,11 @@ void PropertyListContext::SaveSerializableFields()
                       }
                       std::string result;
                       sb.ToString(result);
-                      sec.UpdateValue(prop.name.GetText(), result, false);
+                      sec.UpdateValue(propName, result, false);
                   }
                   else
                   {
-                      sec[prop.name.GetText()] = v;
+                      sec[propName] = v;
                   }
               },
               value);

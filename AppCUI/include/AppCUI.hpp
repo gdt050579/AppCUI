@@ -815,6 +815,8 @@ namespace Utils
         virtual void SetCustomPropertyValue(uint32 propertyID)                                      = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
         virtual const vector<Property> GetPropertiesList()                                          = 0;
+        virtual std::string_view GetCategoryNameForSerialization() const                            = 0;
+        virtual bool AddCategoryBeforePropertyNameWhenSerializing() const                           = 0;
     };
 
     // Example:

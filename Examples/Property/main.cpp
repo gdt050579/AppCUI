@@ -308,6 +308,16 @@ class MyUserControl : public UserControl, public PropertiesInterface
             { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
         };
     };
+
+    std::string_view GetCategoryNameForSerialization() const override
+    {
+        return "MyUserControlProperties";
+    }
+
+    bool AddCategoryBeforePropertyNameWhenSerializing() const override
+    {
+        return true;
+    }
 };
 class PropertyWindowExample : public Window
 {

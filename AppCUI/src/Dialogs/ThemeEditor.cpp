@@ -2243,6 +2243,15 @@ class ConfigProperty : public PropertiesInterface
         }
         return properties;
     }
+
+    std::string_view GetCategoryNameForSerialization() const override
+    {
+        return "ConfigProperty";
+    }
+    bool AddCategoryBeforePropertyNameWhenSerializing() const override
+    {
+        return false;
+    }
 };
 class PreviewControl : public UserControl
 {
