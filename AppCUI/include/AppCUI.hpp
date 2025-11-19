@@ -2115,6 +2115,8 @@ namespace Utils
         void operator=(string_view value);
         void operator=(Graphics::Size value);
         void operator=(Input::Key value);
+        void operator=(Graphics::Color value);
+        void operator=(Graphics::ColorPair value);
         void operator=(const initializer_list<const char*>& values);
         void operator=(const initializer_list<std::string>& values);
         void operator=(const initializer_list<bool>& values);
@@ -2176,6 +2178,8 @@ namespace Utils
         void UpdateValue(string_view name, string_view value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Graphics::Size value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::Color value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::ColorPair value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);

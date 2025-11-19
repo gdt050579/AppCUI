@@ -842,6 +842,14 @@ void IniSection::UpdateValue(string_view name, Input::Key value, bool dontUpdate
 {
     UpdateValueForSection<Input::Key>(this->Data, name, value, dontUpdateIfValueExits);
 }
+void IniSection::UpdateValue(string_view name, Graphics::Color value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<Graphics::Color>(this->Data, name, value, dontUpdateIfValueExits);
+}
+void IniSection::UpdateValue(string_view name, Graphics::ColorPair value, bool dontUpdateIfValueExits)
+{
+    UpdateValueForSection<Graphics::ColorPair>(this->Data, name, value, dontUpdateIfValueExits);
+}
 void IniSection::UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits)
 {
     UpdateValueForSection<const initializer_list<std::string>&>(this->Data, name, values, dontUpdateIfValueExits);
@@ -1184,6 +1192,23 @@ void IniValue::operator=(Input::Key value)
     if (!Utils::KeyUtils::ToString(value, tmp))
         return;
     iniValue->KeyValue = tmp;
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(Graphics::Color value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    iniValue->KeyValue = ColorUtils::GetColorName(value);
+    iniValue->KeyValues.clear();
+}
+void IniValue::operator=(Graphics::ColorPair value)
+{
+    PREPARE_VALUE;
+    LocalString<64> tmp;
+    const auto foreColor     = ColorUtils::GetColorName(value.Foreground);
+    const auto backColor     = ColorUtils::GetColorName(value.Background);
+    tmp.SetFormat("%s,%s", (const char*) foreColor.data(), (const char*) backColor.data());
+    iniValue->KeyValue = tmp.GetText();
     iniValue->KeyValues.clear();
 }
 void IniValue::operator=(const initializer_list<std::string>& values)
