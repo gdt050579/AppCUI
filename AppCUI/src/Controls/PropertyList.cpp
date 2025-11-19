@@ -1565,6 +1565,12 @@ void PropertyListContext::SaveSerializableFields()
         if (!object->GetPropertyValue(prop.id, value))
             continue;
         auto catName     = object->GetCategoryNameForSerialization();
+        if (catName.find(' ') != std::string::npos)
+        {
+            std::string err = std::format("CategoryNameForSerialization '{}' contains spaces!", catName);
+            Dialogs::MessageBox::ShowError("Error", err);
+            return;
+        }
         auto sec          = (*ini)[(const char*)catName.data()];
 
         std::string propName = prop.name.GetText();
