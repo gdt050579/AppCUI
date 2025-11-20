@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-15-intel, windows-latest]
+        os: [ubuntu-24.04, macos-15-intel, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y build-essential cmake ninja-build libsdl2-dev libsdl2-ttf-dev zip
+          sudo apt-get install -y build-essential cmake ninja-build libsdl2-dev libsdl2-ttf-dev zip libltdl-dev
 
       - name: Install dependencies (macOS)
         if: startsWith(matrix.os, 'macos')

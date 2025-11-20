@@ -21,7 +21,7 @@ jobs:
             bin_path: D:/a/AppCUI/AppCUI/bin
             vcpkg_triplet: x64-windows
             archive_tool: 7z
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             lib_ext: a
             bin_path: /home/runner/work/AppCUI/AppCUI/bin
             vcpkg_triplet: x64-linux
@@ -42,7 +42,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y build-essential cmake zip libx11-dev
+          sudo apt-get install -y build-essential cmake zip libx11-dev libltdl-dev
 
       - name: Install dependencies (macOS)
         if: startsWith(matrix.os, 'macos')

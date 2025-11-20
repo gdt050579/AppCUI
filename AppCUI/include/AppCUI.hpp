@@ -789,14 +789,21 @@ namespace Utils
         uint32 id;
         string_view category, name, help;
         PropertyType type;
+        bool isSerializable;
         ConstString values;
 
-        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type)
-            : id(ID), category(_category), name(_name), type(_type)
+        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type, bool _serializable = false)
+            : id(ID), category(_category), name(_name), type(_type), isSerializable(_serializable)
         {
         }
-        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type, const ConstString _values)
-            : id(ID), category(_category), name(_name), type(_type), values(_values)
+        Property(
+              uint32 ID,
+              string_view _category,
+              string_view _name,
+              PropertyType _type,
+              bool _serializable,
+              const ConstString _values)
+            : id(ID), category(_category), name(_name), type(_type), isSerializable(_serializable) , values(_values)
         {
         }
     };
@@ -808,6 +815,8 @@ namespace Utils
         virtual void SetCustomPropertyValue(uint32 propertyID)                                      = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
         virtual const vector<Property> GetPropertiesList()                                          = 0;
+        virtual std::string_view GetCategoryNameForSerialization() const                            = 0;
+        virtual bool AddCategoryBeforePropertyNameWhenSerializing() const                           = 0;
     };
 
     // Example:
@@ -2108,6 +2117,8 @@ namespace Utils
         void operator=(string_view value);
         void operator=(Graphics::Size value);
         void operator=(Input::Key value);
+        void operator=(Graphics::Color value);
+        void operator=(Graphics::ColorPair value);
         void operator=(const initializer_list<const char*>& values);
         void operator=(const initializer_list<std::string>& values);
         void operator=(const initializer_list<bool>& values);
@@ -2169,6 +2180,8 @@ namespace Utils
         void UpdateValue(string_view name, string_view value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Graphics::Size value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::Color value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::ColorPair value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);

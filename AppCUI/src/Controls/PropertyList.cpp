@@ -1,4 +1,6 @@
 #include "ControlContext.hpp"
+#include <cassert>
+#include <format>
 
 #ifdef MessageBox
 #    undef MessageBox
@@ -1331,23 +1333,26 @@ void PropertyListContext::DrawFilterBar(Graphics::Renderer& renderer)
 {
     auto filterWidth = std::min<>(FILTER_PREFERED_WIDTH, this->Layout.Width - 7);
     auto col         = this->filteredMode ? Cfg->SearchBar.Focused : Cfg->SearchBar.Normal;
-    renderer.FillHorizontalLine(2, this->Layout.Height - 1, 2 + filterWidth + 1, ' ', col);
+    auto filterY     = this->Layout.Height - 1;
+    if (hasSerializableProperties)
+        --filterY;
+    renderer.FillHorizontalLine(2, filterY, 2 + filterWidth + 1, ' ', col);
 
     if (this->filterText.Len() <= filterWidth)
     {
-        renderer.WriteSingleLineText(3, this->Layout.Height - 1, this->filterText, col);
+        renderer.WriteSingleLineText(3, filterY, this->filterText, col);
         if (this->filteredMode)
-            renderer.SetCursor(3 + this->filterText.Len(), this->Layout.Height - 1);
+            renderer.SetCursor(3 + this->filterText.Len(), filterY);
     }
     else
     {
         renderer.WriteSingleLineText(
               3,
-              this->Layout.Height - 1,
+              filterY,
               string_view{ this->filterText.GetText() + this->filterText.Len() - filterWidth, (size_t) filterWidth },
               col);
         if (this->filteredMode)
-            renderer.SetCursor(3 + filterWidth, this->Layout.Height - 1);
+            renderer.SetCursor(3 + filterWidth, filterY);
     }
 }
 void PropertyListContext::Paint(Graphics::Renderer& renderer)
@@ -1379,11 +1384,14 @@ void PropertyListContext::Paint(Graphics::Renderer& renderer)
         this->Colors.Unchecked      = this->Cfg->Symbol.Unchecked;
     }
     renderer.Clear(' ', NoColorPair);
+    if (hasSerializableProperties)
+    {
+        max_y--;
+    }
     if (this->hasBorder)
     {
         const auto state = GetControlState(ControlStateFlags::ProcessHoverStatus);
-        renderer.DrawRectSize(
-              0, 0, this->Layout.Width, this->Layout.Height, Cfg->Border.GetColor(state), LineType::Single);
+        renderer.DrawRectSize(0, 0, this->Layout.Width, max_y, Cfg->Border.GetColor(state), LineType::Single);
         if ((this->Focused) && (this->Layout.Width > 9))
             DrawFilterBar(renderer);
         y++;
@@ -1439,7 +1447,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
     }
     if (newPos >= this->items.Len())
         newPos = this->items.Len() - 1;
-    auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
+    auto h = GetCurrentHeight();
     if (h < 1)
         return; // sanity check
     uint32 height = (uint32) h;
@@ -1464,7 +1472,7 @@ void PropertyListContext::MoveTo(uint32 newPos)
 }
 void PropertyListContext::MoveScrollTo(uint32 newPos)
 {
-    auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
+    auto h = GetCurrentHeight();
     if (h < 1)
         return; // sanity check
     if (newPos + h <= items.Len())
@@ -1538,6 +1546,107 @@ void PropertyListContext::EditAndUpdateChar(const PropertyInfo& prop, bool isCha
 {
     PropertyCharEditDialog dlg(prop, object, IsPropertyReadOnly(prop), isChar8);
     dlg.ShowDialog();
+}
+void PropertyListContext::SaveSerializableFields()
+{
+    if (!hasSerializableProperties)
+        return;
+    auto *ini = AppCUI::Application::GetAppSettings();
+    if (!ini)
+    {
+        AppCUI::Dialogs::MessageBox::ShowError("Error", "Failed to obtain AppSettings!");
+        return;
+    }
+    for (uint32 i = 0; i < properties.size(); i++)
+    {
+        auto& prop = properties[i];
+        if (!prop.isSerializable)
+            continue;
+        PropertyValue value;
+        if (!object->GetPropertyValue(prop.id, value))
+            continue;
+        auto catName     = object->GetCategoryNameForSerialization();
+        if (catName.find(' ') != std::string::npos)
+        {
+            std::string err = std::format("CategoryNameForSerialization '{}' contains spaces!", catName);
+            Dialogs::MessageBox::ShowError("Error", err);
+            return;
+        }
+        auto sec          = (*ini)[(const char*)catName.data()];
+
+        std::string propName = prop.name.GetText();
+        std::erase(propName, ' ');
+        if (object->AddCategoryBeforePropertyNameWhenSerializing())
+        {
+            auto propCatName = std::string(categories[prop.category].name.GetText());
+            std::erase(propCatName, ' ');
+            propName = std::format("{}.{}", propCatName, propName);
+        }
+
+        // TODO: implement proper saving of all supported types
+        std::visit(
+              [&](const auto& v)
+              {
+                  using T = std::decay_t<decltype(v)>;
+
+                  if constexpr (std::is_same_v<T, std::monostate>)
+                  {
+                      // do nothing
+                  }
+                  else if constexpr (std::is_same_v<T, u8string_view>)
+                  {
+                      sec.UpdateValue(
+                            propName,
+                            string_view{ reinterpret_cast<const char*>(v.data()), v.size() },
+                            false);
+                  }
+                  else if constexpr (std::is_same_v<T, u16string_view>)
+                  {
+                      UnicodeStringBuilder sb = {};
+                      sb.Add(v.data());
+                      std::string result;
+                      sb.ToString(result);
+                      sec.UpdateValue(propName, result, false);
+                  }
+                  else if constexpr (std::is_same_v<T, CharacterView>)
+                  {
+                      UnicodeStringBuilder sb = {};
+                      sb.Resize(v.size());
+                      for (const auto&c : v)
+                      {
+                          sb.AddChar(c.Code);
+                      }
+                      std::string result;
+                      sb.ToString(result);
+                      sec.UpdateValue(propName, result, false);
+                  }
+                  else
+                  {
+                      sec[propName] = v;
+                  }
+              },
+              value);
+    }
+    const auto configPath = OS::GetCurrentApplicationPath().replace_extension("ini");
+    if (!ini->Save(configPath))
+    {
+        Dialogs::MessageBox::ShowError("Error", "Failed to save settings to file!");
+    }
+}
+void PropertyListCallbacksInjector::OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox)
+{
+    const auto newIndex = cbox->GetCurrentItemIndex();
+    assert(newIndex <= static_cast<uint32>(PropertySelectionType::Both));
+    context->selectionType = static_cast<PropertySelectionType>(newIndex);
+    context->Refilter();
+    context->AdjustItemIndex();
+
+    const bool enableButton = context->selectionType != PropertySelectionType::NonSerializable;
+    context->saveButton->SetEnabled(enableButton);
+}
+void PropertyListCallbacksInjector::OnButtonPressed(Reference<Controls::Button> r)
+{
+    context->SaveSerializableFields();
 }
 void PropertyListContext::EditAndUpdateBool(const PropertyInfo& prop)
 {
@@ -1620,16 +1729,11 @@ void PropertyListContext::ExecuteItemAction()
 }
 bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar)
 {
-    uint32 idx;
-    auto hasIndex = this->items.Get(this->currentPos, idx);
     if ((UnicodeChar >= 32) && (UnicodeChar < 127))
     {
         this->filterText.AddChar((char) UnicodeChar);
         Refilter();
-        if (hasIndex)
-            MoveToPropetyIndex(idx);
-        else
-            MoveTo(0); // first index
+        AdjustItemIndex();
         this->filteredMode = true;
         return true;
     }
@@ -1639,10 +1743,7 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
         {
             this->filterText.Truncate(this->filterText.Len() - 1);
             Refilter();
-            if (hasIndex)
-                MoveToPropetyIndex(idx);
-            else
-                MoveTo(0); // first index
+            AdjustItemIndex();
         }
         this->filteredMode = true;
         return true;
@@ -1654,9 +1755,18 @@ bool PropertyListContext::ProcessFilterKey(Input::Key keyCode, char16 UnicodeCha
     }
     return false;
 }
+void PropertyListContext::AdjustItemIndex()
+{
+    uint32 idx;
+    const auto hasIndex = this->items.Get(this->currentPos, idx);
+    if (hasIndex)
+        MoveToPropetyIndex(idx);
+    else
+        MoveTo(0); // first index
+}
 bool PropertyListContext::OnKeyEvent(Input::Key keyCode, char16 UnicodeChar)
 {
-    auto h = this->hasBorder ? this->Layout.Height - 3 : this->Layout.Height - 1;
+    auto h = GetCurrentHeight() - 1;
 
     switch (keyCode)
     {
@@ -1858,11 +1968,29 @@ void PropertyListContext::OnMouseReleased(int /*x*/, int /*y*/, Input::MouseButt
 {
     this->separatorStatus = PropertySeparatorStatus::None;
 }
-bool PropertyListContext::IsItemFiltered(const PropertyInfo& p)
+bool PropertyListContext::IsItemFiltered(const PropertyInfo& p) const
 {
     if (this->filterText.Empty())
+    {
+        if (hasSerializableProperties)
+        {
+            if (selectionType == PropertySelectionType::Serializable && !p.isSerializable ||
+                selectionType == PropertySelectionType::NonSerializable && p.isSerializable)
+                return false;
+        }
         return true;
-    return String::Contains(p.name.GetText(), this->filterText.GetText(), true);
+    }
+    if (String::Contains(p.name.GetText(), this->filterText.GetText(), true))
+    {
+        if (hasSerializableProperties)
+        {
+            if (selectionType == PropertySelectionType::Serializable && !p.isSerializable ||
+                selectionType == PropertySelectionType::NonSerializable && p.isSerializable)
+                return false;
+        }
+        return true;
+    }
+    return false;
 }
 void PropertyListContext::Refilter()
 {
@@ -1945,7 +2073,7 @@ PropertyList::PropertyList(string_view layout, Reference<PropertiesInterface> ob
     Members->hoveredItemIDX            = INVALID_ITEM;
     Members->ScrollBars.OutsideControl = !Members->hasBorder;
     Members->host                      = this;
-
+    
     SetObject(obj);
 }
 void PropertyList::SetObject(Reference<PropertiesInterface> obj)
@@ -1962,9 +2090,12 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
         for (auto& e : obj->GetPropertiesList())
         {
             auto& pi = Members->properties.emplace_back();
-            pi.name  = e.name;
-            pi.type  = e.type;
-            pi.id    = e.id;
+            pi.name           = e.name;
+            pi.type           = e.type;
+            pi.id             = e.id;
+            pi.isSerializable = e.isSerializable;
+            if (!Members->hasSerializableProperties && e.isSerializable)
+                Members->hasSerializableProperties = true;
             if ((pi.type == PropertyType::Flags) || (pi.type == PropertyType::List) ||
                 (pi.type == PropertyType::Boolean))
             {
@@ -2004,6 +2135,17 @@ void PropertyList::SetObject(Reference<PropertiesInterface> obj)
 
     Members->items.Resize((uint32) Members->properties.size() * 2); // assume that each item has its own category
     Members->Refilter();
+
+    if (Members->hasSerializableProperties)
+    {
+        Members->callbacksInjector->context = Members;
+        Members->selectionTypeLabel         = Factory::Label::Create(this, "Type:", "w:5,b:0,l:1");
+        Members->selectionTypeComboBox      = Factory::ComboBox::Create(this, "w:13,b:0,l:6", "Runtime,Config,Both");
+        Members->selectionTypeComboBox->SetCurentItemIndex(2); // Both
+        Members->selectionTypeComboBox->Handlers()->OnCurrentItemChanged = Members->callbacksInjector;
+        Members->saveButton = Factory::Button::Create(this, "Save", "w:6,b:0,l:21", 0, ButtonFlags::Flat);
+        Members->saveButton->Handlers()->OnButtonPressed = Members->callbacksInjector;
+    }
 }
 PropertyList::~PropertyList()
 {
