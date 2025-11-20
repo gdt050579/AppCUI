@@ -1621,10 +1621,11 @@ bool Renderer::DrawImage(const Image& img, int x, int y, ImageRenderingMethod me
 
 bool AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCharacterSetType charSetType)
 {
+    auto app = AppCUI::Application::GetApplication();
+    CHECK(app, false, "Application was not initialized");
+    app->SpecialCharsSet = charSetType;
     if (charSetType == AppCUI::Application::SpecialCharacterSetType::Auto)
     {
-        auto app = AppCUI::Application::GetApplication();
-        CHECK(app, false, "Application was not initialized");
         CHECK(app->terminal, false, "No terminal was associated/linked to current app");
         // check if support is available for different special character types
         Application::SpecialCharacterSetType order[] = { SpecialCharacterSetType::Unicode,
@@ -1657,10 +1658,18 @@ bool AppCUI::Application::SetSpecialCharacterSet(AppCUI::Application::SpecialCha
         AppCUI::Graphics::LineSpecialChars  = AppCUI::Graphics::AsciiSpecialChars::line_types_chars;
         break;
     default:
-        RETURNERROR(false, "Unknwon special character set --> this is a fallback case, it should not be reached !");
+        RETURNERROR(false, "Unknown special character set --> this is a fallback case, it should not be reached !");
         break;
     }
     return true;
 }
-
 #undef COMPUTE_RGB
+
+
+AppCUI::Utils::PropertiesInterface* AppCUI::Application::GetAppPropertiesObject()
+{
+    auto app = GetApplication();
+    CHECK(app, nullptr, "Application was not initialized at all");
+    CHECK(app->Inited, nullptr, "Application was not initialized");
+    return app;
+}
