@@ -1,5 +1,6 @@
 #include "ControlContext.hpp"
 #include <cassert>
+#include <format>
 
 #ifdef MessageBox
 #    undef MessageBox
