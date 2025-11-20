@@ -5617,6 +5617,7 @@ namespace Application
     EXPORT void Close();
     EXPORT void SetTheme(ThemeType themeType);
     EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
+    EXPORT Utils::PropertiesInterface* GetAppPropertiesObject();
 }; // namespace Application
 
 namespace Dialogs
