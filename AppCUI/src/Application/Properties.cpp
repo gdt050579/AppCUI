@@ -35,9 +35,6 @@ bool ApplicationImpl::GetPropertyValue(uint32 propertyID, Utils::PropertyValue& 
     case AppCUIPropertyIDs::THEME_NAME_PROPERTY_ID:
         value = static_cast<uint32>(this->config.Theme);
         return true;
-    case AppCUIPropertyIDs::THEME_FOLDER_PROPERTY_ID:
-        value = this->config.ThemesFolder.string().c_str();
-        return true;
     case AppCUIPropertyIDs::CHARACTER_SET_PROPERTY_ID:
         value = static_cast<uint32>(SpecialCharsSet);
         return true;
@@ -68,11 +65,11 @@ bool ApplicationImpl::SetPropertyValue(uint32 propertyID, const Utils::PropertyV
     // case AppCUIPropertyIDs::FIXED_PROPERTY_ID:
     //     // TODO:
     //     return true;
-    case AppCUIPropertyIDs::THEME_FOLDER_PROPERTY_ID:
-    {
-        this->config.ThemesFolder = std::get<string_view>(value).data();
-        return true;
-    }
+    //case AppCUIPropertyIDs::THEME_FOLDER_PROPERTY_ID:
+    //{
+    //    this->config.ThemesFolder = std::get<string_view>(value);
+    //    return true;
+    //}
     case AppCUIPropertyIDs::CHARACTER_SET_PROPERTY_ID:
     {
         const uint32 charSetValue = std::get<uint32>(value);
@@ -119,8 +116,8 @@ const vector<Utils::Property> ApplicationImpl::GetPropertiesList()
           "Theme",
           PropertyType::List,
           false,
-          " Default=0,Dark=1,Light=2" },
-        { BT(AppCUIPropertyIDs::THEME_FOLDER_PROPERTY_ID), "Config", "ThemeFolder", PropertyType::Unicode, true },
+          "Default=0,Dark=1,Light=2" },
+        //{ BT(AppCUIPropertyIDs::THEME_FOLDER_PROPERTY_ID), "Config", "ThemeFolder", PropertyType::UTF8, true },
         { BT(AppCUIPropertyIDs::CHARACTER_SET_PROPERTY_ID),
           "Config",
           "CharacterSet",
