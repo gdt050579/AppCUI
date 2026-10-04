@@ -337,6 +337,9 @@ namespace Internal
             return false;
         }
     };
+
+    // loads the [AppCUI] Keyboard.Ctrl / Keyboard.Alt modifier profile (identity when missing or invalid)
+    void LoadKeyboardSettings(Utils::IniSection section);
 } // namespace Internal
 namespace Application
 {

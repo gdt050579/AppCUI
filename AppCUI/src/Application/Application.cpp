@@ -266,6 +266,8 @@ void Application::UpdateAppCUISettings(Utils::IniObject& ini, bool clearExisting
     sect.UpdateValue("Theme", "Default", true);
     sect.UpdateValue("ThemeFolder", "Themes", true);
     sect.UpdateValue("CharacterSet", "auto", true);
+    sect.UpdateValue("Keyboard.Ctrl", "Ctrl", true);
+    sect.UpdateValue("Keyboard.Alt", "Alt", true);
 }
 bool Application::UpdateAppCUISettings(bool clearExistingSettings)
 {
@@ -665,6 +667,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     }
     // ini file is created --> let's load the section
     auto AppCUISection = this->settings.GetSection("appcui");
+    Internal::LoadKeyboardSettings(AppCUISection);
     if (AppCUISection.Exists() == false)
     {
         LOG_WARNING(
@@ -1340,6 +1343,9 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
             RepaintStatus = REPAINT_STATUS_NONE;
         }
         this->terminal->GetSystemEvent(evnt);
+        // keyboard profile: physical modifiers -> logical modifiers (keys, shift state and mouse modifiers)
+        if (!Application::GetModifierMap().IsIdentity())
+            evnt.keyCode = Application::GetModifierMap().ToLogical(evnt.keyCode);
         if (evnt.updateFrames)
         {
             if (ProcessUpdateFrameEvent(this->AppDesktop))

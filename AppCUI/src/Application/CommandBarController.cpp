@@ -53,7 +53,8 @@ void CommandBarController::Clear()
 bool CommandBarController::Set(Input::Key keyCode, const ConstString& caption, int Command)
 {
     CHECK(Command >= 0, false, "Command should be bigger or equal to 0");
-    CHECK(keyCode != Key::None, false, "Key code should be bigger than 0");
+    if (keyCode == Key::None)
+        return false; // unassigned shortcut (e.g. removed by the user) -> not shown
     uint32 index = (((uint32) keyCode) & 0xFF);
     uint32 shift = ((uint32) keyCode) >> ((uint32) Utils::KeyUtils::KEY_SHIFT_BITS);
     CHECK(index < (uint32) Input::Key::Count, false, "Invalid key code !");
@@ -122,7 +123,7 @@ void CommandBarController::ComputeScreenPos()
 {
     int startPoz;
     // validez shift state
-    ShiftStatus = Utils::KeyUtils::GetKeyModifierName(this->CurrentShiftKey);
+    ShiftStatus = Utils::KeyUtils::GetKeyModifierDisplayName(this->CurrentShiftKey);
     startPoz    = (int) ShiftStatus.length();
     if (startPoz > 0)
         startPoz++;
