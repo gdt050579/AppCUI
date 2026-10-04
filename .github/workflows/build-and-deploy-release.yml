@@ -46,9 +46,23 @@ jobs:
 
       - name: Install dependencies (macOS)
         if: startsWith(matrix.os, 'macos')
+        env:
+          # Homebrew does not provide bottles for Intel macOS anymore: `brew update` + upgrades are compiled from
+          # source (~40 minutes). cmake/ninja/pkg-config/zip are already on the runner image and SDL2/SDL2_ttf come
+          # from vcpkg -> only install what is missing, never update or upgrade.
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_UPGRADE: "1"
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+          HOMEBREW_NO_ANALYTICS: "1"
+          HOMEBREW_NO_ENV_HINTS: "1"
         run: |
-          brew update
-          brew install cmake pkg-config zip
+          missing=""
+          for entry in cmake:cmake pkgconf:pkg-config zip:zip; do
+            formula="${entry%%:*}"; tool="${entry##*:}"
+            command -v "$tool" >/dev/null 2>&1 || missing="$missing $formula"
+          done
+          if [ -n "$missing" ]; then brew install $missing; else echo "All build tools are already installed"; fi
 
       - name: Install dependencies (Windows)
         if: startsWith(matrix.os, 'windows')
