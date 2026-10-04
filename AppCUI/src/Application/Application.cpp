@@ -266,6 +266,8 @@ void Application::UpdateAppCUISettings(Utils::IniObject& ini, bool clearExisting
     sect.UpdateValue("Theme", "Default", true);
     sect.UpdateValue("ThemeFolder", "Themes", true);
     sect.UpdateValue("CharacterSet", "auto", true);
+    sect.UpdateValue("Keyboard.Ctrl", "Ctrl", true);
+    sect.UpdateValue("Keyboard.Alt", "Alt", true);
 }
 bool Application::UpdateAppCUISettings(bool clearExistingSettings)
 {
@@ -618,6 +620,7 @@ Application::FrontendType ApplicationImpl::GetFrontendType() const
 }
 void ApplicationImpl::Destroy()
 {
+    Internal::ResetKeyboardSettings(); // do not leak the keyboard profile to a future application instance
     this->Inited             = false;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
@@ -665,6 +668,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     }
     // ini file is created --> let's load the section
     auto AppCUISection = this->settings.GetSection("appcui");
+    Internal::LoadKeyboardSettings(AppCUISection);
     if (AppCUISection.Exists() == false)
     {
         LOG_WARNING(
@@ -680,8 +684,12 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     auto themeFolder    = AppCUISection.GetValue("themefolder").ToString();
     auto charSet      = AppCUISection.GetValue("characterSet").ToString();
 
+    // tests always run on the Tests frontend (with the size requested by the test) -> the settings file can not
+    // change them (a "Frontend = default" value would create a real console terminal and fail without one)
+    const bool isTestFrontend = initData.Frontend == Application::FrontendType::Tests;
+
     // frontend
-    if (frontend)
+    if ((frontend) && (!isTestFrontend))
     {
         if (String::Equals(frontend, "default", true))
             initData.Frontend = Application::FrontendType::Default;
@@ -711,7 +719,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     }
 
     // terminal size
-    const char* s_terminalSize = terminalSize.ToString();
+    const char* s_terminalSize = isTestFrontend ? nullptr : terminalSize.ToString();
     if (s_terminalSize)
     {
         if (String::Equals(s_terminalSize, "fullscreen", true))
@@ -770,6 +778,9 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
 bool ApplicationImpl::Init(Application::InitializationData& initData)
 {
     CHECK(!Inited, false, "Application has already been initialized !");
+
+    // the keyboard profile is process wide -> start from the default one; the settings file (if any) may change it
+    Internal::ResetKeyboardSettings();
 
     if ((initData.Flags & Application::InitializationFlags::LoadSettingsFile) != Application::InitializationFlags::None)
     {
@@ -1340,6 +1351,9 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
             RepaintStatus = REPAINT_STATUS_NONE;
         }
         this->terminal->GetSystemEvent(evnt);
+        // keyboard profile: physical modifiers -> logical modifiers (keys, shift state and mouse modifiers)
+        if (!Application::GetModifierMap().IsIdentity())
+            evnt.keyCode = Application::GetModifierMap().ToLogical(evnt.keyCode);
         if (evnt.updateFrames)
         {
             if (ProcessUpdateFrameEvent(this->AppDesktop))

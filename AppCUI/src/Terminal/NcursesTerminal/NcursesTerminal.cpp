@@ -338,40 +338,11 @@ bool NcursesTerminal::InitInput()
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
     mouseinterval(0);
     set_escdelay(0);
-
-    for (size_t i = 0; i < 12; i++)
-    {
-        // F(x) + shift => F(12) + x
-        keyTranslationMatrix[KEY_F(i + 1)] = static_cast<Key>(static_cast<uint32>(Key::F1) + i);
-
-        // If we press F1 + shift => it generates F13
-        keyTranslationMatrix[KEY_F(i + 13)] = static_cast<Key>(static_cast<uint32>(Key::F1) + i) | Key::Shift;
-    }
-
-#if __APPLE__
-    // some of these will be overwritten - it's ok
-    for (size_t i = 1; i < 'Z' - 'A' + 2; i++)
-    {
-        keyTranslationMatrix[i] = Key::Alt | static_cast<Key>((static_cast<uint32>(Key::A) + i - 1));
-    }
+#ifdef NCURSES_EXT_FUNCS
+    use_extended_names(TRUE); // needed for the modified-key capabilities (kUP5, kDC3, ...)
 #endif
 
-    keyTranslationMatrix[KEY_ENTER]     = Key::Enter;
-    keyTranslationMatrix[13]            = Key::Enter;
-    keyTranslationMatrix[10]            = Key::Enter;
-    keyTranslationMatrix[KEY_ESCAPE]    = Key::Escape;
-    keyTranslationMatrix[KEY_DELETE]    = Key::Delete;
-    keyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
-    keyTranslationMatrix[KEY_TAB]       = Key::Tab;
-    keyTranslationMatrix[KEY_LEFT]      = Key::Left;
-    keyTranslationMatrix[KEY_UP]        = Key::Up;
-    keyTranslationMatrix[KEY_DOWN]      = Key::Down;
-    keyTranslationMatrix[KEY_RIGHT]     = Key::Right;
-    keyTranslationMatrix[KEY_PPAGE]     = Key::PageUp;
-    keyTranslationMatrix[KEY_NPAGE]     = Key::PageDown;
-    keyTranslationMatrix[KEY_HOME]      = Key::Home;
-    keyTranslationMatrix[KEY_END]       = Key::End;
-    keyTranslationMatrix[KEY_DELETE]    = Key::Backspace;
+    BuildKeyTranslationTable();
 
     mode = TerminalMode::TerminalNormal;
 
@@ -411,6 +382,142 @@ void NcursesTerminal::HandleMouse(SystemEvent& evt, const int)
     }
 }
 
+namespace
+{
+#ifdef NCURSES_EXT_FUNCS
+    // xterm modifier parameter (CSI 1;<n>X) -> AppCUI modifiers
+    constexpr Key XTERM_MODIFIERS[9] = {
+        Key::None,                         // 0 (unused)
+        Key::None,                         // 1 (no modifier)
+        Key::Shift,                        // 2
+        Key::Alt,                          // 3
+        Key::Alt | Key::Shift,             // 4
+        Key::Ctrl,                         // 5
+        Key::Ctrl | Key::Shift,            // 6
+        Key::Ctrl | Key::Alt,              // 7
+        Key::Ctrl | Key::Alt | Key::Shift, // 8
+    };
+#endif
+    inline bool IsValidCapability(const char* value)
+    {
+        return (value != nullptr) && (value != reinterpret_cast<const char*>(-1));
+    }
+} // namespace
+
+void NcursesTerminal::BuildKeyTranslationTable()
+{
+    keyTranslationMatrix.clear();
+
+    // function keys: terminfo (xterm convention) exposes modified F-keys as blocks of 12 extra function keys
+    constexpr Key F_KEY_BLOCKS[] = { Key::None, Key::Shift, Key::Ctrl, Key::Ctrl | Key::Shift, Key::Alt, Key::Alt | Key::Shift };
+    for (uint32 block = 0; block < sizeof(F_KEY_BLOCKS) / sizeof(F_KEY_BLOCKS[0]); block++)
+    {
+        for (uint32 i = 0; i < 12; i++)
+        {
+            const uint32 fn = block * 12 + i + 1;
+            if (fn > 63) // ncurses defines KEY_F(0) .. KEY_F(63)
+                break;
+            keyTranslationMatrix[KEY_F(fn)] = F_KEY_BLOCKS[block] | static_cast<Key>(static_cast<uint32>(Key::F1) + i);
+        }
+    }
+
+    // Ctrl + letter is delivered as the control codes 1..26
+    for (uint32 i = 0; i < 26; i++)
+        keyTranslationMatrix[static_cast<int>(i + 1)] = Key::Ctrl | static_cast<Key>(static_cast<uint32>(Key::A) + i);
+    keyTranslationMatrix[0] = Key::Ctrl | Key::Space; // Ctrl+Space / Ctrl+@
+
+    // control codes that terminals use for dedicated keys (override the Ctrl+letter entries above)
+    keyTranslationMatrix[KEY_TAB]   = Key::Tab;   // Ctrl+I
+    keyTranslationMatrix[10]        = Key::Enter; // Ctrl+J
+    keyTranslationMatrix[13]        = Key::Enter; // Ctrl+M
+    keyTranslationMatrix[KEY_ENTER] = Key::Enter;
+    // 0x08 is Backspace only for terminals whose backspace key sends ^H, otherwise it is Ctrl+H
+    const char* kbs = tigetstr(const_cast<char*>("kbs"));
+    if (IsValidCapability(kbs) && (kbs[0] == '\b') && (kbs[1] == 0))
+        keyTranslationMatrix[8] = Key::Backspace;
+    keyTranslationMatrix[KEY_DELETE]    = Key::Backspace; // 0x7F (DEL) is what most terminals send for Backspace
+    keyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
+    keyTranslationMatrix[KEY_ESCAPE]    = Key::Escape;
+
+    // navigation / editing keys
+    keyTranslationMatrix[KEY_LEFT]  = Key::Left;
+    keyTranslationMatrix[KEY_UP]    = Key::Up;
+    keyTranslationMatrix[KEY_DOWN]  = Key::Down;
+    keyTranslationMatrix[KEY_RIGHT] = Key::Right;
+    keyTranslationMatrix[KEY_PPAGE] = Key::PageUp;
+    keyTranslationMatrix[KEY_NPAGE] = Key::PageDown;
+    keyTranslationMatrix[KEY_HOME]  = Key::Home;
+    keyTranslationMatrix[KEY_END]   = Key::End;
+    keyTranslationMatrix[KEY_DC]    = Key::Delete;
+    keyTranslationMatrix[KEY_IC]    = Key::Insert;
+    keyTranslationMatrix[KEY_BTAB]  = Key::Shift | Key::Tab;
+
+    // shifted variants with standard terminfo capabilities
+    keyTranslationMatrix[KEY_SLEFT]     = Key::Shift | Key::Left;
+    keyTranslationMatrix[KEY_SRIGHT]    = Key::Shift | Key::Right;
+    keyTranslationMatrix[KEY_SR]        = Key::Shift | Key::Up;
+    keyTranslationMatrix[KEY_SF]        = Key::Shift | Key::Down;
+    keyTranslationMatrix[KEY_SHOME]     = Key::Shift | Key::Home;
+    keyTranslationMatrix[KEY_SEND]      = Key::Shift | Key::End;
+    keyTranslationMatrix[KEY_SPREVIOUS] = Key::Shift | Key::PageUp;
+    keyTranslationMatrix[KEY_SNEXT]     = Key::Shift | Key::PageDown;
+    keyTranslationMatrix[KEY_SDC]       = Key::Shift | Key::Delete;
+    keyTranslationMatrix[KEY_SIC]       = Key::Shift | Key::Insert;
+
+#ifdef NCURSES_EXT_FUNCS
+    // other modifier combinations are exposed (xterm-like terminals) as extended capabilities: kUP5 = Ctrl+Up, ...
+    struct ExtendedKey
+    {
+        const char* name;
+        Key key;
+    };
+    constexpr ExtendedKey EXTENDED_KEYS[] = {
+        { "kUP", Key::Up },   { "kDN", Key::Down },    { "kLFT", Key::Left },     { "kRIT", Key::Right }, { "kHOM", Key::Home },
+        { "kEND", Key::End }, { "kPRV", Key::PageUp }, { "kNXT", Key::PageDown }, { "kDC", Key::Delete }, { "kIC", Key::Insert },
+    };
+    char capName[16];
+    for (const auto& ek : EXTENDED_KEYS)
+    {
+        for (uint32 modifier = 3; modifier <= 8; modifier++)
+        {
+            snprintf(capName, sizeof(capName), "%s%u", ek.name, modifier);
+            const char* sequence = tigetstr(capName);
+            if (!IsValidCapability(sequence))
+                continue;
+            const int code = key_defined(sequence);
+            if (code > 0)
+                keyTranslationMatrix[code] = XTERM_MODIFIERS[modifier] | ek.key;
+        }
+    }
+#endif
+}
+
+bool NcursesTerminal::TranslateKey(const int c, Key& keyCode, char16& unicodeCharacter)
+{
+    const auto it = keyTranslationMatrix.find(c);
+    if (it != keyTranslationMatrix.end())
+    {
+        keyCode = it->second;
+        return true;
+    }
+    if ((c >= 32) && (c < 127))
+    {
+        unicodeCharacter = static_cast<char16>(c);
+        if (islower(c))
+            keyCode = static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'a'));
+        else if (isupper(c))
+            keyCode = static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'A'));
+        else if (isdigit(c))
+            keyCode = static_cast<Key>(static_cast<uint32>(Key::N0) + (c - '0'));
+        else if (c == ' ')
+            keyCode = Key::Space;
+        else
+            keyCode = Key::None; // punctuation: only the unicode character is available
+        return true;
+    }
+    return false;
+}
+
 void NcursesTerminal::HandleKey(SystemEvent& evt, const int c)
 {
     evt.eventType = SystemEventType::KeyPressed;
@@ -434,34 +541,30 @@ void NcursesTerminal::HandleKeyNormalMode(SystemEvent& evt, const int c)
         return;
     }
 
-    if (keyTranslationMatrix.find(c) != keyTranslationMatrix.end())
+    if (c == KEY_ESCAPE)
     {
-        evt.keyCode = keyTranslationMatrix[c];
+        // terminals send Alt/Meta + key (e.g. "Use Option as Meta key" on macOS) as ESC followed by the key, in the
+        // same write -> if another byte is already available it is an Alt combination, otherwise a plain Escape
+        const int next = getch(); // non-blocking (nodelay)
+        if (next != ERR)
+        {
+            Key key        = Key::None;
+            char16 unicode = 0;
+            if ((next != KEY_ESCAPE) && (next != KEY_COMBO_MODE) && (TranslateKey(next, key, unicode)) && (key != Key::None))
+            {
+                if ((unicode >= 'A') && (unicode <= 'Z'))
+                    key |= Key::Shift;
+                evt.keyCode = Key::Alt | key;
+                return;
+            }
+            ungetch(next);
+        }
+        evt.keyCode = Key::Escape;
         return;
     }
 
-    if ((c >= 32) && (c <= 127))
-    {
-        evt.unicodeCharacter = c;
-        if (islower(c))
-        {
-            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'a'));
-        }
-        else if (isupper(c))
-        {
-            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'A'));
-        }
-        else if (isdigit(c))
-        {
-            evt.keyCode |= static_cast<Key>(static_cast<uint32>(Key::N0) + (c - '0'));
-        }
-        else if (c == ' ')
-        {
-            evt.keyCode |= Key::Space;
-        }
-        return;
-    }
-    evt.eventType = SystemEventType::None;
+    if (!TranslateKey(c, evt.keyCode, evt.unicodeCharacter))
+        evt.eventType = SystemEventType::None;
 }
 
 void NcursesTerminal::HandleKeyComboMode(SystemEvent& evt, const int c)

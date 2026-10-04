@@ -310,6 +310,7 @@ namespace Input
         Left,
         Right
     };
+    class EXPORT ModifierMap;
 }; // namespace Input
 namespace Controls
 {
@@ -1996,8 +1997,123 @@ namespace Utils
         static Input::Key FromString(string_view stringRepresentation);
         static Input::Key KeyModifiersFromString(string_view stringRepresentation);
 
+        // Display helpers: map the logical key to the physical key the user presses (see Input::ModifierMap)
+        // and use platform modifier names (e.g. "Opt+" for Alt on macOS). ToString stays canonical (serialization).
+        static string_view GetKeyModifierDisplayName(Input::Key keyCode);
+        static bool ToDisplayString(Input::Key keyCode, Utils::String& text);
+        // same as ToDisplayString but with an explicit modifier profile (e.g. to preview a profile before applying it)
+        static bool ToDisplayString(Input::Key keyCode, const Input::ModifierMap& map, Utils::String& text);
+
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };
+} // namespace Utils
+
+namespace Input
+{
+    // Bijective remapping of the Ctrl/Alt/Shift modifier combinations, applied to every incoming input event
+    // (physical -> logical) and to every displayed key (logical -> physical). Identity costs one branch per event.
+    class EXPORT ModifierMap
+    {
+        uint8 toLogical[8];
+        uint8 toPhysical[8];
+        bool identity;
+
+      public:
+        ModifierMap();
+        static ModifierMap Identity();
+        // ctrlActsAs / altActsAs: the logical modifier(s) produced by the physical Ctrl / Alt key.
+        // Returns nullopt when the result is not a bijection (it would make some shortcuts unreachable).
+        static std::optional<ModifierMap> FromAssignments(Key ctrlActsAs, Key altActsAs);
+
+        Key ToLogical(Key physical) const;
+        Key ToPhysical(Key logical) const;
+        Key GetCtrlActsAs() const;
+        Key GetAltActsAs() const;
+        inline bool IsIdentity() const
+        {
+            return identity;
+        }
+    };
+
+    enum class KeyBindingFlags : uint8
+    {
+        None                  = 0,
+        ShiftExtendsSelection = 1, // also matches the same key + Shift (and reports it as "extend selection")
+        ReadOnly              = 2, // listed for discoverability, can not be rebound
+        RequiresRestart       = 4, // a new value is used only after the application restarts
+    };
+
+    // A named, rebindable keyboard shortcut. `Key` is the current (effective) key, `DefaultKey` the built-in one.
+    struct KeyBinding
+    {
+        Input::Key Key;
+        Input::Key DefaultKey;
+        const char* Caption;     // stable identifier (used as the settings name)
+        const char* Explanation; // human readable description
+        uint32 CommandId;
+        KeyBindingFlags Flags;
+
+        constexpr KeyBinding(
+              Input::Key key, const char* caption, const char* explanation, uint32 commandId, KeyBindingFlags flags = KeyBindingFlags::None)
+            : Key(key), DefaultKey(key), Caption(caption), Explanation(explanation), CommandId(commandId), Flags(flags)
+        {
+        }
+        constexpr bool Matches(Input::Key key) const
+        {
+            return (Key != Input::Key::None) && (Key == key);
+        }
+        constexpr bool IsModified() const
+        {
+            return Key != DefaultKey;
+        }
+        constexpr bool HasFlag(KeyBindingFlags flag) const
+        {
+            return (static_cast<uint8>(Flags) & static_cast<uint8>(flag)) != 0;
+        }
+    };
+
+    // Small open-addressing table: key -> command id. Built when bindings change, queried once per key press.
+    class EXPORT KeyMap
+    {
+        struct Slot
+        {
+            uint32 key;
+            uint32 commandId;
+            uint8 flags;
+        };
+        std::vector<Slot> slots;
+        uint32 count;
+        uint32 mask;
+
+        const Slot* Find(uint32 key) const;
+        void Rehash(uint32 newCapacity);
+
+      public:
+        static constexpr uint32 NO_COMMAND = 0xFFFFFFFF;
+        struct Result
+        {
+            uint32 commandId;
+            bool extendSelection;
+        };
+
+        KeyMap();
+        void Clear();
+        // Ignores Key::None; when two bindings share a key, the first one wins
+        void Add(const KeyBinding& binding);
+        template <typename Container>
+        void Build(const Container& bindings)
+        {
+            Clear();
+            for (const KeyBinding* b : bindings)
+                Add(*b);
+        }
+        // exact match first; then (if Shift is pressed) the same key without Shift for ShiftExtendsSelection bindings
+        Result Resolve(Key keyCode) const;
+    };
+} // namespace Input
+
+namespace Utils
+{
 
     class EXPORT ColorUtils
     {
@@ -3148,6 +3264,7 @@ namespace Controls
         PropertyItemChanged,
         SplitterPanelAutoExpanded,
         SplitterPanelAutoCollapsed,
+        KeySelectorChanged,
         Custom,
     };
 
@@ -5494,6 +5611,8 @@ namespace Application
         CommandBar();
         void Init(void* controller);
         bool SetCommand(Input::Key keyCode, const ConstString& caption, int CommandID);
+        // Uses binding.Key / binding.Caption; an unassigned binding (Key::None) is skipped
+        bool SetCommand(const Input::KeyBinding& binding, int CommandID);
     };
 
     struct Config
@@ -5577,6 +5696,11 @@ namespace Application
     EXPORT void UpdateAppCUISettings(Utils::IniObject& ini, bool clearExistingSettings = false);
     EXPORT bool UpdateAppCUISettings(bool clearExistingSettings = false);
     EXPORT std::filesystem::path GetAppSettingsFile();
+
+    // Keyboard modifier profile ([AppCUI] Keyboard.Ctrl / Keyboard.Alt). SetModifierMap applies it immediately and
+    // updates the in-memory settings (call SaveAppSettings to persist).
+    EXPORT const Input::ModifierMap& GetModifierMap();
+    EXPORT void SetModifierMap(const Input::ModifierMap& map);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);

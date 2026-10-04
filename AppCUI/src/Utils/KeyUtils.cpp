@@ -18,11 +18,25 @@ static constexpr string_view _Key_Modifiers[8] = {
 static constexpr string_view _Key_Name[] = {
     "",     "F1",     "F2",       "F3",     "F4",     "F5",     "F6",        "F7",  "F8",   "F9", "F10",
     "F11",  "F12",    "Enter",    "Escape", "Insert", "Delete", "Backspace", "Tab", "Left", "Up", "Down",
-    "Righ", "PageUp", "PageDown", "Home",   "End",    "Space",  "A",         "B",   "C",    "D",  "E",
+    "Right", "PageUp", "PageDown", "Home",   "End",    "Space",  "A",         "B",   "C",    "D",  "E",
     "F",    "G",      "H",        "I",      "J",      "K",      "L",         "M",   "N",    "O",  "P",
     "Q",    "R",      "S",        "T",      "U",      "V",      "W",         "X",   "Y",    "Z",  "0",
     "1",    "2",      "3",        "4",      "5",      "6",      "7",         "8",   "9",
 };
+#ifdef __APPLE__
+static constexpr string_view _Key_Modifiers_Display[8] = {
+    /* 0 */ "",
+    /* 1 */ "Opt+",
+    /* 2 */ "Ctrl+",
+    /* 3 */ "Ctrl+Opt+",
+    /* 4 */ "Shift+",
+    /* 5 */ "Opt+Shift+",
+    /* 6 */ "Ctrl+Shift+",
+    /* 7 */ "Ctrl+Opt+Shift+",
+};
+#else
+static constexpr const string_view* _Key_Modifiers_Display = _Key_Modifiers;
+#endif
 static constexpr string_view _Key_Name_Padded[] = {
     "",      " F1 ",   " F2 ",    " F3 ",     " F4 ",       " F5 ",     " F6 ",     " F7 ",        " F8 ",  " F9 ",
     " F10 ", " F11 ",  " F12 ",   " Enter ",  " Escape ",   " Insert ", " Delete ", " Backspace ", " Tab ", " Left ",
@@ -53,6 +67,27 @@ string_view Utils::KeyUtils::GetKeyModifierName(Input::Key keyCode)
     if (keyIndex > 7)
         return string_view("", 0);
     return _Key_Modifiers[keyIndex];
+}
+string_view Utils::KeyUtils::GetKeyModifierDisplayName(Input::Key keyCode)
+{
+    const auto physical = Application::GetModifierMap().ToPhysical(keyCode);
+    return _Key_Modifiers_Display[(((uint32) physical) >> KEY_SHIFT_BITS) & 0x7];
+}
+bool Utils::KeyUtils::ToDisplayString(Input::Key keyCode, const Input::ModifierMap& map, Utils::String& text)
+{
+    CHECK(text.Set(""), false, "");
+    if (keyCode == Input::Key::None)
+        return true;
+    const auto k = GetKeyName(keyCode);
+    CHECK(!k.empty(), false, "");
+    const auto physical = map.ToPhysical(keyCode);
+    CHECK(text.Set(_Key_Modifiers_Display[(((uint32) physical) >> KEY_SHIFT_BITS) & 0x7]), false, "");
+    CHECK(text.Add(k), false, "");
+    return true;
+}
+bool Utils::KeyUtils::ToDisplayString(Input::Key keyCode, Utils::String& text)
+{
+    return ToDisplayString(keyCode, Application::GetModifierMap(), text);
 }
 bool Utils::KeyUtils::ToString(Input::Key keyCode, char* text, uint32 maxTextSize)
 {
@@ -140,12 +175,15 @@ Input::Key Utils::KeyUtils::FromString(string_view stringRepresentation)
     auto* p = &_Key_Name[1];
     for (uint32 tr = 1; tr < sizeof(_Key_Name) / sizeof(_Key_Name[1]); tr++, p++)
     {
-        if (Utils::String::Equals(key, p->data()))
+        if (Utils::String::Equals(key, p->data(), true))
         {
             code = tr;
             break;
         }
     }
+    // backward compatibility: older versions serialized the right arrow as "Righ"
+    if ((code == 0) && (Utils::String::Equals(key, "Righ", true)))
+        code = static_cast<uint32>(Key::Right);
     if (code == 0)
         return Input::Key::None;
     return (Input::Key)((modifier << KEY_SHIFT_BITS) | code);

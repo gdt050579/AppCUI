@@ -28,7 +28,7 @@ void KeySelector::Paint(Graphics::Renderer& renderer)
 
     renderer.FillHorizontalLineSize(0, 0, Members->Layout.Width, ' ', col);
     LocalString<64> temp;
-    if (KeyUtils::ToString(Members->key, temp))
+    if (KeyUtils::ToDisplayString(Members->key, temp))
     {
         renderer.WriteSingleLineText(1, 0, Members->Layout.Width - 1, temp, col);
     }
@@ -57,8 +57,12 @@ bool KeySelector::OnKeyEvent(Key KeyCode, char16 /*characterCode*/)
         break;        
     }
     // set the new value only if not in a read-only mode
-    if (!(Members->Flags && KeySelectorFlags::ReadOnly))
+    // (Key::None is what terminals report for keys without a key code, e.g. punctuation -> keep the current value)
+    if ((!(Members->Flags && KeySelectorFlags::ReadOnly)) && (KeyCode != Key::None) && (Members->key != KeyCode))
+    {
         Members->key = KeyCode;
+        RaiseEvent(Event::KeySelectorChanged);
+    }
 
     return true;
 }
