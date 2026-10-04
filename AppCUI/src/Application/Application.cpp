@@ -620,6 +620,7 @@ Application::FrontendType ApplicationImpl::GetFrontendType() const
 }
 void ApplicationImpl::Destroy()
 {
+    Internal::ResetKeyboardSettings(); // do not leak the keyboard profile to a future application instance
     this->Inited             = false;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
@@ -777,6 +778,9 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
 bool ApplicationImpl::Init(Application::InitializationData& initData)
 {
     CHECK(!Inited, false, "Application has already been initialized !");
+
+    // the keyboard profile is process wide -> start from the default one; the settings file (if any) may change it
+    Internal::ResetKeyboardSettings();
 
     if ((initData.Flags & Application::InitializationFlags::LoadSettingsFile) != Application::InitializationFlags::None)
     {

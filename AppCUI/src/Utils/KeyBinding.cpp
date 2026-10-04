@@ -245,9 +245,13 @@ void Application::SetModifierMap(const ModifierMap& map)
         sect.UpdateValue("Keyboard.Alt", tmp.ToStringView(), false);
     }
 }
-void Internal::LoadKeyboardSettings(Utils::IniSection section)
+void Internal::ResetKeyboardSettings()
 {
     globalModifierMap = ModifierMap::Identity();
+}
+void Internal::LoadKeyboardSettings(Utils::IniSection section)
+{
+    ResetKeyboardSettings();
     if (!section.Exists())
         return;
     if ((!section.HasValue("Keyboard.Ctrl")) && (!section.HasValue("Keyboard.Alt")))

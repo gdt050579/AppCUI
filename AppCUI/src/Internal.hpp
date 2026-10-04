@@ -340,6 +340,9 @@ namespace Internal
 
     // loads the [AppCUI] Keyboard.Ctrl / Keyboard.Alt modifier profile (identity when missing or invalid)
     void LoadKeyboardSettings(Utils::IniSection section);
+    // restores the identity modifier profile (the profile is process wide -> reset on every Init / teardown so that
+    // a new application never inherits the profile of a previous one)
+    void ResetKeyboardSettings();
 } // namespace Internal
 namespace Application
 {
