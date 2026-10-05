@@ -150,14 +150,19 @@ Key ModifierMap::GetAltActsAs() const
 }
 
 //====================================================================================== KeyMap ===
-KeyMap::KeyMap() : count(0), mask(0)
+KeyMap::KeyMap() : slots(nullptr), capacity(0), count(0), mask(0)
 {
+}
+KeyMap::~KeyMap()
+{
+    delete[] slots;
 }
 void KeyMap::Clear()
 {
-    slots.clear();
+    // keeps the allocated table (bindings are rebuilt with roughly the same number of keys)
+    for (uint32 idx = 0; idx < capacity; idx++)
+        slots[idx] = Slot{ 0, 0, 0 };
     count = 0;
-    mask  = 0;
 }
 static inline uint32 HashKey(uint32 key)
 {
@@ -179,28 +184,33 @@ const KeyMap::Slot* KeyMap::Find(uint32 key) const
 }
 void KeyMap::Rehash(uint32 newCapacity)
 {
-    std::vector<Slot> old = std::move(slots);
-    slots.assign(newCapacity, Slot{ 0, 0, 0 });
-    mask = newCapacity - 1;
-    for (const Slot& s : old)
+    // allocate first: if the allocation fails the current table is left untouched
+    Slot* fresh            = new Slot[newCapacity]{}; // value-initialized -> key 0 = empty slot
+    const uint32 freshMask = newCapacity - 1;
+    for (uint32 i = 0; i < capacity; i++)
     {
+        const Slot& s = slots[i];
         if (s.key == 0)
             continue;
-        uint32 idx = HashKey(s.key) & mask;
-        while (slots[idx].key != 0)
-            idx = (idx + 1) & mask;
-        slots[idx] = s;
+        uint32 idx = HashKey(s.key) & freshMask;
+        while (fresh[idx].key != 0)
+            idx = (idx + 1) & freshMask;
+        fresh[idx] = s;
     }
+    delete[] slots;
+    slots    = fresh;
+    capacity = newCapacity;
+    mask     = freshMask;
 }
 void KeyMap::Add(const KeyBinding& binding)
 {
     const uint32 key = static_cast<uint32>(binding.Key);
     if (key == 0)
         return; // unassigned
-    if (slots.empty())
+    if (capacity == 0)
         Rehash(16);
-    else if ((count + 1) * 2 > static_cast<uint32>(slots.size()))
-        Rehash(static_cast<uint32>(slots.size()) * 2);
+    else if ((count + 1) * 2 > capacity)
+        Rehash(capacity * 2);
     uint32 idx = HashKey(key) & mask;
     while (slots[idx].key != 0)
     {

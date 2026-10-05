@@ -2081,7 +2081,8 @@ namespace Input
             uint32 commandId;
             uint8 flags;
         };
-        std::vector<Slot> slots;
+        Slot* slots;
+        uint32 capacity; // power of two, 0 = not allocated
         uint32 count;
         uint32 mask;
 
@@ -2097,6 +2098,9 @@ namespace Input
         };
 
         KeyMap();
+        ~KeyMap();
+        KeyMap(const KeyMap&)            = delete;
+        KeyMap& operator=(const KeyMap&) = delete;
         void Clear();
         // Ignores Key::None; when two bindings share a key, the first one wins
         void Add(const KeyBinding& binding);
