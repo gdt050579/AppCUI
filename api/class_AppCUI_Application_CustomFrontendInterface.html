@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CustomFrontendInterface &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FrontendEvent" href="class_AppCUI_Application_FrontendEvent.html" />
+    <link rel="prev" title="Config" href="class_AppCUI_Application_Config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+      <li class="breadcrumb-item active">CustomFrontendInterface</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Application_CustomFrontendInterface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="customfrontendinterface">
+<h1>CustomFrontendInterface<a class="headerlink" href="#customfrontendinterface" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Application::CustomFrontendInterface</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterfaceE">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterfaceE"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterfaceE"></span><span id="AppCUI::Application::CustomFrontendInterface"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CustomFrontendInterface</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterfaceE" title="Link to this definition"></a><br /></dt>
+<dd><p>A frontend implemented by the application instead of a real terminal (headless / remote / recording screens). </p>
+<p>Select it with <a class="reference internal" href="class_AppCUI_Application_InitializationData.html#structAppCUI_1_1Application_1_1InitializationData_1ab812c4d65c9415e59c93d2d2aee08d99"><span class="std std-ref">InitializationData::Frontend</span></a> = <a class="reference internal" href="namespace_AppCUI_Application.html#namespaceAppCUI_1_1Application_1a8dfe8eb2f731d556fd27d78a7f8d2704a90589c47f06eb971d548591f23c285af"><span class="std std-ref">FrontendType::Custom</span></a> and <a class="reference internal" href="class_AppCUI_Application_InitializationData.html#structAppCUI_1_1Application_1_1InitializationData_1a72ef9e2bdfe61093e3cb81f8858c2bb0"><span class="std std-ref">InitializationData::CustomFrontend</span></a>. <a class="reference internal" href="namespace_AppCUI.html#namespaceAppCUI"><span class="std std-ref">AppCUI</span></a> calls every method from the UI thread; the object is NOT owned by <a class="reference internal" href="namespace_AppCUI.html#namespaceAppCUI"><span class="std std-ref">AppCUI</span></a> and must outlive the application. The clipboard of a custom frontend is private to the process (it never reaches the <a class="reference internal" href="namespace_AppCUI_OS.html#namespaceAppCUI_1_1OS"><span class="std std-ref">OS</span></a> clipboard). </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterfaceD0Ev">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterfaceD0Ev"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterfaceD0Ev"></span><span id="AppCUI::Application::CustomFrontendInterface::~CustomFrontendInterface"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface_1a5bb33f8cc350ce9d848f54cbd2fef3d9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~CustomFrontendInterface</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterfaceD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterface6OnInitER6uint32R6uint32">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterface6OnInitER6uint32R6uint32"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterface6OnInitER6uint32R6uint32"></span><span id="AppCUI::Application::CustomFrontendInterface::OnInit__uint32R.uint32R"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface_1a03075dd8ff74f7780d52b45bc282ad69"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnInit</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">width</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">height</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterface6OnInitER6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">width</span></code> / <code class="docutils literal notranslate"><span class="pre">height</span></code> hold the requested size (<a class="reference internal" href="class_AppCUI_Application_InitializationData.html#structAppCUI_1_1Application_1_1InitializationData_1a49091ba1c9e71caa9561c3e117ce2ed5"><span class="std std-ref">InitializationData::Width</span></a>/Height, may be 0); both must be &gt; 0 on return. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterface8OnUnInitEv">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterface8OnUnInitEv"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterface8OnUnInitEv"></span><span id="AppCUI::Application::CustomFrontendInterface::OnUnInit"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface_1abbf61bfd42fd73010595dbb89f7fca52"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnUnInit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterface8OnUnInitEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Called once when the application stops; the frontend receives no other call afterwards. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterface15OnFlushToScreenEPKN8Graphics9CharacterE6uint326uint32">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterface15OnFlushToScreenEPKN8Graphics9CharacterE6uint326uint32"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterface15OnFlushToScreenEPKN8Graphics9CharacterE6uint326uint32"></span><span id="AppCUI::Application::CustomFrontendInterface::OnFlushToScreen__Graphics::CharacterCP.uint32.uint32"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface_1af90b9a67b853a9e01c1e37d3c2d2e3c7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnFlushToScreen</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Character.html#_CPPv4N6AppCUI8Graphics9CharacterE" title="AppCUI::Graphics::Character"><span class="n"><span class="pre">Character</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">characters</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterface15OnFlushToScreenEPKN8Graphics9CharacterE6uint326uint32" title="Link to this definition"></a><br /></dt>
+<dd><p>The entire screen: <code class="docutils literal notranslate"><span class="pre">width</span> <span class="pre">*</span> <span class="pre">height</span></code> characters, row major (valid only during the call). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterface14OnUpdateCursorE6uint326uint32b">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterface14OnUpdateCursorE6uint326uint32b"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterface14OnUpdateCursorE6uint326uint32b"></span><span id="AppCUI::Application::CustomFrontendInterface::OnUpdateCursor__uint32.uint32.b"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface_1a832bb1751daa60fa7d2a084357429b45"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnUpdateCursor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">visible</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterface14OnUpdateCursorE6uint326uint32b" title="Link to this definition"></a><br /></dt>
+<dd><p>New position / visibility of the text cursor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterface12WaitForEventER13FrontendEvent6uint32">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterface12WaitForEventER13FrontendEvent6uint32"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterface12WaitForEventER13FrontendEvent6uint32"></span><span id="AppCUI::Application::CustomFrontendInterface::WaitForEvent__FrontendEventR.uint32"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface_1a7ba14168264937d9473acab96a5cbd4f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaitForEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="class_AppCUI_Application_FrontendEvent.html#_CPPv4N6AppCUI11Application13FrontendEventE" title="AppCUI::Application::FrontendEvent"><span class="n"><span class="pre">FrontendEvent</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">evnt</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">timeoutMs</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterface12WaitForEventER13FrontendEvent6uint32" title="Link to this definition"></a><br /></dt>
+<dd><p>Waits at most <code class="docutils literal notranslate"><span class="pre">timeoutMs</span></code> milliseconds for the next event; returns false on timeout. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application23CustomFrontendInterface13HasSupportForE23SpecialCharacterSetType">
+<span id="_CPPv3N6AppCUI11Application23CustomFrontendInterface13HasSupportForE23SpecialCharacterSetType"></span><span id="_CPPv2N6AppCUI11Application23CustomFrontendInterface13HasSupportForE23SpecialCharacterSetType"></span><span id="AppCUI::Application::CustomFrontendInterface::HasSupportFor__SpecialCharacterSetType"></span><span class="target" id="classAppCUI_1_1Application_1_1CustomFrontendInterface_1a6d02f5d50ae698774b45ac92776f1b48"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasSupportFor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application23SpecialCharacterSetTypeE" title="AppCUI::Application::SpecialCharacterSetType"><span class="n"><span class="pre">SpecialCharacterSetType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI11Application23CustomFrontendInterface13HasSupportForE23SpecialCharacterSetType" title="Link to this definition"></a><br /></dt>
+<dd><p>Whether a special character set can be displayed (queried when the set is <a class="reference internal" href="namespace_AppCUI_Application.html#namespaceAppCUI_1_1Application_1abb2094b275e8020f13571dfb50f75ff4a06b9281e396db002010bde1de57262eb"><span class="std std-ref">SpecialCharacterSetType::Auto</span></a>). </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Application_Config.html" class="btn btn-neutral float-left" title="Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Application_FrontendEvent.html" class="btn btn-neutral float-right" title="FrontendEvent" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

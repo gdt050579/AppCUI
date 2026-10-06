@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InitializationData &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AppCUI::Controls" href="namespace_AppCUI_Controls.html" />
+    <link rel="prev" title="FrontendEvent" href="class_AppCUI_Application_FrontendEvent.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+      <li class="breadcrumb-item active">InitializationData</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Application_InitializationData.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="initializationdata">
+<h1>InitializationData<a class="headerlink" href="#initializationdata" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Application::InitializationData</span></code> (struct)</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationDataE">
+<span id="_CPPv3N6AppCUI11Application18InitializationDataE"></span><span id="_CPPv2N6AppCUI11Application18InitializationDataE"></span><span id="AppCUI::Application::InitializationData"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializationData</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationDataE" title="Link to this definition"></a><br /></dt>
+<dd><p>Every parameter of <a class="reference internal" href="namespace_AppCUI_Application.html#namespaceAppCUI_1_1Application_1ac9ad0c350b2403b13ab8ba7247d3580e"><span class="std std-ref">Application::Init</span></a>. </p>
+<p>Values read from the settings file (<a class="reference internal" href="namespace_AppCUI_Application.html#namespaceAppCUI_1_1Application_1a35412469fb7ec5244eb8dd8e651b3275a5ae81e1648ef65a00d727b0143941907"><span class="std std-ref">InitializationFlags::LoadSettingsFile</span></a>) override the corresponding fields. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData18InitializationDataEv">
+<span id="_CPPv3N6AppCUI11Application18InitializationData18InitializationDataEv"></span><span id="_CPPv2N6AppCUI11Application18InitializationData18InitializationDataEv"></span><span id="AppCUI::Application::InitializationData::InitializationData"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1afb1ff76e03c1d6745c9d69983cf9300a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializationData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData18InitializationDataEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData5WidthE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData5WidthE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData5WidthE"></span><span id="AppCUI::Application::InitializationData::Width__uint32"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1a49091ba1c9e71caa9561c3e117ce2ed5"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Width</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData5WidthE" title="Link to this definition"></a><br /></dt>
+<dd><p>width in characters (0 = frontend default) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData6HeightE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData6HeightE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData6HeightE"></span><span id="AppCUI::Application::InitializationData::Height__uint32"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1adbc89144499ad29757effd89177927b5"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Height</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData6HeightE" title="Link to this definition"></a><br /></dt>
+<dd><p>height in characters (0 = frontend default) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData8FrontendE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData8FrontendE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData8FrontendE"></span><span id="AppCUI::Application::InitializationData::Frontend__FrontendType"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1ab812c4d65c9415e59c93d2d2aee08d99"></span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application12FrontendTypeE" title="AppCUI::Application::FrontendType"><span class="n"><span class="pre">FrontendType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Frontend</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData8FrontendE" title="Link to this definition"></a><br /></dt>
+<dd><p>frontend used to display the application </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData8CharSizeE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData8CharSizeE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData8CharSizeE"></span><span id="AppCUI::Application::InitializationData::CharSize__CharacterSize"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1a2a4ea9bcc91d77a04e823d469861c66f"></span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application13CharacterSizeE" title="AppCUI::Application::CharacterSize"><span class="n"><span class="pre">CharacterSize</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CharSize</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData8CharSizeE" title="Link to this definition"></a><br /></dt>
+<dd><p>character size (SDL / Windows console) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData5FlagsE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData5FlagsE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData5FlagsE"></span><span id="AppCUI::Application::InitializationData::Flags__InitializationFlags"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1acd99eafaf6edc5d11730c3e1cd229162"></span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application19InitializationFlagsE" title="AppCUI::Application::InitializationFlags"><span class="n"><span class="pre">InitializationFlags</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Flags</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData5FlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p>initialization options </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData8FontNameE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData8FontNameE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData8FontNameE"></span><span id="AppCUI::Application::InitializationData::FontName__string_view"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1aff4cf6402a4e277ba483622fb1c56453"></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FontName</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData8FontNameE" title="Link to this definition"></a><br /></dt>
+<dd><p>font name (Windows console) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData9ThemeNameE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData9ThemeNameE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData9ThemeNameE"></span><span id="AppCUI::Application::InitializationData::ThemeName__Utils::FixSizeString:32:"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1a9df9e15d1aaa65e0c140ea798a0b497a"></span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4I_6uint16EN6AppCUI5Utils13FixSizeStringE" title="AppCUI::Utils::FixSizeString"><span class="n"><span class="pre">FixSizeString</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="m"><span class="pre">32</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThemeName</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData9ThemeNameE" title="Link to this definition"></a><br /></dt>
+<dd><p>name of a <code class="docutils literal notranslate"><span class="pre">.theme</span></code> file (from ThemeFolder) to load </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData11ThemeFolderE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData11ThemeFolderE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData11ThemeFolderE"></span><span id="AppCUI::Application::InitializationData::ThemeFolder__Utils::String"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1a7fb591f2ae1d9f8c56f991d6db923974"></span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_String.html#_CPPv4N6AppCUI5Utils6StringE" title="AppCUI::Utils::String"><span class="n"><span class="pre">String</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ThemeFolder</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData11ThemeFolderE" title="Link to this definition"></a><br /></dt>
+<dd><p>folder with <code class="docutils literal notranslate"><span class="pre">.theme</span></code> files (relative to the executable) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData5ThemeE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData5ThemeE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData5ThemeE"></span><span id="AppCUI::Application::InitializationData::Theme__ThemeType"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1a86ce73cd8f7edbb0afc388a39291852d"></span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeTypeE" title="AppCUI::Application::ThemeType"><span class="n"><span class="pre">ThemeType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Theme</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData5ThemeE" title="Link to this definition"></a><br /></dt>
+<dd><p>built-in theme (also the base of a loaded <code class="docutils literal notranslate"><span class="pre">.theme</span></code>) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData19SpecialCharacterSetE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData19SpecialCharacterSetE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData19SpecialCharacterSetE"></span><span id="AppCUI::Application::InitializationData::SpecialCharacterSet__SpecialCharacterSetType"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1ab91c1a335726e1b0d70072a10dc6bc29"></span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application23SpecialCharacterSetTypeE" title="AppCUI::Application::SpecialCharacterSetType"><span class="n"><span class="pre">SpecialCharacterSetType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SpecialCharacterSet</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData19SpecialCharacterSetE" title="Link to this definition"></a><br /></dt>
+<dd><p>characters used to draw lines and borders </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11Application18InitializationData14CustomFrontendE">
+<span id="_CPPv3N6AppCUI11Application18InitializationData14CustomFrontendE"></span><span id="_CPPv2N6AppCUI11Application18InitializationData14CustomFrontendE"></span><span id="AppCUI::Application::InitializationData::CustomFrontend__CustomFrontendInterfaceP"></span><span class="target" id="structAppCUI_1_1Application_1_1InitializationData_1a72ef9e2bdfe61093e3cb81f8858c2bb0"></span><a class="reference internal" href="class_AppCUI_Application_CustomFrontendInterface.html#_CPPv4N6AppCUI11Application23CustomFrontendInterfaceE" title="AppCUI::Application::CustomFrontendInterface"><span class="n"><span class="pre">CustomFrontendInterface</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">CustomFrontend</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI11Application18InitializationData14CustomFrontendE" title="Link to this definition"></a><br /></dt>
+<dd><p>required (and only used) when Frontend is <a class="reference internal" href="namespace_AppCUI_Application.html#namespaceAppCUI_1_1Application_1a8dfe8eb2f731d556fd27d78a7f8d2704a90589c47f06eb971d548591f23c285af"><span class="std std-ref">FrontendType::Custom</span></a></p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<section id="other-fields">
+<h2>Other fields<a class="headerlink" href="#other-fields" title="Link to this heading"></a></h2>
+<p>Declared in the header as:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Controls</span><span class="o">::</span><span class="n">Desktop</span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">CustomDesktopConstructor</span><span class="p">)();</span><span class="w"> </span><span class="c1">///&lt; creates a custom desktop (nullptr = default desktop)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Application_FrontendEvent.html" class="btn btn-neutral float-left" title="FrontendEvent" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_AppCUI_Controls.html" class="btn btn-neutral float-right" title="AppCUI::Controls" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

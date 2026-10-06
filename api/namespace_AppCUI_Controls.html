@@ -1,0 +1,1022 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AppCUI::Controls &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Button" href="class_AppCUI_Controls_Button.html" />
+    <link rel="prev" title="InitializationData" href="class_AppCUI_Application_InitializationData.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+      <li class="breadcrumb-item active">AppCUI::Controls</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/namespace_AppCUI_Controls.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="appcui-controls">
+<h1>AppCUI::Controls<a class="headerlink" href="#appcui-controls" title="Link to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8ControlsE">
+<span id="_CPPv3N6AppCUI8ControlsE"></span><span id="_CPPv2N6AppCUI8ControlsE"></span><span id="AppCUI::Controls"></span><span class="target" id="namespaceAppCUI_1_1Controls"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Controls</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8ControlsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Every visual element: windows, buttons, text fields, lists, trees, grids, splitters, tabs, menus and the base <a class="reference internal" href="class_AppCUI_Controls_Control.html#classAppCUI_1_1Controls_1_1Control"><span class="std std-ref">Control</span></a> class. </p>
+<p><a class="reference internal" href="#namespaceAppCUI_1_1Controls"><span class="std std-ref">Controls</span></a> are created through the <a class="reference internal" href="namespace_AppCUI_Controls_Factory.html#namespaceAppCUI_1_1Controls_1_1Factory"><span class="std std-ref">AppCUI::Controls::Factory</span></a> classes and positioned with layout strings. </p>
+</dd></dl>
+
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html"><span class="doc">AppCUI::Controls::Factory</span></a> - Creation helpers: Factory::&lt;Control&gt;::Create(parent, …, layout, …) creates a control and adds it to its parent (returning a non-owning Reference) or returns an owning Pointer when no parent is given.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html"><span class="doc">AppCUI::Controls::Handlers</span></a> - Event handlers that can be attached to a control (control-&gt;Handlers()-&gt;OnXXX = …) instead of deriving a new control class: either a pointer to an object that implements the matching On…Interface or a plain function (a lambda without captures).</p></li>
+</ul>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Button.html"><span class="doc">Button</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_CanvasViewer.html"><span class="doc">CanvasViewer</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_CharacterTable.html"><span class="doc">CharacterTable</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_CheckBox.html"><span class="doc">CheckBox</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_ColorPicker.html"><span class="doc">ColorPicker</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Column.html"><span class="doc">Column</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_ColumnsHeaderView.html"><span class="doc">ColumnsHeaderView</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_ComboBox.html"><span class="doc">ComboBox</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Control.html"><span class="doc">Control</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Desktop.html"><span class="doc">Desktop</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Grid.html"><span class="doc">Grid</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_ImageView.html"><span class="doc">ImageView</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_KeySelector.html"><span class="doc">KeySelector</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Label.html"><span class="doc">Label</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_ListView.html"><span class="doc">ListView</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_ListViewItem.html"><span class="doc">ListViewItem</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Menu.html"><span class="doc">Menu</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_NumericSelector.html"><span class="doc">NumericSelector</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Panel.html"><span class="doc">Panel</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Password.html"><span class="doc">Password</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_PropertyList.html"><span class="doc">PropertyList</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_RadioBox.html"><span class="doc">RadioBox</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_SingleApp.html"><span class="doc">SingleApp</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Splitter.html"><span class="doc">Splitter</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Tab.html"><span class="doc">Tab</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_TabPage.html"><span class="doc">TabPage</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_TextArea.html"><span class="doc">TextArea</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_TextField.html"><span class="doc">TextField</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_TreeView.html"><span class="doc">TreeView</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_TreeViewItem.html"><span class="doc">TreeViewItem</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_UserControl.html"><span class="doc">UserControl</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_Window.html"><span class="doc">Window</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Controls_WindowControlsBar.html"><span class="doc">WindowControlsBar</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="enumerations">
+<h2>Enumerations<a class="headerlink" href="#enumerations" title="Link to this heading"></a></h2>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ControlStateFlagsE">
+<span id="_CPPv3N6AppCUI8Controls17ControlStateFlagsE"></span><span id="_CPPv2N6AppCUI8Controls17ControlStateFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ac9333f068887e2eabf7a943f399022e7"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ControlStateFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ControlStateFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ControlStateFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls17ControlStateFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls17ControlStateFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ac9333f068887e2eabf7a943f399022e7a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ControlStateFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ControlStateFlags18ProcessHoverStatusE">
+<span id="_CPPv3N6AppCUI8Controls17ControlStateFlags18ProcessHoverStatusE"></span><span id="_CPPv2N6AppCUI8Controls17ControlStateFlags18ProcessHoverStatusE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ac9333f068887e2eabf7a943f399022e7ad9a9ed427780c4228dd3197b9fc04a76"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessHoverStatus</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ControlStateFlags18ProcessHoverStatusE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ControlStateFlags27ProcessCheckOrPressedStatusE">
+<span id="_CPPv3N6AppCUI8Controls17ControlStateFlags27ProcessCheckOrPressedStatusE"></span><span id="_CPPv2N6AppCUI8Controls17ControlStateFlags27ProcessCheckOrPressedStatusE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ac9333f068887e2eabf7a943f399022e7a19be7f286caa13c641d0407b790cbacc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessCheckOrPressedStatus</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ControlStateFlags27ProcessCheckOrPressedStatusE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ControlStateFlags3AllE">
+<span id="_CPPv3N6AppCUI8Controls17ControlStateFlags3AllE"></span><span id="_CPPv2N6AppCUI8Controls17ControlStateFlags3AllE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ac9333f068887e2eabf7a943f399022e7ab1c94ca2fbc3e78fc30069c8d0f01680"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">All</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ControlStateFlags3AllE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12ControlStateE">
+<span id="_CPPv3N6AppCUI8Controls12ControlStateE"></span><span id="_CPPv2N6AppCUI8Controls12ControlStateE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3a432f55f09d34ce8989527f8d296142"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ControlState</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12ControlStateE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12ControlState7FocusedE">
+<span id="_CPPv3N6AppCUI8Controls12ControlState7FocusedE"></span><span id="_CPPv2N6AppCUI8Controls12ControlState7FocusedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3a432f55f09d34ce8989527f8d296142aa2e08e1fbbc3e1489d688eba112f7964"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Focused</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12ControlState7FocusedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12ControlState6NormalE">
+<span id="_CPPv3N6AppCUI8Controls12ControlState6NormalE"></span><span id="_CPPv2N6AppCUI8Controls12ControlState6NormalE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3a432f55f09d34ce8989527f8d296142a960b44c579bc2f6818d2daaf9e4c16f0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Normal</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12ControlState6NormalE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12ControlState7HoveredE">
+<span id="_CPPv3N6AppCUI8Controls12ControlState7HoveredE"></span><span id="_CPPv2N6AppCUI8Controls12ControlState7HoveredE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3a432f55f09d34ce8989527f8d296142a3ef193e1ac8f2bc3d7226a29d6b09875"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Hovered</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12ControlState7HoveredE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12ControlState8InactiveE">
+<span id="_CPPv3N6AppCUI8Controls12ControlState8InactiveE"></span><span id="_CPPv2N6AppCUI8Controls12ControlState8InactiveE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3a432f55f09d34ce8989527f8d296142a3cab03c00dbd11bc3569afa0748013f0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Inactive</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12ControlState8InactiveE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12ControlState17PressedOrSelectedE">
+<span id="_CPPv3N6AppCUI8Controls12ControlState17PressedOrSelectedE"></span><span id="_CPPv2N6AppCUI8Controls12ControlState17PressedOrSelectedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3a432f55f09d34ce8989527f8d296142af6d2627cb2e0c5e4eff50628b3f68a6a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PressedOrSelected</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12ControlState17PressedOrSelectedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5EventE">
+<span id="_CPPv3N6AppCUI8Controls5EventE"></span><span id="_CPPv2N6AppCUI8Controls5EventE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Event</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5EventE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event11WindowCloseE">
+<span id="_CPPv3N6AppCUI8Controls5Event11WindowCloseE"></span><span id="_CPPv2N6AppCUI8Controls5Event11WindowCloseE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1ac984201d37197ab297a14d19efee4b07"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WindowClose</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event11WindowCloseE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event12WindowAcceptE">
+<span id="_CPPv3N6AppCUI8Controls5Event12WindowAcceptE"></span><span id="_CPPv2N6AppCUI8Controls5Event12WindowAcceptE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1aa2d7f0ca4b800082ab9c94427243df89"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WindowAccept</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event12WindowAcceptE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event13ButtonClickedE">
+<span id="_CPPv3N6AppCUI8Controls5Event13ButtonClickedE"></span><span id="_CPPv2N6AppCUI8Controls5Event13ButtonClickedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a9c130e95620950534eee656031fc6a12"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ButtonClicked</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event13ButtonClickedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event20CheckedStatusChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event20CheckedStatusChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event20CheckedStatusChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a6c208ef0013913382d4e053f551f4dae"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckedStatusChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event20CheckedStatusChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event11TextChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event11TextChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event11TextChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a4d4136aa9ff7a5973b8ec941716136e4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TextChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event11TextChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event17TextFieldValidateE">
+<span id="_CPPv3N6AppCUI8Controls5Event17TextFieldValidateE"></span><span id="_CPPv2N6AppCUI8Controls5Event17TextFieldValidateE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a07c3ffe17779303cbdbcdb4b2a6ef5d9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TextFieldValidate</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event17TextFieldValidateE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event16PasswordValidateE">
+<span id="_CPPv3N6AppCUI8Controls5Event16PasswordValidateE"></span><span id="_CPPv2N6AppCUI8Controls5Event16PasswordValidateE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1afdfd08b8dd2df29e7fdc5b0362d3730b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PasswordValidate</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event16PasswordValidateE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event10TabChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event10TabChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event10TabChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1ac04ebf91951bad84f9c846cb88e6e58d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TabChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event10TabChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event26ListViewCurrentItemChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event26ListViewCurrentItemChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event26ListViewCurrentItemChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a63899a100fafcf3e0ef5ddff0e5e43a2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListViewCurrentItemChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event26ListViewCurrentItemChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event24ListViewSelectionChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event24ListViewSelectionChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event24ListViewSelectionChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1aab00f04919464bbf52729810c2bc60a6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListViewSelectionChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event24ListViewSelectionChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event19ListViewItemCheckedE">
+<span id="_CPPv3N6AppCUI8Controls5Event19ListViewItemCheckedE"></span><span id="_CPPv2N6AppCUI8Controls5Event19ListViewItemCheckedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a35c05f9a600c1a1a0f8be0fbac3962ca"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListViewItemChecked</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event19ListViewItemCheckedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event19ListViewItemPressedE">
+<span id="_CPPv3N6AppCUI8Controls5Event19ListViewItemPressedE"></span><span id="_CPPv2N6AppCUI8Controls5Event19ListViewItemPressedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a44f5dea70e7faf7888e9683ef849fe32"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListViewItemPressed</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event19ListViewItemPressedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event27ComboBoxSelectedItemChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event27ComboBoxSelectedItemChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event27ComboBoxSelectedItemChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a5e0903b9a161d600c48a19f80db5c641"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComboBoxSelectedItemChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event27ComboBoxSelectedItemChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event14ComboBoxClosedE">
+<span id="_CPPv3N6AppCUI8Controls5Event14ComboBoxClosedE"></span><span id="_CPPv2N6AppCUI8Controls5Event14ComboBoxClosedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1ac36ee02f7176cf2ed5639cccb9a0e3ea"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComboBoxClosed</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event14ComboBoxClosedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event31ColorPickerSelectedColorChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event31ColorPickerSelectedColorChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event31ColorPickerSelectedColorChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a96fe6e3eea36de9d171a484fad258432"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ColorPickerSelectedColorChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event31ColorPickerSelectedColorChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event17ColorPickerClosedE">
+<span id="_CPPv3N6AppCUI8Controls5Event17ColorPickerClosedE"></span><span id="_CPPv2N6AppCUI8Controls5Event17ColorPickerClosedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a8a245ef471659da02204134c18a9291c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ColorPickerClosed</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event17ColorPickerClosedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event20TerminateApplicationE">
+<span id="_CPPv3N6AppCUI8Controls5Event20TerminateApplicationE"></span><span id="_CPPv2N6AppCUI8Controls5Event20TerminateApplicationE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1adf1a567e179ed414ff669c0f0527253d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TerminateApplication</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event20TerminateApplicationE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event7CommandE">
+<span id="_CPPv3N6AppCUI8Controls5Event7CommandE"></span><span id="_CPPv2N6AppCUI8Controls5Event7CommandE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1aee97be03cb04119af45014d815621ce1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Command</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event7CommandE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event27NumericSelectorValueChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event27NumericSelectorValueChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event27NumericSelectorValueChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a98b0317e4934eb4e3e24e169684704f9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumericSelectorValueChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event27NumericSelectorValueChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event23SplitterPositionChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event23SplitterPositionChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event23SplitterPositionChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a8ff0e0d3cbc98bdfc1cfbdc81cf65ee5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitterPositionChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event23SplitterPositionChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event19PropertyItemChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event19PropertyItemChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event19PropertyItemChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a78f9f65aed3be9b58b820a436443ce8d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PropertyItemChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event19PropertyItemChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event25SplitterPanelAutoExpandedE">
+<span id="_CPPv3N6AppCUI8Controls5Event25SplitterPanelAutoExpandedE"></span><span id="_CPPv2N6AppCUI8Controls5Event25SplitterPanelAutoExpandedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a541cd6ee22ea81921b6118556283842a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitterPanelAutoExpanded</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event25SplitterPanelAutoExpandedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event26SplitterPanelAutoCollapsedE">
+<span id="_CPPv3N6AppCUI8Controls5Event26SplitterPanelAutoCollapsedE"></span><span id="_CPPv2N6AppCUI8Controls5Event26SplitterPanelAutoCollapsedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1aaf7bafb0c20b6039ca29044f8920f435"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SplitterPanelAutoCollapsed</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event26SplitterPanelAutoCollapsedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event18KeySelectorChangedE">
+<span id="_CPPv3N6AppCUI8Controls5Event18KeySelectorChangedE"></span><span id="_CPPv2N6AppCUI8Controls5Event18KeySelectorChangedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a8bb421748ae3e3b390cedcc35d5f4206"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeySelectorChanged</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event18KeySelectorChangedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls5Event6CustomE">
+<span id="_CPPv3N6AppCUI8Controls5Event6CustomE"></span><span id="_CPPv2N6AppCUI8Controls5Event6CustomE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a96ab65baf45e5eda9b2f5a4aca9558a1a90589c47f06eb971d548591f23c285af"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Custom</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls5Event6CustomE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlagsE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlagsE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6b"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">WindowFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6ba6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags8SizeableE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags8SizeableE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags8SizeableE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6ba33766d4ad5701d3b5de94f4a67fb2f42"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sizeable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags8SizeableE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags12NotifyWindowE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags12NotifyWindowE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags12NotifyWindowE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6baf22860120342117a68426d643be8cfad"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NotifyWindow</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags12NotifyWindowE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags11ErrorWindowE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags11ErrorWindowE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags11ErrorWindowE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6baa7fa733d8f92e243827e2ba6a4660b39"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ErrorWindow</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags11ErrorWindowE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags13WarningWindowE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags13WarningWindowE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags13WarningWindowE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6ba95cb02393d2e3bad1a0f53087e746d75"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WarningWindow</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000800</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags13WarningWindowE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags13NoCloseButtonE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags13NoCloseButtonE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags13NoCloseButtonE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6ba5ab5c38f312e3381e57f3554b7eea5cb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoCloseButton</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x001000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags13NoCloseButtonE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags13FixedPositionE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags13FixedPositionE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags13FixedPositionE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6ba6007122f8c54196650604401232cf4a1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FixedPosition</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x004000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags13FixedPositionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags9MaximizedE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags9MaximizedE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags9MaximizedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6ba49d903a5c02560cf79bf6b516cc89457"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Maximized</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x008000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags9MaximizedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags4MenuE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags4MenuE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags4MenuE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6bab61541208db7fa7dba42c85224405911"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Menu</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x010000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags4MenuE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11WindowFlags13ProcessReturnE">
+<span id="_CPPv3N6AppCUI8Controls11WindowFlags13ProcessReturnE"></span><span id="_CPPv2N6AppCUI8Controls11WindowFlags13ProcessReturnE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a7316ef887912a4214937f4b0246d5c6baebb2aa1e1c46480015328a8b7604eccb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessReturn</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x020000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11WindowFlags13ProcessReturnE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls23WindowControlsBarLayoutE">
+<span id="_CPPv3N6AppCUI8Controls23WindowControlsBarLayoutE"></span><span id="_CPPv2N6AppCUI8Controls23WindowControlsBarLayoutE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1abbb2aaea2537ad75cdbd8d25c7695f4c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">WindowControlsBarLayout</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls23WindowControlsBarLayoutE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls23WindowControlsBarLayout4NoneE">
+<span id="_CPPv3N6AppCUI8Controls23WindowControlsBarLayout4NoneE"></span><span id="_CPPv2N6AppCUI8Controls23WindowControlsBarLayout4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1abbb2aaea2537ad75cdbd8d25c7695f4ca6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls23WindowControlsBarLayout4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls23WindowControlsBarLayout14TopBarFromLeftE">
+<span id="_CPPv3N6AppCUI8Controls23WindowControlsBarLayout14TopBarFromLeftE"></span><span id="_CPPv2N6AppCUI8Controls23WindowControlsBarLayout14TopBarFromLeftE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1abbb2aaea2537ad75cdbd8d25c7695f4ca8706aa71d69d6f8c39537c7789062031"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TopBarFromLeft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls23WindowControlsBarLayout14TopBarFromLeftE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls23WindowControlsBarLayout17BottomBarFromLeftE">
+<span id="_CPPv3N6AppCUI8Controls23WindowControlsBarLayout17BottomBarFromLeftE"></span><span id="_CPPv2N6AppCUI8Controls23WindowControlsBarLayout17BottomBarFromLeftE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1abbb2aaea2537ad75cdbd8d25c7695f4cab11332bcd659fb5f59e7861ecd327f2d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BottomBarFromLeft</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls23WindowControlsBarLayout17BottomBarFromLeftE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls23WindowControlsBarLayout15TopBarFromRightE">
+<span id="_CPPv3N6AppCUI8Controls23WindowControlsBarLayout15TopBarFromRightE"></span><span id="_CPPv2N6AppCUI8Controls23WindowControlsBarLayout15TopBarFromRightE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1abbb2aaea2537ad75cdbd8d25c7695f4cad0cce2d9d8763dc1fd78f0289edae1da"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TopBarFromRight</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls23WindowControlsBarLayout15TopBarFromRightE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls23WindowControlsBarLayout18BottomBarFromRightE">
+<span id="_CPPv3N6AppCUI8Controls23WindowControlsBarLayout18BottomBarFromRightE"></span><span id="_CPPv2N6AppCUI8Controls23WindowControlsBarLayout18BottomBarFromRightE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1abbb2aaea2537ad75cdbd8d25c7695f4ca1da52aea08b9bff9532b5853c9eaf191"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BottomBarFromRight</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls23WindowControlsBarLayout18BottomBarFromRightE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11ButtonFlagsE">
+<span id="_CPPv3N6AppCUI8Controls11ButtonFlagsE"></span><span id="_CPPv2N6AppCUI8Controls11ButtonFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa9ac15477d48e82a030caa4b29d29de9"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ButtonFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11ButtonFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11ButtonFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls11ButtonFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls11ButtonFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa9ac15477d48e82a030caa4b29d29de9a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11ButtonFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11ButtonFlags4FlatE">
+<span id="_CPPv3N6AppCUI8Controls11ButtonFlags4FlatE"></span><span id="_CPPv2N6AppCUI8Controls11ButtonFlags4FlatE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa9ac15477d48e82a030caa4b29d29de9a745e3db6a7ffd50e1a72b39482f0882d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Flat</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11ButtonFlags4FlatE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13SplitterFlagsE">
+<span id="_CPPv3N6AppCUI8Controls13SplitterFlagsE"></span><span id="_CPPv2N6AppCUI8Controls13SplitterFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a78d38d7bd806edb107d12257d8ece509"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">SplitterFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13SplitterFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13SplitterFlags10HorizontalE">
+<span id="_CPPv3N6AppCUI8Controls13SplitterFlags10HorizontalE"></span><span id="_CPPv2N6AppCUI8Controls13SplitterFlags10HorizontalE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a78d38d7bd806edb107d12257d8ece509ac1b5fa03ecdb95d4a45dd1c40b02527f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Horizontal</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13SplitterFlags10HorizontalE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13SplitterFlags8VerticalE">
+<span id="_CPPv3N6AppCUI8Controls13SplitterFlags8VerticalE"></span><span id="_CPPv2N6AppCUI8Controls13SplitterFlags8VerticalE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a78d38d7bd806edb107d12257d8ece509a06ce2a25e5d12c166a36f654dbea6012"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vertical</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13SplitterFlags8VerticalE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel1E">
+<span id="_CPPv3N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel1E"></span><span id="_CPPv2N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel1E"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a78d38d7bd806edb107d12257d8ece509a07d97dca2c51ed09ddb89058b8506bc5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoCollapsePanel1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel1E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel2E">
+<span id="_CPPv3N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel2E"></span><span id="_CPPv2N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel2E"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a78d38d7bd806edb107d12257d8ece509a2ac8caa0492f6be93955b4bd0beb4ecf"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AutoCollapsePanel2</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13SplitterFlags18AutoCollapsePanel2E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls14TextFieldFlagsE">
+<span id="_CPPv3N6AppCUI8Controls14TextFieldFlagsE"></span><span id="_CPPv2N6AppCUI8Controls14TextFieldFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a987cc72bff261c5dd74da00d49d7f617"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">TextFieldFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls14TextFieldFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls14TextFieldFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls14TextFieldFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls14TextFieldFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a987cc72bff261c5dd74da00d49d7f617a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls14TextFieldFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls14TextFieldFlags12ProcessEnterE">
+<span id="_CPPv3N6AppCUI8Controls14TextFieldFlags12ProcessEnterE"></span><span id="_CPPv2N6AppCUI8Controls14TextFieldFlags12ProcessEnterE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a987cc72bff261c5dd74da00d49d7f617a2e40cad822a2df005bc38e191ae43c44"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessEnter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls14TextFieldFlags12ProcessEnterE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls14TextFieldFlags8ReadonlyE">
+<span id="_CPPv3N6AppCUI8Controls14TextFieldFlags8ReadonlyE"></span><span id="_CPPv2N6AppCUI8Controls14TextFieldFlags8ReadonlyE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a987cc72bff261c5dd74da00d49d7f617a060d84e58c348e44da6637e57e2e9201"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Readonly</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls14TextFieldFlags8ReadonlyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls14TextFieldFlags18SyntaxHighlightingE">
+<span id="_CPPv3N6AppCUI8Controls14TextFieldFlags18SyntaxHighlightingE"></span><span id="_CPPv2N6AppCUI8Controls14TextFieldFlags18SyntaxHighlightingE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a987cc72bff261c5dd74da00d49d7f617a6d6e30eb0b6eaf1a0fc4c3008fbb734f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SyntaxHighlighting</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls14TextFieldFlags18SyntaxHighlightingE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls14TextFieldFlags24DisableAutoSelectOnFocusE">
+<span id="_CPPv3N6AppCUI8Controls14TextFieldFlags24DisableAutoSelectOnFocusE"></span><span id="_CPPv2N6AppCUI8Controls14TextFieldFlags24DisableAutoSelectOnFocusE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a987cc72bff261c5dd74da00d49d7f617afe5ad8c5b461947673a0a35565694946"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableAutoSelectOnFocus</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000800</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls14TextFieldFlags24DisableAutoSelectOnFocusE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlagsE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlagsE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337d"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">TextAreaFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337da6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags6BorderE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags6BorderE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags6BorderE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337da070554647306343cbea29ebfdd278ba8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Border</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags6BorderE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags15ShowLineNumbersE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags15ShowLineNumbersE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags15ShowLineNumbersE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337daba23bce9ee59443529defcfdce94b715"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShowLineNumbers</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags15ShowLineNumbersE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags13ProcessTabKeyE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags13ProcessTabKeyE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags13ProcessTabKeyE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337dac373f50dfbbbcce6c661f26453ee71eb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessTabKey</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags13ProcessTabKeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags8ReadonlyE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags8ReadonlyE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags8ReadonlyE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337da060d84e58c348e44da6637e57e2e9201"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Readonly</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000800</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags8ReadonlyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags10ScrollBarsE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags10ScrollBarsE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags10ScrollBarsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337da07199d0f90b724c1439067e85737267f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ScrollBars</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x001000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags10ScrollBarsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags18SyntaxHighlightingE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags18SyntaxHighlightingE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags18SyntaxHighlightingE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337da6d6e30eb0b6eaf1a0fc4c3008fbb734f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SyntaxHighlighting</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x002000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags18SyntaxHighlightingE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TextAreaFlags24DisableAutoSelectOnFocusE">
+<span id="_CPPv3N6AppCUI8Controls13TextAreaFlags24DisableAutoSelectOnFocusE"></span><span id="_CPPv2N6AppCUI8Controls13TextAreaFlags24DisableAutoSelectOnFocusE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a88ea0b7dea46e216f32def2af7ff337dafe5ad8c5b461947673a0a35565694946"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableAutoSelectOnFocus</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x004000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TextAreaFlags24DisableAutoSelectOnFocusE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlagsE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlagsE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">TabFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlags7TopTabsE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlags7TopTabsE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlags7TopTabsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639ae5b6ac44baf3eb4a43cb27e230449999"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TopTabs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlags7TopTabsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlags10BottomTabsE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlags10BottomTabsE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlags10BottomTabsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639aa7111368a7044757b67c2235a679c036"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BottomTabs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlags10BottomTabsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlags8LeftTabsE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlags8LeftTabsE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlags8LeftTabsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639ab1a81b13ab1565442a286cac393059cf"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LeftTabs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlags8LeftTabsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlags8ListViewE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlags8ListViewE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlags8ListViewE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639a416c421e722428b4f6e0863f98a25cff"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ListView</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000300</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlags8ListViewE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlags8HideTabsE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlags8HideTabsE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlags8HideTabsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639ad3f96f2ae9214b26763251e4678bf5eb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideTabs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlags8HideTabsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlags21TransparentBackgroundE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlags21TransparentBackgroundE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlags21TransparentBackgroundE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639a0103e60fd6dd10850f0a5e0774ad59da"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransparentBackground</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x001000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlags21TransparentBackgroundE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TabFlags7TabsBarE">
+<span id="_CPPv3N6AppCUI8Controls8TabFlags7TabsBarE"></span><span id="_CPPv2N6AppCUI8Controls8TabFlags7TabsBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a87e27b0d0c177b0e83e09b316a905639a11601bb3bfe71ade436bba9316dc4152"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TabsBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x002000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TabFlags7TabsBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16UserControlFlagsE">
+<span id="_CPPv3N6AppCUI8Controls16UserControlFlagsE"></span><span id="_CPPv2N6AppCUI8Controls16UserControlFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a86d1c41f9b31bef4ec8125ab46c41a5d"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">UserControlFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16UserControlFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16UserControlFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls16UserControlFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls16UserControlFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a86d1c41f9b31bef4ec8125ab46c41a5da6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16UserControlFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16UserControlFlags21ShowVerticalScrollBarE">
+<span id="_CPPv3N6AppCUI8Controls16UserControlFlags21ShowVerticalScrollBarE"></span><span id="_CPPv2N6AppCUI8Controls16UserControlFlags21ShowVerticalScrollBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a86d1c41f9b31bef4ec8125ab46c41a5da0b63aeb05b68f86b65a6233716116f61"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShowVerticalScrollBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16UserControlFlags21ShowVerticalScrollBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16UserControlFlags23ShowHorizontalScrollBarE">
+<span id="_CPPv3N6AppCUI8Controls16UserControlFlags23ShowHorizontalScrollBarE"></span><span id="_CPPv2N6AppCUI8Controls16UserControlFlags23ShowHorizontalScrollBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a86d1c41f9b31bef4ec8125ab46c41a5da7c333a77a49332af1bea7487641c8860"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShowHorizontalScrollBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16UserControlFlags23ShowHorizontalScrollBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16UserControlFlags23ScrollBarOutsideControlE">
+<span id="_CPPv3N6AppCUI8Controls16UserControlFlags23ScrollBarOutsideControlE"></span><span id="_CPPv2N6AppCUI8Controls16UserControlFlags23ScrollBarOutsideControlE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a86d1c41f9b31bef4ec8125ab46c41a5dad8b16ec2ebf77375a91d9cd2977745e9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ScrollBarOutsideControl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16UserControlFlags23ScrollBarOutsideControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11ViewerFlagsE">
+<span id="_CPPv3N6AppCUI8Controls11ViewerFlagsE"></span><span id="_CPPv2N6AppCUI8Controls11ViewerFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a094b16cc816de8979f8f7efa768975a5"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ViewerFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11ViewerFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11ViewerFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls11ViewerFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls11ViewerFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a094b16cc816de8979f8f7efa768975a5a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11ViewerFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11ViewerFlags6BorderE">
+<span id="_CPPv3N6AppCUI8Controls11ViewerFlags6BorderE"></span><span id="_CPPv2N6AppCUI8Controls11ViewerFlags6BorderE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a094b16cc816de8979f8f7efa768975a5a070554647306343cbea29ebfdd278ba8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Border</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11ViewerFlags6BorderE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls11ViewerFlags13HideScrollBarE">
+<span id="_CPPv3N6AppCUI8Controls11ViewerFlags13HideScrollBarE"></span><span id="_CPPv2N6AppCUI8Controls11ViewerFlags13HideScrollBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a094b16cc816de8979f8f7efa768975a5a5eedad2e6e68500b4f42c0b878ef5470"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideScrollBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls11ViewerFlags13HideScrollBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlagsE">
+<span id="_CPPv3N6AppCUI8Controls22ColumnsHeaderViewFlagsE"></span><span id="_CPPv2N6AppCUI8Controls22ColumnsHeaderViewFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad2250624e61d0bcfc046757213529247"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ColumnsHeaderViewFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls22ColumnsHeaderViewFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls22ColumnsHeaderViewFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad2250624e61d0bcfc046757213529247a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags9ClickableE">
+<span id="_CPPv3N6AppCUI8Controls22ColumnsHeaderViewFlags9ClickableE"></span><span id="_CPPv2N6AppCUI8Controls22ColumnsHeaderViewFlags9ClickableE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad2250624e61d0bcfc046757213529247a276487edc1b94098d86dcbc4b99df48d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clickable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x00001</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags9ClickableE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags8SortableE">
+<span id="_CPPv3N6AppCUI8Controls22ColumnsHeaderViewFlags8SortableE"></span><span id="_CPPv2N6AppCUI8Controls22ColumnsHeaderViewFlags8SortableE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad2250624e61d0bcfc046757213529247a73c130f2bcae405bc5d5cf58bb857991"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sortable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x00002</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags8SortableE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags14HideSeparatorsE">
+<span id="_CPPv3N6AppCUI8Controls22ColumnsHeaderViewFlags14HideSeparatorsE"></span><span id="_CPPv2N6AppCUI8Controls22ColumnsHeaderViewFlags14HideSeparatorsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad2250624e61d0bcfc046757213529247aa746676732ed659ee3df555a0d6eca56"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideSeparators</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x00004</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags14HideSeparatorsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags10FixedSizedE">
+<span id="_CPPv3N6AppCUI8Controls22ColumnsHeaderViewFlags10FixedSizedE"></span><span id="_CPPv2N6AppCUI8Controls22ColumnsHeaderViewFlags10FixedSizedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad2250624e61d0bcfc046757213529247a7c253eff5ac3564755686a7c7fe817ce"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FixedSized</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x00008</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags10FixedSizedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags10HideHeaderE">
+<span id="_CPPv3N6AppCUI8Controls22ColumnsHeaderViewFlags10HideHeaderE"></span><span id="_CPPv2N6AppCUI8Controls22ColumnsHeaderViewFlags10HideHeaderE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad2250624e61d0bcfc046757213529247a57b1ffe73e28cdfc6e9e647dffdc7835"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideHeader</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x00010</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlags10HideHeaderE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls19CopyClipboardFormatE">
+<span id="_CPPv3N6AppCUI8Controls19CopyClipboardFormatE"></span><span id="_CPPv2N6AppCUI8Controls19CopyClipboardFormatE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a920ab54bd474d53c8626d145fe89d07f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CopyClipboardFormat</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls19CopyClipboardFormatE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls19CopyClipboardFormat12TextWithTabsE">
+<span id="_CPPv3N6AppCUI8Controls19CopyClipboardFormat12TextWithTabsE"></span><span id="_CPPv2N6AppCUI8Controls19CopyClipboardFormat12TextWithTabsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a920ab54bd474d53c8626d145fe89d07fa5f0e2f02d1bcedfd1e8d0245bef84ab6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TextWithTabs</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls19CopyClipboardFormat12TextWithTabsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls19CopyClipboardFormat3CSVE">
+<span id="_CPPv3N6AppCUI8Controls19CopyClipboardFormat3CSVE"></span><span id="_CPPv2N6AppCUI8Controls19CopyClipboardFormat3CSVE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a920ab54bd474d53c8626d145fe89d07facc8d68c551c4a9a6d5313e07de4deafd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CSV</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls19CopyClipboardFormat3CSVE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls19CopyClipboardFormat4HTMLE">
+<span id="_CPPv3N6AppCUI8Controls19CopyClipboardFormat4HTMLE"></span><span id="_CPPv2N6AppCUI8Controls19CopyClipboardFormat4HTMLE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a920ab54bd474d53c8626d145fe89d07fa4c4ad5fca2e7a3f74dbb1ced00381aa4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HTML</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls19CopyClipboardFormat4HTMLE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls18CopyClipboardFlagsE">
+<span id="_CPPv3N6AppCUI8Controls18CopyClipboardFlagsE"></span><span id="_CPPv2N6AppCUI8Controls18CopyClipboardFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1d15d5d0b51d00a316931d96cb668c10"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CopyClipboardFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls18CopyClipboardFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls18CopyClipboardFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls18CopyClipboardFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls18CopyClipboardFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1d15d5d0b51d00a316931d96cb668c10a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls18CopyClipboardFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls18CopyClipboardFlags10CopyHeaderE">
+<span id="_CPPv3N6AppCUI8Controls18CopyClipboardFlags10CopyHeaderE"></span><span id="_CPPv2N6AppCUI8Controls18CopyClipboardFlags10CopyHeaderE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1d15d5d0b51d00a316931d96cb668c10aa9561e231e99357d4a4c4fa53315a473"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyHeader</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x00000001</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls18CopyClipboardFlags10CopyHeaderE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlagsE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlagsE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ListViewFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags11HideColumnsE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags11HideColumnsE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags11HideColumnsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a84b83e82aa60abd73438c8d70b6c25ac"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideColumns</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags11HideColumnsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags10CheckBoxesE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags10CheckBoxesE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags10CheckBoxesE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8ac4ae2ff76d599c2393476ac31170d59f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckBoxes</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags10CheckBoxesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags20HideColumnsSeparatorE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags20HideColumnsSeparatorE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags20HideColumnsSeparatorE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a607ab52e00f634053a9c20edc423c384"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideColumnsSeparator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags20HideColumnsSeparatorE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags8SortableE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags8SortableE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags8SortableE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a73c130f2bcae405bc5d5cf58bb857991"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sortable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000800</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags8SortableE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags14ItemSeparatorsE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags14ItemSeparatorsE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags14ItemSeparatorsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a6c2b6b3445cf7232f669dcdbb3e14c8b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ItemSeparators</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x001000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags14ItemSeparatorsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags29HideCurrentItemWhenNotFocusedE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags29HideCurrentItemWhenNotFocusedE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags29HideCurrentItemWhenNotFocusedE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a8dfefb824dafc319c0b9809ec5aea6d9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideCurrentItemWhenNotFocused</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x002000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags29HideCurrentItemWhenNotFocusedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags27AllowMultipleItemsSelectionE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags27AllowMultipleItemsSelectionE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags27AllowMultipleItemsSelectionE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8aadbfc07722add424a3917e8c3d12775b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllowMultipleItemsSelection</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x004000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags27AllowMultipleItemsSelectionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags10SearchModeE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags10SearchModeE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags10SearchModeE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8af78c5d1c01fbdecb78b989edde0e583b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SearchMode</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x008000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags10SearchModeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags13HideSearchBarE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags13HideSearchBarE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags13HideSearchBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8ab726c4dcea1f16dba6a571093e888b55"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideSearchBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x010000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags13HideSearchBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags10HideBorderE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags10HideBorderE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags10HideBorderE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8ac50a8240f5547a2f9a203937c8c34f27"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideBorder</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x020000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags10HideBorderE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags13HideScrollBarE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags13HideScrollBarE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags13HideScrollBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a5eedad2e6e68500b4f42c0b878ef5470"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideScrollBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x040000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags13HideScrollBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13ListViewFlags14PopupSearchBarE">
+<span id="_CPPv3N6AppCUI8Controls13ListViewFlags14PopupSearchBarE"></span><span id="_CPPv2N6AppCUI8Controls13ListViewFlags14PopupSearchBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1ad55e655ac5f0a0234578bbf1b9e814f8a39c61b432d1abd4ec27c1a6746223f16"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PopupSearchBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x080000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13ListViewFlags14PopupSearchBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlagsE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlagsE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95e"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">TreeViewFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95ea6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags11HideColumnsE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags11HideColumnsE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags11HideColumnsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95ea84b83e82aa60abd73438c8d70b6c25ac"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideColumns</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags11HideColumnsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags10HideBorderE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags10HideBorderE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags10HideBorderE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95eac50a8240f5547a2f9a203937c8c34f27"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideBorder</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags10HideBorderE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags20HideColumnsSeparatorE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags20HideColumnsSeparatorE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags20HideColumnsSeparatorE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95ea607ab52e00f634053a9c20edc423c384"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideColumnsSeparator</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags20HideColumnsSeparatorE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags8SortableE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags8SortableE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags8SortableE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95ea73c130f2bcae405bc5d5cf58bb857991"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sortable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000800</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags8SortableE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags31DynamicallyPopulateNodeChildrenE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags31DynamicallyPopulateNodeChildrenE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags31DynamicallyPopulateNodeChildrenE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95eaba5f903c21cf7e4ec48b05c18a00ef2b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DynamicallyPopulateNodeChildren</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x001000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags31DynamicallyPopulateNodeChildrenE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags13HideScrollBarE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags13HideScrollBarE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags13HideScrollBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95ea5eedad2e6e68500b4f42c0b878ef5470"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideScrollBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x002000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags13HideScrollBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags10SearchableE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags10SearchableE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags10SearchableE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95ea594574ccd4ec1bb1b679d6885ef1bb0c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Searchable</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x004000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags10SearchableE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags12FilterSearchE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags12FilterSearchE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags12FilterSearchE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95eaa3384df907703906f21fd9df4a82748b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FilterSearch</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x008000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags12FilterSearchE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls13TreeViewFlags13HideSearchBarE">
+<span id="_CPPv3N6AppCUI8Controls13TreeViewFlags13HideSearchBarE"></span><span id="_CPPv2N6AppCUI8Controls13TreeViewFlags13HideSearchBarE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a3bc10e88d0c3dfb4f3f2312db1f6a95eab726c4dcea1f16dba6a571093e888b55"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideSearchBar</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x010000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls13TreeViewFlags13HideSearchBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlagsE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlagsE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14c"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">GridFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags19HideHorizontalLinesE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags19HideHorizontalLinesE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags19HideHorizontalLinesE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14caf05d06108daed7f4b9b521cc61956fa6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideHorizontalLines</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags19HideHorizontalLinesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags17HideVerticalLinesE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags17HideVerticalLinesE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags17HideVerticalLinesE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca7c7ea474eb2c7119165e88a902e97b7c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideVerticalLines</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags17HideVerticalLinesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags9HideBoxesE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags9HideBoxesE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags9HideBoxesE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14caf8850942b6e6b9239f4ccbf54381ff81"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideBoxes</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags9HideBoxesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags15HideHoveredCellE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags15HideHoveredCellE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags15HideHoveredCellE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca37ef0baa6a5bf96edd78d97de5591e2e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideHoveredCell</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000800</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags15HideHoveredCellE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags16HideSelectedCellE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags16HideSelectedCellE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags16HideSelectedCellE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca9f507ce8cd4fb26430aa9aeffa412e86"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideSelectedCell</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x001000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags16HideSelectedCellE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags21TransparentBackgroundE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags21TransparentBackgroundE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags21TransparentBackgroundE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca0103e60fd6dd10850f0a5e0774ad59da"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TransparentBackground</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x002000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags21TransparentBackgroundE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags11DisableZoomE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags11DisableZoomE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags11DisableZoomE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14cadbb545fe697518e9526c7032afd6f83a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableZoom</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x004000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags11DisableZoomE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags11DisableMoveE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags11DisableMoveE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags11DisableMoveE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca25b4dcc4ed78509d73220fa6d2eaabc3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableMove</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x008000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags11DisableMoveE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags4SortE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags4SortE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags4SortE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca6b46ae48421828d9973deec5fa9aa0c3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Sort</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x010000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags4SortE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags17DisableDuplicatesE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags17DisableDuplicatesE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags17DisableDuplicatesE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14ca7a5247c3ad0a254b4b60b493fd9356c0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DisableDuplicates</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x020000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags17DisableDuplicatesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls9GridFlags6FilterE">
+<span id="_CPPv3N6AppCUI8Controls9GridFlags6FilterE"></span><span id="_CPPv2N6AppCUI8Controls9GridFlags6FilterE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa1a6ca1d99098d54f67f88976a49a14cad7778d0c64b6ba21494c97f77a66885a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Filter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x040000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls9GridFlags6FilterE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17PropertyListFlagsE">
+<span id="_CPPv3N6AppCUI8Controls17PropertyListFlagsE"></span><span id="_CPPv2N6AppCUI8Controls17PropertyListFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1af0891bfc089f4d9aee747ecd3c9ea7fe"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PropertyListFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17PropertyListFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17PropertyListFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls17PropertyListFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls17PropertyListFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1af0891bfc089f4d9aee747ecd3c9ea7fea6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17PropertyListFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17PropertyListFlags6BorderE">
+<span id="_CPPv3N6AppCUI8Controls17PropertyListFlags6BorderE"></span><span id="_CPPv2N6AppCUI8Controls17PropertyListFlags6BorderE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1af0891bfc089f4d9aee747ecd3c9ea7fea070554647306343cbea29ebfdd278ba8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Border</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17PropertyListFlags6BorderE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17PropertyListFlags8ReadOnlyE">
+<span id="_CPPv3N6AppCUI8Controls17PropertyListFlags8ReadOnlyE"></span><span id="_CPPv2N6AppCUI8Controls17PropertyListFlags8ReadOnlyE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1af0891bfc089f4d9aee747ecd3c9ea7fea131fb182a881796e7606ed6da27f1197"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadOnly</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17PropertyListFlags8ReadOnlyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17PropertyListFlags14HideCategoriesE">
+<span id="_CPPv3N6AppCUI8Controls17PropertyListFlags14HideCategoriesE"></span><span id="_CPPv2N6AppCUI8Controls17PropertyListFlags14HideCategoriesE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1af0891bfc089f4d9aee747ecd3c9ea7fea7c61f615f113795a67ee703c106ed841"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideCategories</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17PropertyListFlags14HideCategoriesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16KeySelectorFlagsE">
+<span id="_CPPv3N6AppCUI8Controls16KeySelectorFlagsE"></span><span id="_CPPv2N6AppCUI8Controls16KeySelectorFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1048f5f6ccf2b58233609e79abc71105"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">KeySelectorFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16KeySelectorFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16KeySelectorFlags4NoneE">
+<span id="_CPPv3N6AppCUI8Controls16KeySelectorFlags4NoneE"></span><span id="_CPPv2N6AppCUI8Controls16KeySelectorFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1048f5f6ccf2b58233609e79abc71105a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16KeySelectorFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16KeySelectorFlags10ProcessTabE">
+<span id="_CPPv3N6AppCUI8Controls16KeySelectorFlags10ProcessTabE"></span><span id="_CPPv2N6AppCUI8Controls16KeySelectorFlags10ProcessTabE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1048f5f6ccf2b58233609e79abc71105ae4ab9cf196fc5cd515c7355fb95d8c56"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessTab</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000100</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16KeySelectorFlags10ProcessTabE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16KeySelectorFlags13ProcessReturnE">
+<span id="_CPPv3N6AppCUI8Controls16KeySelectorFlags13ProcessReturnE"></span><span id="_CPPv2N6AppCUI8Controls16KeySelectorFlags13ProcessReturnE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1048f5f6ccf2b58233609e79abc71105aebb2aa1e1c46480015328a8b7604eccb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessReturn</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000200</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16KeySelectorFlags13ProcessReturnE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16KeySelectorFlags13ProcessEscapeE">
+<span id="_CPPv3N6AppCUI8Controls16KeySelectorFlags13ProcessEscapeE"></span><span id="_CPPv2N6AppCUI8Controls16KeySelectorFlags13ProcessEscapeE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1048f5f6ccf2b58233609e79abc71105ad416caece9449c669cf63373e247717d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProcessEscape</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000400</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16KeySelectorFlags13ProcessEscapeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls16KeySelectorFlags8ReadOnlyE">
+<span id="_CPPv3N6AppCUI8Controls16KeySelectorFlags8ReadOnlyE"></span><span id="_CPPv2N6AppCUI8Controls16KeySelectorFlags8ReadOnlyE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1048f5f6ccf2b58233609e79abc71105a131fb182a881796e7606ed6da27f1197"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadOnly</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x000800</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls16KeySelectorFlags8ReadOnlyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="type-aliases">
+<h2>Type aliases<a class="headerlink" href="#type-aliases" title="Link to this heading"></a></h2>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls10ItemHandleE">
+<span id="_CPPv3N6AppCUI8Controls10ItemHandleE"></span><span id="_CPPv2N6AppCUI8Controls10ItemHandleE"></span><span class="target" id="namespaceAppCUI_1_1Controls_1a1a38557da03997dec56aa36ccaec3732"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ItemHandle</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls10ItemHandleE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</section>
+<section id="variables">
+<h2>Variables<a class="headerlink" href="#variables" title="Link to this heading"></a></h2>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17InvalidItemHandleE">
+<span id="_CPPv3N6AppCUI8Controls17InvalidItemHandleE"></span><span id="_CPPv2N6AppCUI8Controls17InvalidItemHandleE"></span><span id="AppCUI::Controls::InvalidItemHandle__ItemHandle"></span><span class="target" id="namespaceAppCUI_1_1Controls_1aa04da3068727ef0888981f61e53c6712"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">InvalidItemHandle</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0xFFFFFFFF</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17InvalidItemHandleE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Application_InitializationData.html" class="btn btn-neutral float-left" title="InitializationData" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_Button.html" class="btn btn-neutral float-right" title="Button" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rect &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Renderer" href="class_AppCUI_Graphics_Renderer.html" />
+    <link rel="prev" title="Point" href="class_AppCUI_Graphics_Point.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+      <li class="breadcrumb-item active">Rect</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Graphics_Rect.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rect">
+<h1>Rect<a class="headerlink" href="#rect" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Graphics::Rect</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics4RectE">
+<span id="_CPPv3N6AppCUI8Graphics4RectE"></span><span id="_CPPv2N6AppCUI8Graphics4RectE"></span><span id="AppCUI::Graphics::Rect"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rect</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics4RectE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics4Rect4RectEv">
+<span id="_CPPv3N6AppCUI8Graphics4Rect4RectEv"></span><span id="_CPPv2N6AppCUI8Graphics4Rect4RectEv"></span><span id="AppCUI::Graphics::Rect::Rect"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a787a28c20dbb94bdf59f4617a0d74093"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rect</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics4Rect4RectEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics4Rect4RectE5Point4Size">
+<span id="_CPPv3N6AppCUI8Graphics4Rect4RectE5Point4Size"></span><span id="_CPPv2N6AppCUI8Graphics4Rect4RectE5Point4Size"></span><span id="AppCUI::Graphics::Rect::Rect__Point.Size"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1ae59b8a1e06469fffd0cb8500651e16f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rect</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="class_AppCUI_Graphics_Point.html#_CPPv4N6AppCUI8Graphics5PointE" title="AppCUI::Graphics::Point"><span class="n"><span class="pre">Point</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference internal" href="class_AppCUI_Graphics_Size.html#_CPPv4N6AppCUI8Graphics4SizeE" title="AppCUI::Graphics::Size"><span class="n"><span class="pre">Size</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics4Rect4RectE5Point4Size" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics4Rect6CreateEiiii10Alignament">
+<span id="_CPPv3N6AppCUI8Graphics4Rect6CreateEiiii10Alignament"></span><span id="_CPPv2N6AppCUI8Graphics4Rect6CreateEiiii10Alignament"></span><span id="AppCUI::Graphics::Rect::Create__i.i.i.i.Alignament"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a989333db59807a6892ced2ddf2c1a018"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span>, <a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8Graphics10AlignamentE" title="AppCUI::Graphics::Alignament"><span class="n"><span class="pre">Alignament</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">align</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics4Rect6CreateEiiii10Alignament" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics4Rect6CreateEiiii">
+<span id="_CPPv3N6AppCUI8Graphics4Rect6CreateEiiii"></span><span id="_CPPv2N6AppCUI8Graphics4Rect6CreateEiiii"></span><span id="AppCUI::Graphics::Rect::Create__i.i.i.i"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a780a2d4295adbdd892ad58c68eba7bbd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">left</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">top</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">right</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bottom</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics4Rect6CreateEiiii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect8ContainsEii">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect8ContainsEii"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect8ContainsEii"></span><span id="AppCUI::Graphics::Rect::Contains__i.iC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1adac6a91aa722b6c63075712f7beba6a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Contains</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect8ContainsEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect10GetCenterXEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect10GetCenterXEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect10GetCenterXEv"></span><span id="AppCUI::Graphics::Rect::GetCenterXC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a512f177756efebb892bfd0db00da4fef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCenterX</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect10GetCenterXEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect10GetCenterYEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect10GetCenterYEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect10GetCenterYEv"></span><span id="AppCUI::Graphics::Rect::GetCenterYC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a54846160b2752e2f31147143ad83e879"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCenterY</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect10GetCenterYEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect4GetXEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect4GetXEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect4GetXEv"></span><span id="AppCUI::Graphics::Rect::GetXC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a9ee9a68bf59c2a08e30c80a4d1d4f2f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetX</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect4GetXEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect4GetYEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect4GetYEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect4GetYEv"></span><span id="AppCUI::Graphics::Rect::GetYC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1ade8612dd08043dcdbafc36c344d65eae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetY</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect4GetYEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect8GetWidthEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect8GetWidthEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect8GetWidthEv"></span><span id="AppCUI::Graphics::Rect::GetWidthC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a2ea300c9f5ca2b51069382d7d5b9776c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetWidth</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect8GetWidthEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect9GetHeightEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect9GetHeightEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect9GetHeightEv"></span><span id="AppCUI::Graphics::Rect::GetHeightC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1aef253229a5afa9a64fcadf44b3c7b772"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHeight</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect9GetHeightEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect7GetLeftEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect7GetLeftEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect7GetLeftEv"></span><span id="AppCUI::Graphics::Rect::GetLeftC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a1a309fceacb4b3fb1d9511a1182f006f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLeft</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect7GetLeftEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect6GetTopEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect6GetTopEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect6GetTopEv"></span><span id="AppCUI::Graphics::Rect::GetTopC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1aa9825210503d8080e036825735e72727"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTop</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect6GetTopEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect8GetRightEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect8GetRightEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect8GetRightEv"></span><span id="AppCUI::Graphics::Rect::GetRightC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a07b6e40abf38884a2bbec73c0f5e4de7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRight</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect8GetRightEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics4Rect9GetBottomEv">
+<span id="_CPPv3NK6AppCUI8Graphics4Rect9GetBottomEv"></span><span id="_CPPv2NK6AppCUI8Graphics4Rect9GetBottomEv"></span><span id="AppCUI::Graphics::Rect::GetBottomC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Rect_1a83f0be39dc05de8c72c07140579d1dfd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetBottom</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics4Rect9GetBottomEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Graphics_Point.html" class="btn btn-neutral float-left" title="Point" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Graphics_Renderer.html" class="btn btn-neutral float-right" title="Renderer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

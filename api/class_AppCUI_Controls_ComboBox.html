@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComboBox &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Control" href="class_AppCUI_Controls_Control.html" />
+    <link rel="prev" title="ColumnsHeaderView" href="class_AppCUI_Controls_ColumnsHeaderView.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+      <li class="breadcrumb-item active">ComboBox</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_ComboBox.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="combobox">
+<h1>ComboBox<a class="headerlink" href="#combobox" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::ComboBox</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBoxE">
+<span id="_CPPv3N6AppCUI8Controls8ComboBoxE"></span><span id="_CPPv2N6AppCUI8Controls8ComboBoxE"></span><span id="AppCUI::Controls::ComboBox"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComboBox</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_Control.html#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBoxE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataE6uint64">
+<span id="_CPPv3NK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataE6uint64"></span><span id="_CPPv2NK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataE6uint64"></span><span id="AppCUI::Controls::ComboBox::GetCurrentItemUserData__uint64C"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1ac0180821ef3280013d29d2aa745afc5c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentItemUserData</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">errorValue</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataE9ReferenceI1TEv">
+<span id="_CPPv3I0ENK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataEv"></span><span id="_CPPv2I0ENK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a38648dceca9f06c3d19fea55fba2df1c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataE9ReferenceI1TEv" title="AppCUI::Controls::ComboBox::GetCurrentItemUserData::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentItemUserData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK6AppCUI8Controls8ComboBox22GetCurrentItemUserDataE9ReferenceI1TEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls8ComboBox13GetItemsCountEv">
+<span id="_CPPv3NK6AppCUI8Controls8ComboBox13GetItemsCountEv"></span><span id="_CPPv2NK6AppCUI8Controls8ComboBox13GetItemsCountEv"></span><span id="AppCUI::Controls::ComboBox::GetItemsCountC"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1ade592251fb483d581bbe1074aa732bc7"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetItemsCount</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls8ComboBox13GetItemsCountEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls8ComboBox19GetCurrentItemIndexEv">
+<span id="_CPPv3NK6AppCUI8Controls8ComboBox19GetCurrentItemIndexEv"></span><span id="_CPPv2NK6AppCUI8Controls8ComboBox19GetCurrentItemIndexEv"></span><span id="AppCUI::Controls::ComboBox::GetCurrentItemIndexC"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1afbe8a0989ce85ced781f97de0d226a6b"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentItemIndex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls8ComboBox19GetCurrentItemIndexEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox18GetCurrentItemTextEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox18GetCurrentItemTextEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox18GetCurrentItemTextEv"></span><span id="AppCUI::Controls::ComboBox::GetCurrentItemText"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1afd55c5be9210ac2919bfccd57069d078"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentItemText</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox18GetCurrentItemTextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls8ComboBox15GetItemUserDataE6uint326uint64">
+<span id="_CPPv3NK6AppCUI8Controls8ComboBox15GetItemUserDataE6uint326uint64"></span><span id="_CPPv2NK6AppCUI8Controls8ComboBox15GetItemUserDataE6uint326uint64"></span><span id="AppCUI::Controls::ComboBox::GetItemUserData__uint32.uint64C"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a97c48dbd7cae0b8df7360134fa7a9c16"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetItemUserData</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">errorValue</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls8ComboBox15GetItemUserDataE6uint326uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK6AppCUI8Controls8ComboBox15GetItemUserDataE9ReferenceI1TE6uint32">
+<span id="_CPPv3I0ENK6AppCUI8Controls8ComboBox15GetItemUserDataE6uint32"></span><span id="_CPPv2I0ENK6AppCUI8Controls8ComboBox15GetItemUserDataE6uint32"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1ad5bf884260a7b9585414b7455f6b1188"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENK6AppCUI8Controls8ComboBox15GetItemUserDataE9ReferenceI1TE6uint32" title="AppCUI::Controls::ComboBox::GetItemUserData::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetItemUserData</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK6AppCUI8Controls8ComboBox15GetItemUserDataE9ReferenceI1TE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox11GetItemTextE6uint32">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox11GetItemTextE6uint32"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox11GetItemTextE6uint32"></span><span id="AppCUI::Controls::ComboBox::GetItemText__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a41c0c35ee5055d6ed391a82b142f7363"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetItemText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox11GetItemTextE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox15SetItemUserDataE6uint326uint64">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox15SetItemUserDataE6uint326uint64"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox15SetItemUserDataE6uint326uint64"></span><span id="AppCUI::Controls::ComboBox::SetItemUserData__uint32.uint64"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1af04ffd1db6f4554c329223e1f174308b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetItemUserData</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">userData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox15SetItemUserDataE6uint326uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI8Controls8ComboBox15SetItemUserDataEb6uint329ReferenceI1TE">
+<span id="_CPPv3I0EN6AppCUI8Controls8ComboBox15SetItemUserDataE6uint329ReferenceI1TE"></span><span id="_CPPv2I0EN6AppCUI8Controls8ComboBox15SetItemUserDataE6uint329ReferenceI1TE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1ae104fa35792efbbcd833c8019c1473f6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetItemUserData</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI8Controls8ComboBox15SetItemUserDataEb6uint329ReferenceI1TE" title="AppCUI::Controls::ComboBox::SetItemUserData::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI8Controls8ComboBox15SetItemUserDataEb6uint329ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox18SetCurentItemIndexE6uint32">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox18SetCurentItemIndexE6uint32"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox18SetCurentItemIndexE6uint32"></span><span id="AppCUI::Controls::ComboBox::SetCurentItemIndex__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a8c55f5f4a7fbb7b8cbb0b327707f9574"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetCurentItemIndex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox18SetCurentItemIndexE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox18SetNoIndexSelectedEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox18SetNoIndexSelectedEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox18SetNoIndexSelectedEv"></span><span id="AppCUI::Controls::ComboBox::SetNoIndexSelected"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a68c152032a060ae007d8b3eccccfb2b0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetNoIndexSelected</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox18SetNoIndexSelectedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI8Controls8ComboBox7AddItemEbRK11ConstString9ReferenceI1TE">
+<span id="_CPPv3I0EN6AppCUI8Controls8ComboBox7AddItemERK11ConstString9ReferenceI1TE"></span><span id="_CPPv2I0EN6AppCUI8Controls8ComboBox7AddItemERK11ConstString9ReferenceI1TE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1aabc67943cb4921621e2da04664252729"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddItem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI8Controls8ComboBox7AddItemEbRK11ConstString9ReferenceI1TE" title="AppCUI::Controls::ComboBox::AddItem::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI8Controls8ComboBox7AddItemEbRK11ConstString9ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox7AddItemERK11ConstString6uint64">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox7AddItemERK11ConstString6uint64"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox7AddItemERK11ConstString6uint64"></span><span id="AppCUI::Controls::ComboBox::AddItem__ConstStringCR.uint64"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a97218725b7ff81ab71fc5f23800f83e3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddItem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">usedData</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox7AddItemERK11ConstString6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox7AddItemERK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox7AddItemERK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox7AddItemERK11ConstString"></span><span id="AppCUI::Controls::ComboBox::AddItem__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1ac38fcaf79426705ea06129e7b28cdcfd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddItem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox7AddItemERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox12AddSeparatorERK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox12AddSeparatorERK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox12AddSeparatorERK11ConstString"></span><span id="AppCUI::Controls::ComboBox::AddSeparator__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a30747741de7ced911e2236d2ad44f84a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddSeparator</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox12AddSeparatorERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox14DeleteAllItemsEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox14DeleteAllItemsEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox14DeleteAllItemsEv"></span><span id="AppCUI::Controls::ComboBox::DeleteAllItems"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a7e8ac29d8119a687d6c4efd472f85899"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeleteAllItems</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox14DeleteAllItemsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox10OnKeyEventEN5Input3KeyE6char16">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox10OnKeyEventEN5Input3KeyE6char16"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox10OnKeyEventEN5Input3KeyE6char16"></span><span id="AppCUI::Controls::ComboBox::OnKeyEvent__Input::Key.char16"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a2ab8d8021240b14c8524962b49756c41"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnKeyEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">UnicodeChar</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox10OnKeyEventEN5Input3KeyE6char16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox8OnHotKeyEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox8OnHotKeyEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox8OnHotKeyEv"></span><span id="AppCUI::Controls::ComboBox::OnHotKey"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a8bd638622b768c28a4f9d78a0cabe678"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnHotKey</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox8OnHotKeyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox12OnMouseLeaveEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox12OnMouseLeaveEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox12OnMouseLeaveEv"></span><span id="AppCUI::Controls::ComboBox::OnMouseLeave"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1ae5990631e6dfffe1d29c8239f11d4e29"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseLeave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox12OnMouseLeaveEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox12OnMouseEnterEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox12OnMouseEnterEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox12OnMouseEnterEv"></span><span id="AppCUI::Controls::ComboBox::OnMouseEnter"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a96ba7b99cbdcb4452712ffae0811deda"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseEnter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox12OnMouseEnterEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox11OnMouseOverEii">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox11OnMouseOverEii"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox11OnMouseOverEii"></span><span id="AppCUI::Controls::ComboBox::OnMouseOver__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a88d415867b6f12a2cdd6939a4ef82c31"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseOver</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox11OnMouseOverEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::ComboBox::OnMousePressed__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a4f43dd99deaacb2a8202fb4f5aa2b13f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMousePressed</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE"></span><span id="AppCUI::Controls::ComboBox::OnMouseWheel__i.i.Input::MouseWheel.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1aee4047e6b8b2f298e70b09acacde21bf"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseWheel</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input10MouseWheelE" title="AppCUI::Input::MouseWheel"><span class="n"><span class="pre">MouseWheel</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">direction</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox5PaintERN8Graphics8RendererE">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox5PaintERN8Graphics8RendererE"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox5PaintERN8Graphics8RendererE"></span><span id="AppCUI::Controls::ComboBox::Paint__Graphics::RendererR"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1abfa4f12de7a10eed4a70e0cc900c3557"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Paint</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Renderer.html#_CPPv4N6AppCUI8Graphics8RendererE" title="AppCUI::Graphics::Renderer"><span class="n"><span class="pre">Renderer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">renderer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox5PaintERN8Graphics8RendererE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox12OnExpandViewERN8Graphics4ClipE">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox12OnExpandViewERN8Graphics4ClipE"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox12OnExpandViewERN8Graphics4ClipE"></span><span id="AppCUI::Controls::ComboBox::OnExpandView__Graphics::ClipR"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1aa77dd59d1d414bf594ef1a4532a806fb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnExpandView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Clip.html#_CPPv4N6AppCUI8Graphics4ClipE" title="AppCUI::Graphics::Clip"><span class="n"><span class="pre">Clip</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">expandedClip</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox12OnExpandViewERN8Graphics4ClipE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox10OnPackViewEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox10OnPackViewEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox10OnPackViewEv"></span><span id="AppCUI::Controls::ComboBox::OnPackView"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a66245cae0e56a8d8699a558105c1fb97"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnPackView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox10OnPackViewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox8HandlersEv">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox8HandlersEv"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox8HandlersEv"></span><span id="AppCUI::Controls::ComboBox::Handlers"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a810a5b1845a618d8596c541e5490bf4b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls8ComboBox8HandlersEv" title="AppCUI::Controls::ComboBox::Handlers"><span class="n"><span class="pre">Handlers</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ComboBox</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Handlers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox8HandlersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBoxD0Ev">
+<span id="_CPPv3N6AppCUI8Controls8ComboBoxD0Ev"></span><span id="_CPPv2N6AppCUI8Controls8ComboBoxD0Ev"></span><span id="AppCUI::Controls::ComboBox::~ComboBox"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a95ac915c0847d51552df93d9f426478a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~ComboBox</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBoxD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox16NO_ITEM_SELECTEDE">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox16NO_ITEM_SELECTEDE"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox16NO_ITEM_SELECTEDE"></span><span id="AppCUI::Controls::ComboBox::NO_ITEM_SELECTED__uint32C"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1abe030906df30a7f5f6d01ff91861e98f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NO_ITEM_SELECTED</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0xFFFFFFFF</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox16NO_ITEM_SELECTEDE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8ComboBox8ComboBoxE11string_viewRK11ConstStringc">
+<span id="_CPPv3N6AppCUI8Controls8ComboBox8ComboBoxE11string_viewRK11ConstStringc"></span><span id="_CPPv2N6AppCUI8Controls8ComboBox8ComboBoxE11string_viewRK11ConstStringc"></span><span id="AppCUI::Controls::ComboBox::ComboBox__string_view.ConstStringCR.c"></span><span class="target" id="classAppCUI_1_1Controls_1_1ComboBox_1a04c9c5309aa4982d99afe68666a30479"></span><span class="sig-name descname"><span class="n"><span class="pre">ComboBox</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">itemsSeparator</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8ComboBox8ComboBoxE11string_viewRK11ConstStringc" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">Factory::ComboBox</span></dt>
+</dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">Control</span></dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_ColumnsHeaderView.html" class="btn btn-neutral float-left" title="ColumnsHeaderView" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_Control.html" class="btn btn-neutral float-right" title="Control" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

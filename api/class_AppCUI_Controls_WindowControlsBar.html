@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WindowControlsBar &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AppCUI::Controls::Factory" href="namespace_AppCUI_Controls_Factory.html" />
+    <link rel="prev" title="Window" href="class_AppCUI_Controls_Window.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+      <li class="breadcrumb-item active">WindowControlsBar</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_WindowControlsBar.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="windowcontrolsbar">
+<h1>WindowControlsBar<a class="headerlink" href="#windowcontrolsbar" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::WindowControlsBar</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBarE">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBarE"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBarE"></span><span id="AppCUI::Controls::WindowControlsBar"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WindowControlsBar</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBarE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar14AddCommandItemERK11ConstStringiRK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar14AddCommandItemERK11ConstStringiRK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar14AddCommandItemERK11ConstStringiRK11ConstString"></span><span id="AppCUI::Controls::WindowControlsBar::AddCommandItem__ConstStringCR.i.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1a68bfb46a8df385c07510ad54e3a263d7"></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddCommandItem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ID</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">toolTip</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar14AddCommandItemERK11ConstStringiRK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar19AddSingleChoiceItemERK11ConstStringibRK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar19AddSingleChoiceItemERK11ConstStringibRK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar19AddSingleChoiceItemERK11ConstStringibRK11ConstString"></span><span id="AppCUI::Controls::WindowControlsBar::AddSingleChoiceItem__ConstStringCR.i.b.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1ad21408b363edde47d96e4c0d81c08af1"></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddSingleChoiceItem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ID</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checked</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">toolTip</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar19AddSingleChoiceItemERK11ConstStringibRK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar12AddCheckItemERK11ConstStringibRK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar12AddCheckItemERK11ConstStringibRK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar12AddCheckItemERK11ConstStringibRK11ConstString"></span><span id="AppCUI::Controls::WindowControlsBar::AddCheckItem__ConstStringCR.i.b.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1a665c8514718c0eef085f028a0b8f2644"></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddCheckItem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ID</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">checked</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">toolTip</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar12AddCheckItemERK11ConstStringibRK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar11AddTextItemERK11ConstStringRK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar11AddTextItemERK11ConstStringRK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar11AddTextItemERK11ConstStringRK11ConstString"></span><span id="AppCUI::Controls::WindowControlsBar::AddTextItem__ConstStringCR.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1a08bbc43e82dee69d6d92f1b9d2d5b52f"></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddTextItem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">toolTip</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar11AddTextItemERK11ConstStringRK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar11SetItemTextE10ItemHandleRK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar11SetItemTextE10ItemHandleRK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar11SetItemTextE10ItemHandleRK11ConstString"></span><span id="AppCUI::Controls::WindowControlsBar::SetItemText__ItemHandle.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1a57983974e65979e75a68cdf9d4dd3b9a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetItemText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar11SetItemTextE10ItemHandleRK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar21SetItemTextWithHotKeyE10ItemHandleRK11ConstString6uint32">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar21SetItemTextWithHotKeyE10ItemHandleRK11ConstString6uint32"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar21SetItemTextWithHotKeyE10ItemHandleRK11ConstString6uint32"></span><span id="AppCUI::Controls::WindowControlsBar::SetItemTextWithHotKey__ItemHandle.ConstStringCR.uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1af36456b74cac92309380062e63b709e6"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetItemTextWithHotKey</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">hotKeyOffset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar21SetItemTextWithHotKeyE10ItemHandleRK11ConstString6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar14SetItemToolTipE10ItemHandleRK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar14SetItemToolTipE10ItemHandleRK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar14SetItemToolTipE10ItemHandleRK11ConstString"></span><span id="AppCUI::Controls::WindowControlsBar::SetItemToolTip__ItemHandle.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1a34d089ba0abbe19c90d1e652839f969d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetItemToolTip</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">toolTipText</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar14SetItemToolTipE10ItemHandleRK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar13IsItemCheckedE10ItemHandle">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar13IsItemCheckedE10ItemHandle"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar13IsItemCheckedE10ItemHandle"></span><span id="AppCUI::Controls::WindowControlsBar::IsItemChecked__ItemHandle"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1aad3a42394921706549d72373debdb41c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsItemChecked</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar13IsItemCheckedE10ItemHandle" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar12SetItemCheckE10ItemHandleb">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar12SetItemCheckE10ItemHandleb"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar12SetItemCheckE10ItemHandleb"></span><span id="AppCUI::Controls::WindowControlsBar::SetItemCheck__ItemHandle.b"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1acca87ff52f525838231805562a9fe016"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetItemCheck</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar12SetItemCheckE10ItemHandleb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar13IsItemVisibleE10ItemHandle">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar13IsItemVisibleE10ItemHandle"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar13IsItemVisibleE10ItemHandle"></span><span id="AppCUI::Controls::WindowControlsBar::IsItemVisible__ItemHandle"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1abe99b7f61b341ae373620f71a3bcaa6a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsItemVisible</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar13IsItemVisibleE10ItemHandle" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar11IsItemShownE10ItemHandle">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar11IsItemShownE10ItemHandle"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar11IsItemShownE10ItemHandle"></span><span id="AppCUI::Controls::WindowControlsBar::IsItemShown__ItemHandle"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1ac6597af76eb27d9b5c578545000ca1a3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsItemShown</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar11IsItemShownE10ItemHandle" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17WindowControlsBar14SetItemVisibleE10ItemHandleb">
+<span id="_CPPv3N6AppCUI8Controls17WindowControlsBar14SetItemVisibleE10ItemHandleb"></span><span id="_CPPv2N6AppCUI8Controls17WindowControlsBar14SetItemVisibleE10ItemHandleb"></span><span id="AppCUI::Controls::WindowControlsBar::SetItemVisible__ItemHandle.b"></span><span class="target" id="classAppCUI_1_1Controls_1_1WindowControlsBar_1a513f32bb25dae25ef48504ef26143576"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetItemVisible</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">itemHandle</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17WindowControlsBar14SetItemVisibleE10ItemHandleb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">Window</span></dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_Window.html" class="btn btn-neutral float-left" title="Window" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_AppCUI_Controls_Factory.html" class="btn btn-neutral float-right" title="AppCUI::Controls::Factory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

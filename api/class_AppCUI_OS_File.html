@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Library" href="class_AppCUI_OS_Library.html" />
+    <link rel="prev" title="FSLocationData" href="class_AppCUI_OS_FSLocationData.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+      <li class="breadcrumb-item active">File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_OS_File.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file">
+<h1>File<a class="headerlink" href="#file" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::OS::File</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4FileE">
+<span id="_CPPv3N6AppCUI2OS4FileE"></span><span id="_CPPv2N6AppCUI2OS4FileE"></span><span id="AppCUI::OS::File"></span><span class="target" id="classAppCUI_1_1OS_1_1File"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">File</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_OS.html#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_OS_DataObject.html#_CPPv4N6AppCUI2OS10DataObjectE" title="AppCUI::OS::DataObject"><span class="n"><span class="pre">DataObject</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI2OS4FileE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File4FileEv">
+<span id="_CPPv3N6AppCUI2OS4File4FileEv"></span><span id="_CPPv2N6AppCUI2OS4File4FileEv"></span><span id="AppCUI::OS::File::File"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a4100d19f381b94df5d4a48223a19f1c7"></span><span class="sig-name descname"><span class="n"><span class="pre">File</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File4FileEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4FileD0Ev">
+<span id="_CPPv3N6AppCUI2OS4FileD0Ev"></span><span id="_CPPv2N6AppCUI2OS4FileD0Ev"></span><span id="AppCUI::OS::File::~File"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a0b3de49173ec3622d0868bfab117d5ac"></span><span class="sig-name descname"><span class="n"><span class="pre">~File</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4FileD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File9OpenWriteERKNSt10filesystem4pathE">
+<span id="_CPPv3N6AppCUI2OS4File9OpenWriteERKNSt10filesystem4pathE"></span><span id="_CPPv2N6AppCUI2OS4File9OpenWriteERKNSt10filesystem4pathE"></span><span id="AppCUI::OS::File::OpenWrite__std::filesystem::pathCR"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a2db10239c7b4d2cecf6466610007ffc0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OpenWrite</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File9OpenWriteERKNSt10filesystem4pathE" title="Link to this definition"></a><br /></dt>
+<dd><p>Opens a file for Read/Write. </p>
+<p>The file MUST exists. The file pointer will be set at the end of the file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filePath</strong> – <strong>[in]</strong> is the full path to an existing file. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File8OpenReadERKNSt10filesystem4pathE">
+<span id="_CPPv3N6AppCUI2OS4File8OpenReadERKNSt10filesystem4pathE"></span><span id="_CPPv2N6AppCUI2OS4File8OpenReadERKNSt10filesystem4pathE"></span><span id="AppCUI::OS::File::OpenRead__std::filesystem::pathCR"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1ac319e55ed85b7ffbc05b49a46ea3523b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OpenRead</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File8OpenReadERKNSt10filesystem4pathE" title="Link to this definition"></a><br /></dt>
+<dd><p>Opens a file for Read. </p>
+<p>The file MUST exists. The file pointer will be set at the begining of the file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filePath</strong> – <strong>[in]</strong> is the full path to an existing file. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File6CreateERKNSt10filesystem4pathEb">
+<span id="_CPPv3N6AppCUI2OS4File6CreateERKNSt10filesystem4pathEb"></span><span id="_CPPv2N6AppCUI2OS4File6CreateERKNSt10filesystem4pathEb"></span><span id="AppCUI::OS::File::Create__std::filesystem::pathCR.b"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1ad96633f4b1ac78d0e5b7d900a13eaedb"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filePath</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">overwriteExisting</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File6CreateERKNSt10filesystem4pathEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Creates a new file. </p>
+<p>If the file exists and overwriteExisting parameter is set to true, it will be overwritten. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filePath</strong> – <strong>[in]</strong> is the full path to an existing file. </p></li>
+<li><p><strong>overwriteExisting</strong> – <strong>[in]</strong> - if set to true and the file exists it will overwrite the file. If set to false and a file exists, will fail to overwrite and the method will return false. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File7GetSizeEv">
+<span id="_CPPv3N6AppCUI2OS4File7GetSizeEv"></span><span id="_CPPv2N6AppCUI2OS4File7GetSizeEv"></span><span id="AppCUI::OS::File::GetSize"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a4bb499b2336b0a0665961fa629a361b3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File7GetSizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File13GetCurrentPosEv">
+<span id="_CPPv3N6AppCUI2OS4File13GetCurrentPosEv"></span><span id="_CPPv2N6AppCUI2OS4File13GetCurrentPosEv"></span><span id="AppCUI::OS::File::GetCurrentPos"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a4d8495edc2a8a6d5c2010cffee019f6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentPos</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File13GetCurrentPosEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File7SetSizeE6uint64">
+<span id="_CPPv3N6AppCUI2OS4File7SetSizeE6uint64"></span><span id="_CPPv2N6AppCUI2OS4File7SetSizeE6uint64"></span><span id="AppCUI::OS::File::SetSize__uint64"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1aec28a508c42179186508b6c77eb7a185"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">newSize</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File7SetSizeE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File13SetCurrentPosE6uint64">
+<span id="_CPPv3N6AppCUI2OS4File13SetCurrentPosE6uint64"></span><span id="_CPPv2N6AppCUI2OS4File13SetCurrentPosE6uint64"></span><span id="AppCUI::OS::File::SetCurrentPos__uint64"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1ac8b457fde25bf23aa1f46f5a82fa57a5"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetCurrentPos</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">newPosition</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File13SetCurrentPosE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File5CloseEv">
+<span id="_CPPv3N6AppCUI2OS4File5CloseEv"></span><span id="_CPPv2N6AppCUI2OS4File5CloseEv"></span><span id="AppCUI::OS::File::Close"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1ab36596d0180da4d531fae8956538e2cd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Close</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File5CloseEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File11ReadContentERKNSt10filesystem4pathE">
+<span id="_CPPv3N6AppCUI2OS4File11ReadContentERKNSt10filesystem4pathE"></span><span id="_CPPv2N6AppCUI2OS4File11ReadContentERKNSt10filesystem4pathE"></span><span id="AppCUI::OS::File::ReadContent__std::filesystem::pathCR"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a81fd04e8e08528f225f1bb554a04301b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_Buffer.html#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadContent</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File11ReadContentERKNSt10filesystem4pathE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathEN5Utils10BufferViewE">
+<span id="_CPPv3N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathEN5Utils10BufferViewE"></span><span id="_CPPv2N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathEN5Utils10BufferViewE"></span><span id="AppCUI::OS::File::WriteContent__std::filesystem::pathCR.Utils::BufferView"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a3616e4e69d6957c7de737c1b236c30d9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteContent</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_BufferView.html#_CPPv4N6AppCUI5Utils10BufferViewE" title="AppCUI::Utils::BufferView"><span class="n"><span class="pre">BufferView</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">buf</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathEN5Utils10BufferViewE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathE11string_view">
+<span id="_CPPv3N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathE11string_view"></span><span id="_CPPv2N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathE11string_view"></span><span id="AppCUI::OS::File::WriteContent__std::filesystem::pathCR.string_view"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a173596dd92dd3c38989b62dba2c596c6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteContent</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File12WriteContentERKNSt10filesystem4pathE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File10ReadBufferEPv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS4File10ReadBufferEPv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS4File10ReadBufferEPv6uint32R6uint32"></span><span id="AppCUI::OS::File::ReadBuffer__voidP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1aefcc77ffe6aa46ccab0708bb925af2a0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadBuffer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesRead</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File10ReadBufferEPv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS4File11WriteBufferEPKv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS4File11WriteBufferEPKv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS4File11WriteBufferEPKv6uint32R6uint32"></span><span id="AppCUI::OS::File::WriteBuffer__voidCP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1File_1a2e3236a714a722a7692ba6dc3dc4fe30"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteBuffer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesWritten</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS4File11WriteBufferEPKv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_OS_FSLocationData.html" class="btn btn-neutral float-left" title="FSLocationData" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_OS_Library.html" class="btn btn-neutral float-right" title="Library" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

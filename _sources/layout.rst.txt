@@ -1,3 +1,5 @@
+.. _layout:
+
 Layout in AppCUI
 ================
 
@@ -6,6 +8,11 @@ Each control in AppCUI is created based on a layout rule that can be described a
 .. code-block:: c
 
    "key:value,key:value,...key:value"
+
+``=`` can be used instead of ``:`` and ``;`` instead of ``,`` (``"x=1;y=2"`` is the same as ``"x:1,y:2"``); keys and
+values are not case sensitive and spaces around them are ignored. An invalid layout (unknown key, invalid value or a
+combination of keys that is not allowed) is rejected: the constructor of the control throws an exception (in debug
+builds the reason is also logged).
 
 Where key can be one of the following:
 
@@ -42,7 +49,7 @@ Where key can be one of the following:
 
 A numerical value is represented by an integer (positive and negative) number between **-30000** and **30000**. Example: ``x:100`` --> X will be 100. Using a value outside accepted interval (**[-30000..30000]**) will reject the layout.
 
-A percentage value is represented by a floating value (positive and negative) succeded by the character ``%`` between **-300%** and **300%**. Example: ``x:12.75%`` --> X will be converted to a numerical value that is equal to the width of its parent multiplied by ``0.1275``. Using a value outside accepted interval (**[-300%..300%]**) will reject the layout. Percentage values can be use to ensure that if a parent size is changed, its children change their size with it.
+A percentage value is represented by a number (positive and negative, with at most two decimals - extra decimals are ignored) succeded by the character ``%`` between **-300%** and **300%**. Example: ``x:12.75%`` --> X will be converted to a numerical value that is equal to the width of its parent multiplied by ``0.1275``. Using a value outside accepted interval (**[-300%..300%]**) will reject the layout. Percentage values can be use to ensure that if a parent size is changed, its children change their size with it.
 
 Dock values can be one of the following
 

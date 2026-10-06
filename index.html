@@ -1,21 +1,26 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to AppCUI’s documentation! &mdash; AppCUI  documentation</title>
+  <title>AppCUI &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
 
   
-      <script src="_static/jquery.js"></script>
-      <script src="_static/underscore.js"></script>
-      <script src="_static/doctools.js"></script>
-      <script src="_static/language_data.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="AppCUI Initialization" href="initialization.html" /> 
+    <link rel="next" title="Getting started" href="getting_started.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,6 +33,7 @@
           
           <a href="#" class="icon icon-home">
             AppCUI
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -37,12 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="initialization.html">AppCUI Initialization</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminals.html">Terminals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 </ul>
 
         </div>
@@ -59,7 +74,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to AppCUI’s documentation!</li>
+      <li class="breadcrumb-item active">AppCUI</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -69,12 +84,42 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="welcome-to-appcui-s-documentation">
-<h1>Welcome to AppCUI’s documentation!<a class="headerlink" href="#welcome-to-appcui-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <section id="appcui">
+<h1>AppCUI<a class="headerlink" href="#appcui" title="Link to this heading"></a></h1>
+<p><strong>AppCUI</strong> is a cross-platform C++20 framework for text user interfaces (TUI). An application builds a virtual
+desktop with windows and controls - buttons, text fields, list views, tree views, grids, property lists, tabs,
+splitters, menus, images, … - that work with the keyboard and the mouse, and AppCUI displays it in the Windows
+console, in any terminal (ncurses), in an SDL window or through a frontend implemented by the application.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"AppCUI.hpp"</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">AppCUI</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">())</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Controls</span><span class="o">::</span><span class="n">Factory</span><span class="o">::</span><span class="n">Window</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">,</span><span class="w"> </span><span class="s">"d:c,w:30,h:6"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Controls</span><span class="o">::</span><span class="n">Factory</span><span class="o">::</span><span class="n">Label</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="o">*</span><span class="n">window</span><span class="p">,</span><span class="w"> </span><span class="s">"Hello, AppCUI!"</span><span class="p">,</span><span class="w"> </span><span class="s">"x:1,y:1,w:20"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Application</span><span class="o">::</span><span class="n">AddWindow</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">window</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Application</span><span class="o">::</span><span class="n">Run</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="initialization.html">AppCUI Initialization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="initialization.html#initializationdata-structure">InitializationData structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#building">Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#using-appcui-in-your-project">Using AppCUI in your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#a-first-application">A first application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="initialization.html#initialization-flags">Initialization flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="initialization.html#the-settings-file">The settings file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="initialization.html#initializationdata">InitializationData</a></li>
 <li class="toctree-l2"><a class="reference internal" href="initialization.html#examples">Examples</a></li>
 </ul>
 </li>
@@ -85,39 +130,50 @@
 <li class="toctree-l2"><a class="reference internal" href="layout.html#more-examples">More examples</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="development.html#github-workflows">Github workflows</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="colors.html#colors-and-rgb">Colors and RGB</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="terminals.html">Terminals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="terminals.html#supported-features">Supported features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terminals.html#keyboard-on-ncurses-terminals">Keyboard on ncurses terminals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terminals.html#custom-frontends">Custom frontends</a></li>
+</ul>
+</li>
 </ul>
 </div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#namespaces">Namespaces</a></li>
+</ul>
+</li>
+</ul>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
+</ul>
+</div>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-<li><p><span class="xref std std-ref">layout</span></p></li>
 </ul>
-</div>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="initialization.html" class="btn btn-neutral float-right" title="AppCUI Initialization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Gavriluț Dragoș.</p>
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

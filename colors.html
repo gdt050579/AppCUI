@@ -1,22 +1,27 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Colors &mdash; AppCUI  documentation</title>
+  <title>Colors &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
 
   
-      <script src="_static/jquery.js"></script>
-      <script src="_static/underscore.js"></script>
-      <script src="_static/doctools.js"></script>
-      <script src="_static/language_data.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Terminals" href="terminals.html" />
-    <link rel="prev" title="AppCUI development" href="development.html" /> 
+    <link rel="next" title="Frontends (terminals)" href="terminals.html" />
+    <link rel="prev" title="Layout in AppCUI" href="layout.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,6 +34,7 @@
           
           <a href="index.html" class="icon icon-home">
             AppCUI
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -38,15 +44,24 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="initialization.html">AppCUI Initialization</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Colors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#colors-and-rgb">Colors and RGB</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="terminals.html">Terminals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 </ul>
 
         </div>
@@ -73,42 +88,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="colors">
-<h1>Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h1>
+  <section id="colors">
+<h1>Colors<a class="headerlink" href="#colors" title="Link to this heading"></a></h1>
 <p>AppCUI support 16 colors (foreground and background) for each displayed character.
 All colors are described using <strong>AppCUI::Graphics::Color</strong> enum:</p>
-<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">Color</span> <span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">char</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span>
 <span class="p">{</span>
-    <span class="n">Black</span>       <span class="o">=</span> <span class="mh">0x00</span><span class="p">,</span>
-    <span class="n">DarkBlue</span>    <span class="o">=</span> <span class="mh">0x01</span><span class="p">,</span>
-    <span class="n">DarkGreen</span>   <span class="o">=</span> <span class="mh">0x02</span><span class="p">,</span>
-    <span class="n">Teal</span>        <span class="o">=</span> <span class="mh">0x03</span><span class="p">,</span>
-    <span class="n">DarkRed</span>     <span class="o">=</span> <span class="mh">0x04</span><span class="p">,</span>
-    <span class="n">Magenta</span>     <span class="o">=</span> <span class="mh">0x05</span><span class="p">,</span>
-    <span class="n">Olive</span>       <span class="o">=</span> <span class="mh">0x06</span><span class="p">,</span>
-    <span class="n">Silver</span>      <span class="o">=</span> <span class="mh">0x07</span><span class="p">,</span>
-    <span class="n">Gray</span>        <span class="o">=</span> <span class="mh">0x08</span><span class="p">,</span>
-    <span class="n">Blue</span>        <span class="o">=</span> <span class="mh">0x09</span><span class="p">,</span>
-    <span class="n">Green</span>       <span class="o">=</span> <span class="mh">0x0A</span><span class="p">,</span>
-    <span class="n">Aqua</span>        <span class="o">=</span> <span class="mh">0x0B</span><span class="p">,</span>
-    <span class="n">Red</span>         <span class="o">=</span> <span class="mh">0x0C</span><span class="p">,</span>
-    <span class="n">Pink</span>        <span class="o">=</span> <span class="mh">0x0D</span><span class="p">,</span>
-    <span class="n">Yellow</span>      <span class="o">=</span> <span class="mh">0x0E</span><span class="p">,</span>
-    <span class="n">White</span>       <span class="o">=</span> <span class="mh">0x0F</span><span class="p">,</span>
-    <span class="n">Transparent</span> <span class="o">=</span> <span class="mh">0x10</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Black</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="mh">0x00</span><span class="p">,</span>
+<span class="w">    </span><span class="n">DarkBlue</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mh">0x01</span><span class="p">,</span>
+<span class="w">    </span><span class="n">DarkGreen</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mh">0x02</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Teal</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mh">0x03</span><span class="p">,</span>
+<span class="w">    </span><span class="n">DarkRed</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mh">0x04</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Magenta</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mh">0x05</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Olive</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="mh">0x06</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Silver</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mh">0x07</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Gray</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mh">0x08</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Blue</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mh">0x09</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Green</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="mh">0x0A</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Aqua</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mh">0x0B</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Red</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="mh">0x0C</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Pink</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mh">0x0D</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Yellow</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mh">0x0E</span><span class="p">,</span>
+<span class="w">    </span><span class="n">White</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="mh">0x0F</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Transparent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x10</span><span class="p">,</span>
 <span class="p">};</span>
 </pre></div>
 </div>
 <p>Transparent value can be used to specify that the existing color should be used, instead of replacing it with the new one.</p>
-<div class="section" id="colors-and-rgb">
-<h2>Colors and RGB<a class="headerlink" href="#colors-and-rgb" title="Permalink to this headline">¶</a></h2>
-<p>Colors can be used with <strong>AppCUI::Graphics::Image</strong> object. There is also a <cite>string</cite> format available  where each character represents a color. The following table explaings the colors and characters that can be used to represent it in a string view.</p>
+<section id="colors-and-rgb">
+<h2>Colors and RGB<a class="headerlink" href="#colors-and-rgb" title="Link to this heading"></a></h2>
+<p>Each of the 16 colors has an RGB value (used, for example, by <strong>AppCUI::Graphics::Image</strong> and by the SDL frontend).
+An image can also be created from a string where every character is the color of one pixel:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Image</span><span class="w"> </span><span class="n">img</span><span class="p">;</span>
+<span class="n">img</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">"rRgG"</span>
+<span class="w">                 </span><span class="s">"bByY"</span><span class="p">);</span><span class="w"> </span><span class="c1">// 4x2 pixels: Red, DarkRed, Green, DarkGreen / Blue, DarkBlue, Yellow, Yellow</span>
+</pre></div>
+</div>
+<p>The string is read row by row (<code class="docutils literal notranslate"><span class="pre">width</span></code> characters per row); a character that is not in the table below leaves
+its pixel unchanged (transparent black - all channels 0 - after <code class="docutils literal notranslate"><span class="pre">Create</span></code>) and a shorter string leaves the remaining pixels unchanged. The
+following table shows the characters that represent each color:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 23%" />
-<col style="width: 37%" />
-<col style="width: 41%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Color</p></th>
 <th class="head"><p>RGB</p></th>
@@ -150,7 +169,7 @@ All colors are described using <strong>AppCUI::Graphics::Color</strong> enum:</p
 </tr>
 <tr class="row-even"><td><p>Color::Gray</p></td>
 <td><p>R:128, G:128, B:128 #808080</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">8</span></code> , <code class="docutils literal notranslate"><span class="pre">S</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">8</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Color::Blue</p></td>
 <td><p>R:0, G:0, B:255 #0000FF</p></td>
@@ -158,7 +177,7 @@ All colors are described using <strong>AppCUI::Graphics::Color</strong> enum:</p
 </tr>
 <tr class="row-even"><td><p>Color::Green</p></td>
 <td><p>R:0, G:255, B:0 #00FF00</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">G</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">g</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Color::Aqua</p></td>
 <td><p>R:0, G:255, B:255 #00FFFF</p></td>
@@ -182,21 +201,21 @@ All colors are described using <strong>AppCUI::Graphics::Color</strong> enum:</p
 </tr>
 </tbody>
 </table>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="development.html" class="btn btn-neutral float-left" title="AppCUI development" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="terminals.html" class="btn btn-neutral float-right" title="Terminals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="layout.html" class="btn btn-neutral float-left" title="Layout in AppCUI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="terminals.html" class="btn btn-neutral float-right" title="Frontends (terminals)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Gavriluț Dragoș.</p>
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,0 +1,8 @@
+/* let the cells of wide tables wrap instead of scrolling horizontally (sphinx_rtd_theme default: nowrap) */
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+    white-space: normal;
+}
+.wy-table-responsive {
+    overflow: visible;
+}

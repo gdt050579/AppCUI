@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CheckBox &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ColorPicker" href="class_AppCUI_Controls_Factory_ColorPicker.html" />
+    <link rel="prev" title="CharacterTable" href="class_AppCUI_Controls_Factory_CharacterTable.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+      <li class="breadcrumb-item active">CheckBox</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_Factory_CheckBox.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="checkbox">
+<h1>CheckBox<a class="headerlink" href="#checkbox" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::Factory::CheckBox</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Factory8CheckBoxE">
+<span id="_CPPv3N6AppCUI8Controls7Factory8CheckBoxE"></span><span id="_CPPv2N6AppCUI8Controls7Factory8CheckBoxE"></span><span id="AppCUI::Controls::Factory::CheckBox"></span><span class="target" id="classAppCUI_1_1Controls_1_1Factory_1_1CheckBox"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckBox</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Factory8CheckBoxE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Factory8CheckBox6CreateEPN8Controls7ControlERK11ConstString11string_viewi">
+<span id="_CPPv3N6AppCUI8Controls7Factory8CheckBox6CreateEPN8Controls7ControlERK11ConstString11string_viewi"></span><span id="_CPPv2N6AppCUI8Controls7Factory8CheckBox6CreateEPN8Controls7ControlERK11ConstString11string_viewi"></span><span id="AppCUI::Controls::Factory::CheckBox::Create__Controls::ControlP.ConstStringCR.string_view.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Factory_1_1CheckBox_1aba33e38b1a177398ca061a7a0c578b2f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_CheckBox.html#_CPPv4N6AppCUI8Controls8CheckBoxE" title="AppCUI::Controls::CheckBox"><span class="n"><span class="pre">CheckBox</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_Control.html#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">parent</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">controlID</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Factory8CheckBox6CreateEPN8Controls7ControlERK11ConstString11string_viewi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Factory8CheckBox6CreateERN8Controls7ControlERK11ConstString11string_viewi">
+<span id="_CPPv3N6AppCUI8Controls7Factory8CheckBox6CreateERN8Controls7ControlERK11ConstString11string_viewi"></span><span id="_CPPv2N6AppCUI8Controls7Factory8CheckBox6CreateERN8Controls7ControlERK11ConstString11string_viewi"></span><span id="AppCUI::Controls::Factory::CheckBox::Create__Controls::ControlR.ConstStringCR.string_view.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Factory_1_1CheckBox_1aae72b8f22d7e3c5fc1afae0394a35c1d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_CheckBox.html#_CPPv4N6AppCUI8Controls8CheckBoxE" title="AppCUI::Controls::CheckBox"><span class="n"><span class="pre">CheckBox</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_Control.html#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">parent</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">controlID</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Factory8CheckBox6CreateERN8Controls7ControlERK11ConstString11string_viewi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Factory8CheckBox6CreateERK11ConstString11string_viewi">
+<span id="_CPPv3N6AppCUI8Controls7Factory8CheckBox6CreateERK11ConstString11string_viewi"></span><span id="_CPPv2N6AppCUI8Controls7Factory8CheckBox6CreateERK11ConstString11string_viewi"></span><span id="AppCUI::Controls::Factory::CheckBox::Create__ConstStringCR.string_view.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Factory_1_1CheckBox_1af2959a35e43a7814b62f23a43297b34c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Pointer</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_CheckBox.html#_CPPv4N6AppCUI8Controls8CheckBoxE" title="AppCUI::Controls::CheckBox"><span class="n"><span class="pre">CheckBox</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">controlID</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Factory8CheckBox6CreateERK11ConstString11string_viewi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_Factory_CharacterTable.html" class="btn btn-neutral float-left" title="CharacterTable" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_Factory_ColorPicker.html" class="btn btn-neutral float-right" title="ColorPicker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

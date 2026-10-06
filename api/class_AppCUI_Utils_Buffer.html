@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buffer &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BufferView" href="class_AppCUI_Utils_BufferView.html" />
+    <link rel="prev" title="Array32" href="class_AppCUI_Utils_Array32.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+      <li class="breadcrumb-item active">Buffer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Utils_Buffer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="buffer">
+<h1>Buffer<a class="headerlink" href="#buffer" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Utils::Buffer</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6BufferE">
+<span id="_CPPv3N6AppCUI5Utils6BufferE"></span><span id="_CPPv2N6AppCUI5Utils6BufferE"></span><span id="AppCUI::Utils::Buffer"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6BufferE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6BufferD0Ev">
+<span id="_CPPv3N6AppCUI5Utils6BufferD0Ev"></span><span id="_CPPv2N6AppCUI5Utils6BufferD0Ev"></span><span id="AppCUI::Utils::Buffer::~Buffer"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a627740030a538385a3e7eeccddf04b17"></span><span class="sig-name descname"><span class="n"><span class="pre">~Buffer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6BufferD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer6BufferEv">
+<span id="_CPPv3N6AppCUI5Utils6Buffer6BufferEv"></span><span id="_CPPv2N6AppCUI5Utils6Buffer6BufferEv"></span><span id="AppCUI::Utils::Buffer::Buffer"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1acef4dff94b972ef7525ceb55f401f2b2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer6BufferERK6Buffer">
+<span id="_CPPv3N6AppCUI5Utils6Buffer6BufferERK6Buffer"></span><span id="_CPPv2N6AppCUI5Utils6Buffer6BufferERK6Buffer"></span><span id="AppCUI::Utils::Buffer::Buffer__BufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a77465375eff6300505d9f67f18ed1838"></span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferERK6Buffer" title="AppCUI::Utils::Buffer::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buf</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferERK6Buffer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer6BufferERPv6size_t">
+<span id="_CPPv3N6AppCUI5Utils6Buffer6BufferERPv6size_t"></span><span id="_CPPv2N6AppCUI5Utils6Buffer6BufferERPv6size_t"></span><span id="AppCUI::Utils::Buffer::Buffer__voidPR.s"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a1241e0b34f05e05f64fbf9bb55a546f7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferERPv6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer6BufferERPc6size_t">
+<span id="_CPPv3N6AppCUI5Utils6Buffer6BufferERPc6size_t"></span><span id="_CPPv2N6AppCUI5Utils6Buffer6BufferERPc6size_t"></span><span id="AppCUI::Utils::Buffer::Buffer__cPR.s"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1aaf4903c2228179d4b13d6d0583ceb1d8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferERPc6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer6BufferERP5uint86size_t">
+<span id="_CPPv3N6AppCUI5Utils6Buffer6BufferERP5uint86size_t"></span><span id="_CPPv2N6AppCUI5Utils6Buffer6BufferERP5uint86size_t"></span><span id="AppCUI::Utils::Buffer::Buffer__uint8PR.s"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1af176c9424cc5c97a80c52bb69d84a7bf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ptr</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferERP5uint86size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer6BufferERR6Buffer">
+<span id="_CPPv3N6AppCUI5Utils6Buffer6BufferERR6Buffer"></span><span id="_CPPv2N6AppCUI5Utils6Buffer6BufferERR6Buffer"></span><span id="AppCUI::Utils::Buffer::Buffer__BufferRR"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a1b1d6759bddaba441207b8305d8afdb7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Buffer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferERR6Buffer" title="AppCUI::Utils::Buffer::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buf</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer6BufferERR6Buffer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6BufferaSERR6Buffer">
+<span id="_CPPv3N6AppCUI5Utils6BufferaSERR6Buffer"></span><span id="_CPPv2N6AppCUI5Utils6BufferaSERR6Buffer"></span><span id="AppCUI::Utils::Buffer::assign-operator__BufferRR"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a1c65c7d71c1d59d519119a43e34098fc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6BufferaSERR6Buffer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils6BufferixE6size_t">
+<span id="_CPPv3NK6AppCUI5Utils6BufferixE6size_t"></span><span id="_CPPv2NK6AppCUI5Utils6BufferixE6size_t"></span><span id="AppCUI::Utils::Buffer::subscript-operator__sC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a3130f4915afe39cb01b3416fbd8cb369"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils6BufferixE6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils6Buffercv10BufferViewEv">
+<span id="_CPPv3NK6AppCUI5Utils6Buffercv10BufferViewEv"></span><span id="_CPPv2NK6AppCUI5Utils6Buffercv10BufferViewEv"></span><span id="AppCUI::Utils::Buffer::castto-BufferView-operatorC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a3eb92e328e68f4a029953da4d6ca33bc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Utils_BufferView.html#_CPPv4N6AppCUI5Utils10BufferViewE" title="AppCUI::Utils::BufferView"><span class="n"><span class="pre">BufferView</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils6Buffercv10BufferViewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils6Buffercv11string_viewEv">
+<span id="_CPPv3NK6AppCUI5Utils6Buffercv11string_viewEv"></span><span id="_CPPv2NK6AppCUI5Utils6Buffercv11string_viewEv"></span><span id="AppCUI::Utils::Buffer::castto-string_view-operatorC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a44ad01a7a65a18dfa19adb1fe1fc485c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils6Buffercv11string_viewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils6Buffer7IsValidEv">
+<span id="_CPPv3NK6AppCUI5Utils6Buffer7IsValidEv"></span><span id="_CPPv2NK6AppCUI5Utils6Buffer7IsValidEv"></span><span id="AppCUI::Utils::Buffer::IsValidC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a7ce324dbea63e2afece71a4dfb1ab47b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValid</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils6Buffer7IsValidEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils6Buffer9GetLengthEv">
+<span id="_CPPv3NK6AppCUI5Utils6Buffer9GetLengthEv"></span><span id="_CPPv2NK6AppCUI5Utils6Buffer9GetLengthEv"></span><span id="AppCUI::Utils::Buffer::GetLengthC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1aeeec03a91b2f4177bb089bc7c7d72f7b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLength</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils6Buffer9GetLengthEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils6Buffer17GetAllocatedSpaceEv">
+<span id="_CPPv3NK6AppCUI5Utils6Buffer17GetAllocatedSpaceEv"></span><span id="_CPPv2NK6AppCUI5Utils6Buffer17GetAllocatedSpaceEv"></span><span id="AppCUI::Utils::Buffer::GetAllocatedSpaceC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a07dcbdccd2b628abb64b52d2f95102fe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAllocatedSpace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils6Buffer17GetAllocatedSpaceEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils6Buffer7GetDataEv">
+<span id="_CPPv3NK6AppCUI5Utils6Buffer7GetDataEv"></span><span id="_CPPv2NK6AppCUI5Utils6Buffer7GetDataEv"></span><span id="AppCUI::Utils::Buffer::GetDataC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a7c2636d9d064dba429057cb5d3736fc2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils6Buffer7GetDataEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI5Utils6Buffer9GetObjectE9ReferenceI1TE6uint32">
+<span id="_CPPv3I0EN6AppCUI5Utils6Buffer9GetObjectE6uint32"></span><span id="_CPPv2I0EN6AppCUI5Utils6Buffer9GetObjectE6uint32"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a14be7566c7ec5d91c299ec90554f59a5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Utils_Reference.html#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils6Buffer9GetObjectE9ReferenceI1TE6uint32" title="AppCUI::Utils::Buffer::GetObject::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI5Utils6Buffer9GetObjectE9ReferenceI1TE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer6ResizeE6size_t">
+<span id="_CPPv3N6AppCUI5Utils6Buffer6ResizeE6size_t"></span><span id="_CPPv2N6AppCUI5Utils6Buffer6ResizeE6size_t"></span><span id="AppCUI::Utils::Buffer::Resize__s"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a2c077dcc22949acefe1b053b09c83332"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Resize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer6ResizeE6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer7ReserveE6size_t">
+<span id="_CPPv3N6AppCUI5Utils6Buffer7ReserveE6size_t"></span><span id="_CPPv2N6AppCUI5Utils6Buffer7ReserveE6size_t"></span><span id="AppCUI::Utils::Buffer::Reserve__s"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a6dfb0fcd2fa0cb4662b6ae5a1c460ff7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reserve</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer7ReserveE6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer3AddERK6Buffer">
+<span id="_CPPv3N6AppCUI5Utils6Buffer3AddERK6Buffer"></span><span id="_CPPv2N6AppCUI5Utils6Buffer3AddERK6Buffer"></span><span id="AppCUI::Utils::Buffer::Add__BufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1af9e41cc5c0d41e7c69757cb60d24c385"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Add</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer3AddERK6Buffer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer3AddE10BufferView">
+<span id="_CPPv3N6AppCUI5Utils6Buffer3AddE10BufferView"></span><span id="_CPPv2N6AppCUI5Utils6Buffer3AddE10BufferView"></span><span id="AppCUI::Utils::Buffer::Add__BufferView"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a990b1101777170e75f89efd9328cf7ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="class_AppCUI_Utils_BufferView.html#_CPPv4N6AppCUI5Utils10BufferViewE" title="AppCUI::Utils::BufferView"><span class="n"><span class="pre">BufferView</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer3AddE10BufferView" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer3AddE11string_view">
+<span id="_CPPv3N6AppCUI5Utils6Buffer3AddE11string_view"></span><span id="_CPPv2N6AppCUI5Utils6Buffer3AddE11string_view"></span><span id="AppCUI::Utils::Buffer::Add__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a799ebcb6be1556f617dc56ced65d83f6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer3AddE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer3AddE14u16string_view">
+<span id="_CPPv3N6AppCUI5Utils6Buffer3AddE14u16string_view"></span><span id="_CPPv2N6AppCUI5Utils6Buffer3AddE14u16string_view"></span><span id="AppCUI::Utils::Buffer::Add__u16string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1ae1d1dd9152d029939ce15858e1107119"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Add</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">u16string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer3AddE14u16string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesERK6Buffer6uint32">
+<span id="_CPPv3N6AppCUI5Utils6Buffer16AddMultipleTimesERK6Buffer6uint32"></span><span id="_CPPv2N6AppCUI5Utils6Buffer16AddMultipleTimesERK6Buffer6uint32"></span><span id="AppCUI::Utils::Buffer::AddMultipleTimes__BufferCR.uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a96272213ecfb3325c04579427ceed26c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddMultipleTimes</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">times</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesERK6Buffer6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesE10BufferView6uint32">
+<span id="_CPPv3N6AppCUI5Utils6Buffer16AddMultipleTimesE10BufferView6uint32"></span><span id="_CPPv2N6AppCUI5Utils6Buffer16AddMultipleTimesE10BufferView6uint32"></span><span id="AppCUI::Utils::Buffer::AddMultipleTimes__BufferView.uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a354815a3f714a59b7fa03aa2b15236b1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddMultipleTimes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="class_AppCUI_Utils_BufferView.html#_CPPv4N6AppCUI5Utils10BufferViewE" title="AppCUI::Utils::BufferView"><span class="n"><span class="pre">BufferView</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">times</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesE10BufferView6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesE11string_view6uint32">
+<span id="_CPPv3N6AppCUI5Utils6Buffer16AddMultipleTimesE11string_view6uint32"></span><span id="_CPPv2N6AppCUI5Utils6Buffer16AddMultipleTimesE11string_view6uint32"></span><span id="AppCUI::Utils::Buffer::AddMultipleTimes__string_view.uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1aa0227b776c960fd4d231779aecb4a668"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddMultipleTimes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">times</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesE11string_view6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesE14u16string_view6uint32">
+<span id="_CPPv3N6AppCUI5Utils6Buffer16AddMultipleTimesE14u16string_view6uint32"></span><span id="_CPPv2N6AppCUI5Utils6Buffer16AddMultipleTimesE14u16string_view6uint32"></span><span id="AppCUI::Utils::Buffer::AddMultipleTimes__u16string_view.uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1ad60eab9a7821f49191e9951fadc5672e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddMultipleTimes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">u16string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">times</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6Buffer16AddMultipleTimesE14u16string_view6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6BufferaSERK6Buffer">
+<span id="_CPPv3N6AppCUI5Utils6BufferaSERK6Buffer"></span><span id="_CPPv2N6AppCUI5Utils6BufferaSERK6Buffer"></span><span id="AppCUI::Utils::Buffer::assign-operator__BufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1ab6fe9b42887744fccefaac871b587dda"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6BufferaSERK6Buffer" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6BufferaSE10BufferView">
+<span id="_CPPv3N6AppCUI5Utils6BufferaSE10BufferView"></span><span id="_CPPv2N6AppCUI5Utils6BufferaSE10BufferView"></span><span id="AppCUI::Utils::Buffer::assign-operator__BufferView"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a6c7489e0c8d2198d8ebf046a5ab6ed44"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="class_AppCUI_Utils_BufferView.html#_CPPv4N6AppCUI5Utils10BufferViewE" title="AppCUI::Utils::BufferView"><span class="n"><span class="pre">BufferView</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6BufferaSE10BufferView" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6BufferaSE11string_view">
+<span id="_CPPv3N6AppCUI5Utils6BufferaSE11string_view"></span><span id="_CPPv2N6AppCUI5Utils6BufferaSE11string_view"></span><span id="AppCUI::Utils::Buffer::assign-operator__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1aa0c586ac03d82bce7248b822bf5f5302"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6BufferaSE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils6BufferaSE14u16string_view">
+<span id="_CPPv3N6AppCUI5Utils6BufferaSE14u16string_view"></span><span id="_CPPv2N6AppCUI5Utils6BufferaSE14u16string_view"></span><span id="AppCUI::Utils::Buffer::assign-operator__u16string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1Buffer_1a3d4b04b195485f296b7225a24c2687d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">u16string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils6BufferaSE14u16string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Utils_Array32.html" class="btn btn-neutral float-left" title="Array32" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Utils_BufferView.html" class="btn btn-neutral float-right" title="BufferView" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

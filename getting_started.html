@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting started &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Initialization" href="initialization.html" />
+    <link rel="prev" title="AppCUI" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            AppCUI
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building">Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-appcui-in-your-project">Using AppCUI in your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-first-application">A first application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/getting_started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<p>AppCUI is a C++20 library built with CMake. Its dependencies (SDL2, SDL2_ttf, FreeType, libpng, libjpeg-turbo,
+bzip2, brotli and, on Linux / macOS, ncurses) are built automatically by the <a class="reference external" href="https://vcpkg.io">vcpkg</a> copy that is
+included in the repository as a git submodule.</p>
+<ul>
+<li><p>a C++20 compiler: Visual Studio 2022 (Windows), GCC or Clang (Linux), Apple Clang / Xcode command line tools (macOS)</p></li>
+<li><p>CMake 3.13 or newer (and, preferably, Ninja)</p></li>
+<li><p>git (the vcpkg submodule)</p></li>
+<li><p>Linux only: the X11 / OpenGL development packages needed to build SDL2. The packages installed by the CI are a
+known-good set:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>build-essential<span class="w"> </span>cmake<span class="w"> </span>ninja-build<span class="w"> </span>libsdl2-dev<span class="w"> </span>libsdl2-ttf-dev<span class="w"> </span>libltdl-dev
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="building">
+<h2>Building<a class="headerlink" href="#building" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--recursive<span class="w"> </span>https://github.com/gdt050579/AppCUI.git
+<span class="nb">cd</span><span class="w"> </span>AppCUI
+cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--config<span class="w"> </span>Release
+</pre></div>
+</div>
+<p>The first configuration builds the dependencies (this takes a while; vcpkg caches them afterwards). When AppCUI is the
+top level project, the library (<code class="docutils literal notranslate"><span class="pre">libAppCUI</span></code>) and every example of the <code class="docutils literal notranslate"><span class="pre">Examples</span></code> folder are written to the
+<code class="docutils literal notranslate"><span class="pre">bin</span></code> folder. If the repository was cloned without <code class="docutils literal notranslate"><span class="pre">--recursive</span></code>, run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">update</span> <span class="pre">--init</span> <span class="pre">--recursive</span></code>.</p>
+</section>
+<section id="using-appcui-in-your-project">
+<h2>Using AppCUI in your project<a class="headerlink" href="#using-appcui-in-your-project" title="Link to this heading"></a></h2>
+<p>Add the repository as a sub-folder (for example a git submodule) and link the <code class="docutils literal notranslate"><span class="pre">AppCUI</span></code> target:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.13</span><span class="p">)</span>
+<span class="c"># the toolchain must be set before project(): it builds the dependencies of AppCUI</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_TOOLCHAIN_FILE</span><span class="w"> </span><span class="s2">"${CMAKE_CURRENT_SOURCE_DIR}/AppCUI/vcpkg/scripts/buildsystems/vcpkg.cmake"</span>
+<span class="w">    </span><span class="s">CACHE</span><span class="w"> </span><span class="s">STRING</span><span class="w"> </span><span class="s2">"Vcpkg toolchain file"</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">MyApp</span><span class="w"> </span><span class="s">LANGUAGES</span><span class="w"> </span><span class="s">CXX</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_STANDARD</span><span class="w"> </span><span class="s">20</span><span class="p">)</span>
+
+<span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">AppCUI</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">MyApp</span><span class="w"> </span><span class="s">main.cpp</span><span class="p">)</span>
+<span class="nb">target_include_directories</span><span class="p">(</span><span class="s">MyApp</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">AppCUI/AppCUI/include</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">MyApp</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">AppCUI</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As vcpkg runs in manifest mode, your project needs a <code class="docutils literal notranslate"><span class="pre">vcpkg.json</span></code> that lists the same dependencies as
+<code class="docutils literal notranslate"><span class="pre">AppCUI/vcpkg.json</span></code> (plus your own). AppCUI is a shared library: ship <code class="docutils literal notranslate"><span class="pre">libAppCUI</span></code> (and the libraries it depends
+on) next to your executable.</p>
+</section>
+<section id="a-first-application">
+<h2>A first application<a class="headerlink" href="#a-first-application" title="Link to this heading"></a></h2>
+<p>Everything is declared in one header, <code class="docutils literal notranslate"><span class="pre">AppCUI.hpp</span></code>. An application initializes AppCUI, adds one or more windows to
+the desktop and runs the event loop:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"AppCUI.hpp"</span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">AppCUI</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">AppCUI</span><span class="o">::</span><span class="nn">Application</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">AppCUI</span><span class="o">::</span><span class="nn">Controls</span><span class="p">;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GreetingWindow</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Window</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">BUTTON_GREET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Reference</span><span class="o">&lt;</span><span class="n">TextField</span><span class="o">&gt;</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">GreetingWindow</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Window</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">,</span><span class="w"> </span><span class="s">"d:c,w:50,h:8"</span><span class="p">,</span><span class="w"> </span><span class="n">WindowFlags</span><span class="o">::</span><span class="n">None</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Factory</span><span class="o">::</span><span class="n">Label</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="s">"Name"</span><span class="p">,</span><span class="w"> </span><span class="s">"x:1,y:1,w:6"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Factory</span><span class="o">::</span><span class="n">TextField</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="s">""</span><span class="p">,</span><span class="w"> </span><span class="s">"x:8,y:1,w:39"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Factory</span><span class="o">::</span><span class="n">Button</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="s">"&amp;Greet"</span><span class="p">,</span><span class="w"> </span><span class="s">"x:50%,y:4,w:20,a:t"</span><span class="p">,</span><span class="w"> </span><span class="n">BUTTON_GREET</span><span class="p">);</span>
+<span class="w">        </span><span class="n">name</span><span class="o">-&gt;</span><span class="n">SetFocus</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">OnEvent</span><span class="p">(</span><span class="n">Reference</span><span class="o">&lt;</span><span class="n">Control</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">Event</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">controlID</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">eventType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Event</span><span class="o">::</span><span class="n">ButtonClicked</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">controlID</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">BUTTON_GREET</span><span class="p">))</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">text</span><span class="p">;</span>
+<span class="w">            </span><span class="n">name</span><span class="o">-&gt;</span><span class="n">GetText</span><span class="p">().</span><span class="n">ToString</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
+<span class="w">            </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Hello, "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">text</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">"stranger"</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"!"</span><span class="p">;</span>
+<span class="w">            </span><span class="n">Dialogs</span><span class="o">::</span><span class="n">MessageBox</span><span class="o">::</span><span class="n">ShowNotification</span><span class="p">(</span><span class="s">"Greeting"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="p">(</span><span class="n">text</span><span class="p">));</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">eventType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Event</span><span class="o">::</span><span class="n">WindowClose</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">Application</span><span class="o">::</span><span class="n">Close</span><span class="p">();</span><span class="w"> </span><span class="c1">// closing the window ends the application</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Window</span><span class="o">::</span><span class="n">OnEvent</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w"> </span><span class="n">controlID</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">())</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Application</span><span class="o">::</span><span class="n">AddWindow</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">GreetingWindow</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="w">    </span><span class="n">Application</span><span class="o">::</span><span class="n">Run</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>every control is created with a <a class="reference internal" href="layout.html"><span class="doc">layout</span></a> string (<code class="docutils literal notranslate"><span class="pre">&quot;d:c,w:50,h:8&quot;</span></code> = docked in the center, 50
+characters wide and 8 lines high);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Factory::&lt;Control&gt;::Create(parent,</span> <span class="pre">...)</span></code> creates a control, adds it to <code class="docutils literal notranslate"><span class="pre">parent</span></code> and returns a non-owning
+<code class="docutils literal notranslate"><span class="pre">Reference</span></code> to it;</p></li>
+<li><p>events (button clicks, window close, …) reach <code class="docutils literal notranslate"><span class="pre">OnEvent</span></code> of the control and then of its parents;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Application::Run()</span></code> returns when <code class="docutils literal notranslate"><span class="pre">Application::Close()</span></code> is called or when the last window is closed.</p></li>
+</ul>
+<p>Instead of deriving classes, a control can also receive its events through <em>handlers</em> (a pointer to an object that
+implements the handler interface, or a plain function / lambda without captures):</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">InitializationFlags</span><span class="o">::</span><span class="n">CommandBar</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Factory</span><span class="o">::</span><span class="n">Window</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="s">"Handlers"</span><span class="p">,</span><span class="w"> </span><span class="s">"d:c,w:40,h:8"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">label</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">Factory</span><span class="o">::</span><span class="n">Label</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="o">*</span><span class="n">window</span><span class="p">,</span><span class="w"> </span><span class="s">"Press the button"</span><span class="p">,</span><span class="w"> </span><span class="s">"x:1,y:1,w:36"</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">button</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Factory</span><span class="o">::</span><span class="n">Button</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="o">*</span><span class="n">window</span><span class="p">,</span><span class="w"> </span><span class="s">"&amp;Press me"</span><span class="p">,</span><span class="w"> </span><span class="s">"x:50%,y:3,w:16,a:t"</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// a plain function (or a lambda without captures) instead of a new class</span>
+<span class="w">    </span><span class="n">button</span><span class="o">-&gt;</span><span class="n">Handlers</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">OnButtonPressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="n">Reference</span><span class="o">&lt;</span><span class="n">Button</span><span class="o">&gt;</span><span class="w"> </span><span class="n">btn</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">btn</span><span class="o">-&gt;</span><span class="n">SetText</span><span class="p">(</span><span class="s">"Pressed !"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">label</span><span class="o">-&gt;</span><span class="n">SetText</span><span class="p">(</span><span class="s">"Use Tab / Shift+Tab to move the focus"</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">Application</span><span class="o">::</span><span class="n">AddWindow</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">window</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Application</span><span class="o">::</span><span class="n">Run</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Both samples are compiled with the examples (<code class="docutils literal notranslate"><span class="pre">docs/snippets</span></code>). The <a class="reference external" href="https://github.com/gdt050579/AppCUI/tree/main/Examples">Examples</a> folder has a program for almost every control (buttons,
+list views, tree views, grids, property lists, menus, tabs, splitters, images, …).</p>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="initialization.html"><span class="doc">Initialization</span></a> - initialization options and the <code class="docutils literal notranslate"><span class="pre">.ini</span></code> settings file</p></li>
+<li><p><a class="reference internal" href="layout.html"><span class="doc">Layout in AppCUI</span></a> - how controls are positioned and resized</p></li>
+<li><p><a class="reference internal" href="terminals.html"><span class="doc">Frontends (terminals)</span></a> - the frontends (Windows console, SDL, ncurses, custom) and what each one supports</p></li>
+<li><p><a class="reference internal" href="api/index.html"><span class="doc">API reference</span></a> - every class, function and type of <code class="docutils literal notranslate"><span class="pre">AppCUI.hpp</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="AppCUI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="initialization.html" class="btn btn-neutral float-right" title="Initialization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

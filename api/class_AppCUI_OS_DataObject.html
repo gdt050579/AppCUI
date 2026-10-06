@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataObject &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DateTime" href="class_AppCUI_OS_DateTime.html" />
+    <link rel="prev" title="Clipboard" href="class_AppCUI_OS_Clipboard.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+      <li class="breadcrumb-item active">DataObject</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_OS_DataObject.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dataobject">
+<h1>DataObject<a class="headerlink" href="#dataobject" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::OS::DataObject</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObjectE">
+<span id="_CPPv3N6AppCUI2OS10DataObjectE"></span><span id="_CPPv2N6AppCUI2OS10DataObjectE"></span><span id="AppCUI::OS::DataObject"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DataObject</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObjectE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="class_AppCUI_OS_File.html#classAppCUI_1_1OS_1_1File"><span class="std std-ref">AppCUI::OS::File</span></a>, <a class="reference internal" href="class_AppCUI_OS_MemoryFile.html#classAppCUI_1_1OS_1_1MemoryFile"><span class="std std-ref">AppCUI::OS::MemoryFile</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObjectD0Ev">
+<span id="_CPPv3N6AppCUI2OS10DataObjectD0Ev"></span><span id="_CPPv2N6AppCUI2OS10DataObjectD0Ev"></span><span id="AppCUI::OS::DataObject::~DataObject"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1afca11bbd3328599bbada44c3006e87a1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~DataObject</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObjectD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject7GetSizeEv">
+<span id="_CPPv3N6AppCUI2OS10DataObject7GetSizeEv"></span><span id="_CPPv2N6AppCUI2OS10DataObject7GetSizeEv"></span><span id="AppCUI::OS::DataObject::GetSize"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a61d31e552bb20f2b997213d250833866"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject7GetSizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject13GetCurrentPosEv">
+<span id="_CPPv3N6AppCUI2OS10DataObject13GetCurrentPosEv"></span><span id="_CPPv2N6AppCUI2OS10DataObject13GetCurrentPosEv"></span><span id="AppCUI::OS::DataObject::GetCurrentPos"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1ad7d9e8c55dade1ef31466fffa0fe6560"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentPos</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject13GetCurrentPosEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject7SetSizeE6uint64">
+<span id="_CPPv3N6AppCUI2OS10DataObject7SetSizeE6uint64"></span><span id="_CPPv2N6AppCUI2OS10DataObject7SetSizeE6uint64"></span><span id="AppCUI::OS::DataObject::SetSize__uint64"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a0eecfeeb8739f36609f25b7b37ead077"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">newSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject7SetSizeE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject13SetCurrentPosE6uint64">
+<span id="_CPPv3N6AppCUI2OS10DataObject13SetCurrentPosE6uint64"></span><span id="_CPPv2N6AppCUI2OS10DataObject13SetCurrentPosE6uint64"></span><span id="AppCUI::OS::DataObject::SetCurrentPos__uint64"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1aed1cabc504108b2bc8ecb3828678db17"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetCurrentPos</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">newPosition</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject13SetCurrentPosE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject5CloseEv">
+<span id="_CPPv3N6AppCUI2OS10DataObject5CloseEv"></span><span id="_CPPv2N6AppCUI2OS10DataObject5CloseEv"></span><span id="AppCUI::OS::DataObject::Close"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a32b9715b276499cbb799830c2691e8bb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Close</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject5CloseEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject4ReadEPv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject4ReadEPv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject4ReadEPv6uint32R6uint32"></span><span id="AppCUI::OS::DataObject::Read__voidP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1ad47cde60a0eb597d8f0f5389b2ddff59"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Read</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesRead</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject4ReadEPv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject4ReadEPv6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject4ReadEPv6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject4ReadEPv6uint32"></span><span id="AppCUI::OS::DataObject::Read__voidP.uint32"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1adda02914efb25e862cbc07babc865127"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Read</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject4ReadEPv6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject4ReadE6uint64Pv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject4ReadE6uint64Pv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject4ReadE6uint64Pv6uint32R6uint32"></span><span id="AppCUI::OS::DataObject::Read__uint64.voidP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a71194242264fa0545526259d7c04e885"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesRead</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject4ReadE6uint64Pv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject4ReadERN5Utils6BufferE6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject4ReadERN5Utils6BufferE6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject4ReadERN5Utils6BufferE6uint32"></span><span id="AppCUI::OS::DataObject::Read__Utils::BufferR.uint32"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a27219a3fae2d3e8ef45d6baa1a56f7b7"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_Buffer.html#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buf</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject4ReadERN5Utils6BufferE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject4ReadE6uint64RN5Utils6BufferE6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject4ReadE6uint64RN5Utils6BufferE6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject4ReadE6uint64RN5Utils6BufferE6uint32"></span><span id="AppCUI::OS::DataObject::Read__uint64.Utils::BufferR.uint32"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a54cceec655a0f8dfd22c4fdc65089925"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_Buffer.html#_CPPv4N6AppCUI5Utils6BufferE" title="AppCUI::Utils::Buffer"><span class="n"><span class="pre">Buffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">buf</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject4ReadE6uint64RN5Utils6BufferE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI2OS10DataObject4ReadEbR1T">
+<span id="_CPPv3I0EN6AppCUI2OS10DataObject4ReadER1T"></span><span id="_CPPv2I0EN6AppCUI2OS10DataObject4ReadER1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a1586c53f6f321527df041fae0095b541"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Read</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6AppCUI2OS10DataObject4ReadEbR1T" title="AppCUI::OS::DataObject::Read::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI2OS10DataObject4ReadEbR1T" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject5WriteEPKv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject5WriteEPKv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject5WriteEPKv6uint32R6uint32"></span><span id="AppCUI::OS::DataObject::Write__voidCP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a6f34d5bca3add272482698402952897e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Write</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesWritten</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject5WriteEPKv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject5WriteEPKv6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject5WriteEPKv6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject5WriteEPKv6uint32"></span><span id="AppCUI::OS::DataObject::Write__voidCP.uint32"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1aa9fae4d2bf71cba7d7968a8ec500cfe3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Write</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject5WriteEPKv6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject5WriteE6uint64PKv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject5WriteE6uint64PKv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject5WriteE6uint64PKv6uint32R6uint32"></span><span id="AppCUI::OS::DataObject::Write__uint64.voidCP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a4a6ef18b0b6a57403642f098ee0d41ed"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesWritten</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject5WriteE6uint64PKv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject5WriteE11string_view">
+<span id="_CPPv3N6AppCUI2OS10DataObject5WriteE11string_view"></span><span id="_CPPv2N6AppCUI2OS10DataObject5WriteE11string_view"></span><span id="AppCUI::OS::DataObject::Write__string_view"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a33ec6a4da406415d3129fb4728d3657c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Write</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject5WriteE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject5WriteE6uint6411string_viewR6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject5WriteE6uint6411string_viewR6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject5WriteE6uint6411string_viewR6uint32"></span><span id="AppCUI::OS::DataObject::Write__uint64.string_view.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1adf9a58e10474d7b5a41d3c1a7dfcde2f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">text</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesWritten</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject5WriteE6uint6411string_viewR6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI2OS10DataObject5WriteEbRK1T">
+<span id="_CPPv3I0EN6AppCUI2OS10DataObject5WriteERK1T"></span><span id="_CPPv2I0EN6AppCUI2OS10DataObject5WriteERK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a3cbf6d2169d732a89690c20725c30a40"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Write</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI2OS10DataObject5WriteEbRK1T" title="AppCUI::OS::DataObject::Write::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI2OS10DataObject5WriteEbRK1T" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI2OS10DataObject5WriteEb6uint64RK1T">
+<span id="_CPPv3I0EN6AppCUI2OS10DataObject5WriteE6uint64RK1T"></span><span id="_CPPv2I0EN6AppCUI2OS10DataObject5WriteE6uint64RK1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a248fb4f1853b86a08e3aafaa0be834a2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Write</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI2OS10DataObject5WriteEb6uint64RK1T" title="AppCUI::OS::DataObject::Write::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI2OS10DataObject5WriteEb6uint64RK1T" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject10ReadBufferEPv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject10ReadBufferEPv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject10ReadBufferEPv6uint32R6uint32"></span><span id="AppCUI::OS::DataObject::ReadBuffer__voidP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1ae12670c859fab5eea48cc8ba63711160"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadBuffer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesRead</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject10ReadBufferEPv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS10DataObject11WriteBufferEPKv6uint32R6uint32">
+<span id="_CPPv3N6AppCUI2OS10DataObject11WriteBufferEPKv6uint32R6uint32"></span><span id="_CPPv2N6AppCUI2OS10DataObject11WriteBufferEPKv6uint32R6uint32"></span><span id="AppCUI::OS::DataObject::WriteBuffer__voidCP.uint32.uint32R"></span><span class="target" id="classAppCUI_1_1OS_1_1DataObject_1a97a3fe4b267bb131106dd85de6a5590f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteBuffer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buffer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">bufferSize</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bytesWritten</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS10DataObject11WriteBufferEPKv6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_OS_Clipboard.html" class="btn btn-neutral float-left" title="Clipboard" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_OS_DateTime.html" class="btn btn-neutral float-right" title="DateTime" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

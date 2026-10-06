@@ -1,0 +1,631 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Desktop" href="class_AppCUI_Controls_Desktop.html" />
+    <link rel="prev" title="ComboBox" href="class_AppCUI_Controls_ComboBox.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+      <li class="breadcrumb-item active">Control</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_Control.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="control">
+<h1>Control<a class="headerlink" href="#control" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::Control</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7ControlE">
+<span id="_CPPv3N6AppCUI8Controls7ControlE"></span><span id="_CPPv2N6AppCUI8Controls7ControlE"></span><span id="AppCUI::Controls::Control"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Control</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7ControlE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="class_AppCUI_Controls_Button.html#classAppCUI_1_1Controls_1_1Button"><span class="std std-ref">AppCUI::Controls::Button</span></a>, <a class="reference internal" href="class_AppCUI_Controls_CanvasViewer.html#classAppCUI_1_1Controls_1_1CanvasViewer"><span class="std std-ref">AppCUI::Controls::CanvasViewer</span></a>, <a class="reference internal" href="class_AppCUI_Controls_CharacterTable.html#classAppCUI_1_1Controls_1_1CharacterTable"><span class="std std-ref">AppCUI::Controls::CharacterTable</span></a>, <a class="reference internal" href="class_AppCUI_Controls_CheckBox.html#classAppCUI_1_1Controls_1_1CheckBox"><span class="std std-ref">AppCUI::Controls::CheckBox</span></a>, <a class="reference internal" href="class_AppCUI_Controls_ColorPicker.html#classAppCUI_1_1Controls_1_1ColorPicker"><span class="std std-ref">AppCUI::Controls::ColorPicker</span></a>, <a class="reference internal" href="class_AppCUI_Controls_ColumnsHeaderView.html#classAppCUI_1_1Controls_1_1ColumnsHeaderView"><span class="std std-ref">AppCUI::Controls::ColumnsHeaderView</span></a>, <a class="reference internal" href="class_AppCUI_Controls_ComboBox.html#classAppCUI_1_1Controls_1_1ComboBox"><span class="std std-ref">AppCUI::Controls::ComboBox</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Desktop.html#classAppCUI_1_1Controls_1_1Desktop"><span class="std std-ref">AppCUI::Controls::Desktop</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Grid.html#classAppCUI_1_1Controls_1_1Grid"><span class="std std-ref">AppCUI::Controls::Grid</span></a>, <a class="reference internal" href="class_AppCUI_Controls_KeySelector.html#classAppCUI_1_1Controls_1_1KeySelector"><span class="std std-ref">AppCUI::Controls::KeySelector</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Label.html#classAppCUI_1_1Controls_1_1Label"><span class="std std-ref">AppCUI::Controls::Label</span></a>, <a class="reference internal" href="class_AppCUI_Controls_NumericSelector.html#classAppCUI_1_1Controls_1_1NumericSelector"><span class="std std-ref">AppCUI::Controls::NumericSelector</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Panel.html#classAppCUI_1_1Controls_1_1Panel"><span class="std std-ref">AppCUI::Controls::Panel</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Password.html#classAppCUI_1_1Controls_1_1Password"><span class="std std-ref">AppCUI::Controls::Password</span></a>, <a class="reference internal" href="class_AppCUI_Controls_PropertyList.html#classAppCUI_1_1Controls_1_1PropertyList"><span class="std std-ref">AppCUI::Controls::PropertyList</span></a>, <a class="reference internal" href="class_AppCUI_Controls_RadioBox.html#classAppCUI_1_1Controls_1_1RadioBox"><span class="std std-ref">AppCUI::Controls::RadioBox</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Splitter.html#classAppCUI_1_1Controls_1_1Splitter"><span class="std std-ref">AppCUI::Controls::Splitter</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Tab.html#classAppCUI_1_1Controls_1_1Tab"><span class="std std-ref">AppCUI::Controls::Tab</span></a>, <a class="reference internal" href="class_AppCUI_Controls_TabPage.html#classAppCUI_1_1Controls_1_1TabPage"><span class="std std-ref">AppCUI::Controls::TabPage</span></a>, <a class="reference internal" href="class_AppCUI_Controls_TextArea.html#classAppCUI_1_1Controls_1_1TextArea"><span class="std std-ref">AppCUI::Controls::TextArea</span></a>, <a class="reference internal" href="class_AppCUI_Controls_TextField.html#classAppCUI_1_1Controls_1_1TextField"><span class="std std-ref">AppCUI::Controls::TextField</span></a>, <a class="reference internal" href="class_AppCUI_Controls_UserControl.html#classAppCUI_1_1Controls_1_1UserControl"><span class="std std-ref">AppCUI::Controls::UserControl</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Window.html#classAppCUI_1_1Controls_1_1Window"><span class="std std-ref">AppCUI::Controls::Window</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI8Controls7Control10AddControlE9ReferenceI1TE10unique_ptrI1TE">
+<span id="_CPPv3I0EN6AppCUI8Controls7Control10AddControlE10unique_ptrI1TE"></span><span id="_CPPv2I0EN6AppCUI8Controls7Control10AddControlE10unique_ptrI1TE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1Control_1abbd2a1b4bbdcdf773a09aa4117b5a04d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI8Controls7Control10AddControlE9ReferenceI1TE10unique_ptrI1TE" title="AppCUI::Controls::Control::AddControl::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI8Controls7Control10AddControlE9ReferenceI1TE10unique_ptrI1TE" title="AppCUI::Controls::Control::AddControl::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">control</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI8Controls7Control10AddControlE9ReferenceI1TE10unique_ptrI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN6AppCUI8Controls7Control18CreateChildControlE9ReferenceI1TEDp9Arguments">
+<span id="_CPPv3I0DpEN6AppCUI8Controls7Control18CreateChildControlEDp9Arguments"></span><span id="_CPPv2I0DpEN6AppCUI8Controls7Control18CreateChildControlEDp9Arguments"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Arguments</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ade8ba731dd4fe3302373f0c3e3cd53a4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0DpEN6AppCUI8Controls7Control18CreateChildControlE9ReferenceI1TEDp9Arguments" title="AppCUI::Controls::Control::CreateChildControl::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateChildControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0DpEN6AppCUI8Controls7Control18CreateChildControlE9ReferenceI1TEDp9Arguments" title="AppCUI::Controls::Control::CreateChildControl::Arguments"><span class="n"><span class="pre">Arguments</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN6AppCUI8Controls7Control18CreateChildControlE9ReferenceI1TEDp9Arguments" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control13RemoveControlEP7Control">
+<span id="_CPPv3N6AppCUI8Controls7Control13RemoveControlEP7Control"></span><span id="_CPPv2N6AppCUI8Controls7Control13RemoveControlEP7Control"></span><span id="AppCUI::Controls::Control::RemoveControl__ControlP"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aebc22e3ee0175111c86fc5f663715e2f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveControl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">control</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control13RemoveControlEP7Control" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI8Controls7Control13RemoveControlEbR9ReferenceI1TE">
+<span id="_CPPv3I0EN6AppCUI8Controls7Control13RemoveControlER9ReferenceI1TE"></span><span id="_CPPv2I0EN6AppCUI8Controls7Control13RemoveControlER9ReferenceI1TE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ae4e06a58a743266678cbe61ecb52dbea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RemoveControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI8Controls7Control13RemoveControlEbR9ReferenceI1TE" title="AppCUI::Controls::Control::RemoveControl::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">control</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI8Controls7Control13RemoveControlEbR9ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control13IsInitializedEv">
+<span id="_CPPv3N6AppCUI8Controls7Control13IsInitializedEv"></span><span id="_CPPv2N6AppCUI8Controls7Control13IsInitializedEv"></span><span id="AppCUI::Controls::Control::IsInitialized"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a52b810f18cf5809a9c265bdc3a2a5ebf"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsInitialized</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control13IsInitializedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control4GetXEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control4GetXEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control4GetXEv"></span><span id="AppCUI::Controls::Control::GetXC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab2d67a5352acdf3f39b0723764a92833"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetX</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control4GetXEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control4GetYEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control4GetYEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control4GetYEv"></span><span id="AppCUI::Controls::Control::GetYC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab4f961dcace883f5ede56fbbe145a86a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetY</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control4GetYEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control8GetWidthEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control8GetWidthEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control8GetWidthEv"></span><span id="AppCUI::Controls::Control::GetWidthC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a0b5ffdf22cde32a4eaaf4195d9d84504"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetWidth</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control8GetWidthEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control9GetHeightEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control9GetHeightEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control9GetHeightEv"></span><span id="AppCUI::Controls::Control::GetHeightC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ad2421846205fe9d6d30838f2ddc7b5b9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHeight</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control9GetHeightEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control7GetSizeEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control7GetSizeEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control7GetSizeEv"></span><span id="AppCUI::Controls::Control::GetSizeC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1afabfe69c15a7b2ed50a9cd03c3b6acac"></span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Size.html#_CPPv4N6AppCUI8Graphics4SizeE" title="AppCUI::Graphics::Size"><span class="n"><span class="pre">Size</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control7GetSizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control13GetClientSizeEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control13GetClientSizeEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control13GetClientSizeEv"></span><span id="AppCUI::Controls::Control::GetClientSizeC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a21bf0ae5e060b428361dc1c484c40ef8"></span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Size.html#_CPPv4N6AppCUI8Graphics4SizeE" title="AppCUI::Graphics::Size"><span class="n"><span class="pre">Size</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetClientSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control13GetClientSizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control19GetAbsolutePositionEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control19GetAbsolutePositionEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control19GetAbsolutePositionEv"></span><span id="AppCUI::Controls::Control::GetAbsolutePositionC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ae4f1f2c18fa06cd59cd30aa5995a7021"></span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Point.html#_CPPv4N6AppCUI8Graphics5PointE" title="AppCUI::Graphics::Point"><span class="n"><span class="pre">Point</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAbsolutePosition</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control19GetAbsolutePositionEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control20GetAbsoluteRectangleEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control20GetAbsoluteRectangleEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control20GetAbsoluteRectangleEv"></span><span id="AppCUI::Controls::Control::GetAbsoluteRectangleC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a15f2bc94d176569da95da809bdbfebb6"></span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Rect.html#_CPPv4N6AppCUI8Graphics4RectE" title="AppCUI::Graphics::Rect"><span class="n"><span class="pre">Rect</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAbsoluteRectangle</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control20GetAbsoluteRectangleEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control6MoveToEii">
+<span id="_CPPv3N6AppCUI8Controls7Control6MoveToEii"></span><span id="_CPPv2N6AppCUI8Controls7Control6MoveToEii"></span><span id="AppCUI::Controls::Control::MoveTo__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a06b3be393988121551abc173b3a4f489"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MoveTo</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newX</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newY</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control6MoveToEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control6ResizeEii">
+<span id="_CPPv3N6AppCUI8Controls7Control6ResizeEii"></span><span id="_CPPv2N6AppCUI8Controls7Control6ResizeEii"></span><span id="AppCUI::Controls::Control::Resize__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aa689c7a9a3dca98eeefb41aac73da2f8"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Resize</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newWidth</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newHeight</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control6ResizeEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control15RecomputeLayoutEv">
+<span id="_CPPv3N6AppCUI8Controls7Control15RecomputeLayoutEv"></span><span id="_CPPv2N6AppCUI8Controls7Control15RecomputeLayoutEv"></span><span id="AppCUI::Controls::Control::RecomputeLayout"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a4609ad78b4d4a6438b45ff340a17513d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RecomputeLayout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control15RecomputeLayoutEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control8GetGroupEv">
+<span id="_CPPv3N6AppCUI8Controls7Control8GetGroupEv"></span><span id="_CPPv2N6AppCUI8Controls7Control8GetGroupEv"></span><span id="AppCUI::Controls::Control::GetGroup"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a2d488f3ed0d2e3f2d35f64f197bb010c"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGroup</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control8GetGroupEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control8SetGroupEi">
+<span id="_CPPv3N6AppCUI8Controls7Control8SetGroupEi"></span><span id="_CPPv2N6AppCUI8Controls7Control8SetGroupEi"></span><span id="AppCUI::Controls::Control::SetGroup__i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab4c9163fb52b99bffec045a26d2bf8ca"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetGroup</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newGroupID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control8SetGroupEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10ClearGroupEv">
+<span id="_CPPv3N6AppCUI8Controls7Control10ClearGroupEv"></span><span id="_CPPv2N6AppCUI8Controls7Control10ClearGroupEv"></span><span id="AppCUI::Controls::Control::ClearGroup"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a321f7fb8633ec9a3e5517489e1864b45"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearGroup</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10ClearGroupEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control9SetHotKeyE6char16">
+<span id="_CPPv3N6AppCUI8Controls7Control9SetHotKeyE6char16"></span><span id="_CPPv2N6AppCUI8Controls7Control9SetHotKeyE6char16"></span><span id="AppCUI::Controls::Control::SetHotKey__char16"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aefae8f0eac5cbd0e52afdaad93c95fd9"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetHotKey</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">hotKey</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control9SetHotKeyE6char16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control9GetHotKeyEv">
+<span id="_CPPv3N6AppCUI8Controls7Control9GetHotKeyEv"></span><span id="_CPPv2N6AppCUI8Controls7Control9GetHotKeyEv"></span><span id="AppCUI::Controls::Control::GetHotKey"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab39620e2d072946e5d8441acae0d18db"></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHotKey</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control9GetHotKeyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control19GetHotKeyTextOffsetEv">
+<span id="_CPPv3N6AppCUI8Controls7Control19GetHotKeyTextOffsetEv"></span><span id="_CPPv2N6AppCUI8Controls7Control19GetHotKeyTextOffsetEv"></span><span id="AppCUI::Controls::Control::GetHotKeyTextOffset"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab2cf8b6a28f8c56d839ecced34be5d05"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHotKeyTextOffset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control19GetHotKeyTextOffsetEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control11ClearHotKeyEv">
+<span id="_CPPv3N6AppCUI8Controls7Control11ClearHotKeyEv"></span><span id="_CPPv2N6AppCUI8Controls7Control11ClearHotKeyEv"></span><span id="AppCUI::Controls::Control::ClearHotKey"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a0c7b3d4bdc9e9c02899e5620c0c06e87"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearHotKey</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control11ClearHotKeyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10SetEnabledEKb">
+<span id="_CPPv3N6AppCUI8Controls7Control10SetEnabledEKb"></span><span id="_CPPv2N6AppCUI8Controls7Control10SetEnabledEKb"></span><span id="AppCUI::Controls::Control::SetEnabled__bC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab7371e6d9d805c1f7256da6071b06210"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetEnabled</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10SetEnabledEKb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10SetVisibleEKb">
+<span id="_CPPv3N6AppCUI8Controls7Control10SetVisibleEKb"></span><span id="_CPPv2N6AppCUI8Controls7Control10SetVisibleEKb"></span><span id="AppCUI::Controls::Control::SetVisible__bC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a55236f70fe1ef59488218955162bc9de"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetVisible</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10SetVisibleEKb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10SetCheckedEKb">
+<span id="_CPPv3N6AppCUI8Controls7Control10SetCheckedEKb"></span><span id="_CPPv2N6AppCUI8Controls7Control10SetCheckedEKb"></span><span id="AppCUI::Controls::Control::SetChecked__bC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ae0068fe6c3df142d85d129322db314f9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetChecked</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10SetCheckedEKb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control9IsEnabledEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control9IsEnabledEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control9IsEnabledEv"></span><span id="AppCUI::Controls::Control::IsEnabledC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a230ab9970e8b3764d6e33c1e679fe117"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsEnabled</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control9IsEnabledEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control9IsVisibleEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control9IsVisibleEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control9IsVisibleEv"></span><span id="AppCUI::Controls::Control::IsVisibleC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a33ee559b9181ac6ae1b749b287c3ea3b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsVisible</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control9IsVisibleEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control9IsCheckedEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control9IsCheckedEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control9IsCheckedEv"></span><span id="AppCUI::Controls::Control::IsCheckedC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a7041618374cf868991736761b69d8f92"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsChecked</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control9IsCheckedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control8HasFocusEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control8HasFocusEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control8HasFocusEv"></span><span id="AppCUI::Controls::Control::HasFocusC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a9f66a6a0f7e9ba1b011b6d65fb9942bc"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasFocus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control8HasFocusEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control11IsMouseOverEv">
+<span id="_CPPv3NK6AppCUI8Controls7Control11IsMouseOverEv"></span><span id="_CPPv2NK6AppCUI8Controls7Control11IsMouseOverEv"></span><span id="AppCUI::Controls::Control::IsMouseOverC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a97b26bdea6a86b59dd95b8374b4b9259"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsMouseOver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control11IsMouseOverEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls7Control8GetStateE17ControlStateFlags">
+<span id="_CPPv3NK6AppCUI8Controls7Control8GetStateE17ControlStateFlags"></span><span id="_CPPv2NK6AppCUI8Controls7Control8GetStateE17ControlStateFlags"></span><span id="AppCUI::Controls::Control::GetState__ControlStateFlagsC"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a7ca6b08e5a35cc28e4a8f32e987f4700"></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls12ControlStateE" title="AppCUI::Controls::ControlState"><span class="n"><span class="pre">ControlState</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetState</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls17ControlStateFlagsE" title="AppCUI::Controls::ControlStateFlags"><span class="n"><span class="pre">ControlStateFlags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls7Control8GetStateE17ControlStateFlags" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control9GetParentEv">
+<span id="_CPPv3N6AppCUI8Controls7Control9GetParentEv"></span><span id="_CPPv2N6AppCUI8Controls7Control9GetParentEv"></span><span id="AppCUI::Controls::Control::GetParent"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ae973ba90796e5cfaa19b6ee6f960acff"></span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetParent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control9GetParentEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control15GetChildrenListEv">
+<span id="_CPPv3N6AppCUI8Controls7Control15GetChildrenListEv"></span><span id="_CPPv2N6AppCUI8Controls7Control15GetChildrenListEv"></span><span id="AppCUI::Controls::Control::GetChildrenList"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a289254f69bbe2cfe77ae44ae1600746b"></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetChildrenList</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control15GetChildrenListEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control8GetChildE6uint32">
+<span id="_CPPv3N6AppCUI8Controls7Control8GetChildE6uint32"></span><span id="_CPPv2N6AppCUI8Controls7Control8GetChildE6uint32"></span><span id="AppCUI::Controls::Control::GetChild__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a6967b4fec9ebf368a0a2e5a3343ede47"></span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetChild</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control8GetChildE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control15GetFocusedChildEv">
+<span id="_CPPv3N6AppCUI8Controls7Control15GetFocusedChildEv"></span><span id="_CPPv2N6AppCUI8Controls7Control15GetFocusedChildEv"></span><span id="AppCUI::Controls::Control::GetFocusedChild"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1adbfd8aee18ee24eab22f887a0ada4a60"></span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetFocusedChild</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control15GetFocusedChildEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control16GetChildrenCountEv">
+<span id="_CPPv3N6AppCUI8Controls7Control16GetChildrenCountEv"></span><span id="_CPPv2N6AppCUI8Controls7Control16GetChildrenCountEv"></span><span id="AppCUI::Controls::Control::GetChildrenCount"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a77e40b4c60e9194948c2f04c977a1599"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetChildrenCount</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control16GetChildrenCountEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control13GetChildIndexE9ReferenceI7ControlER6uint32">
+<span id="_CPPv3N6AppCUI8Controls7Control13GetChildIndexE9ReferenceI7ControlER6uint32"></span><span id="_CPPv2N6AppCUI8Controls7Control13GetChildIndexE9ReferenceI7ControlER6uint32"></span><span id="AppCUI::Controls::Control::GetChildIndex__Reference:Control:.uint32R"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aa658ea6fb665724888711a3a919a184e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetChildIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">control</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control13GetChildIndexE9ReferenceI7ControlER6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control16HasDistantParentE9ReferenceI7ControlE">
+<span id="_CPPv3N6AppCUI8Controls7Control16HasDistantParentE9ReferenceI7ControlE"></span><span id="_CPPv2N6AppCUI8Controls7Control16HasDistantParentE9ReferenceI7ControlE"></span><span id="AppCUI::Controls::Control::HasDistantParent__Reference:Control:"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a1335337e6daeae23ac02580676ad5862"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasDistantParent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">parent</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control16HasDistantParentE9ReferenceI7ControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control9GetConfigEv">
+<span id="_CPPv3N6AppCUI8Controls7Control9GetConfigEv"></span><span id="_CPPv2N6AppCUI8Controls7Control9GetConfigEv"></span><span id="AppCUI::Controls::Control::GetConfig"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a69c12dcdb27a83445c90f23d88ab4d0a"></span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11ApplicationE" title="AppCUI::Application"><span class="n"><span class="pre">Application</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Application_Config.html#_CPPv4N6AppCUI11Application6ConfigE" title="AppCUI::Application::Config"><span class="n"><span class="pre">Config</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetConfig</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control9GetConfigEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10RaiseEventE5Event">
+<span id="_CPPv3N6AppCUI8Controls7Control10RaiseEventE5Event"></span><span id="_CPPv2N6AppCUI8Controls7Control10RaiseEventE5Event"></span><span id="AppCUI::Controls::Control::RaiseEvent__Event"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1af9186d0622e0254c52e8c79350e3ad69"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RaiseEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls5EventE" title="AppCUI::Controls::Event"><span class="n"><span class="pre">Event</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10RaiseEventE5Event" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10RaiseEventE5Eventi">
+<span id="_CPPv3N6AppCUI8Controls7Control10RaiseEventE5Eventi"></span><span id="_CPPv2N6AppCUI8Controls7Control10RaiseEventE5Eventi"></span><span id="AppCUI::Controls::Control::RaiseEvent__Event.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a8f60af159829db491d691ec24435cae5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RaiseEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls5EventE" title="AppCUI::Controls::Event"><span class="n"><span class="pre">Event</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10RaiseEventE5Eventi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control8SetFocusEv">
+<span id="_CPPv3N6AppCUI8Controls7Control8SetFocusEv"></span><span id="_CPPv2N6AppCUI8Controls7Control8SetFocusEv"></span><span id="AppCUI::Controls::Control::SetFocus"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aceead91a218887b1473e11a6a4c049f4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetFocus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control8SetFocusEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control12SetControlIDEi">
+<span id="_CPPv3N6AppCUI8Controls7Control12SetControlIDEi"></span><span id="_CPPv2N6AppCUI8Controls7Control12SetControlIDEi"></span><span id="AppCUI::Controls::Control::SetControlID__i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a97f4113873096ecb88080c1ddde7230a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetControlID</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control12SetControlIDEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control12GetControlIDEv">
+<span id="_CPPv3N6AppCUI8Controls7Control12GetControlIDEv"></span><span id="_CPPv2N6AppCUI8Controls7Control12GetControlIDEv"></span><span id="AppCUI::Controls::Control::GetControlID"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a25cbbafe42322e0f73e6eb4541db488d"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetControlID</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control12GetControlIDEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10ExpandViewEv">
+<span id="_CPPv3N6AppCUI8Controls7Control10ExpandViewEv"></span><span id="_CPPv2N6AppCUI8Controls7Control10ExpandViewEv"></span><span id="AppCUI::Controls::Control::ExpandView"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a94a49c60310af9b4f5d94e2dee4542a3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExpandView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10ExpandViewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control8PackViewEv">
+<span id="_CPPv3N6AppCUI8Controls7Control8PackViewEv"></span><span id="_CPPv2N6AppCUI8Controls7Control8PackViewEv"></span><span id="AppCUI::Controls::Control::PackView"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a6a0c0dbe0dad601fd86e25c05c366000"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PackView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control8PackViewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7SetTextERK11ConstStringb">
+<span id="_CPPv3N6AppCUI8Controls7Control7SetTextERK11ConstStringb"></span><span id="_CPPv2N6AppCUI8Controls7Control7SetTextERK11ConstStringb"></span><span id="AppCUI::Controls::Control::SetText__ConstStringCR.b"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ac22c2947aacb20f1eae6b8699c922e30"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetText</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">updateHotKey</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7SetTextERK11ConstStringb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7SetTextERKN8Graphics15CharacterBufferE">
+<span id="_CPPv3N6AppCUI8Controls7Control7SetTextERKN8Graphics15CharacterBufferE"></span><span id="_CPPv2N6AppCUI8Controls7Control7SetTextERKN8Graphics15CharacterBufferE"></span><span id="AppCUI::Controls::Control::SetText__Graphics::CharacterBufferCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ad61b6771695ad816eae5884b4d7846a0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetText</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7SetTextERKN8Graphics15CharacterBufferE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control17SetTextWithHotKeyERK11ConstString6uint32">
+<span id="_CPPv3N6AppCUI8Controls7Control17SetTextWithHotKeyERK11ConstString6uint32"></span><span id="_CPPv2N6AppCUI8Controls7Control17SetTextWithHotKeyERK11ConstString6uint32"></span><span id="AppCUI::Controls::Control::SetTextWithHotKey__ConstStringCR.uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a3932be656c64b8255dc8ac9418455f3c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTextWithHotKey</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">hotKeyTextOffset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control17SetTextWithHotKeyERK11ConstString6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7GetTextEv">
+<span id="_CPPv3N6AppCUI8Controls7Control7GetTextEv"></span><span id="_CPPv2N6AppCUI8Controls7Control7GetTextEv"></span><span id="AppCUI::Controls::Control::GetText"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a315f73acca0e1497b8bbadc3585e9cfa"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetText</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7GetTextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control16UpdateHScrollBarE6uint646uint64">
+<span id="_CPPv3N6AppCUI8Controls7Control16UpdateHScrollBarE6uint646uint64"></span><span id="_CPPv2N6AppCUI8Controls7Control16UpdateHScrollBarE6uint646uint64"></span><span id="AppCUI::Controls::Control::UpdateHScrollBar__uint64.uint64"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ad6db95308fe3ebc425ded7a71205462f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateHScrollBar</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">maxValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control16UpdateHScrollBarE6uint646uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control16UpdateVScrollBarE6uint646uint64">
+<span id="_CPPv3N6AppCUI8Controls7Control16UpdateVScrollBarE6uint646uint64"></span><span id="_CPPv2N6AppCUI8Controls7Control16UpdateVScrollBarE6uint646uint64"></span><span id="AppCUI::Controls::Control::UpdateVScrollBar__uint64.uint64"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aeb9c1b55d22c2dbf882e0b3b40feb8ab"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateVScrollBar</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">maxValue</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control16UpdateVScrollBarE6uint646uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control22SetVScrollBarTopMarginE6uint32">
+<span id="_CPPv3N6AppCUI8Controls7Control22SetVScrollBarTopMarginE6uint32"></span><span id="_CPPv2N6AppCUI8Controls7Control22SetVScrollBarTopMarginE6uint32"></span><span id="AppCUI::Controls::Control::SetVScrollBarTopMargin__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a8b061b6b9cda2e1326a3df95db1b285e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetVScrollBarTopMargin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">space</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control22SetVScrollBarTopMarginE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control24SetHScrollBarLeftMargingE6uint32">
+<span id="_CPPv3N6AppCUI8Controls7Control24SetHScrollBarLeftMargingE6uint32"></span><span id="_CPPv2N6AppCUI8Controls7Control24SetHScrollBarLeftMargingE6uint32"></span><span id="AppCUI::Controls::Control::SetHScrollBarLeftMarging__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a0605d953a1b4f0d0d1ab486ffc487382"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetHScrollBarLeftMarging</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">space</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control24SetHScrollBarLeftMargingE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control8HandlersEv">
+<span id="_CPPv3N6AppCUI8Controls7Control8HandlersEv"></span><span id="_CPPv2N6AppCUI8Controls7Control8HandlersEv"></span><span id="AppCUI::Controls::Control::Handlers"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1af9b862a0dc54cfd1432364e545f45a9b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7Control8HandlersEv" title="AppCUI::Controls::Control::Handlers"><span class="n"><span class="pre">Handlers</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Control</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Handlers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control8HandlersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control5PaintERN8Graphics8RendererE">
+<span id="_CPPv3N6AppCUI8Controls7Control5PaintERN8Graphics8RendererE"></span><span id="_CPPv2N6AppCUI8Controls7Control5PaintERN8Graphics8RendererE"></span><span id="AppCUI::Controls::Control::Paint__Graphics::RendererR"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a7e4f8da55dfcb6e8900355ee61cd5fb0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Paint</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Renderer.html#_CPPv4N6AppCUI8Graphics8RendererE" title="AppCUI::Graphics::Renderer"><span class="n"><span class="pre">Renderer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">renderer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control5PaintERN8Graphics8RendererE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7OnStartEv">
+<span id="_CPPv3N6AppCUI8Controls7Control7OnStartEv"></span><span id="_CPPv2N6AppCUI8Controls7Control7OnStartEv"></span><span id="AppCUI::Controls::Control::OnStart"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a02c140718eb7096dd8641d05bcdc4cfe"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnStart</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7OnStartEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10OnKeyEventEN5Input3KeyE6char16">
+<span id="_CPPv3N6AppCUI8Controls7Control10OnKeyEventEN5Input3KeyE6char16"></span><span id="_CPPv2N6AppCUI8Controls7Control10OnKeyEventEN5Input3KeyE6char16"></span><span id="AppCUI::Controls::Control::OnKeyEvent__Input::Key.char16"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a51480e8c003980f3560c94c784c62595"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnKeyEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">UnicodeChar</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10OnKeyEventEN5Input3KeyE6char16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control8OnHotKeyEv">
+<span id="_CPPv3N6AppCUI8Controls7Control8OnHotKeyEv"></span><span id="_CPPv2N6AppCUI8Controls7Control8OnHotKeyEv"></span><span id="AppCUI::Controls::Control::OnHotKey"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab5794dc8ec80eb1154aa807ef4875074"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnHotKey</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control8OnHotKeyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control15OnHotKeyChangedEv">
+<span id="_CPPv3N6AppCUI8Controls7Control15OnHotKeyChangedEv"></span><span id="_CPPv2N6AppCUI8Controls7Control15OnHotKeyChangedEv"></span><span id="AppCUI::Controls::Control::OnHotKeyChanged"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1adbaa821cbe071b77d25947c02d9d18de"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnHotKeyChanged</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control15OnHotKeyChangedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control16OnFocusRequestedE9ReferenceI7ControlE">
+<span id="_CPPv3N6AppCUI8Controls7Control16OnFocusRequestedE9ReferenceI7ControlE"></span><span id="_CPPv2N6AppCUI8Controls7Control16OnFocusRequestedE9ReferenceI7ControlE"></span><span id="AppCUI::Controls::Control::OnFocusRequested__Reference:Control:"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a3f350a9233d7cd42a9beedabc5d49489"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnFocusRequested</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">control</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control16OnFocusRequestedE9ReferenceI7ControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7OnFocusEv">
+<span id="_CPPv3N6AppCUI8Controls7Control7OnFocusEv"></span><span id="_CPPv2N6AppCUI8Controls7Control7OnFocusEv"></span><span id="AppCUI::Controls::Control::OnFocus"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ad3736643afe5822173e9a3e4e5835904"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnFocus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7OnFocusEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control11OnLoseFocusEv">
+<span id="_CPPv3N6AppCUI8Controls7Control11OnLoseFocusEv"></span><span id="_CPPv2N6AppCUI8Controls7Control11OnLoseFocusEv"></span><span id="AppCUI::Controls::Control::OnLoseFocus"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a93f4cb2c5f487d39e44c24fe18db3606"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnLoseFocus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control11OnLoseFocusEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control13OnFrameUpdateEv">
+<span id="_CPPv3N6AppCUI8Controls7Control13OnFrameUpdateEv"></span><span id="_CPPv2N6AppCUI8Controls7Control13OnFrameUpdateEv"></span><span id="AppCUI::Controls::Control::OnFrameUpdate"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a85c1bfe3e4a35c44f1163941df28e454"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnFrameUpdate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control13OnFrameUpdateEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls7Control14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls7Control14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::Control::OnMousePressed__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ae3e731d4530a30754900cb6881fc2376"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMousePressed</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls7Control15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls7Control15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::Control::OnMouseReleased__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a1f6fc77864f177a02f8f41db86f86668"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseReleased</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls7Control11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls7Control11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::Control::OnMouseDrag__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1abe7472670e23d81997a3b741940dba2a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseDrag</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control12OnMouseEnterEv">
+<span id="_CPPv3N6AppCUI8Controls7Control12OnMouseEnterEv"></span><span id="_CPPv2N6AppCUI8Controls7Control12OnMouseEnterEv"></span><span id="AppCUI::Controls::Control::OnMouseEnter"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aab12fdf80fb017e9f701ac2bb57e4e39"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseEnter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control12OnMouseEnterEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control11OnMouseOverEii">
+<span id="_CPPv3N6AppCUI8Controls7Control11OnMouseOverEii"></span><span id="_CPPv2N6AppCUI8Controls7Control11OnMouseOverEii"></span><span id="AppCUI::Controls::Control::OnMouseOver__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ae02e5868c955af3045cc957a9e2ebdae"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseOver</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control11OnMouseOverEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control12OnMouseLeaveEv">
+<span id="_CPPv3N6AppCUI8Controls7Control12OnMouseLeaveEv"></span><span id="_CPPv2N6AppCUI8Controls7Control12OnMouseLeaveEv"></span><span id="AppCUI::Controls::Control::OnMouseLeave"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1af2a45bce5343b70f100831900d79a3f2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseLeave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control12OnMouseLeaveEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls7Control12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls7Control12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE"></span><span id="AppCUI::Controls::Control::OnMouseWheel__i.i.Input::MouseWheel.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a5312d1c3c76c614f904bc4d6f832c03c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseWheel</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input10MouseWheelE" title="AppCUI::Input::MouseWheel"><span class="n"><span class="pre">MouseWheel</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">direction</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7OnEventE9ReferenceI7ControlE5Eventi">
+<span id="_CPPv3N6AppCUI8Controls7Control7OnEventE9ReferenceI7ControlE5Eventi"></span><span id="_CPPv2N6AppCUI8Controls7Control7OnEventE9ReferenceI7ControlE5Eventi"></span><span id="AppCUI::Controls::Control::OnEvent__Reference:Control:.Event.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1abc0b344e567586455c2abcd45688da87"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sender</span></span>, <a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls5EventE" title="AppCUI::Controls::Event"><span class="n"><span class="pre">Event</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">controlID</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7OnEventE9ReferenceI7ControlE5Eventi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control18OnUpdateCommandBarERN11Application10CommandBarE">
+<span id="_CPPv3N6AppCUI8Controls7Control18OnUpdateCommandBarERN11Application10CommandBarE"></span><span id="_CPPv2N6AppCUI8Controls7Control18OnUpdateCommandBarERN11Application10CommandBarE"></span><span id="AppCUI::Controls::Control::OnUpdateCommandBar__Application::CommandBarR"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ad1039f16ad1298926a82cc3558d26413"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnUpdateCommandBar</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Application.html#_CPPv4N6AppCUI11ApplicationE" title="AppCUI::Application"><span class="n"><span class="pre">Application</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Application_CommandBar.html#_CPPv4N6AppCUI11Application10CommandBarE" title="AppCUI::Application::CommandBar"><span class="n"><span class="pre">CommandBar</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">commandBar</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control18OnUpdateCommandBarERN11Application10CommandBarE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control18OnUpdateScrollBarsEv">
+<span id="_CPPv3N6AppCUI8Controls7Control18OnUpdateScrollBarsEv"></span><span id="_CPPv2N6AppCUI8Controls7Control18OnUpdateScrollBarsEv"></span><span id="AppCUI::Controls::Control::OnUpdateScrollBars"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a0cfd0c9108215af22dbb444995697085"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnUpdateScrollBars</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control18OnUpdateScrollBarsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control14OnBeforeResizeEii">
+<span id="_CPPv3N6AppCUI8Controls7Control14OnBeforeResizeEii"></span><span id="_CPPv2N6AppCUI8Controls7Control14OnBeforeResizeEii"></span><span id="AppCUI::Controls::Control::OnBeforeResize__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1af03484e9a9cd43a0ebb67fd22d2f704a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnBeforeResize</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newWidth</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newHeight</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control14OnBeforeResizeEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control13OnAfterResizeEii">
+<span id="_CPPv3N6AppCUI8Controls7Control13OnAfterResizeEii"></span><span id="_CPPv2N6AppCUI8Controls7Control13OnAfterResizeEii"></span><span id="AppCUI::Controls::Control::OnAfterResize__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a6388d2f18ef788cb1f0459b594cc1ad7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnAfterResize</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newWidth</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newHeight</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control13OnAfterResizeEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control18OnBeforeAddControlE9ReferenceI7ControlE">
+<span id="_CPPv3N6AppCUI8Controls7Control18OnBeforeAddControlE9ReferenceI7ControlE"></span><span id="_CPPv2N6AppCUI8Controls7Control18OnBeforeAddControlE9ReferenceI7ControlE"></span><span id="AppCUI::Controls::Control::OnBeforeAddControl__Reference:Control:"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a1e6371b96f234feb1b7591cc4faee842"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnBeforeAddControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctrl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control18OnBeforeAddControlE9ReferenceI7ControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control17OnAfterAddControlE9ReferenceI7ControlE">
+<span id="_CPPv3N6AppCUI8Controls7Control17OnAfterAddControlE9ReferenceI7ControlE"></span><span id="_CPPv2N6AppCUI8Controls7Control17OnAfterAddControlE9ReferenceI7ControlE"></span><span id="AppCUI::Controls::Control::OnAfterAddControl__Reference:Control:"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a6885ba9fff1d68cffa02ec9901ce0cad"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnAfterAddControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctrl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control17OnAfterAddControlE9ReferenceI7ControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control16OnControlRemovedE9ReferenceI7ControlE">
+<span id="_CPPv3N6AppCUI8Controls7Control16OnControlRemovedE9ReferenceI7ControlE"></span><span id="_CPPv2N6AppCUI8Controls7Control16OnControlRemovedE9ReferenceI7ControlE"></span><span id="AppCUI::Controls::Control::OnControlRemoved__Reference:Control:"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ac605da5fc85e699b0e6bbb7a332013ea"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnControlRemoved</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ctrl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control16OnControlRemovedE9ReferenceI7ControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control15OnBeforeSetTextERK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls7Control15OnBeforeSetTextERK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls7Control15OnBeforeSetTextERK11ConstString"></span><span id="AppCUI::Controls::Control::OnBeforeSetText__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ad7d55826d5007f254530d8bf1eaabe3a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnBeforeSetText</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control15OnBeforeSetTextERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control14OnAfterSetTextEv">
+<span id="_CPPv3N6AppCUI8Controls7Control14OnAfterSetTextEv"></span><span id="_CPPv2N6AppCUI8Controls7Control14OnAfterSetTextEv"></span><span id="AppCUI::Controls::Control::OnAfterSetText"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ad9b386bc9daad4526b0d4f7ee4291088"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnAfterSetText</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control14OnAfterSetTextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control12OnExpandViewERN8Graphics4ClipE">
+<span id="_CPPv3N6AppCUI8Controls7Control12OnExpandViewERN8Graphics4ClipE"></span><span id="_CPPv2N6AppCUI8Controls7Control12OnExpandViewERN8Graphics4ClipE"></span><span id="AppCUI::Controls::Control::OnExpandView__Graphics::ClipR"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a011da458492a6a382b2e33d6a2a9655e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnExpandView</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Clip.html#_CPPv4N6AppCUI8Graphics4ClipE" title="AppCUI::Graphics::Clip"><span class="n"><span class="pre">Clip</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">expandedClip</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control12OnExpandViewERN8Graphics4ClipE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10OnPackViewEv">
+<span id="_CPPv3N6AppCUI8Controls7Control10OnPackViewEv"></span><span id="_CPPv2N6AppCUI8Controls7Control10OnPackViewEv"></span><span id="AppCUI::Controls::Control::OnPackView"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a08a1e3259da7d3fa1135b5a93a08ce5b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnPackView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10OnPackViewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7ControlD0Ev">
+<span id="_CPPv3N6AppCUI8Controls7ControlD0Ev"></span><span id="_CPPv2N6AppCUI8Controls7ControlD0Ev"></span><span id="AppCUI::Controls::Control::~Control"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab0e5dcbb8f47ee4177e00383f3b9cc75"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Control</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7ControlD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7ContextE">
+<span id="_CPPv3N6AppCUI8Controls7Control7ContextE"></span><span id="_CPPv2N6AppCUI8Controls7Control7ContextE"></span><span id="AppCUI::Controls::Control::Context__voidP"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a91ad1f8dbdca23128d452a47ffe143d1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Context</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7ContextE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control16IsMouseInControlEii">
+<span id="_CPPv3N6AppCUI8Controls7Control16IsMouseInControlEii"></span><span id="_CPPv2N6AppCUI8Controls7Control16IsMouseInControlEii"></span><span id="AppCUI::Controls::Control::IsMouseInControl__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1ab562f9116a25a2b670056893a55efc18"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsMouseInControl</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control16IsMouseInControlEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control10SetMarginsEiiii">
+<span id="_CPPv3N6AppCUI8Controls7Control10SetMarginsEiiii"></span><span id="_CPPv2N6AppCUI8Controls7Control10SetMarginsEiiii"></span><span id="AppCUI::Controls::Control::SetMargins__i.i.i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a0b32cac077a192b4a94919f4d2704af1"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetMargins</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">left</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">top</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">right</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bottom</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control10SetMarginsEiiii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control11ShowToolTipERK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls7Control11ShowToolTipERK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls7Control11ShowToolTipERK11ConstString"></span><span id="AppCUI::Controls::Control::ShowToolTip__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a33d6adcf95515af0bfa6b2dd686ba627"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShowToolTip</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control11ShowToolTipERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control11ShowToolTipERK11ConstStringii">
+<span id="_CPPv3N6AppCUI8Controls7Control11ShowToolTipERK11ConstStringii"></span><span id="_CPPv2N6AppCUI8Controls7Control11ShowToolTipERK11ConstStringii"></span><span id="AppCUI::Controls::Control::ShowToolTip__ConstStringCR.i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1aabebfafe6f94e0b2ff30e769b66ee9d2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShowToolTip</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control11ShowToolTipERK11ConstStringii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control11HideToolTipEv">
+<span id="_CPPv3N6AppCUI8Controls7Control11HideToolTipEv"></span><span id="_CPPv2N6AppCUI8Controls7Control11HideToolTipEv"></span><span id="AppCUI::Controls::Control::HideToolTip"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a3b0972fc8fb90c2bfe612b861af3527f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HideToolTip</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control11HideToolTipEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control17GetComponentStateE17ControlStateFlagsbb">
+<span id="_CPPv3N6AppCUI8Controls7Control17GetComponentStateE17ControlStateFlagsbb"></span><span id="_CPPv2N6AppCUI8Controls7Control17GetComponentStateE17ControlStateFlagsbb"></span><span id="AppCUI::Controls::Control::GetComponentState__ControlStateFlags.b.b"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a0359fb300a0076f0b8027035e568d792"></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls12ControlStateE" title="AppCUI::Controls::ControlState"><span class="n"><span class="pre">ControlState</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetComponentState</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls17ControlStateFlagsE" title="AppCUI::Controls::ControlStateFlags"><span class="n"><span class="pre">ControlStateFlags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isHovered</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isPressedOrSelected</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control17GetComponentStateE17ControlStateFlagsbb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control15AddChildControlE10unique_ptrI7ControlE">
+<span id="_CPPv3N6AppCUI8Controls7Control15AddChildControlE10unique_ptrI7ControlE"></span><span id="_CPPv2N6AppCUI8Controls7Control15AddChildControlE10unique_ptrI7ControlE"></span><span id="AppCUI::Controls::Control::AddChildControl__unique_ptr:Control:"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a001a4cad430734f606747e98a5394995"></span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddChildControl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">control</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control15AddChildControlE10unique_ptrI7ControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls7Control7ControlEPvRK11ConstString11string_viewb">
+<span id="_CPPv3N6AppCUI8Controls7Control7ControlEPvRK11ConstString11string_viewb"></span><span id="_CPPv2N6AppCUI8Controls7Control7ControlEPvRK11ConstString11string_viewb"></span><span id="AppCUI::Controls::Control::Control__voidP.ConstStringCR.string_view.b"></span><span class="target" id="classAppCUI_1_1Controls_1_1Control_1a211d2bf74c743afbfbcd018af0769873"></span><span class="sig-name descname"><span class="n"><span class="pre">Control</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">computeHotKey</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls7Control7ControlEPvRK11ConstString11string_viewb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_ComboBox.html" class="btn btn-neutral float-left" title="ComboBox" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_Desktop.html" class="btn btn-neutral float-right" title="Desktop" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

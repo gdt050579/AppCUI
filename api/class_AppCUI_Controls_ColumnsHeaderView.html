@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ColumnsHeaderView &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ComboBox" href="class_AppCUI_Controls_ComboBox.html" />
+    <link rel="prev" title="Column" href="class_AppCUI_Controls_Column.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+      <li class="breadcrumb-item active">ColumnsHeaderView</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_ColumnsHeaderView.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="columnsheaderview">
+<h1>ColumnsHeaderView<a class="headerlink" href="#columnsheaderview" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::ColumnsHeaderView</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderViewE">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderViewE"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderViewE"></span><span id="AppCUI::Controls::ColumnsHeaderView"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ColumnsHeaderView</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_Control.html#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderViewE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="class_AppCUI_Controls_ListView.html#classAppCUI_1_1Controls_1_1ListView"><span class="std std-ref">AppCUI::Controls::ListView</span></a>, <a class="reference internal" href="class_AppCUI_Controls_TreeView.html#classAppCUI_1_1Controls_1_1TreeView"><span class="std std-ref">AppCUI::Controls::TreeView</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView15OnColumnClickedE6uint32">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView15OnColumnClickedE6uint32"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView15OnColumnClickedE6uint32"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnColumnClicked__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a38e85ebb212901c7ed81abfd91cdb92b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnColumnClicked</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">columnIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView15OnColumnClickedE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView15GetHeaderLayoutEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView15GetHeaderLayoutEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView15GetHeaderLayoutEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::GetHeaderLayout"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a3b073e70b3d3f4a501ac2056c34e740d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Rect.html#_CPPv4N6AppCUI8Graphics4RectE" title="AppCUI::Graphics::Rect"><span class="n"><span class="pre">Rect</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHeaderLayout</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView15GetHeaderLayoutEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView27ComputeColumnsPreferedWidthE6uint32">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView27ComputeColumnsPreferedWidthE6uint32"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView27ComputeColumnsPreferedWidthE6uint32"></span><span id="AppCUI::Controls::ColumnsHeaderView::ComputeColumnsPreferedWidth__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a03a9013c07bf49b499571f5ad057b768"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeColumnsPreferedWidth</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">columnIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView27ComputeColumnsPreferedWidthE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView10AddColumnsENSt16initializer_listI11ConstStringEE">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView10AddColumnsENSt16initializer_listI11ConstStringEE"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView10AddColumnsENSt16initializer_listI11ConstStringEE"></span><span id="AppCUI::Controls::ColumnsHeaderView::AddColumns__std::initializer_list:ConstString:"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1ab1e7b4d03c691317b603dbe4d9d306a0"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddColumns</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView10AddColumnsENSt16initializer_listI11ConstStringEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView9AddColumnEK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView9AddColumnEK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView9AddColumnEK11ConstString"></span><span id="AppCUI::Controls::ColumnsHeaderView::AddColumn__ConstStringC"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a533d7edcc0516c917b2bfd326c5ded13"></span><a class="reference internal" href="class_AppCUI_Controls_Column.html#_CPPv4N6AppCUI8Controls6ColumnE" title="AppCUI::Controls::Column"><span class="n"><span class="pre">Column</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddColumn</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">columnFormat</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView9AddColumnEK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView9GetColumnE6uint32">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView9GetColumnE6uint32"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView9GetColumnE6uint32"></span><span id="AppCUI::Controls::ColumnsHeaderView::GetColumn__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a7be68275b67eb9140f987cf9838798d3"></span><a class="reference internal" href="class_AppCUI_Controls_Column.html#_CPPv4N6AppCUI8Controls6ColumnE" title="AppCUI::Controls::Column"><span class="n"><span class="pre">Column</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetColumn</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView9GetColumnE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls17ColumnsHeaderView14GetColumnCountEv">
+<span id="_CPPv3NK6AppCUI8Controls17ColumnsHeaderView14GetColumnCountEv"></span><span id="_CPPv2NK6AppCUI8Controls17ColumnsHeaderView14GetColumnCountEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::GetColumnCountC"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a5a65bffd9dc9fbbff1d5a608ae71195e"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetColumnCount</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls17ColumnsHeaderView14GetColumnCountEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView16DeleteAllColumnsEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView16DeleteAllColumnsEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView16DeleteAllColumnsEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::DeleteAllColumns"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1ac787656c536bb67c4e7d8b9fd10224e1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeleteAllColumns</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView16DeleteAllColumnsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12DeleteColumnE6uint32">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12DeleteColumnE6uint32"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12DeleteColumnE6uint32"></span><span id="AppCUI::Controls::ColumnsHeaderView::DeleteColumn__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1aa715731785e73c4db075185fec0c99e1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeleteColumn</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">columnIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12DeleteColumnE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView21SetFrozenColumnsCountE6uint32">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView21SetFrozenColumnsCountE6uint32"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView21SetFrozenColumnsCountE6uint32"></span><span id="AppCUI::Controls::ColumnsHeaderView::SetFrozenColumnsCount__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1aba383f452c1e3208d5d943da2c8c4b6d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetFrozenColumnsCount</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView21SetFrozenColumnsCountE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls17ColumnsHeaderView18GetSortColumnIndexEv">
+<span id="_CPPv3NK6AppCUI8Controls17ColumnsHeaderView18GetSortColumnIndexEv"></span><span id="_CPPv2NK6AppCUI8Controls17ColumnsHeaderView18GetSortColumnIndexEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::GetSortColumnIndexC"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a4d03e589d3dd18d665373be9e7fa1dc4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSortColumnIndex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls17ColumnsHeaderView18GetSortColumnIndexEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView13GetSortColumnEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView13GetSortColumnEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView13GetSortColumnEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::GetSortColumn"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a826d2fbe4aa666b2eb575408ea045361"></span><a class="reference internal" href="class_AppCUI_Controls_Column.html#_CPPv4N6AppCUI8Controls6ColumnE" title="AppCUI::Controls::Column"><span class="n"><span class="pre">Column</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSortColumn</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView13GetSortColumnEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView18SetClipboardFormatE19CopyClipboardFormat18CopyClipboardFlags">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView18SetClipboardFormatE19CopyClipboardFormat18CopyClipboardFlags"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView18SetClipboardFormatE19CopyClipboardFormat18CopyClipboardFlags"></span><span id="AppCUI::Controls::ColumnsHeaderView::SetClipboardFormat__CopyClipboardFormat.CopyClipboardFlags"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a5db6ebdbea7d87c442537951ec89dde1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetClipboardFormat</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls19CopyClipboardFormatE" title="AppCUI::Controls::CopyClipboardFormat"><span class="n"><span class="pre">CopyClipboardFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span>, <a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls18CopyClipboardFlagsE" title="AppCUI::Controls::CopyClipboardFlags"><span class="n"><span class="pre">CopyClipboardFlags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView18SetClipboardFormatE19CopyClipboardFormat18CopyClipboardFlags" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView5PaintERN8Graphics8RendererE">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView5PaintERN8Graphics8RendererE"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView5PaintERN8Graphics8RendererE"></span><span id="AppCUI::Controls::ColumnsHeaderView::Paint__Graphics::RendererR"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a345b5f55e01d3bdd4dcf2994cebbcbb4"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Paint</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Renderer.html#_CPPv4N6AppCUI8Graphics8RendererE" title="AppCUI::Graphics::Renderer"><span class="n"><span class="pre">Renderer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">renderer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView5PaintERN8Graphics8RendererE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView10OnKeyEventEN5Input3KeyE6char16">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView10OnKeyEventEN5Input3KeyE6char16"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView10OnKeyEventEN5Input3KeyE6char16"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnKeyEvent__Input::Key.char16"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a4fdaca7b26540bc65c2ee2ad93426203"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnKeyEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">UnicodeChar</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView10OnKeyEventEN5Input3KeyE6char16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnMouseReleased__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a58c73462e0d0459048f41f9afdecfaf0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseReleased</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnMousePressed__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1aaae21e9b1fc7d39039d8946a9f5e82d7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMousePressed</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnMouseDrag__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a0c51723d285f1ec702c936ccf2829cb9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseDrag</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView11OnMouseOverEii">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView11OnMouseOverEii"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView11OnMouseOverEii"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnMouseOver__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1aed59d4b64ec88fb18a721d16de2ae66d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseOver</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView11OnMouseOverEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12OnMouseLeaveEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12OnMouseLeaveEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12OnMouseLeaveEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnMouseLeave"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1af3fc6e072d8bdce331213bbc2a2c8828"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseLeave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12OnMouseLeaveEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView11OnLoseFocusEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView11OnLoseFocusEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView11OnLoseFocusEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnLoseFocus"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a6c52522b9b9509725a6920fd975adfbd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnLoseFocus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView11OnLoseFocusEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView13OnAfterResizeEii">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView13OnAfterResizeEii"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView13OnAfterResizeEii"></span><span id="AppCUI::Controls::ColumnsHeaderView::OnAfterResize__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a0c852a1ba51009c6b7900e9a25916902"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnAfterResize</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newWidth</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newHeight</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView13OnAfterResizeEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderViewD0Ev">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderViewD0Ev"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderViewD0Ev"></span><span id="AppCUI::Controls::ColumnsHeaderView::~ColumnsHeaderView"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a3c311156658fd7ae7ebc0b7c8b73a857"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~ColumnsHeaderView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderViewD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewE11string_viewNSt16initializer_listI11ConstStringEE22ColumnsHeaderViewFlags">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewE11string_viewNSt16initializer_listI11ConstStringEE22ColumnsHeaderViewFlags"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewE11string_viewNSt16initializer_listI11ConstStringEE22ColumnsHeaderViewFlags"></span><span id="AppCUI::Controls::ColumnsHeaderView::ColumnsHeaderView__string_view.std::initializer_list:ConstString:.ColumnsHeaderViewFlags"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1adfa99d1ff83060a2a28fed44232409a2"></span><span class="sig-name descname"><span class="n"><span class="pre">ColumnsHeaderView</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">columnsList</span></span>, <a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls22ColumnsHeaderViewFlagsE" title="AppCUI::Controls::ColumnsHeaderViewFlags"><span class="n"><span class="pre">ColumnsHeaderViewFlags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewE11string_viewNSt16initializer_listI11ConstStringEE22ColumnsHeaderViewFlags" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewEPv11string_view">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewEPv11string_view"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewEPv11string_view"></span><span id="AppCUI::Controls::ColumnsHeaderView::ColumnsHeaderView__voidP.string_view"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1ae7da74e8e93cd5782e9052a16d444289"></span><span class="sig-name descname"><span class="n"><span class="pre">ColumnsHeaderView</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">context</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView17ColumnsHeaderViewEPv11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls17ColumnsHeaderView21HeaderHasMouseCaptionEv">
+<span id="_CPPv3NK6AppCUI8Controls17ColumnsHeaderView21HeaderHasMouseCaptionEv"></span><span id="_CPPv2NK6AppCUI8Controls17ColumnsHeaderView21HeaderHasMouseCaptionEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::HeaderHasMouseCaptionC"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a6e845d1d097160221b32f823da9de3ee"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HeaderHasMouseCaption</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls17ColumnsHeaderView21HeaderHasMouseCaptionEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView17SetColumnClipRectERN8Graphics8RendererE6uint32">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView17SetColumnClipRectERN8Graphics8RendererE6uint32"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView17SetColumnClipRectERN8Graphics8RendererE6uint32"></span><span id="AppCUI::Controls::ColumnsHeaderView::SetColumnClipRect__Graphics::RendererR.uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1a781eb18d71e7cfa7c0f248cbc7d4d2c8"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetColumnClipRect</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Renderer.html#_CPPv4N6AppCUI8Graphics8RendererE" title="AppCUI::Graphics::Renderer"><span class="n"><span class="pre">Renderer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">renderer</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">columnIndex</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView17SetColumnClipRectERN8Graphics8RendererE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">Control</span></dt>
+</dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilderE">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12TableBuilderE"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12TableBuilderE"></span><span id="AppCUI::Controls::ColumnsHeaderView::TableBuilder"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1_1TableBuilder"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TableBuilder</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilderE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder12TableBuilderEP17ColumnsHeaderViewR20UnicodeStringBuilder">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12TableBuilder12TableBuilderEP17ColumnsHeaderViewR20UnicodeStringBuilder"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12TableBuilder12TableBuilderEP17ColumnsHeaderViewR20UnicodeStringBuilder"></span><span id="AppCUI::Controls::ColumnsHeaderView::TableBuilder::TableBuilder__ColumnsHeaderViewP.UnicodeStringBuilderR"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1_1TableBuilder_1ace3407dc154cee035c9c5888c2a9707d"></span><span class="sig-name descname"><span class="n"><span class="pre">TableBuilder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderViewE" title="AppCUI::Controls::ColumnsHeaderView"><span class="n"><span class="pre">ColumnsHeaderView</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">obj</span></span>, <span class="n"><span class="pre">UnicodeStringBuilder</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder12TableBuilderEP17ColumnsHeaderViewR20UnicodeStringBuilder" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder5StartEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12TableBuilder5StartEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12TableBuilder5StartEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::TableBuilder::Start"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1_1TableBuilder_1a1377e69ccd2e619cd992507ee6d74b05"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Start</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder5StartEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddNewRowEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddNewRowEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddNewRowEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::TableBuilder::AddNewRow"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1_1TableBuilder_1a112d0a07d391fe5f5ed98b45eb3b201c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddNewRow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddNewRowEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddStringE6uint3211ConstString">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddStringE6uint3211ConstString"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddStringE6uint3211ConstString"></span><span id="AppCUI::Controls::ColumnsHeaderView::TableBuilder::AddString__uint32.ConstString"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1_1TableBuilder_1a2990398f75fe5041af622b32bb9fb6de"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">columnIndex</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder9AddStringE6uint3211ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder8FinalizeEv">
+<span id="_CPPv3N6AppCUI8Controls17ColumnsHeaderView12TableBuilder8FinalizeEv"></span><span id="_CPPv2N6AppCUI8Controls17ColumnsHeaderView12TableBuilder8FinalizeEv"></span><span id="AppCUI::Controls::ColumnsHeaderView::TableBuilder::Finalize"></span><span class="target" id="classAppCUI_1_1Controls_1_1ColumnsHeaderView_1_1TableBuilder_1a0e84830f424e42c76f4e357dbf1a0349"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Finalize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls17ColumnsHeaderView12TableBuilder8FinalizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_Column.html" class="btn btn-neutral float-left" title="Column" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_ComboBox.html" class="btn btn-neutral float-right" title="ComboBox" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

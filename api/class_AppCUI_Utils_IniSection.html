@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IniSection &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IniValue" href="class_AppCUI_Utils_IniValue.html" />
+    <link rel="prev" title="IniObject" href="class_AppCUI_Utils_IniObject.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+      <li class="breadcrumb-item active">IniSection</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Utils_IniSection.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="inisection">
+<h1>IniSection<a class="headerlink" href="#inisection" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Utils::IniSection</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSectionE">
+<span id="_CPPv3N6AppCUI5Utils10IniSectionE"></span><span id="_CPPv2N6AppCUI5Utils10IniSectionE"></span><span id="AppCUI::Utils::IniSection"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IniSection</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSectionE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection10IniSectionEv">
+<span id="_CPPv3N6AppCUI5Utils10IniSection10IniSectionEv"></span><span id="_CPPv2N6AppCUI5Utils10IniSection10IniSectionEv"></span><span id="AppCUI::Utils::IniSection::IniSection"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a6fcf348ffc87d15b96f4a0ab71f26cb2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IniSection</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection10IniSectionEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection10IniSectionEPv">
+<span id="_CPPv3N6AppCUI5Utils10IniSection10IniSectionEPv"></span><span id="_CPPv2N6AppCUI5Utils10IniSection10IniSectionEPv"></span><span id="AppCUI::Utils::IniSection::IniSection__voidP"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a9408dc68699e11cbdeb228783eb47efa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IniSection</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection10IniSectionEPv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils10IniSection6ExistsEv">
+<span id="_CPPv3NK6AppCUI5Utils10IniSection6ExistsEv"></span><span id="_CPPv2NK6AppCUI5Utils10IniSection6ExistsEv"></span><span id="AppCUI::Utils::IniSection::ExistsC"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1ae8646eff79599ae4d469dc030996f6cb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Exists</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils10IniSection6ExistsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils10IniSection7GetNameEv">
+<span id="_CPPv3NK6AppCUI5Utils10IniSection7GetNameEv"></span><span id="_CPPv2NK6AppCUI5Utils10IniSection7GetNameEv"></span><span id="AppCUI::Utils::IniSection::GetNameC"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a9e408c6dd532c8e6eb460849669b9614"></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils10IniSection7GetNameEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection8GetValueE11string_view">
+<span id="_CPPv3N6AppCUI5Utils10IniSection8GetValueE11string_view"></span><span id="_CPPv2N6AppCUI5Utils10IniSection8GetValueE11string_view"></span><span id="AppCUI::Utils::IniSection::GetValue__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a94f3627a969409b7c55c27bccecf4bff"></span><a class="reference internal" href="class_AppCUI_Utils_IniValue.html#_CPPv4N6AppCUI5Utils8IniValueE" title="AppCUI::Utils::IniValue"><span class="n"><span class="pre">IniValue</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keyName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection8GetValueE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils10IniSection9GetValuesEv">
+<span id="_CPPv3NK6AppCUI5Utils10IniSection9GetValuesEv"></span><span id="_CPPv2NK6AppCUI5Utils10IniSection9GetValuesEv"></span><span id="AppCUI::Utils::IniSection::GetValuesC"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1affb1daa06d14d0c82d53c1137bd26642"></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Utils_IniValue.html#_CPPv4N6AppCUI5Utils8IniValueE" title="AppCUI::Utils::IniValue"><span class="n"><span class="pre">IniValue</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetValues</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils10IniSection9GetValuesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSectionixE11string_view">
+<span id="_CPPv3N6AppCUI5Utils10IniSectionixE11string_view"></span><span id="_CPPv2N6AppCUI5Utils10IniSectionixE11string_view"></span><span id="AppCUI::Utils::IniSection::subscript-operator__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1ad3331a99b9c151b5ca09a0a0e54ca0af"></span><a class="reference internal" href="class_AppCUI_Utils_IniValue.html#_CPPv4N6AppCUI5Utils8IniValueE" title="AppCUI::Utils::IniValue"><span class="n"><span class="pre">IniValue</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keyName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSectionixE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection5beginEv">
+<span id="_CPPv3N6AppCUI5Utils10IniSection5beginEv"></span><span id="_CPPv2N6AppCUI5Utils10IniSection5beginEv"></span><span id="AppCUI::Utils::IniSection::begin"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a7d84d06e6625164067afa9af99bab9f0"></span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorE" title="AppCUI::Utils::IniSection::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection5beginEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection3endEv">
+<span id="_CPPv3N6AppCUI5Utils10IniSection3endEv"></span><span id="_CPPv2N6AppCUI5Utils10IniSection3endEv"></span><span id="AppCUI::Utils::IniSection::end"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a3c3ebe28fbf9e71b4387acd495e70aba"></span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorE" title="AppCUI::Utils::IniSection::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection3endEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection5ClearEv">
+<span id="_CPPv3N6AppCUI5Utils10IniSection5ClearEv"></span><span id="_CPPv2N6AppCUI5Utils10IniSection5ClearEv"></span><span id="AppCUI::Utils::IniSection::Clear"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1af7c035dabfdd7092890e8465e2faa7e6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection5ClearEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11DeleteValueE11string_view">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11DeleteValueE11string_view"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11DeleteValueE11string_view"></span><span id="AppCUI::Utils::IniSection::DeleteValue__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a4bd9b998b9917d7eb786b6bee5fe2988"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeleteValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keyName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11DeleteValueE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection8HasValueE11string_view">
+<span id="_CPPv3N6AppCUI5Utils10IniSection8HasValueE11string_view"></span><span id="_CPPv2N6AppCUI5Utils10IniSection8HasValueE11string_view"></span><span id="AppCUI::Utils::IniSection::HasValue__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a13d83b05a4138ca8d6a45f13033a1d59"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">keyName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection8HasValueE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewbb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewbb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewbb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.b.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a9d054f3b079fc2ad992a425c37839888"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewbb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint32b">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint32b"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint32b"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.uint32.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1ae34e19b3a906b26eb03bc54e0d5b5116"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint32b" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint64b">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint64b"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint64b"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.uint64.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1aedd41849df95d870634bc0f52a4cfb76"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view6uint64b" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int32b">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int32b"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int32b"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.int32.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a208c00ada4460ced2aa93adba8e2986d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int32b" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int64b">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int64b"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int64b"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.int64.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1aacd04a9bdb2c0a86d95d40a23b8f357f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view5int64b" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewfb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewfb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewfb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.float.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a623b25471ed5affe1ef881930d7de518"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewfb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewdb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewdb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewdb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.double.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a6a208e5a81414bf3749c407d58092252"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewdb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewPKcb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewPKcb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewPKcb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.cCP.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1acdd287c0243f5885de4856f7d8ade156"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewPKcb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view11string_viewb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_view11string_viewb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_view11string_viewb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.string_view.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a107c5fffe6e1ebe8f401fc843d39f294"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_view11string_viewb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics4SizeEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics4SizeEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics4SizeEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.Graphics::Size.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1abb0310b3189e60ced0ab00e17c4d4cdd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Size.html#_CPPv4N6AppCUI8Graphics4SizeE" title="AppCUI::Graphics::Size"><span class="n"><span class="pre">Size</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics4SizeEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN5Input3KeyEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN5Input3KeyEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN5Input3KeyEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.Input::Key.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a8ad8783dfa4896cc0a2c2dc4c90b8b12"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN5Input3KeyEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics5ColorEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics5ColorEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics5ColorEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.Graphics::Color.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a583bb0ad938b7b855ee752c41d3da72a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8Graphics5ColorE" title="AppCUI::Graphics::Color"><span class="n"><span class="pre">Color</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics5ColorEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics9ColorPairEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics9ColorPairEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics9ColorPairEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.Graphics::ColorPair.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a9da731c756864c3ac3654798ba7cd7d7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_ColorPair.html#_CPPv4N6AppCUI8Graphics9ColorPairE" title="AppCUI::Graphics::ColorPair"><span class="n"><span class="pre">ColorPair</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewN8Graphics9ColorPairEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listINSt6stringEEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listINSt6stringEEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listINSt6stringEEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:ss:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1ad3b8d78a097ec94c6031e7453c7b8abf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listINSt6stringEEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIPKcEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIPKcEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIPKcEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:cCP:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a7ef517966303fd03a787d701d42532c0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIPKcEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIbEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIbEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIbEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:b:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a616a61fc3bf5c625e3444a54a7181fb9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIbEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int32Eb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int32Eb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int32Eb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:int32:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a34c49065d72f4a0efa4f2da448086605"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int32Eb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int64Eb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int64Eb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int64Eb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:int64:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a8a33a9dc85d5a751d1022557c045d9cc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI5int64Eb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint32Eb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint32Eb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint32Eb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:uint32:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1a65ec0430ccaa4fde1a9eb97440c6b717"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint32Eb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint64Eb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint64Eb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint64Eb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:uint64:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1ad21ca51e12a28cfe627a8455d81992ee"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listI6uint64Eb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIfEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIfEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIfEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:float:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1ac4eb5a98804ed058d93697ec980d3576"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIfEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIdEb">
+<span id="_CPPv3N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIdEb"></span><span id="_CPPv2N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIdEb"></span><span id="AppCUI::Utils::IniSection::UpdateValue__string_view.initializer_list:double:CR.b"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1ada8f41012897ace1fb2b122c6b62f7ac"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dontUpdateIfValueExits</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection11UpdateValueE11string_viewRK16initializer_listIdEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection8IteratorE">
+<span id="_CPPv3N6AppCUI5Utils10IniSection8IteratorE"></span><span id="_CPPv2N6AppCUI5Utils10IniSection8IteratorE"></span><span id="AppCUI::Utils::IniSection::Iterator"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1_1Iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Iterator</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection8IteratorD0Ev">
+<span id="_CPPv3N6AppCUI5Utils10IniSection8IteratorD0Ev"></span><span id="_CPPv2N6AppCUI5Utils10IniSection8IteratorD0Ev"></span><span id="AppCUI::Utils::IniSection::Iterator::~Iterator"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1_1Iterator_1a33b7f13eb35b2722f6bc9e1ef6dbbc9b"></span><span class="sig-name descname"><span class="n"><span class="pre">~Iterator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection8IteratorppEv">
+<span id="_CPPv3N6AppCUI5Utils10IniSection8IteratorppEv"></span><span id="_CPPv2N6AppCUI5Utils10IniSection8IteratorppEv"></span><span id="AppCUI::Utils::IniSection::Iterator::inc-operator"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1_1Iterator_1aa7d28d78e5a4a9c0eb7cade4cf76cdd3"></span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorE" title="AppCUI::Utils::IniSection::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorppEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection8IteratorneERK8Iterator">
+<span id="_CPPv3N6AppCUI5Utils10IniSection8IteratorneERK8Iterator"></span><span id="_CPPv2N6AppCUI5Utils10IniSection8IteratorneERK8Iterator"></span><span id="AppCUI::Utils::IniSection::Iterator::neq-operator__IteratorCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1_1Iterator_1a0da505f35e7cf081c6a57daf3456d6dd"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorE" title="AppCUI::Utils::IniSection::Iterator"><span class="n"><span class="pre">Iterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratorneERK8Iterator" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils10IniSection8IteratormlEv">
+<span id="_CPPv3N6AppCUI5Utils10IniSection8IteratormlEv"></span><span id="_CPPv2N6AppCUI5Utils10IniSection8IteratormlEv"></span><span id="AppCUI::Utils::IniSection::Iterator::mul-operator"></span><span class="target" id="classAppCUI_1_1Utils_1_1IniSection_1_1Iterator_1a54d958a5a40b323c5914653bb21020e8"></span><a class="reference internal" href="class_AppCUI_Utils_IniValue.html#_CPPv4N6AppCUI5Utils8IniValueE" title="AppCUI::Utils::IniValue"><span class="n"><span class="pre">IniValue</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils10IniSection8IteratormlEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">IniSection</span></dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Utils_IniObject.html" class="btn btn-neutral float-left" title="IniObject" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Utils_IniValue.html" class="btn btn-neutral float-right" title="IniValue" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

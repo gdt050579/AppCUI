@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TextArea &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="TextField" href="class_AppCUI_Controls_TextField.html" />
+    <link rel="prev" title="TabPage" href="class_AppCUI_Controls_TabPage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+      <li class="breadcrumb-item active">TextArea</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_TextArea.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="textarea">
+<h1>TextArea<a class="headerlink" href="#textarea" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::TextArea</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextAreaE">
+<span id="_CPPv3N6AppCUI8Controls8TextAreaE"></span><span id="_CPPv2N6AppCUI8Controls8TextAreaE"></span><span id="AppCUI::Controls::TextArea"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TextArea</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8ControlsE" title="AppCUI::Controls"><span class="n"><span class="pre">Controls</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Controls_Control.html#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextAreaE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea5PaintERN8Graphics8RendererE">
+<span id="_CPPv3N6AppCUI8Controls8TextArea5PaintERN8Graphics8RendererE"></span><span id="_CPPv2N6AppCUI8Controls8TextArea5PaintERN8Graphics8RendererE"></span><span id="AppCUI::Controls::TextArea::Paint__Graphics::RendererR"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1acb26b909b3a4e0bf439af99673955507"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Paint</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Renderer.html#_CPPv4N6AppCUI8Graphics8RendererE" title="AppCUI::Graphics::Renderer"><span class="n"><span class="pre">Renderer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">renderer</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea5PaintERN8Graphics8RendererE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea7OnEventE9ReferenceI7ControlE5Eventi">
+<span id="_CPPv3N6AppCUI8Controls8TextArea7OnEventE9ReferenceI7ControlE5Eventi"></span><span id="_CPPv2N6AppCUI8Controls8TextArea7OnEventE9ReferenceI7ControlE5Eventi"></span><span id="AppCUI::Controls::TextArea::OnEvent__Reference:Control:.Event.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a2138c060b60cfff8230f9b0de8c54d0a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Control.html#_CPPv4N6AppCUI8Controls7ControlE" title="AppCUI::Controls::Control"><span class="n"><span class="pre">Control</span></span></a><span class="p"><span class="pre">&gt;</span></span>, <a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls5EventE" title="AppCUI::Controls::Event"><span class="n"><span class="pre">Event</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eventType</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ID</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea7OnEventE9ReferenceI7ControlE5Eventi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea10OnKeyEventEN5Input3KeyE6char16">
+<span id="_CPPv3N6AppCUI8Controls8TextArea10OnKeyEventEN5Input3KeyE6char16"></span><span id="_CPPv2N6AppCUI8Controls8TextArea10OnKeyEventEN5Input3KeyE6char16"></span><span id="AppCUI::Controls::TextArea::OnKeyEvent__Input::Key.char16"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1aacd58288740becd1160e876660e8b39f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnKeyEvent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">UnicodeChar</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea10OnKeyEventEN5Input3KeyE6char16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea18OnUpdateScrollBarsEv">
+<span id="_CPPv3N6AppCUI8Controls8TextArea18OnUpdateScrollBarsEv"></span><span id="_CPPv2N6AppCUI8Controls8TextArea18OnUpdateScrollBarsEv"></span><span id="AppCUI::Controls::TextArea::OnUpdateScrollBars"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1aeae3cfeab9e1e2577b9175b05cfe4965"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnUpdateScrollBars</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea18OnUpdateScrollBarsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea7OnFocusEv">
+<span id="_CPPv3N6AppCUI8Controls8TextArea7OnFocusEv"></span><span id="_CPPv2N6AppCUI8Controls8TextArea7OnFocusEv"></span><span id="AppCUI::Controls::TextArea::OnFocus"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1ae945961e3271dfea5b6382a08de98adb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnFocus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea7OnFocusEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls8TextArea14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls8TextArea14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::TextArea::OnMousePressed__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1afeae11ca6ed800c6779c54f08421f8f6"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMousePressed</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea14OnMousePressedEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls8TextArea15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls8TextArea15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::TextArea::OnMouseReleased__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1aea93548a0447301ced9b2508c887f8bd"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseReleased</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea15OnMouseReleasedEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls8TextArea11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls8TextArea11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE"></span><span id="AppCUI::Controls::TextArea::OnMouseDrag__i.i.Input::MouseButton.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a17a35db0c74f9e6d61d05bc3ab2d4193"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseDrag</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input11MouseButtonE" title="AppCUI::Input::MouseButton"><span class="n"><span class="pre">MouseButton</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">button</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea11OnMouseDragEiiN5Input11MouseButtonEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI8Controls8TextArea12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI8Controls8TextArea12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE"></span><span id="AppCUI::Controls::TextArea::OnMouseWheel__i.i.Input::MouseWheel.Input::Key"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1aebcbc2ad4a9e3d2d4b6442a1699378ac"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseWheel</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input10MouseWheelE" title="AppCUI::Input::MouseWheel"><span class="n"><span class="pre">MouseWheel</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">direction</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea12OnMouseWheelEiiN5Input10MouseWheelEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea12OnMouseEnterEv">
+<span id="_CPPv3N6AppCUI8Controls8TextArea12OnMouseEnterEv"></span><span id="_CPPv2N6AppCUI8Controls8TextArea12OnMouseEnterEv"></span><span id="AppCUI::Controls::TextArea::OnMouseEnter"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1ac2b601e9aec5fa0b5d3d784760c85549"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseEnter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea12OnMouseEnterEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea12OnMouseLeaveEv">
+<span id="_CPPv3N6AppCUI8Controls8TextArea12OnMouseLeaveEv"></span><span id="_CPPv2N6AppCUI8Controls8TextArea12OnMouseLeaveEv"></span><span id="AppCUI::Controls::TextArea::OnMouseLeave"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1aed9c4d002090cc322b1730bb0f2d5151"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnMouseLeave</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea12OnMouseLeaveEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea13OnAfterResizeEii">
+<span id="_CPPv3N6AppCUI8Controls8TextArea13OnAfterResizeEii"></span><span id="_CPPv2N6AppCUI8Controls8TextArea13OnAfterResizeEii"></span><span id="AppCUI::Controls::TextArea::OnAfterResize__i.i"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a380a3e49a40f9141e5538055ea56f4f4"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnAfterResize</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newWidth</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">newHeight</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea13OnAfterResizeEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea14OnAfterSetTextEv">
+<span id="_CPPv3N6AppCUI8Controls8TextArea14OnAfterSetTextEv"></span><span id="_CPPv2N6AppCUI8Controls8TextArea14OnAfterSetTextEv"></span><span id="AppCUI::Controls::TextArea::OnAfterSetText"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a0571ee88407f133cd4bb7502068d65a2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnAfterSetText</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea14OnAfterSetTextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea11SetReadOnlyEb">
+<span id="_CPPv3N6AppCUI8Controls8TextArea11SetReadOnlyEb"></span><span id="_CPPv2N6AppCUI8Controls8TextArea11SetReadOnlyEb"></span><span id="AppCUI::Controls::TextArea::SetReadOnly__b"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1aef6609de56ae7a2b84437da951f8d66e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetReadOnly</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea11SetReadOnlyEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea10IsReadOnlyEv">
+<span id="_CPPv3N6AppCUI8Controls8TextArea10IsReadOnlyEv"></span><span id="_CPPv2N6AppCUI8Controls8TextArea10IsReadOnlyEv"></span><span id="AppCUI::Controls::TextArea::IsReadOnly"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1af77f5a7684dfd0e81ffc229231fba644"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsReadOnly</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea10IsReadOnlyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls8TextArea12HasSelectionEv">
+<span id="_CPPv3NK6AppCUI8Controls8TextArea12HasSelectionEv"></span><span id="_CPPv2NK6AppCUI8Controls8TextArea12HasSelectionEv"></span><span id="AppCUI::Controls::TextArea::HasSelectionC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a1b81dd13d93474cbf4a94e788d6a681a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasSelection</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls8TextArea12HasSelectionEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls8TextArea12GetSelectionER6uint32R6uint32">
+<span id="_CPPv3NK6AppCUI8Controls8TextArea12GetSelectionER6uint32R6uint32"></span><span id="_CPPv2NK6AppCUI8Controls8TextArea12GetSelectionER6uint32R6uint32"></span><span id="AppCUI::Controls::TextArea::GetSelection__uint32R.uint32RC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1ab8c6ca0feec224fc466d28e519d79785"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSelection</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">start</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls8TextArea12GetSelectionER6uint32R6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea15SetTabCharacterEc">
+<span id="_CPPv3N6AppCUI8Controls8TextArea15SetTabCharacterEc"></span><span id="_CPPv2N6AppCUI8Controls8TextArea15SetTabCharacterEc"></span><span id="AppCUI::Controls::TextArea::SetTabCharacter__c"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a475e21ed63bcec57d00a8de1c6d65276"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTabCharacter</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tabCharacter</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea15SetTabCharacterEc" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextAreaD0Ev">
+<span id="_CPPv3N6AppCUI8Controls8TextAreaD0Ev"></span><span id="_CPPv2N6AppCUI8Controls8TextAreaD0Ev"></span><span id="AppCUI::Controls::TextArea::~TextArea"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1aa5f7854c70db3f01e5a73c5a2975fbd9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~TextArea</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextAreaD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea8HandlersEv">
+<span id="_CPPv3N6AppCUI8Controls8TextArea8HandlersEv"></span><span id="_CPPv2N6AppCUI8Controls8TextArea8HandlersEv"></span><span id="AppCUI::Controls::TextArea::Handlers"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a2b4a56cb604bcc7ac428db808219082b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls8TextArea8HandlersEv" title="AppCUI::Controls::TextArea::Handlers"><span class="n"><span class="pre">Handlers</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">TextControl</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Handlers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea8HandlersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8TextArea8TextAreaERK11ConstString11string_view13TextAreaFlags">
+<span id="_CPPv3N6AppCUI8Controls8TextArea8TextAreaERK11ConstString11string_view13TextAreaFlags"></span><span id="_CPPv2N6AppCUI8Controls8TextArea8TextAreaERK11ConstString11string_view13TextAreaFlags"></span><span id="AppCUI::Controls::TextArea::TextArea__ConstStringCR.string_view.TextAreaFlags"></span><span class="target" id="classAppCUI_1_1Controls_1_1TextArea_1a18814c1400686bf8cf3a72ee91d04aa3"></span><span class="sig-name descname"><span class="n"><span class="pre">TextArea</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">caption</span></span>, <span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">layout</span></span>, <a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls13TextAreaFlagsE" title="AppCUI::Controls::TextAreaFlags"><span class="n"><span class="pre">TextAreaFlags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8TextArea8TextAreaERK11ConstString11string_view13TextAreaFlags" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">Factory::TextArea</span></dt>
+</dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">Control</span></dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_TabPage.html" class="btn btn-neutral float-left" title="TabPage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_TextField.html" class="btn btn-neutral float-right" title="TextField" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

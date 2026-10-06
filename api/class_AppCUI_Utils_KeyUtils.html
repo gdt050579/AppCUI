@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KeyUtils &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LocalString" href="class_AppCUI_Utils_LocalString.html" />
+    <link rel="prev" title="IniValueArray" href="class_AppCUI_Utils_IniValueArray.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+      <li class="breadcrumb-item active">KeyUtils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Utils_KeyUtils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="keyutils">
+<h1>KeyUtils<a class="headerlink" href="#keyutils" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Utils::KeyUtils</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtilsE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtilsE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtilsE"></span><span id="AppCUI::Utils::KeyUtils"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyUtils</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtilsE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils10GetKeyNameEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils10GetKeyNameEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils10GetKeyNameEN5Input3KeyE"></span><span id="AppCUI::Utils::KeyUtils::GetKeyName__Input::Key"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1aca40915aef10b3cb6fe62b78e9f2543c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetKeyName</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils10GetKeyNameEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the name of the Key without modifiers. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils18GetKeyModifierNameEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils18GetKeyModifierNameEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils18GetKeyModifierNameEN5Input3KeyE"></span><span id="AppCUI::Utils::KeyUtils::GetKeyModifierName__Input::Key"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a7ec152a60f1396c82cc0935939fe388b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetKeyModifierName</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils18GetKeyModifierNameEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils16GetKeyNamePaddedEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils16GetKeyNamePaddedEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils16GetKeyNamePaddedEN5Input3KeyE"></span><span id="AppCUI::Utils::KeyUtils::GetKeyNamePadded__Input::Key"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a3671d7fba7cc58196a894e3ba006ca43"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetKeyNamePadded</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils16GetKeyNamePaddedEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyEPc6uint32">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyEPc6uint32"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyEPc6uint32"></span><span id="AppCUI::Utils::KeyUtils::ToString__Input::Key.cP.uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a4fb02414bdbc0ae1df7ee463c0f0dbc6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">text</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">maxTextSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyEPc6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyERN5Utils6StringE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyERN5Utils6StringE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyERN5Utils6StringE"></span><span id="AppCUI::Utils::KeyUtils::ToString__Input::Key.Utils::StringR"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1af563be7b3c2a64af609c62af1bf2d327"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_String.html#_CPPv4N6AppCUI5Utils6StringE" title="AppCUI::Utils::String"><span class="n"><span class="pre">String</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils8ToStringEN5Input3KeyERN5Utils6StringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils10FromStringE11string_view">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils10FromStringE11string_view"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils10FromStringE11string_view"></span><span id="AppCUI::Utils::KeyUtils::FromString__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1aef07eb1c98db84d2d3331f0ced63271e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FromString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stringRepresentation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils10FromStringE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils22KeyModifiersFromStringE11string_view">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils22KeyModifiersFromStringE11string_view"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils22KeyModifiersFromStringE11string_view"></span><span id="AppCUI::Utils::KeyUtils::KeyModifiersFromString__string_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a6ce8c95acb7df4a6bc847554fd12fb97"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KeyModifiersFromString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stringRepresentation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils22KeyModifiersFromStringE11string_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils25GetKeyModifierDisplayNameEN5Input3KeyE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils25GetKeyModifierDisplayNameEN5Input3KeyE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils25GetKeyModifierDisplayNameEN5Input3KeyE"></span><span id="AppCUI::Utils::KeyUtils::GetKeyModifierDisplayName__Input::Key"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a72dcb40c8626edf98dba6a91adcd5609"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetKeyModifierDisplayName</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils25GetKeyModifierDisplayNameEN5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd><p>Display helpers: map the logical key to the physical key the user presses (see <a class="reference internal" href="class_AppCUI_Input_ModifierMap.html#classAppCUI_1_1Input_1_1ModifierMap"><span class="std std-ref">Input::ModifierMap</span></a>) and use platform modifier names (e.g. </p>
+<p>“Opt+” for Alt on macOS). ToString stays canonical (serialization). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERN5Utils6StringE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERN5Utils6StringE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERN5Utils6StringE"></span><span id="AppCUI::Utils::KeyUtils::ToDisplayString__Input::Key.Utils::StringR"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a7b62125e0f3d96c8d66b0fe75cb10e24"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDisplayString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_String.html#_CPPv4N6AppCUI5Utils6StringE" title="AppCUI::Utils::String"><span class="n"><span class="pre">String</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERN5Utils6StringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERKN5Input11ModifierMapERN5Utils6StringE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERKN5Input11ModifierMapERN5Utils6StringE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERKN5Input11ModifierMapERN5Utils6StringE"></span><span id="AppCUI::Utils::KeyUtils::ToDisplayString__Input::Key.Input::ModifierMapCR.Utils::StringR"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1afa4f4ac672d300feb8c96ffd76f2834e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDisplayString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">keyCode</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Input_ModifierMap.html#_CPPv4N6AppCUI5Input11ModifierMapE" title="AppCUI::Input::ModifierMap"><span class="n"><span class="pre">ModifierMap</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">map</span></span>, <a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5UtilsE" title="AppCUI::Utils"><span class="n"><span class="pre">Utils</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Utils_String.html#_CPPv4N6AppCUI5Utils6StringE" title="AppCUI::Utils::String"><span class="n"><span class="pre">String</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils15ToDisplayStringEN5Input3KeyERKN5Input11ModifierMapERN5Utils6StringE" title="Link to this definition"></a><br /></dt>
+<dd><p>same as ToDisplayString but with an explicit modifier profile (e.g. to preview a profile before applying it) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils12CreateHotKeyE6char16N5Input3KeyE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils12CreateHotKeyE6char16N5Input3KeyE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils12CreateHotKeyE6char16N5Input3KeyE"></span><span id="AppCUI::Utils::KeyUtils::CreateHotKey__char16.Input::Key"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a13f063dab8bedc2ade076f411b95e84a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateHotKey</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">hotKey</span></span>, <a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">modifier</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3KeyE" title="AppCUI::Input::Key"><span class="n"><span class="pre">Key</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Input.html#_CPPv4N6AppCUI5Input3Key4NoneE" title="AppCUI::Input::Key::None"><span class="n"><span class="pre">None</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils12CreateHotKeyE6char16N5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils14KEY_SHIFT_MASKE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils14KEY_SHIFT_MASKE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils14KEY_SHIFT_MASKE"></span><span id="AppCUI::Utils::KeyUtils::KEY_SHIFT_MASK__uint32C"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1ac06b46e0de9d9c2b94096b38bbb1fbc1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KEY_SHIFT_MASK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x7000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils14KEY_SHIFT_MASKE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils14KEY_SHIFT_BITSE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils14KEY_SHIFT_BITSE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils14KEY_SHIFT_BITSE"></span><span id="AppCUI::Utils::KeyUtils::KEY_SHIFT_BITS__uint32C"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a0586750125e419139e327cd9f08e7d18"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KEY_SHIFT_BITS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">12</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils14KEY_SHIFT_BITSE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils8KeyUtils13KEY_CODE_MASKE">
+<span id="_CPPv3N6AppCUI5Utils8KeyUtils13KEY_CODE_MASKE"></span><span id="_CPPv2N6AppCUI5Utils8KeyUtils13KEY_CODE_MASKE"></span><span id="AppCUI::Utils::KeyUtils::KEY_CODE_MASK__uint32C"></span><span class="target" id="classAppCUI_1_1Utils_1_1KeyUtils_1a511730542ee9c788fda464cfa6984a45"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">KEY_CODE_MASK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0xFF</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils8KeyUtils13KEY_CODE_MASKE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Utils_IniValueArray.html" class="btn btn-neutral float-left" title="IniValueArray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Utils_LocalString.html" class="btn btn-neutral float-right" title="LocalString" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

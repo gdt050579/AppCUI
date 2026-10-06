@@ -1,22 +1,26 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AppCUI development &mdash; AppCUI  documentation</title>
+  <title>AppCUI development &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
 
   
-      <script src="_static/jquery.js"></script>
-      <script src="_static/underscore.js"></script>
-      <script src="_static/doctools.js"></script>
-      <script src="_static/language_data.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Colors" href="colors.html" />
-    <link rel="prev" title="Layout in AppCUI" href="layout.html" /> 
+    <link rel="prev" title="AppCUI::StdIncludes" href="api/namespace_AppCUI_StdIncludes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,6 +33,7 @@
           
           <a href="index.html" class="icon icon-home">
             AppCUI
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -38,15 +43,28 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="initialization.html">AppCUI Initialization</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">AppCUI development</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#github-workflows">Github workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#github-workflows">GitHub workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#documenting-the-api">Documenting the API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminals.html">Terminals</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -73,28 +91,99 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="appcui-development">
-<h1>AppCUI development<a class="headerlink" href="#appcui-development" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="github-workflows">
-<h2>Github workflows<a class="headerlink" href="#github-workflows" title="Permalink to this headline">¶</a></h2>
-<p>Github workflows will be automatically triggered on push to <code class="docutils literal notranslate"><span class="pre">main</span></code> and on <code class="docutils literal notranslate"><span class="pre">pull_request</span></code>.</p>
-<p>If any workflows need to be triggered for other branches, one could create a draft PR to start testing or manually trigger the workflows from the <cite>Actions</cite> page, while selecting the required workflow.
-The contributor will be greeted with a <code class="docutils literal notranslate"><span class="pre">This</span> <span class="pre">workflow</span> <span class="pre">has</span> <span class="pre">a</span> <span class="pre">workflow_dispatch</span> <span class="pre">event</span> <span class="pre">trigger</span></code> and a <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">workflow</span></code> button.</p>
+  <section id="appcui-development">
+<h1>AppCUI development<a class="headerlink" href="#appcui-development" title="Link to this heading"></a></h1>
+<section id="github-workflows">
+<h2>GitHub workflows<a class="headerlink" href="#github-workflows" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Workflow</p></th>
+<th class="head"><p>Trigger</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci.yml</span></code> (build)</p></td>
+<td><p>push to <code class="docutils literal notranslate"><span class="pre">main</span></code>, pull requests, manual</p></td>
+<td><p>builds AppCUI, the examples and the documentation samples on Linux, macOS and Windows</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gh-pages.yml</span></code></p></td>
+<td><p>push to <code class="docutils literal notranslate"><span class="pre">main</span></code>, pull requests that change <code class="docutils literal notranslate"><span class="pre">docs</span></code> or <code class="docutils literal notranslate"><span class="pre">AppCUI.hpp</span></code>, manual</p></td>
+<td><p>builds this documentation (Doxygen + Sphinx, warnings are errors); on <code class="docutils literal notranslate"><span class="pre">main</span></code> it is published to the
+<code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">increase_version.yml</span></code></p></td>
+<td><p>push to <code class="docutils literal notranslate"><span class="pre">main</span></code>, manual</p></td>
+<td><p>increments <code class="docutils literal notranslate"><span class="pre">APPCUI_VERSION</span></code> in <code class="docutils literal notranslate"><span class="pre">AppCUI.hpp</span></code> (do not edit it by hand)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">build-and-deploy-release.yml</span></code> / <code class="docutils literal notranslate"><span class="pre">deploy_release.yml</span></code></p></td>
+<td><p>push to <code class="docutils literal notranslate"><span class="pre">main</span></code> / manual</p></td>
+<td><p>build the release binaries</p></td>
+</tr>
+</tbody>
+</table>
+<p>Workflows with a manual trigger can be started for any branch from the <em>Actions</em> page (<code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">workflow</span></code>); for the
+others, a draft pull request runs them.</p>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<p>The documentation is built with <a class="reference external" href="https://www.sphinx-doc.org">Sphinx</a>. The guides are the <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files of
+<code class="docutils literal notranslate"><span class="pre">docs/source</span></code>; the API reference is generated from <code class="docutils literal notranslate"><span class="pre">AppCUI/include/AppCUI.hpp</span></code> by
+<a class="reference external" href="https://www.doxygen.nl">Doxygen</a> (which parses the header into XML) and
+<a class="reference external" href="https://breathe.readthedocs.io">Breathe</a> (which renders the XML in Sphinx). The pages of the API reference
+(<code class="docutils literal notranslate"><span class="pre">docs/source/api</span></code>) are generated by <code class="docutils literal notranslate"><span class="pre">docs/source/_ext/appcui_api.py</span></code> at every build and are not stored in the
+repository.</p>
+<p>Building it locally:</p>
+<ol class="arabic">
+<li><p>install Doxygen (<code class="docutils literal notranslate"><span class="pre">winget</span> <span class="pre">install</span> <span class="pre">DoxygenProject.Doxygen</span></code>, <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">doxygen</span></code> or a release from
+<a class="reference external" href="https://www.doxygen.nl/download.html">https://www.doxygen.nl/download.html</a>) - or point the <code class="docutils literal notranslate"><span class="pre">DOXYGEN</span></code> environment variable to the executable. The CI
+uses Doxygen 1.18.0; older versions (for example the one packaged by some Linux distributions) may produce
+different XML and additional warnings;</p></li>
+<li><p>install the Python packages (a virtual environment is recommended):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
 </div>
+</li>
+<li><p>build the HTML pages (the result is in <code class="docutils literal notranslate"><span class="pre">docs/build/html</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>html<span class="w">                                   </span><span class="c1"># Linux / macOS</span>
+make.bat<span class="w"> </span>html<span class="w">                               </span><span class="c1"># Windows</span>
+python<span class="w"> </span>-m<span class="w"> </span>sphinx<span class="w"> </span>-W<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>build/html<span class="w">   </span><span class="c1"># what the CI runs (warnings are errors)</span>
+</pre></div>
 </div>
+</li>
+</ol>
+<p>Without Doxygen, <code class="docutils literal notranslate"><span class="pre">APPCUI_DOCS_SKIP_API=1</span></code> builds the guides only (the API reference is replaced by a placeholder).</p>
+<section id="documenting-the-api">
+<h3>Documenting the API<a class="headerlink" href="#documenting-the-api" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>every public declaration of <code class="docutils literal notranslate"><span class="pre">AppCUI.hpp</span></code> appears in the API reference, documented or not;</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">///</span></code> comment just before a declaration (or <code class="docutils literal notranslate"><span class="pre">///&lt;</span></code> after a member on the same line) becomes its description;
+the first sentence is the summary. Plain <code class="docutils literal notranslate"><span class="pre">//</span></code> comments are not part of the documentation;</p></li>
+<li><p>namespace descriptions are in <code class="docutils literal notranslate"><span class="pre">docs/doxygen/namespaces.dox</span></code>;</p></li>
+<li><p>code shown in the guides lives in <code class="docutils literal notranslate"><span class="pre">docs/snippets</span></code> and is included with <code class="docutils literal notranslate"><span class="pre">literalinclude</span></code>: the samples are
+compiled with the examples, so a change of the API that breaks them breaks the build.</p></li>
+</ul>
+</section>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="layout.html" class="btn btn-neutral float-left" title="Layout in AppCUI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="colors.html" class="btn btn-neutral float-right" title="Colors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api/namespace_AppCUI_StdIncludes.html" class="btn btn-neutral float-left" title="AppCUI::StdIncludes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Gavriluț Dragoș.</p>
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

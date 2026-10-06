@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Character" href="class_AppCUI_Graphics_Character.html" />
+    <link rel="prev" title="AppCUI::Graphics" href="namespace_AppCUI_Graphics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+      <li class="breadcrumb-item active">Canvas</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Graphics_Canvas.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="canvas">
+<h1>Canvas<a class="headerlink" href="#canvas" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Graphics::Canvas</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6CanvasE">
+<span id="_CPPv3N6AppCUI8Graphics6CanvasE"></span><span id="_CPPv2N6AppCUI8Graphics6CanvasE"></span><span id="AppCUI::Graphics::Canvas"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Canvas</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Renderer.html#_CPPv4N6AppCUI8Graphics8RendererE" title="AppCUI::Graphics::Renderer"><span class="n"><span class="pre">Renderer</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6CanvasE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas6CanvasEv">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas6CanvasEv"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas6CanvasEv"></span><span id="AppCUI::Graphics::Canvas::Canvas"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a8a2702adfbca2141858a86958caa8618"></span><span class="sig-name descname"><span class="n"><span class="pre">Canvas</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas6CanvasEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6CanvasD0Ev">
+<span id="_CPPv3N6AppCUI8Graphics6CanvasD0Ev"></span><span id="_CPPv2N6AppCUI8Graphics6CanvasD0Ev"></span><span id="AppCUI::Graphics::Canvas::~Canvas"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a94ac6dbef0d5c850068be47f6f054bea"></span><span class="sig-name descname"><span class="n"><span class="pre">~Canvas</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6CanvasD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas6CreateE6uint326uint32i9ColorPair">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas6CreateE6uint326uint32i9ColorPair"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas6CreateE6uint326uint32i9ColorPair"></span><span id="AppCUI::Graphics::Canvas::Create__uint32.uint32.i.ColorPair"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1aaed188e51df53586821ac8e9887a7c36"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fillCharacter</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'</span> <span class="pre">'</span></span>, <a class="reference internal" href="class_AppCUI_Graphics_ColorPair.html#_CPPv4N6AppCUI8Graphics9ColorPairE" title="AppCUI::Graphics::ColorPair"><span class="n"><span class="pre">ColorPair</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">color</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8Graphics16DefaultColorPairE" title="AppCUI::Graphics::DefaultColorPair"><span class="n"><span class="pre">DefaultColorPair</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas6CreateE6uint326uint32i9ColorPair" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas6ResizeE6uint326uint32i9ColorPair">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas6ResizeE6uint326uint32i9ColorPair"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas6ResizeE6uint326uint32i9ColorPair"></span><span id="AppCUI::Graphics::Canvas::Resize__uint32.uint32.i.ColorPair"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a097cba553604d6845840e937a37c180e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Resize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fillCharacter</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="sc"><span class="pre">'</span> <span class="pre">'</span></span>, <a class="reference internal" href="class_AppCUI_Graphics_ColorPair.html#_CPPv4N6AppCUI8Graphics9ColorPairE" title="AppCUI::Graphics::ColorPair"><span class="n"><span class="pre">ColorPair</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">color</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8Graphics16DefaultColorPairE" title="AppCUI::Graphics::DefaultColorPair"><span class="n"><span class="pre">DefaultColorPair</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas6ResizeE6uint326uint32i9ColorPair" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas15SetAbsoluteClipERKN8Graphics4ClipE">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas15SetAbsoluteClipERKN8Graphics4ClipE"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas15SetAbsoluteClipERKN8Graphics4ClipE"></span><span id="AppCUI::Graphics::Canvas::SetAbsoluteClip__Graphics::ClipCR"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a7045a003b2c3c704565c11ba499686aa"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAbsoluteClip</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_Clip.html#_CPPv4N6AppCUI8Graphics4ClipE" title="AppCUI::Graphics::Clip"><span class="n"><span class="pre">Clip</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">clip</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas15SetAbsoluteClipERKN8Graphics4ClipE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas33ExtendAbsoluteClipInAllDirectionsEi">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas33ExtendAbsoluteClipInAllDirectionsEi"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas33ExtendAbsoluteClipInAllDirectionsEi"></span><span id="AppCUI::Graphics::Canvas::ExtendAbsoluteClipInAllDirections__i"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a2778022d415fd671840bd0af010e9613"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtendAbsoluteClipInAllDirections</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas33ExtendAbsoluteClipInAllDirectionsEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas37ExtendAbsoluteClipToRightBottomCornerEv">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas37ExtendAbsoluteClipToRightBottomCornerEv"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas37ExtendAbsoluteClipToRightBottomCornerEv"></span><span id="AppCUI::Graphics::Canvas::ExtendAbsoluteClipToRightBottomCorner"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a397ff2813a671913edf807078f35b4cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExtendAbsoluteClipToRightBottomCorner</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas37ExtendAbsoluteClipToRightBottomCornerEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas9ClearClipEv">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas9ClearClipEv"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas9ClearClipEv"></span><span id="AppCUI::Graphics::Canvas::ClearClip"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a5b7d166add03bf8b42304672cb310c40"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearClip</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas9ClearClipEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas12SetTranslateEii">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas12SetTranslateEii"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas12SetTranslateEii"></span><span id="AppCUI::Graphics::Canvas::SetTranslate__i.i"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a0f1cd8ba3e27aef3fc1508d3787602cc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTranslate</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offX</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offY</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas12SetTranslateEii" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas5ResetEv">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas5ResetEv"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas5ResetEv"></span><span id="AppCUI::Graphics::Canvas::Reset"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a6c7322815df908989f0ebd4af3e8be7d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas5ResetEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas12DarkenScreenEv">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas12DarkenScreenEv"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas12DarkenScreenEv"></span><span id="AppCUI::Graphics::Canvas::DarkenScreen"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a55b5e95ac50268eff46e15c2bfd464d5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DarkenScreen</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas12DarkenScreenEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Graphics6Canvas18ClearEntireSurfaceEi9ColorPair">
+<span id="_CPPv3N6AppCUI8Graphics6Canvas18ClearEntireSurfaceEi9ColorPair"></span><span id="_CPPv2N6AppCUI8Graphics6Canvas18ClearEntireSurfaceEi9ColorPair"></span><span id="AppCUI::Graphics::Canvas::ClearEntireSurface__i.ColorPair"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a65debc471a06d54271cafe2ddd8afcf9"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearEntireSurface</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">character</span></span>, <a class="reference internal" href="class_AppCUI_Graphics_ColorPair.html#_CPPv4N6AppCUI8Graphics9ColorPairE" title="AppCUI::Graphics::ColorPair"><span class="n"><span class="pre">ColorPair</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">color</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Graphics6Canvas18ClearEntireSurfaceEi9ColorPair" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics6Canvas8GetWidthEv">
+<span id="_CPPv3NK6AppCUI8Graphics6Canvas8GetWidthEv"></span><span id="_CPPv2NK6AppCUI8Graphics6Canvas8GetWidthEv"></span><span id="AppCUI::Graphics::Canvas::GetWidthC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a76296a47630d3e38179cd33fc60ad581"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetWidth</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics6Canvas8GetWidthEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics6Canvas9GetHeightEv">
+<span id="_CPPv3NK6AppCUI8Graphics6Canvas9GetHeightEv"></span><span id="_CPPv2NK6AppCUI8Graphics6Canvas9GetHeightEv"></span><span id="AppCUI::Graphics::Canvas::GetHeightC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1ab39ff11b6d2383ee397c67618ae1384f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHeight</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics6Canvas9GetHeightEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics6Canvas19GetCursorVisibilityEv">
+<span id="_CPPv3NK6AppCUI8Graphics6Canvas19GetCursorVisibilityEv"></span><span id="_CPPv2NK6AppCUI8Graphics6Canvas19GetCursorVisibilityEv"></span><span id="AppCUI::Graphics::Canvas::GetCursorVisibilityC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a61024620d07902eca17ac849cc772ad5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCursorVisibility</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics6Canvas19GetCursorVisibilityEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics6Canvas10GetCursorXEv">
+<span id="_CPPv3NK6AppCUI8Graphics6Canvas10GetCursorXEv"></span><span id="_CPPv2NK6AppCUI8Graphics6Canvas10GetCursorXEv"></span><span id="AppCUI::Graphics::Canvas::GetCursorXC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a6e772f226f8826b62ffe0eb43e17aaf5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCursorX</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics6Canvas10GetCursorXEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics6Canvas10GetCursorYEv">
+<span id="_CPPv3NK6AppCUI8Graphics6Canvas10GetCursorYEv"></span><span id="_CPPv2NK6AppCUI8Graphics6Canvas10GetCursorYEv"></span><span id="AppCUI::Graphics::Canvas::GetCursorYC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1afdb62c6fb23088ea25853744c634be4d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCursorY</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics6Canvas10GetCursorYEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Graphics6Canvas19GetCharactersBufferEv">
+<span id="_CPPv3NK6AppCUI8Graphics6Canvas19GetCharactersBufferEv"></span><span id="_CPPv2NK6AppCUI8Graphics6Canvas19GetCharactersBufferEv"></span><span id="AppCUI::Graphics::Canvas::GetCharactersBufferC"></span><span class="target" id="classAppCUI_1_1Graphics_1_1Canvas_1a8ffe34e815ad2f87348dc5fe830922fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Graphics_Character.html#_CPPv4N6AppCUI8Graphics9CharacterE" title="AppCUI::Graphics::Character"><span class="n"><span class="pre">Character</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCharactersBuffer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Graphics6Canvas19GetCharactersBufferEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespace_AppCUI_Graphics.html" class="btn btn-neutral float-left" title="AppCUI::Graphics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Graphics_Character.html" class="btn btn-neutral float-right" title="Character" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

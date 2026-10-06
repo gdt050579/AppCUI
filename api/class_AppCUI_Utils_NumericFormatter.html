@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NumericFormatter &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pointer" href="class_AppCUI_Utils_Pointer.html" />
+    <link rel="prev" title="NumericFormat" href="class_AppCUI_Utils_NumericFormat.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+      <li class="breadcrumb-item active">NumericFormatter</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Utils_NumericFormatter.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="numericformatter">
+<h1>NumericFormatter<a class="headerlink" href="#numericformatter" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Utils::NumericFormatter</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatterE">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatterE"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatterE"></span><span id="AppCUI::Utils::NumericFormatter"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumericFormatter</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatterE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter16NumericFormatterEv">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter16NumericFormatterEv"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter16NumericFormatterEv"></span><span id="AppCUI::Utils::NumericFormatter::NumericFormatter"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a8deb40b9398af77191fa440fd75dada9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumericFormatter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter16NumericFormatterEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatterD0Ev">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatterD0Ev"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatterD0Ev"></span><span id="AppCUI::Utils::NumericFormatter::~NumericFormatter"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1afb85e7b25fa6dd91596b894cf4c8506e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~NumericFormatter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatterD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE6uint64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE6uint64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE6uint64"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__uint64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a5794990d2b8ad685e028952cb5773ad5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE6uint32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE6uint32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE6uint32"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1aac9f46e6549234fe22d18394ba9fd4fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE6uint16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE6uint16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE6uint16"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__uint16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a3b39332f06d8c3ba0a5fc72ab09a057b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE6uint16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE5uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE5uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a13c9e5eeae148eff59b7379b7b706a82"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5int64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE5int64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE5int64"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__int64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a275016f981a0547751afd0ce31910f61"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5int64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5int32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE5int32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE5int32"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__int32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a135b4f638c9af46bbf900cb9cbf4d059"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5int32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5int16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE5int16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE5int16"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__int16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1aa7217a23408eb0e4e9c462eaf84d0ea0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int16E" title="AppCUI::int16"><span class="n"><span class="pre">int16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE5int16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE4int8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToHexE4int8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToHexE4int8"></span><span id="AppCUI::Utils::NumericFormatter::ToHex__int8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ac0223ef7345981af3960dfc5e01f95a6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToHex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI4int8E" title="AppCUI::int8"><span class="n"><span class="pre">int8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToHexE4int8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE6uint64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE6uint64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE6uint64"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__uint64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1afa1240c33cfe2c40abe25a99f353f173"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE6uint32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE6uint32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE6uint32"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a26e6d35ca863b97897e59ffce8e5b84c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE6uint16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE6uint16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE6uint16"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__uint16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a64c54b91a5e33d320c270ed4a694a6f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE6uint16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE5uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE5uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a74970e2bca168c183f168730afcfaa29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5int64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE5int64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE5int64"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__int64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ab03eedec634ff132cc839d785ed36783"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5int64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5int32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE5int32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE5int32"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__int32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a9b36bfa31cb718f5dbf4ac2919acfd62"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5int32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5int16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE5int16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE5int16"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__int16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a97d0f17b722f73ceab90c764d1f5e1d7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int16E" title="AppCUI::int16"><span class="n"><span class="pre">int16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE5int16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE4int8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecE4int8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecE4int8"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__int8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a1f420438266843a36212e88324bc45fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI4int8E" title="AppCUI::int8"><span class="n"><span class="pre">int8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecE4int8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecEf">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecEf"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecEf"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__float"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a75b6e17f0de6559008870d3be850ceea"></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecEf" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecEd">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToDecEd"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToDecEd"></span><span id="AppCUI::Utils::NumericFormatter::ToDec__double"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a050dc7e30c3cd0d26a40919d7f5a6ced"></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToDec</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToDecEd" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE6uint64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE6uint64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE6uint64"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__uint64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a224a2a77f2bdca148491c0a3d9b57e41"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE6uint32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE6uint32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE6uint32"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a89b163e5d1249bfb4b99d5243d0a5bfa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE6uint16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE6uint16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE6uint16"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__uint16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a7e6e56554f2999b3bb84230334ef5387"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE6uint16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE5uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE5uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1aebd9a7dd67e3cac39d8a33f4eefe2ed8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5int64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE5int64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE5int64"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__int64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a23371e9e993584c0b5e2e53c0d549a10"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5int64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5int32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE5int32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE5int32"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__int32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a66607c5f4cd21e7f82f6c810f1a5b9c5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5int32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5int16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE5int16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE5int16"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__int16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a807903000ba61accb7903d44d048f265"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int16E" title="AppCUI::int16"><span class="n"><span class="pre">int16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE5int16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE4int8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToOctE4int8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToOctE4int8"></span><span id="AppCUI::Utils::NumericFormatter::ToOct__int8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a85acdb67d5edeb9cd98312ac64453d58"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToOct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI4int8E" title="AppCUI::int8"><span class="n"><span class="pre">int8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToOctE4int8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE6uint64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE6uint64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE6uint64"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__uint64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1aeb00ce13d20f94c705918fd1fe4f351d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE6uint32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE6uint32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE6uint32"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a7c374783264727d0c7a0f56290bd1be2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE6uint16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE6uint16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE6uint16"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__uint16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a4e03ba926739555e239b70863b9f0581"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE6uint16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE5uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE5uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a7e45566be02c58f08ffcf15dd02d818f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5int64">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE5int64"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE5int64"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__int64"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ad9f96a7cc17916626ab6ebbc77013193"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5int64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5int32">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE5int32"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE5int32"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__int32"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ab8e00d081ec1acab926da9bf959692b5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5int32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5int16">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE5int16"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE5int16"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__int16"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1aa2d194c7d676b596ddc31c792bddb073"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int16E" title="AppCUI::int16"><span class="n"><span class="pre">int16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE5int16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE4int8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter5ToBinE4int8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter5ToBinE4int8"></span><span id="AppCUI::Utils::NumericFormatter::ToBin__int8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1adcd7f2e88ca4f0292d42af7a680fa023"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI4int8E" title="AppCUI::int8"><span class="n"><span class="pre">int8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter5ToBinE4int8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE6uint645uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE6uint645uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE6uint645uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__uint64.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ac0c8ab3c79c726fb7b18e943e36bb2bc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE6uint645uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE6uint325uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE6uint325uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE6uint325uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__uint32.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a27e65d07f52c87ee5c46728916c663de"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE6uint325uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE6uint165uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE6uint165uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE6uint165uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__uint16.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a2938a5f23315c0231bfb60b43c5929af"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE6uint165uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5uint85uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE5uint85uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE5uint85uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__uint8.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1aa1a63ed9219e7ff88e48890c655718b8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5uint85uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5int645uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE5int645uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE5int645uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__int64.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ae5d9e662fc03fd4ce6fbe27102a30d15"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5int645uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5int325uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE5int325uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE5int325uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__int32.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1af23448b1348e86e2d584c090045355b8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5int325uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5int165uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE5int165uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE5int165uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__int16.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a90b9be02ba5c0c5a6a774ea2be767906"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int16E" title="AppCUI::int16"><span class="n"><span class="pre">int16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE5int165uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE4int85uint8">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter6ToBaseE4int85uint8"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter6ToBaseE4int85uint8"></span><span id="AppCUI::Utils::NumericFormatter::ToBase__int8.uint8"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a967156c27484c8e7604fa71b25d74072"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI4int8E" title="AppCUI::int8"><span class="n"><span class="pre">int8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter6ToBaseE4int85uint8" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE6uint6413NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE6uint6413NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE6uint6413NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__uint64.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a2e9a05ccf16e2e7006713b0b900b4d89"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE6uint6413NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE6uint3213NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE6uint3213NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE6uint3213NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__uint32.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ac366e035a61ba5a7d881996211473015"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE6uint3213NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE6uint1613NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE6uint1613NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE6uint1613NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__uint16.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1ac2a79908dc618c83715e27d3ad1f164e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE6uint1613NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5uint813NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE5uint813NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE5uint813NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__uint8.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a2863e5b25898ccb2e967d8396f25a6b1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5uint813NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5int6413NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE5int6413NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE5int6413NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__int64.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a6aa8c6a160789aea62d8f4c62f23d69d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int64E" title="AppCUI::int64"><span class="n"><span class="pre">int64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5int6413NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5int3213NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE5int3213NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE5int3213NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__int32.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a2e33c355b1dd9e46d138d5cb7f1eb9d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int32E" title="AppCUI::int32"><span class="n"><span class="pre">int32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5int3213NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5int1613NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE5int1613NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE5int1613NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__int16.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a38a5e31c5d6fc5cd39d4eef4edd83bb6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5int16E" title="AppCUI::int16"><span class="n"><span class="pre">int16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE5int1613NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE4int813NumericFormat">
+<span id="_CPPv3N6AppCUI5Utils16NumericFormatter8ToStringE4int813NumericFormat"></span><span id="_CPPv2N6AppCUI5Utils16NumericFormatter8ToStringE4int813NumericFormat"></span><span id="AppCUI::Utils::NumericFormatter::ToString__int8.NumericFormat"></span><span class="target" id="classAppCUI_1_1Utils_1_1NumericFormatter_1a3f9338373a05db95eaf62de56684227a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI4int8E" title="AppCUI::int8"><span class="n"><span class="pre">int8</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="class_AppCUI_Utils_NumericFormat.html#_CPPv4N6AppCUI5Utils13NumericFormatE" title="AppCUI::Utils::NumericFormat"><span class="n"><span class="pre">NumericFormat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">fmt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils16NumericFormatter8ToStringE4int813NumericFormat" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Utils_NumericFormat.html" class="btn btn-neutral float-left" title="NumericFormat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Utils_Pointer.html" class="btn btn-neutral float-right" title="Pointer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

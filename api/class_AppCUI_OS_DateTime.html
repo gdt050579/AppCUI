@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DateTime &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FSLocationData" href="class_AppCUI_OS_FSLocationData.html" />
+    <link rel="prev" title="DataObject" href="class_AppCUI_OS_DataObject.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+      <li class="breadcrumb-item active">DateTime</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_OS_DateTime.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="datetime">
+<h1>DateTime<a class="headerlink" href="#datetime" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::OS::DateTime</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTimeE">
+<span id="_CPPv3N6AppCUI2OS8DateTimeE"></span><span id="_CPPv2N6AppCUI2OS8DateTimeE"></span><span id="AppCUI::OS::DateTime"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DateTime</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTimeE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime8DateTimeEv">
+<span id="_CPPv3N6AppCUI2OS8DateTime8DateTimeEv"></span><span id="_CPPv2N6AppCUI2OS8DateTime8DateTimeEv"></span><span id="AppCUI::OS::DateTime::DateTime"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a6c8f8a2a29cb47f25c8e771821fa54b8"></span><span class="sig-name descname"><span class="n"><span class="pre">DateTime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime8DateTimeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime5ResetEv">
+<span id="_CPPv3N6AppCUI2OS8DateTime5ResetEv"></span><span id="_CPPv2N6AppCUI2OS8DateTime5ResetEv"></span><span id="AppCUI::OS::DateTime::Reset"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a186bf05b5aafc16250c65022d4a6dad9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime5ResetEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime10CreateFromERKNSt10filesystem15directory_entryE">
+<span id="_CPPv3N6AppCUI2OS8DateTime10CreateFromERKNSt10filesystem15directory_entryE"></span><span id="_CPPv2N6AppCUI2OS8DateTime10CreateFromERKNSt10filesystem15directory_entryE"></span><span id="AppCUI::OS::DateTime::CreateFrom__std::filesystem::directory_entryCR"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1aa7f229d39a86f8ebf557916238277562"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateFrom</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">directory_entry</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">entry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime10CreateFromERKNSt10filesystem15directory_entryE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint32K6uint32">
+<span id="_CPPv3N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint32K6uint32"></span><span id="_CPPv2N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint32K6uint32"></span><span id="AppCUI::OS::DateTime::CreateFromFileTime__uint32C.uint32C"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a7755e52da1de7ebace50013f4651c6d6"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateFromFileTime</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">low</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">high</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint32K6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint64">
+<span id="_CPPv3N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint64"></span><span id="_CPPv2N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint64"></span><span id="AppCUI::OS::DateTime::CreateFromFileTime__uint64C"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1ad5f20644846fab830531275c89b5b03d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateFromFileTime</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime18CreateFromFileTimeEK6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime16CreateFromFATUTCEK6uint32">
+<span id="_CPPv3N6AppCUI2OS8DateTime16CreateFromFATUTCEK6uint32"></span><span id="_CPPv2N6AppCUI2OS8DateTime16CreateFromFATUTCEK6uint32"></span><span id="AppCUI::OS::DateTime::CreateFromFATUTC__uint32C"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a3a0318259f3c8ea128411925ac09154a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateFromFATUTC</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">entry</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime16CreateFromFATUTCEK6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime19CreateFromTimestampEK6uint64">
+<span id="_CPPv3N6AppCUI2OS8DateTime19CreateFromTimestampEK6uint64"></span><span id="_CPPv2N6AppCUI2OS8DateTime19CreateFromTimestampEK6uint64"></span><span id="AppCUI::OS::DateTime::CreateFromTimestamp__uint64C"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a214e0a9af24bfa18ba5ca1937772ff0f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateFromTimestamp</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">timestamp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime19CreateFromTimestampEK6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS8DateTime23GetStringRepresentationEv">
+<span id="_CPPv3N6AppCUI2OS8DateTime23GetStringRepresentationEv"></span><span id="_CPPv2N6AppCUI2OS8DateTime23GetStringRepresentationEv"></span><span id="AppCUI::OS::DateTime::GetStringRepresentation"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1abf3f55c4f87ebba15d73195c05150f26"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetStringRepresentation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS8DateTime23GetStringRepresentationEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI2OS8DateTime7GetYearEv">
+<span id="_CPPv3NK6AppCUI2OS8DateTime7GetYearEv"></span><span id="_CPPv2NK6AppCUI2OS8DateTime7GetYearEv"></span><span id="AppCUI::OS::DateTime::GetYearC"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1add7f40995e01a7ff970983d5bc85e5a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetYear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI2OS8DateTime7GetYearEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI2OS8DateTime8GetMonthEv">
+<span id="_CPPv3NK6AppCUI2OS8DateTime8GetMonthEv"></span><span id="_CPPv2NK6AppCUI2OS8DateTime8GetMonthEv"></span><span id="AppCUI::OS::DateTime::GetMonthC"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1ae30ab03fd8ed8faa87412669f31ab54f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMonth</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI2OS8DateTime8GetMonthEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI2OS8DateTime6GetDayEv">
+<span id="_CPPv3NK6AppCUI2OS8DateTime6GetDayEv"></span><span id="_CPPv2NK6AppCUI2OS8DateTime6GetDayEv"></span><span id="AppCUI::OS::DateTime::GetDayC"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a060d2da4964acc6075d2e5023f17811c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDay</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI2OS8DateTime6GetDayEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI2OS8DateTime7GetHourEv">
+<span id="_CPPv3NK6AppCUI2OS8DateTime7GetHourEv"></span><span id="_CPPv2NK6AppCUI2OS8DateTime7GetHourEv"></span><span id="AppCUI::OS::DateTime::GetHourC"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a264ae04920870a441ef230849f50ab25"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHour</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI2OS8DateTime7GetHourEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI2OS8DateTime9GetMinuteEv">
+<span id="_CPPv3NK6AppCUI2OS8DateTime9GetMinuteEv"></span><span id="_CPPv2NK6AppCUI2OS8DateTime9GetMinuteEv"></span><span id="AppCUI::OS::DateTime::GetMinuteC"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1a7af351fd9c786c952c2036c530f926b7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMinute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI2OS8DateTime9GetMinuteEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI2OS8DateTime9GetSecondEv">
+<span id="_CPPv3NK6AppCUI2OS8DateTime9GetSecondEv"></span><span id="_CPPv2NK6AppCUI2OS8DateTime9GetSecondEv"></span><span id="AppCUI::OS::DateTime::GetSecondC"></span><span class="target" id="classAppCUI_1_1OS_1_1DateTime_1ad0c98c3c8849c40debec1debd997fccb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetSecond</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI2OS8DateTime9GetSecondEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_OS_DataObject.html" class="btn btn-neutral float-left" title="DataObject" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_OS_FSLocationData.html" class="btn btn-neutral float-right" title="FSLocationData" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

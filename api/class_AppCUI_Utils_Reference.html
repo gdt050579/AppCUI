@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="String" href="class_AppCUI_Utils_String.html" />
+    <link rel="prev" title="Property" href="class_AppCUI_Utils_Property.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+      <li class="breadcrumb-item active">Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Utils_Reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Utils::Reference</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI5Utils9ReferenceE">
+<span id="_CPPv3I0EN6AppCUI5Utils9ReferenceE"></span><span id="_CPPv2I0EN6AppCUI5Utils9ReferenceE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Utils_1_1Reference"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reference</span></span></span><a class="headerlink" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9Reference9ReferenceEv">
+<span id="_CPPv3N6AppCUI5Utils9Reference9ReferenceEv"></span><span id="_CPPv2N6AppCUI5Utils9Reference9ReferenceEv"></span><span id="AppCUI::Utils::Reference::Reference"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1aff7f398a2785a7f7e156c076ec598948"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reference</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9Reference9ReferenceEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9Reference9ReferenceEP1T">
+<span id="_CPPv3N6AppCUI5Utils9Reference9ReferenceEP1T"></span><span id="_CPPv2N6AppCUI5Utils9Reference9ReferenceEP1T"></span><span id="AppCUI::Utils::Reference::Reference__TP"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a75a5a1a86ea41d4dc67dda2166263099"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reference</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9Reference9ReferenceEP1T" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferenceptEv">
+<span id="_CPPv3N6AppCUI5Utils9ReferenceptEv"></span><span id="_CPPv2N6AppCUI5Utils9ReferenceptEv"></span><span id="AppCUI::Utils::Reference::pointer-operatorCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a7f75e995c1aa0af3bb90b4f9f9baaaaa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferenceptEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferencecvR1TEv">
+<span id="_CPPv3N6AppCUI5Utils9ReferencecvR1TEv"></span><span id="_CPPv2N6AppCUI5Utils9ReferencecvR1TEv"></span><span id="AppCUI::Utils::Reference::castto-TR-operatorCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1aa483e5ab6e03158bde00015650a2c73c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&amp;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferencecvR1TEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9Reference5ResetEv">
+<span id="_CPPv3N6AppCUI5Utils9Reference5ResetEv"></span><span id="_CPPv2N6AppCUI5Utils9Reference5ResetEv"></span><span id="AppCUI::Utils::Reference::ResetCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a81068f0c4efaaf5623f32aa83078863c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9Reference5ResetEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils9Reference7IsValidEv">
+<span id="_CPPv3NK6AppCUI5Utils9Reference7IsValidEv"></span><span id="_CPPv2NK6AppCUI5Utils9Reference7IsValidEv"></span><span id="AppCUI::Utils::Reference::IsValidCCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1ace0a1bd15f1fca1b6118b7b02a5d6094"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValid</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils9Reference7IsValidEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI5Utils9Reference6ToBaseE9ReferenceI1CEv">
+<span id="_CPPv3I0EN6AppCUI5Utils9Reference6ToBaseEv"></span><span id="_CPPv2I0EN6AppCUI5Utils9Reference6ToBaseEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a61aad2121a11d84fbbc90c2443542a75"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9Reference6ToBaseE9ReferenceI1CEv" title="AppCUI::Utils::Reference::ToBase::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToBase</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI5Utils9Reference6ToBaseE9ReferenceI1CEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI5Utils9Reference11ToObjectRefE9ReferenceI1CEv">
+<span id="_CPPv3I0EN6AppCUI5Utils9Reference11ToObjectRefEv"></span><span id="_CPPv2I0EN6AppCUI5Utils9Reference11ToObjectRefEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1aaddb3c9b87a23c21d90a65514d367763"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9Reference11ToObjectRefE9ReferenceI1CEv" title="AppCUI::Utils::Reference::ToObjectRef::C"><span class="n"><span class="pre">C</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToObjectRef</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI5Utils9Reference11ToObjectRefE9ReferenceI1CEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9Referencecv6size_tEv">
+<span id="_CPPv3N6AppCUI5Utils9Referencecv6size_tEv"></span><span id="_CPPv2N6AppCUI5Utils9Referencecv6size_tEv"></span><span id="AppCUI::Utils::Reference::castto-s-operatorCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1ab109812e12752f5752a3d3f13365f679"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9Referencecv6size_tEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils9Reference12ToGenericRefEv">
+<span id="_CPPv3NK6AppCUI5Utils9Reference12ToGenericRefEv"></span><span id="_CPPv2NK6AppCUI5Utils9Reference12ToGenericRefEv"></span><span id="AppCUI::Utils::Reference::ToGenericRefC"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a56b269df6fcbaa019c91475c6dd19189"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Utils_GenericRef.html#_CPPv4N6AppCUI5Utils10GenericRefE" title="AppCUI::Utils::GenericRef"><span class="n"><span class="pre">GenericRef</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToGenericRef</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils9Reference12ToGenericRefEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TEPKv">
+<span id="_CPPv3N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TEPKv"></span><span id="_CPPv2N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TEPKv"></span><span id="AppCUI::Utils::Reference::eq-operator__Reference:T:CR.voidCPCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1aff64308ae4187b690dcbf35c2e280927"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TEPKv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferenceeqEPKvRK9ReferenceI1TE">
+<span id="_CPPv3N6AppCUI5Utils9ReferenceeqEPKvRK9ReferenceI1TE"></span><span id="_CPPv2N6AppCUI5Utils9ReferenceeqEPKvRK9ReferenceI1TE"></span><span id="AppCUI::Utils::Reference::eq-operator__voidCP.Reference:T:CRCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a1796b1b9124a3eb501c2bee2157f6e8c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferenceeqEPKvRK9ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TERK9ReferenceI1TE">
+<span id="_CPPv3N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TERK9ReferenceI1TE"></span><span id="_CPPv2N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TERK9ReferenceI1TE"></span><span id="AppCUI::Utils::Reference::eq-operator__Reference:T:CR.Reference:T:CRCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1afb4b92ef14ceca6bdbdde46bcfc28bad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferenceeqERK9ReferenceI1TERK9ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferenceneERK9ReferenceI1TEPKv">
+<span id="_CPPv3N6AppCUI5Utils9ReferenceneERK9ReferenceI1TEPKv"></span><span id="_CPPv2N6AppCUI5Utils9ReferenceneERK9ReferenceI1TEPKv"></span><span id="AppCUI::Utils::Reference::neq-operator__Reference:T:CR.voidCPCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a3deba407f8c8e0592ffb03cc181009ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferenceneERK9ReferenceI1TEPKv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferenceneEPKvRK9ReferenceI1TE">
+<span id="_CPPv3N6AppCUI5Utils9ReferenceneEPKvRK9ReferenceI1TE"></span><span id="_CPPv2N6AppCUI5Utils9ReferenceneEPKvRK9ReferenceI1TE"></span><span id="AppCUI::Utils::Reference::neq-operator__voidCP.Reference:T:CRCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1af8d4d9798d596a48f18c27c262d67ed3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferenceneEPKvRK9ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils9ReferenceneERK9ReferenceI1TERK9ReferenceI1TE">
+<span id="_CPPv3N6AppCUI5Utils9ReferenceneERK9ReferenceI1TERK9ReferenceI1TE"></span><span id="_CPPv2N6AppCUI5Utils9ReferenceneERK9ReferenceI1TERK9ReferenceI1TE"></span><span id="AppCUI::Utils::Reference::neq-operator__Reference:T:CR.Reference:T:CRCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1Reference_1a3c2ef5a4673d3db6d75678cbe329e71e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">!=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lhs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference"><span class="n"><span class="pre">Reference</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI5Utils9ReferenceE" title="AppCUI::Utils::Reference::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rhs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils9ReferenceneERK9ReferenceI1TERK9ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Utils_Property.html" class="btn btn-neutral float-left" title="Property" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Utils_String.html" class="btn btn-neutral float-right" title="String" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

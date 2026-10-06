@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ListView" href="class_AppCUI_Controls_Handlers_ListView.html" />
+    <link rel="prev" title="ComboBox" href="class_AppCUI_Controls_Handlers_ComboBox.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+      <li class="breadcrumb-item active">Control</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_Handlers_Control.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="control">
+<h1>Control<a class="headerlink" href="#control" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::Handlers::Control</span></code> (struct)</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7ControlE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7ControlE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7ControlE"></span><span id="AppCUI::Controls::Handlers::Control"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Control</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7ControlE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="class_AppCUI_Controls_Handlers_Button.html#structAppCUI_1_1Controls_1_1Handlers_1_1Button"><span class="std std-ref">AppCUI::Controls::Handlers::Button</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Handlers_CheckState.html#structAppCUI_1_1Controls_1_1Handlers_1_1CheckState"><span class="std std-ref">AppCUI::Controls::Handlers::CheckState</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Handlers_ComboBox.html#structAppCUI_1_1Controls_1_1Handlers_1_1ComboBox"><span class="std std-ref">AppCUI::Controls::Handlers::ComboBox</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Handlers_ListView.html#structAppCUI_1_1Controls_1_1Handlers_1_1ListView"><span class="std std-ref">AppCUI::Controls::Handlers::ListView</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Handlers_TextControl.html#structAppCUI_1_1Controls_1_1Handlers_1_1TextControl"><span class="std std-ref">AppCUI::Controls::Handlers::TextControl</span></a>, <a class="reference internal" href="class_AppCUI_Controls_Handlers_TreeView.html#structAppCUI_1_1Controls_1_1Handlers_1_1TreeView"><span class="std std-ref">AppCUI::Controls::Handlers::TreeView</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7ControlD0Ev">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7ControlD0Ev"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7ControlD0Ev"></span><span id="AppCUI::Controls::Handlers::Control::~Control"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1a488ff01c637392642ac8013148f6bae5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Control</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7ControlD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7Control12PaintControlE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7Control12PaintControlE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7Control12PaintControlE"></span><span id="AppCUI::Controls::Handlers::Control::PaintControl__Wrapper:PaintControlInterface.PaintControlCallback.PaintControlHandler:"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1ae7907e67feaf2cf3b6363716e2d0160b"></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_Wrapper.html#_CPPv4I000EN6AppCUI8Controls8Handlers7WrapperE" title="AppCUI::Controls::Handlers::Wrapper"><span class="n"><span class="pre">Wrapper</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_PaintControlInterface.html#_CPPv4N6AppCUI8Controls8Handlers21PaintControlInterfaceE" title="AppCUI::Controls::Handlers::PaintControlInterface"><span class="n"><span class="pre">PaintControlInterface</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Controls_Handlers_PaintControlCallback.html#_CPPv4N6AppCUI8Controls8Handlers20PaintControlCallbackE" title="AppCUI::Controls::Handlers::PaintControlCallback"><span class="n"><span class="pre">PaintControlCallback</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html#_CPPv4N6AppCUI8Controls8Handlers19PaintControlHandlerE" title="AppCUI::Controls::Handlers::PaintControlHandler"><span class="n"><span class="pre">PaintControlHandler</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PaintControl</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7Control12PaintControlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7Control7OnEventE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7Control7OnEventE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7Control7OnEventE"></span><span id="AppCUI::Controls::Handlers::Control::OnEvent__Wrapper:OnEventInterface.OnEventCallback.OnEventHandler:"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1af7948c5225d6e05bc11a6d659044c90b"></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_Wrapper.html#_CPPv4I000EN6AppCUI8Controls8Handlers7WrapperE" title="AppCUI::Controls::Handlers::Wrapper"><span class="n"><span class="pre">Wrapper</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnEventInterface.html#_CPPv4N6AppCUI8Controls8Handlers16OnEventInterfaceE" title="AppCUI::Controls::Handlers::OnEventInterface"><span class="n"><span class="pre">OnEventInterface</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnEventCallback.html#_CPPv4N6AppCUI8Controls8Handlers15OnEventCallbackE" title="AppCUI::Controls::Handlers::OnEventCallback"><span class="n"><span class="pre">OnEventCallback</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html#_CPPv4N6AppCUI8Controls8Handlers14OnEventHandlerE" title="AppCUI::Controls::Handlers::OnEventHandler"><span class="n"><span class="pre">OnEventHandler</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnEvent</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7Control7OnEventE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7Control10OnKeyEventE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7Control10OnKeyEventE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7Control10OnKeyEventE"></span><span id="AppCUI::Controls::Handlers::Control::OnKeyEvent__Wrapper:OnKeyEventInterface.OnKeyEventCallback.OnKeyEventHandler:"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1a38fcfd89e6922a31b927a4877cec1b38"></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_Wrapper.html#_CPPv4I000EN6AppCUI8Controls8Handlers7WrapperE" title="AppCUI::Controls::Handlers::Wrapper"><span class="n"><span class="pre">Wrapper</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnKeyEventInterface.html#_CPPv4N6AppCUI8Controls8Handlers19OnKeyEventInterfaceE" title="AppCUI::Controls::Handlers::OnKeyEventInterface"><span class="n"><span class="pre">OnKeyEventInterface</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnKeyEventCallback.html#_CPPv4N6AppCUI8Controls8Handlers18OnKeyEventCallbackE" title="AppCUI::Controls::Handlers::OnKeyEventCallback"><span class="n"><span class="pre">OnKeyEventCallback</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html#_CPPv4N6AppCUI8Controls8Handlers17OnKeyEventHandlerE" title="AppCUI::Controls::Handlers::OnKeyEventHandler"><span class="n"><span class="pre">OnKeyEventHandler</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnKeyEvent</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7Control10OnKeyEventE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7Control7OnFocusE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7Control7OnFocusE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7Control7OnFocusE"></span><span id="AppCUI::Controls::Handlers::Control::OnFocus__Wrapper:OnFocusInterface.OnFocusCallback.OnFocusHandler:"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1a8738adb3b837510005110b3aa403585d"></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_Wrapper.html#_CPPv4I000EN6AppCUI8Controls8Handlers7WrapperE" title="AppCUI::Controls::Handlers::Wrapper"><span class="n"><span class="pre">Wrapper</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnFocusInterface.html#_CPPv4N6AppCUI8Controls8Handlers16OnFocusInterfaceE" title="AppCUI::Controls::Handlers::OnFocusInterface"><span class="n"><span class="pre">OnFocusInterface</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnFocusCallback.html#_CPPv4N6AppCUI8Controls8Handlers15OnFocusCallbackE" title="AppCUI::Controls::Handlers::OnFocusCallback"><span class="n"><span class="pre">OnFocusCallback</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html#_CPPv4N6AppCUI8Controls8Handlers14OnFocusHandlerE" title="AppCUI::Controls::Handlers::OnFocusHandler"><span class="n"><span class="pre">OnFocusHandler</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnFocus</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7Control7OnFocusE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7Control7OnStartE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7Control7OnStartE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7Control7OnStartE"></span><span id="AppCUI::Controls::Handlers::Control::OnStart__Wrapper:OnStartInterface.OnStartCallback.OnStartHandler:"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1ad969837692a0e082d1470aa13b114375"></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_Wrapper.html#_CPPv4I000EN6AppCUI8Controls8Handlers7WrapperE" title="AppCUI::Controls::Handlers::Wrapper"><span class="n"><span class="pre">Wrapper</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnStartInterface.html#_CPPv4N6AppCUI8Controls8Handlers16OnStartInterfaceE" title="AppCUI::Controls::Handlers::OnStartInterface"><span class="n"><span class="pre">OnStartInterface</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnStartCallback.html#_CPPv4N6AppCUI8Controls8Handlers15OnStartCallbackE" title="AppCUI::Controls::Handlers::OnStartCallback"><span class="n"><span class="pre">OnStartCallback</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html#_CPPv4N6AppCUI8Controls8Handlers14OnStartHandlerE" title="AppCUI::Controls::Handlers::OnStartHandler"><span class="n"><span class="pre">OnStartHandler</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnStart</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7Control7OnStartE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7Control11OnLoseFocusE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7Control11OnLoseFocusE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7Control11OnLoseFocusE"></span><span id="AppCUI::Controls::Handlers::Control::OnLoseFocus__Wrapper:OnLoseFocusInterface.OnLoseFocusCallback.OnLoseFocusHandler:"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1a254de2d0a6e0cce179f6457b8119a5ae"></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_Wrapper.html#_CPPv4I000EN6AppCUI8Controls8Handlers7WrapperE" title="AppCUI::Controls::Handlers::Wrapper"><span class="n"><span class="pre">Wrapper</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnLoseFocusInterface.html#_CPPv4N6AppCUI8Controls8Handlers20OnLoseFocusInterfaceE" title="AppCUI::Controls::Handlers::OnLoseFocusInterface"><span class="n"><span class="pre">OnLoseFocusInterface</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnLoseFocusCallback.html#_CPPv4N6AppCUI8Controls8Handlers19OnLoseFocusCallbackE" title="AppCUI::Controls::Handlers::OnLoseFocusCallback"><span class="n"><span class="pre">OnLoseFocusCallback</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html#_CPPv4N6AppCUI8Controls8Handlers18OnLoseFocusHandlerE" title="AppCUI::Controls::Handlers::OnLoseFocusHandler"><span class="n"><span class="pre">OnLoseFocusHandler</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnLoseFocus</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7Control11OnLoseFocusE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls8Handlers7Control14OnAfterSetTextE">
+<span id="_CPPv3N6AppCUI8Controls8Handlers7Control14OnAfterSetTextE"></span><span id="_CPPv2N6AppCUI8Controls8Handlers7Control14OnAfterSetTextE"></span><span id="AppCUI::Controls::Handlers::Control::OnAfterSetText__Wrapper:OnAfterSetTextInterface.OnAfterSetTextCallback.OnAfterSetTextHandler:"></span><span class="target" id="structAppCUI_1_1Controls_1_1Handlers_1_1Control_1a6a8f5cc2a7a2331a663c64da2dbeb18e"></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_Wrapper.html#_CPPv4I000EN6AppCUI8Controls8Handlers7WrapperE" title="AppCUI::Controls::Handlers::Wrapper"><span class="n"><span class="pre">Wrapper</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnAfterSetTextInterface.html#_CPPv4N6AppCUI8Controls8Handlers23OnAfterSetTextInterfaceE" title="AppCUI::Controls::Handlers::OnAfterSetTextInterface"><span class="n"><span class="pre">OnAfterSetTextInterface</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_Controls_Handlers_OnAfterSetTextCallback.html#_CPPv4N6AppCUI8Controls8Handlers22OnAfterSetTextCallbackE" title="AppCUI::Controls::Handlers::OnAfterSetTextCallback"><span class="n"><span class="pre">OnAfterSetTextCallback</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html#_CPPv4N6AppCUI8Controls8Handlers21OnAfterSetTextHandlerE" title="AppCUI::Controls::Handlers::OnAfterSetTextHandler"><span class="n"><span class="pre">OnAfterSetTextHandler</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OnAfterSetText</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls8Handlers7Control14OnAfterSetTextE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_Handlers_ComboBox.html" class="btn btn-neutral float-left" title="ComboBox" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_Handlers_ListView.html" class="btn btn-neutral float-right" title="ListView" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

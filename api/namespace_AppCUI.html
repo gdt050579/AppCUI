@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AppCUI &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AppCUI::StdIncludes" href="namespace_AppCUI_StdIncludes.html" />
+    <link rel="prev" title="AppCUI::Endian" href="namespace_AppCUI_Endian.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+      <li class="breadcrumb-item active">AppCUI</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/namespace_AppCUI.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="appcui">
+<h1>AppCUI<a class="headerlink" href="#appcui" title="Link to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv46AppCUI">
+<span id="_CPPv36AppCUI"></span><span id="_CPPv26AppCUI"></span><span id="AppCUI"></span><span class="target" id="namespaceAppCUI"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AppCUI</span></span></span><a class="headerlink" href="#_CPPv46AppCUI" title="Link to this definition"></a><br /></dt>
+<dd><p>Root namespace of the <a class="reference internal" href="#namespaceAppCUI"><span class="std std-ref">AppCUI</span></a> framework (<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;</span><span class="pre">AppCUI.hpp</span><span class="pre">&gt;</span></code>). </p>
+<p>Besides the namespaces below, it defines the fixed-size integer aliases used everywhere in the API (<code class="docutils literal notranslate"><a class="reference internal" href="#namespaceAppCUI_1a12d3c8093ae455e830732f70462755f9"><span class="std std-ref"><span class="pre">uint8</span></span></a></code> … <code class="docutils literal notranslate"><a class="reference internal" href="#namespaceAppCUI_1a587241f8edcc66f8d851cc80d0c6d97e"><span class="std std-ref"><span class="pre">uint64</span></span></a></code>, <code class="docutils literal notranslate"><a class="reference internal" href="#namespaceAppCUI_1a6cfa58ccd5b5cfda467c9d3112a35c45"><span class="std std-ref"><span class="pre">int8</span></span></a></code> … <code class="docutils literal notranslate"><a class="reference internal" href="#namespaceAppCUI_1a43ba44a87d9455f116641f88a18b246b"><span class="std std-ref"><span class="pre">int64</span></span></a></code>, <code class="docutils literal notranslate"><a class="reference internal" href="#namespaceAppCUI_1a3bf675572fbdf441582f9c9fdcacab4a"><span class="std std-ref"><span class="pre">char8</span></span></a></code>, <code class="docutils literal notranslate"><a class="reference internal" href="#namespaceAppCUI_1aa7737079218a49fcf56dbf8ad2a03399"><span class="std std-ref"><span class="pre">char16</span></span></a></code>). </p>
+</dd></dl>
+
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_AppCUI_Application.html"><span class="doc">AppCUI::Application</span></a> - Application lifetime: initialization (Init, InitializationData), the event loop (Run), desktop windows (AddWindow, ArrangeWindows), menus, themes, settings (&lt;executable&gt;.ini) and custom frontends.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Controls.html"><span class="doc">AppCUI::Controls</span></a> - Every visual element: windows, buttons, text fields, lists, trees, grids, splitters, tabs, menus and the base Control class.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Dialogs.html"><span class="doc">AppCUI::Dialogs</span></a> - Ready made modal dialogs: message boxes, open / save file dialogs, the windows manager and the theme editor.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Endian.html"><span class="doc">AppCUI::Endian</span></a> - Byte order helpers: byte swapping and conversions between the host order and little / big endian.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Graphics.html"><span class="doc">AppCUI::Graphics</span></a> - Drawing: colors, characters, the Renderer used by Control::Paint, canvases, images, rectangles, clipping, special characters (box drawing, arrows, …), code pages and text formatting.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Input.html"><span class="doc">AppCUI::Input</span></a> - Keyboard and mouse input: key codes and modifiers (Key), mouse buttons and wheel, key bindings, key maps and keyboard modifier profiles (ModifierMap).</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Log.html"><span class="doc">AppCUI::Log</span></a> - Logging of AppCUI (and application) messages to a file, to stdout / stderr or to the debugger.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_OS.html"><span class="doc">AppCUI::OS</span></a> - Operating system services: files (File, MemoryFile, DataObject), the clipboard, dynamic libraries, date / time and special folders.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_StdIncludes.html"><span class="doc">AppCUI::StdIncludes</span></a> - Standard library names (string_view, u16string_view, unique_ptr, vector, optional, …) imported into the AppCUI namespace.</p></li>
+<li><p><a class="reference internal" href="namespace_AppCUI_Utils.html"><span class="doc">AppCUI::Utils</span></a> - General purpose utilities: strings (String, LocalString, UnicodeStringBuilder, FixSizeString), buffers (Buffer, BufferView), INI files (IniObject), number formatting and parsing, smart references (Reference, Pointer), properties (PropertiesInterface) and key helpers (KeyUtils).</p></li>
+</ul>
+</section>
+<section id="type-aliases">
+<h2>Type aliases<a class="headerlink" href="#type-aliases" title="Link to this heading"></a></h2>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI6uint64E">
+<span id="_CPPv3N6AppCUI6uint64E"></span><span id="_CPPv2N6AppCUI6uint64E"></span><span class="target" id="namespaceAppCUI_1a587241f8edcc66f8d851cc80d0c6d97e"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">uint64</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI6uint64E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI6uint32E">
+<span id="_CPPv3N6AppCUI6uint32E"></span><span id="_CPPv2N6AppCUI6uint32E"></span><span class="target" id="namespaceAppCUI_1a8cb96bc5ef49e3b3e743098446ec2048"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">uint32</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI6uint32E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI6uint16E">
+<span id="_CPPv3N6AppCUI6uint16E"></span><span id="_CPPv2N6AppCUI6uint16E"></span><span class="target" id="namespaceAppCUI_1a4a547e69d81399f03deda0ce22b701ba"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">uint16</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">uint16_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI6uint16E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5uint8E">
+<span id="_CPPv3N6AppCUI5uint8E"></span><span id="_CPPv2N6AppCUI5uint8E"></span><span class="target" id="namespaceAppCUI_1a12d3c8093ae455e830732f70462755f9"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">uint8</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5uint8E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5int64E">
+<span id="_CPPv3N6AppCUI5int64E"></span><span id="_CPPv2N6AppCUI5int64E"></span><span class="target" id="namespaceAppCUI_1a43ba44a87d9455f116641f88a18b246b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">int64</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5int64E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5int32E">
+<span id="_CPPv3N6AppCUI5int32E"></span><span id="_CPPv2N6AppCUI5int32E"></span><span class="target" id="namespaceAppCUI_1a3d878ead1e8acbca94c32a97542f0d5d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">int32</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">int32_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5int32E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5int16E">
+<span id="_CPPv3N6AppCUI5int16E"></span><span id="_CPPv2N6AppCUI5int16E"></span><span class="target" id="namespaceAppCUI_1a54810a3c7533c3ce0f6feffc6d85c5d1"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">int16</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">int16_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5int16E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI4int8E">
+<span id="_CPPv3N6AppCUI4int8E"></span><span id="_CPPv2N6AppCUI4int8E"></span><span class="target" id="namespaceAppCUI_1a6cfa58ccd5b5cfda467c9d3112a35c45"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">int8</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">int8_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI4int8E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5char8E">
+<span id="_CPPv3N6AppCUI5char8E"></span><span id="_CPPv2N6AppCUI5char8E"></span><span class="target" id="namespaceAppCUI_1a3bf675572fbdf441582f9c9fdcacab4a"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">char8</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">char8_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5char8E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI6char16E">
+<span id="_CPPv3N6AppCUI6char16E"></span><span id="_CPPv2N6AppCUI6char16E"></span><span class="target" id="namespaceAppCUI_1aa7737079218a49fcf56dbf8ad2a03399"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">char16</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">char16_t</span></span><a class="headerlink" href="#_CPPv4N6AppCUI6char16E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI11ConstStringE">
+<span id="_CPPv3N6AppCUI11ConstStringE"></span><span id="_CPPv2N6AppCUI11ConstStringE"></span><span class="target" id="namespaceAppCUI_1a15f6e15210f9c0c6bdcbca2e94b89e1b"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ConstString</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">variant</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">u8string_view</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">u16string_view</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">CharacterView</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6AppCUI11ConstStringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespace_AppCUI_Endian.html" class="btn btn-neutral float-left" title="AppCUI::Endian" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_AppCUI_StdIncludes.html" class="btn btn-neutral float-right" title="AppCUI::StdIncludes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

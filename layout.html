@@ -1,22 +1,27 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Layout in AppCUI &mdash; AppCUI  documentation</title>
+  <title>Layout in AppCUI &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
 
   
-      <script src="_static/jquery.js"></script>
-      <script src="_static/underscore.js"></script>
-      <script src="_static/doctools.js"></script>
-      <script src="_static/language_data.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="AppCUI development" href="development.html" />
-    <link rel="prev" title="AppCUI Initialization" href="initialization.html" /> 
+    <link rel="next" title="Colors" href="colors.html" />
+    <link rel="prev" title="Initialization" href="initialization.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,6 +34,7 @@
           
           <a href="index.html" class="icon icon-home">
             AppCUI
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -38,8 +44,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="initialization.html">AppCUI Initialization</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Layout in AppCUI</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#docking">Docking</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-absolute-offset">Using absolute offset</a></li>
@@ -54,9 +62,16 @@
 <li class="toctree-l2"><a class="reference internal" href="#more-examples">More examples</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminals.html">Terminals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 </ul>
 
         </div>
@@ -83,20 +98,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="layout-in-appcui">
-<h1>Layout in AppCUI<a class="headerlink" href="#layout-in-appcui" title="Permalink to this headline">¶</a></h1>
+  <section id="layout-in-appcui">
+<span id="layout"></span><h1>Layout in AppCUI<a class="headerlink" href="#layout-in-appcui" title="Link to this heading"></a></h1>
 <p>Each control in AppCUI is created based on a layout rule that can be described as an ascii string that respects the following format:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;key:value,key:value,...key:value&quot;</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="s">"key:value,key:value,...key:value"</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">=</span></code> can be used instead of <code class="docutils literal notranslate"><span class="pre">:</span></code> and <code class="docutils literal notranslate"><span class="pre">;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">,</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;x=1;y=2&quot;</span></code> is the same as <code class="docutils literal notranslate"><span class="pre">&quot;x:1,y:2&quot;</span></code>); keys and
+values are not case sensitive and spaces around them are ignored. An invalid layout (unknown key, invalid value or a
+combination of keys that is not allowed) is rejected: the constructor of the control throws an exception (in debug
+builds the reason is also logged).</p>
 <p>Where key can be one of the following:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 9%" />
-<col style="width: 10%" />
-<col style="width: 25%" />
-<col style="width: 56%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><div class="line-block">
 <div class="line">Key</div>
@@ -239,14 +252,9 @@
 </table>
 <p><strong>Remarks</strong>: Key aliases can be use to provide a shorter format for a layout. In other words, the following two formats are identical: <code class="docutils literal notranslate"><span class="pre">x:10,y:10,width:30,height:30</span></code> and <code class="docutils literal notranslate"><span class="pre">x:10,y:10,w:30,h:30</span></code></p>
 <p>A numerical value is represented by an integer (positive and negative) number between <strong>-30000</strong> and <strong>30000</strong>. Example: <code class="docutils literal notranslate"><span class="pre">x:100</span></code> –&gt; X will be 100. Using a value outside accepted interval (<strong>[-30000..30000]</strong>) will reject the layout.</p>
-<p>A percentage value is represented by a floating value (positive and negative) succeded by the character <code class="docutils literal notranslate"><span class="pre">%</span></code> between <strong>-300%</strong> and <strong>300%</strong>. Example: <code class="docutils literal notranslate"><span class="pre">x:12.75%</span></code> –&gt; X will be converted to a numerical value that is equal to the width of its parent multiplied by <code class="docutils literal notranslate"><span class="pre">0.1275</span></code>. Using a value outside accepted interval (<strong>[-300%..300%]</strong>) will reject the layout. Percentage values can be use to ensure that if a parent size is changed, its children change their size with it.</p>
+<p>A percentage value is represented by a number (positive and negative, with at most two decimals - extra decimals are ignored) succeded by the character <code class="docutils literal notranslate"><span class="pre">%</span></code> between <strong>-300%</strong> and <strong>300%</strong>. Example: <code class="docutils literal notranslate"><span class="pre">x:12.75%</span></code> –&gt; X will be converted to a numerical value that is equal to the width of its parent multiplied by <code class="docutils literal notranslate"><span class="pre">0.1275</span></code>. Using a value outside accepted interval (<strong>[-300%..300%]</strong>) will reject the layout. Percentage values can be use to ensure that if a parent size is changed, its children change their size with it.</p>
 <p>Dock values can be one of the following</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 19%" />
-<col style="width: 31%" />
-<col style="width: 49%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Value</p></th>
 <th class="head"><p>Alias</p></th>
@@ -288,12 +296,6 @@
 <p><strong>Remarks</strong>: Dock value aliases can be use to provide a shorter format for a layout. In other words: <code class="docutils literal notranslate"><span class="pre">dock:topleft</span></code> is the same with <code class="docutils literal notranslate"><span class="pre">dock:tl</span></code> or <code class="docutils literal notranslate"><span class="pre">dock:lt</span></code> or <code class="docutils literal notranslate"><span class="pre">d:tl</span></code></p>
 <p>Align values have the same name as the docking ones, but they refer to the direction of width and height from a specific point (denoted by “X” and “Y” keys). Align parameter is used to compute top-left and bottom-right corner of a control that is described using a (X,Y) coordonate. The following table ilustrate how this values are computed:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 26%" />
-<col style="width: 29%" />
-<col style="width: 29%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Value</p></th>
 <th class="head"><p>Alias</p></th>
@@ -350,16 +352,12 @@
 </tbody>
 </table>
 <p><strong>Remarks</strong>: Align value aliases can be use to provide a shorter format for a layout. In other words: <code class="docutils literal notranslate"><span class="pre">align:center</span></code> is the same with <code class="docutils literal notranslate"><span class="pre">align:c</span></code> or  <code class="docutils literal notranslate"><span class="pre">a:c</span></code></p>
-<div class="section" id="docking">
-<h2>Docking<a class="headerlink" href="#docking" title="Permalink to this headline">¶</a></h2>
+<section id="docking">
+<h2>Docking<a class="headerlink" href="#docking" title="Link to this heading"></a></h2>
 <p>To dock a control inside its parent use <code class="docutils literal notranslate"><span class="pre">d</span></code> or <code class="docutils literal notranslate"><span class="pre">dock</span></code> key.
 When docking a control, the following key can not be used: <code class="docutils literal notranslate"><span class="pre">align</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom</span></code>.
 <strong>Width</strong> and <strong>height</strong> should be used to specify the size of control. If not specified, they are defaulted to <code class="docutils literal notranslate"><span class="pre">100%</span></code>.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 63%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
 <th class="head"><p>Outcome</p></th>
@@ -407,19 +405,15 @@ When docking a control, the following key can not be used: <code class="docutils
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="using-absolute-offset">
-<h2>Using absolute offset<a class="headerlink" href="#using-absolute-offset" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="using-absolute-offset">
+<h2>Using absolute offset<a class="headerlink" href="#using-absolute-offset" title="Link to this heading"></a></h2>
 <p>In this mode parameters <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> must be used to specify a point from where the control will be constructed.
 When using this more, parameters <code class="docutils literal notranslate"><span class="pre">d</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom</span></code> can not be used.
 If <strong>width</strong> or <strong>height</strong> are not specified , they will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).
 If <strong>align</strong> is not specified, it will be defaulted to <code class="docutils literal notranslate"><span class="pre">topleft</span></code></p>
 <p>If <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code> or <code class="docutils literal notranslate"><span class="pre">height</span></code> are provided using percentages, the control will automatically adjust its size if its parent size changes.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 31%" />
-<col style="width: 69%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
 <th class="head"><p>Result</p></th>
@@ -449,23 +443,18 @@ If <strong>align</strong> is not specified, it will be defaulted to <code class=
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="anchors">
-<h2>Anchors<a class="headerlink" href="#anchors" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="anchors">
+<h2>Anchors<a class="headerlink" href="#anchors" title="Link to this heading"></a></h2>
 <p>Anchors (<code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code>) represent the distance between the object and its parent margins. When one of the anchors is present, the <code class="docutils literal notranslate"><span class="pre">dock</span></code> key can not be used. Depending on the combination of anchors used, other keys may be unusable.</p>
 <img alt="_images/layout_anchors.png" src="_images/layout_anchors.png" />
-<div class="section" id="corner-anchors">
-<h3>Corner anchors<a class="headerlink" href="#corner-anchors" title="Permalink to this headline">¶</a></h3>
+<section id="corner-anchors">
+<h3>Corner anchors<a class="headerlink" href="#corner-anchors" title="Link to this heading"></a></h3>
 <p>Corner anchors are cases when the following combinations of anchors are used toghether (<code class="docutils literal notranslate"><span class="pre">left</span></code> and <code class="docutils literal notranslate"><span class="pre">top</span></code>), (<code class="docutils literal notranslate"><span class="pre">left</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code>), (<code class="docutils literal notranslate"><span class="pre">right</span></code> and <code class="docutils literal notranslate"><span class="pre">top</span></code>) and (<code class="docutils literal notranslate"><span class="pre">right</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code>).
 When this combinations are used, <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> keys can not be used. Using them will reject the layout.
 If <strong>width</strong> or <strong>height</strong> are not specified , they will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless there is a minimum width or minumum height specified for that controls - in which case that limit will be applied).</p>
 <p>The combination of anchors also decides how (top,left) and (right,bottom) corners of a control are computed, as follows:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 21%" />
-<col style="width: 45%" />
-<col style="width: 34%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Combonation</p></th>
 <th class="head"><p>Top-Left corner</p></th>
@@ -494,10 +483,6 @@ If <strong>width</strong> or <strong>height</strong> are not specified , they wi
 <p>where <code class="docutils literal notranslate"><span class="pre">parentWidth</span></code> is the width of control parent, and <code class="docutils literal notranslate"><span class="pre">parentHeight</span></code> the height of control parent.</p>
 <p><strong>Examples</strong></p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 42%" />
-<col style="width: 58%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
 <th class="head"><p>Result</p></th>
@@ -518,18 +503,14 @@ If <strong>width</strong> or <strong>height</strong> are not specified , they wi
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="using-left-right-anchors">
-<h3>Using Left-Right anchors<a class="headerlink" href="#using-left-right-anchors" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="using-left-right-anchors">
+<h3>Using Left-Right anchors<a class="headerlink" href="#using-left-right-anchors" title="Link to this heading"></a></h3>
 <p>When <code class="docutils literal notranslate"><span class="pre">Left</span></code> and <code class="docutils literal notranslate"><span class="pre">right</span></code> anchors are used together, there are several restrictions. First of all, <code class="docutils literal notranslate"><span class="pre">width</span></code>  and <code class="docutils literal notranslate"><span class="pre">x</span></code> parameters can not be specified. Width is deduced as the difference between parents width and the sum of left and right anchors. Left anchor will also be considered the “x” value.
 However, <code class="docutils literal notranslate"><span class="pre">height</span></code> parameter should be specified (if not specified it will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless a minimum height is specified for that controls - in which case that limit will be applied).
 <cite>align</cite> paramter can also be specified , but only with the following values: <strong>top</strong>, <strong>center</strong> or <strong>bottom</strong>. If not specified it will be defaulted to <strong>center</strong>.</p>
 <p><strong>Examples</strong></p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 44%" />
-<col style="width: 56%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
 <th class="head"><p>Result</p></th>
@@ -550,18 +531,14 @@ However, <code class="docutils literal notranslate"><span class="pre">height</sp
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="using-top-bottom-anchors">
-<h3>Using Top-Bottom anchors<a class="headerlink" href="#using-top-bottom-anchors" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="using-top-bottom-anchors">
+<h3>Using Top-Bottom anchors<a class="headerlink" href="#using-top-bottom-anchors" title="Link to this heading"></a></h3>
 <p>When <code class="docutils literal notranslate"><span class="pre">top</span></code> and <code class="docutils literal notranslate"><span class="pre">bottom</span></code> anchors are used together, there are several restrictions. First of all, <code class="docutils literal notranslate"><span class="pre">height</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> parameters can not be specified. Height is deduced as the difference between parents height and the sum of top and bottom anchors. Top anchor will also be considered the “y” value.
 However, <code class="docutils literal notranslate"><span class="pre">width</span></code> parameter should be specified (if not specified it will be defaulted to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">character</span></code> (unless a minimum width is specified for that controls - in which case that limit will be applied).
 <cite>align</cite> paramter can also be specified , but only with the following values: <strong>left</strong>, <strong>center</strong> or <strong>right</strong>. If not specified it will be defaulted to <strong>center</strong>.</p>
 <p><strong>Examples</strong></p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 44%" />
-<col style="width: 56%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
 <th class="head"><p>Result</p></th>
@@ -582,16 +559,12 @@ However, <code class="docutils literal notranslate"><span class="pre">width</spa
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="margin-anchors">
-<h3>3-margin anchors<a class="headerlink" href="#margin-anchors" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="margin-anchors">
+<h3>3-margin anchors<a class="headerlink" href="#margin-anchors" title="Link to this heading"></a></h3>
 <p>When using 3 of the 4 anchors, the following keys can not be used: <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">align</span></code> and <code class="docutils literal notranslate"><span class="pre">dock</span></code>. Using them will reject the layout.
 The following table reflects these dependencies:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 47%" />
-<col style="width: 53%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Combination</p></th>
 <th class="head"><p>Result</p></th>
@@ -617,11 +590,6 @@ The following table reflects these dependencies:</p>
 <p><strong>Remarks</strong> if <code class="docutils literal notranslate"><span class="pre">height</span></code> or <code class="docutils literal notranslate"><span class="pre">width</span></code> are not present and can not be computed as a different betweem two margins, they are defaulted to value 1. If limits are present (min Width or min Height) those limits are applied. This is usually usefull for controls that have a fixed width or height (e.g. a button, a combobox).</p>
 <p>The position of the control is also computed based on the combination of the 3 anchors selectd, as shown in the next table:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 31%" />
-<col style="width: 36%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Combonation</p></th>
 <th class="head"><p>Top-Left corner</p></th>
@@ -650,10 +618,6 @@ The following table reflects these dependencies:</p>
 <p>where <code class="docutils literal notranslate"><span class="pre">parentWidth</span></code> is the width of control parent, and <code class="docutils literal notranslate"><span class="pre">parentHeight</span></code> the height of control parent.</p>
 <p><strong>Examples</strong></p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 42%" />
-<col style="width: 58%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
 <th class="head"><p>Result</p></th>
@@ -678,16 +642,12 @@ The following table reflects these dependencies:</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="id1">
-<h3>4-margin anchors<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id1">
+<h3>4-margin anchors<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p>When all of the 4 anchors, the rest of the keys ( <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">align</span></code> and <code class="docutils literal notranslate"><span class="pre">dock</span></code>) can not be used. Using them will reject the layout.</p>
 <p><strong>Example</strong></p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 37%" />
-<col style="width: 63%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Layout</p></th>
 <th class="head"><p>Result</p></th>
@@ -700,26 +660,26 @@ The following table reflects these dependencies:</p>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="more-examples">
-<h2>More examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="more-examples">
+<h2>More examples<a class="headerlink" href="#more-examples" title="Link to this heading"></a></h2>
 <p>For more examples on how to use AppCUI layout model, check out our repository example: <a class="reference external" href="https://github.com/gdt050579/AppCUI/tree/main/Examples/Layout">Example</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="initialization.html" class="btn btn-neutral float-left" title="AppCUI Initialization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="development.html" class="btn btn-neutral float-right" title="AppCUI development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="initialization.html" class="btn btn-neutral float-left" title="Initialization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="colors.html" class="btn btn-neutral float-right" title="Colors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Gavriluț Dragoș.</p>
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

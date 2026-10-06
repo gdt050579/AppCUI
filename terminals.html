@@ -1,20 +1,26 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Terminals &mdash; AppCUI  documentation</title>
+  <title>Frontends (terminals) &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
 
   
-      <script src="_static/jquery.js"></script>
-      <script src="_static/underscore.js"></script>
-      <script src="_static/doctools.js"></script>
-      <script src="_static/language_data.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API reference" href="api/index.html" />
     <link rel="prev" title="Colors" href="colors.html" /> 
 </head>
 
@@ -28,6 +34,7 @@
           
           <a href="index.html" class="icon icon-home">
             AppCUI
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -37,12 +44,26 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="initialization.html">AppCUI Initialization</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Terminals</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frontends (terminals)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#supported-features">Supported features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keyboard-on-ncurses-terminals">Keyboard on ncurses terminals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-frontends">Custom frontends</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
 </ul>
 
         </div>
@@ -59,7 +80,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Terminals</li>
+      <li class="breadcrumb-item active">Frontends (terminals)</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/terminals.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -69,178 +90,304 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="terminals">
-<h1>Terminals<a class="headerlink" href="#terminals" title="Permalink to this headline">¶</a></h1>
-<p>AppCUI supports various terminals front-ends, as shown in the next table.</p>
+  <section id="frontends-terminals">
+<h1>Frontends (terminals)<a class="headerlink" href="#frontends-terminals" title="Link to this heading"></a></h1>
+<p>AppCUI draws every control into an in-memory screen; a <em>frontend</em> displays that screen and produces the keyboard /
+mouse events. The frontend is selected with <code class="docutils literal notranslate"><span class="pre">InitializationData::Frontend</span></code> or with the <code class="docutils literal notranslate"><span class="pre">Frontend</span></code> key of the
+settings file (see <a class="reference internal" href="initialization.html"><span class="doc">Initialization</span></a>):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 56%" />
-<col style="width: 18%" />
-<col style="width: 11%" />
-<col style="width: 15%" />
+<col style="width: 20.0%" />
+<col style="width: 15.0%" />
+<col style="width: 65.0%" />
 </colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Frontend</p></th>
+<th class="head"><p>Systems</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
 <tbody>
-<tr class="row-odd"><td><div class="line-block">
-<div class="line">Feature</div>
-<div class="line"><br /></div>
-</div>
-</td>
-<td><div class="line-block">
-<div class="line">Windows</div>
-<div class="line">Terminal</div>
-</div>
-</td>
-<td><div class="line-block">
-<div class="line">SDL</div>
-<div class="line"><br /></div>
-</div>
-</td>
-<td><div class="line-block">
-<div class="line">ncurses</div>
-<div class="line"><br /></div>
-</div>
-</td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WindowsConsole</span></code></p></td>
+<td><p>Windows</p></td>
+<td><p>the Windows console (the default on Windows)</p></td>
 </tr>
-<tr class="row-even"><td><p>Windows</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Terminal</span></code></p></td>
+<td><p>Linux, macOS</p></td>
+<td><p>any terminal emulator, through ncurses (the default on Linux and macOS)</p></td>
 </tr>
-<tr class="row-odd"><td><p>Linux</p></td>
-<td></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SDL</span></code></p></td>
+<td><p>all</p></td>
+<td><p>a separate window rendered with SDL2 and an embedded font (JuliaMono)</p></td>
 </tr>
-<tr class="row-even"><td><p>MAC/OSX</p></td>
-<td></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Custom</span></code></p></td>
+<td><p>all</p></td>
+<td><p>implemented by the application (headless, remote or recorded screens) - see below</p></td>
 </tr>
-<tr class="row-odd"><td><p>16 colors</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-even"><td><p>Game Mode (30 FPS auto renderer)</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Unicode character set</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Cursor (caret) blink</p></td>
-<td><p>Yes</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Mouse drag</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Mouse move event</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Mouse click event</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Alt+key</span></code> support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Ctrl+key</span></code> support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Shift+key</span></code> support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Ctrl+Alt+key</span></code> support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+key</span></code> support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Alt+Shift+key</span></code> support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Ctrl+Alt+Shift+key</span></code> support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Underline characters</p></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Bold characters</p></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Clipboard support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Terminal resize events</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Terminal maximize support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Terminal full-screen support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>Terminal configure size support</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>Terminal set character size Mode</p></td>
-<td><p>Yes</p></td>
-<td><p>Yes</p></td>
-<td></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Tests</span></code></p></td>
+<td><p>all</p></td>
+<td><p>an in-memory screen driven by a test script (<code class="docutils literal notranslate"><span class="pre">Application::InitForTests</span></code> / <code class="docutils literal notranslate"><span class="pre">RunTestScript</span></code>)</p></td>
 </tr>
 </tbody>
 </table>
+<section id="supported-features">
+<h2>Supported features<a class="headerlink" href="#supported-features" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Windows console</p></th>
+<th class="head"><p>SDL</p></th>
+<th class="head"><p>ncurses</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>16 colors</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes (8-color terminals show bright colors as normal ones; no colors below 8)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Unicode special characters (box drawing, arrows, …)</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes (not on the Linux text console, <code class="docutils literal notranslate"><span class="pre">TERM=linux</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>FPS mode (<code class="docutils literal notranslate"><span class="pre">InitializationFlags::EnableFPSMode</span></code>, ~30 updates per second)</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Text cursor (caret)</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Mouse: left button</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mouse: right / middle button</p></td>
+<td><p>Right only</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Mouse: double click</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mouse: move and drag</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Depends on the terminal (<code class="docutils literal notranslate"><span class="pre">REPORT_MOUSE_POSITION</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Mouse: wheel</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Ctrl+key</span></code>, <code class="docutils literal notranslate"><span class="pre">Shift+key</span></code>, <code class="docutils literal notranslate"><span class="pre">Alt+key</span></code> and their combinations</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Partial (see below)</p></td>
+</tr>
+<tr class="row-even"><td><p>Clipboard</p></td>
+<td><p>Yes</p></td>
+<td><p>Windows only</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Resize events</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>Maximized / full screen / fixed size window</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No (the terminal decides)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Character size (<code class="docutils literal notranslate"><span class="pre">CharacterSize</span></code>)</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No (the terminal decides)</p></td>
+</tr>
+<tr class="row-even"><td><p>Font name (<code class="docutils literal notranslate"><span class="pre">FontName</span></code>)</p></td>
+<td><p>Yes</p></td>
+<td><p>No (embedded font)</p></td>
+<td><p>No (the terminal decides)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="keyboard-on-ncurses-terminals">
+<h2>Keyboard on ncurses terminals<a class="headerlink" href="#keyboard-on-ncurses-terminals" title="Link to this heading"></a></h2>
+<p>Terminals send many key combinations as escape sequences and some combinations are not sent at all. AppCUI
+recognizes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Ctrl+&lt;letter&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Ctrl+Space</span></code>, <code class="docutils literal notranslate"><span class="pre">Shift+Tab</span></code>, the function keys and their Shift / Ctrl / Alt variants, and the
+modified navigation keys (arrows, <code class="docutils literal notranslate"><span class="pre">Home</span></code>, <code class="docutils literal notranslate"><span class="pre">End</span></code>, <code class="docutils literal notranslate"><span class="pre">PageUp</span></code>, <code class="docutils literal notranslate"><span class="pre">PageDown</span></code>, <code class="docutils literal notranslate"><span class="pre">Insert</span></code>, <code class="docutils literal notranslate"><span class="pre">Delete</span></code>) as
+described by the terminfo entry of the terminal (xterm-compatible terminals report all of them);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alt+&lt;key&gt;</span></code> when the terminal sends Alt (Meta) as an <code class="docutils literal notranslate"><span class="pre">Escape</span></code> prefix (on macOS enable “Use Option as Meta key”
+in Terminal / iTerm2);</p></li>
+<li><p><strong>combo mode</strong>, for combinations the terminal can not send: press <kbd class="kbd docutils literal notranslate">`</kbd> (backtick), toggle the modifiers with
+<kbd class="kbd docutils literal notranslate">a</kbd> (Alt), <kbd class="kbd docutils literal notranslate">c</kbd> (Ctrl) and <kbd class="kbd docutils literal notranslate">s</kbd> (Shift), then press a letter or a digit (<code class="docutils literal notranslate"><span class="pre">1</span></code> - <code class="docutils literal notranslate"><span class="pre">9</span></code>, <code class="docutils literal notranslate"><span class="pre">0</span></code> are the
+function keys <code class="docutils literal notranslate"><span class="pre">F1</span></code> - <code class="docutils literal notranslate"><span class="pre">F10</span></code>). <kbd class="kbd docutils literal notranslate">Space</kbd> keeps combo mode active for several keys and <kbd class="kbd docutils literal notranslate">Escape</kbd> leaves it.
+The selected modifiers are shown on the screen while combo mode is active.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">Keyboard.Ctrl</span></code> / <code class="docutils literal notranslate"><span class="pre">Keyboard.Alt</span></code> keys of the settings file (see <a class="reference internal" href="initialization.html"><span class="doc">Initialization</span></a>) remap the modifiers
+when a terminal or a keyboard layout makes some of them hard to use.</p>
+</section>
+<section id="custom-frontends">
+<h2>Custom frontends<a class="headerlink" href="#custom-frontends" title="Link to this heading"></a></h2>
+<p>An application can implement its own frontend (<code class="docutils literal notranslate"><span class="pre">FrontendType::Custom</span></code>): AppCUI then calls an object that implements
+<code class="docutils literal notranslate"><span class="pre">Application::CustomFrontendInterface</span></code> instead of a terminal. This is how an application can run without a terminal
+(tests, screenshots), stream its screen over the network or record a session.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomFrontendInterface</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">OnInit</span><span class="p">(</span><span class="n">uint32</span><span class="o">&amp;</span><span class="w"> </span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="o">&amp;</span><span class="w"> </span><span class="n">height</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">          </span><span class="c1">// choose the screen size</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">OnUnInit</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">                                     </span><span class="c1">// the application stops</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">OnFlushToScreen</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Graphics</span><span class="o">::</span><span class="n">Character</span><span class="o">*</span><span class="w"> </span><span class="n">characters</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="n">width</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="n">height</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">OnUpdateCursor</span><span class="p">(</span><span class="n">uint32</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">visible</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WaitForEvent</span><span class="p">(</span><span class="n">FrontendEvent</span><span class="o">&amp;</span><span class="w"> </span><span class="n">evnt</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="n">timeoutMs</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// false = no event (timeout)</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasSupportFor</span><span class="p">(</span><span class="n">SpecialCharacterSetType</span><span class="w"> </span><span class="n">type</span><span class="p">);</span><span class="w">        </span><span class="c1">// default: every set</span>
+<span class="p">};</span>
+</pre></div>
 </div>
+<ul class="simple">
+<li><p>AppCUI calls every method from its own (UI) thread. <code class="docutils literal notranslate"><span class="pre">WaitForEvent</span></code> may be fed by other threads (for example a
+network thread that pushes events into a queue): it must return within <code class="docutils literal notranslate"><span class="pre">timeoutMs</span></code> milliseconds so that the frame
+updates of <code class="docutils literal notranslate"><span class="pre">EnableFPSMode</span></code> keep running.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OnFlushToScreen</span></code> receives the whole screen after every repaint (<code class="docutils literal notranslate"><span class="pre">width</span> <span class="pre">*</span> <span class="pre">height</span></code> characters, row major); the
+pointer is only valid during the call.</p></li>
+<li><p>Events are <code class="docutils literal notranslate"><span class="pre">FrontendEvent</span></code> objects: key presses (key code + Unicode character), shift state changes, mouse
+down / up / move / wheel, resize, close and redraw requests.</p></li>
+<li><p>The object is not owned by AppCUI and must outlive <code class="docutils literal notranslate"><span class="pre">Application::Run()</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Frontend</span></code> and <code class="docutils literal notranslate"><span class="pre">Size</span></code> keys of the settings file are ignored, and the clipboard is private to the process
+(a custom frontend never reads or writes the clipboard of the operating system).</p></li>
+</ul>
+<p>A complete headless frontend that renders an application into memory and prints the screen:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// A headless frontend: AppCUI draws into memory instead of a terminal (useful for tests, screenshots or for</span>
+<span class="c1">// streaming the screen somewhere else).</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HeadlessScreen</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">CustomFrontendInterface</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Graphics</span><span class="o">::</span><span class="n">Character</span><span class="o">&gt;</span><span class="w"> </span><span class="n">screen</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">width</span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">height</span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">closed</span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">OnInit</span><span class="p">(</span><span class="n">uint32</span><span class="o">&amp;</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="o">&amp;</span><span class="w"> </span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span><span class="p">;</span><span class="w"> </span><span class="c1">// the screen size is decided by the frontend</span>
+<span class="w">        </span><span class="n">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnUnInit</span><span class="p">()</span><span class="w"> </span><span class="k">override</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnFlushToScreen</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Graphics</span><span class="o">::</span><span class="n">Character</span><span class="o">*</span><span class="w"> </span><span class="n">characters</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="n">h</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">screen</span><span class="p">.</span><span class="n">assign</span><span class="p">(</span><span class="n">characters</span><span class="p">,</span><span class="w"> </span><span class="n">characters</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">h</span><span class="p">);</span>
+<span class="w">        </span><span class="n">width</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">;</span>
+<span class="w">        </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">h</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnUpdateCursor</span><span class="p">(</span><span class="n">uint32</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">WaitForEvent</span><span class="p">(</span><span class="n">FrontendEvent</span><span class="o">&amp;</span><span class="w"> </span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">uint32</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// a real frontend waits here for input (network, test script, ...); this one closes the application as</span>
+<span class="w">        </span><span class="c1">// soon as the first screen has been drawn</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">closed</span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">        </span><span class="n">e</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">FrontendEvent</span><span class="p">{};</span>
+<span class="w">        </span><span class="n">e</span><span class="p">.</span><span class="n">Type</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">FrontendEventType</span><span class="o">::</span><span class="n">Closed</span><span class="p">;</span>
+<span class="w">        </span><span class="n">closed</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">ToText</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">text</span><span class="p">;</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">uint32</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">height</span><span class="p">;</span><span class="w"> </span><span class="n">y</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">uint32</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">width</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="o">++</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="k">const</span><span class="w"> </span><span class="n">char16</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">screen</span><span class="p">[</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="p">].</span><span class="n">Code</span><span class="p">;</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mh">0x80</span><span class="p">)</span>
+<span class="w">                    </span><span class="n">text</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mh">0x20</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="sc">' '</span><span class="p">);</span>
+<span class="w">                </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mh">0x800</span><span class="p">)</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">text</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="mh">0xC0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">6</span><span class="p">)));</span>
+<span class="w">                    </span><span class="n">text</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="mh">0x80</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x3F</span><span class="p">)));</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="k">else</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">text</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="mh">0xE0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">12</span><span class="p">)));</span>
+<span class="w">                    </span><span class="n">text</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="mh">0x80</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">((</span><span class="n">ch</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x3F</span><span class="p">)));</span>
+<span class="w">                    </span><span class="n">text</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">(</span><span class="mh">0x80</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">ch</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0x3F</span><span class="p">)));</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">text</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="sc">'\n'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">text</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">HeadlessScreen</span><span class="w"> </span><span class="n">headless</span><span class="p">;</span><span class="w"> </span><span class="c1">// must outlive the application</span>
+
+<span class="n">InitializationData</span><span class="w"> </span><span class="n">initData</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">Frontend</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="n">FrontendType</span><span class="o">::</span><span class="n">Custom</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">CustomFrontend</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">headless</span><span class="p">;</span>
+<span class="n">initData</span><span class="p">.</span><span class="n">SpecialCharacterSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SpecialCharacterSetType</span><span class="o">::</span><span class="n">Ascii</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">Application</span><span class="o">::</span><span class="n">Init</span><span class="p">(</span><span class="n">initData</span><span class="p">))</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Controls</span><span class="o">::</span><span class="n">Factory</span><span class="o">::</span><span class="n">Window</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="s">"Headless"</span><span class="p">,</span><span class="w"> </span><span class="s">"d:c,w:40,h:6"</span><span class="p">);</span>
+<span class="n">Controls</span><span class="o">::</span><span class="n">Factory</span><span class="o">::</span><span class="n">Label</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="o">*</span><span class="n">window</span><span class="p">,</span><span class="w"> </span><span class="s">"Rendered without a terminal"</span><span class="p">,</span><span class="w"> </span><span class="s">"x:1,y:1,w:36"</span><span class="p">);</span>
+<span class="n">Application</span><span class="o">::</span><span class="n">AddWindow</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">window</span><span class="p">));</span>
+<span class="n">Application</span><span class="o">::</span><span class="n">Run</span><span class="p">();</span><span class="w"> </span><span class="c1">// returns after the frontend sent FrontendEventType::Closed</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">headless</span><span class="p">.</span><span class="n">ToText</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">############################################################</span>
+<span class="cp">############################################################</span>
+<span class="cp">############################################################</span>
+<span class="cp">##########+============ Headless =============[x]+##########</span>
+<span class="cp">##########|                                      |##########</span>
+<span class="cp">##########| Rendered without a terminal          |##########</span>
+<span class="cp">##########|                                      |##########</span>
+<span class="cp">##########|                                      |##########</span>
+<span class="cp">##########+======================================+##########</span>
+<span class="cp">############################################################</span>
+<span class="cp">############################################################</span>
+<span class="cp">############################################################</span>
+</pre></div>
+</div>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="colors.html" class="btn btn-neutral float-left" title="Colors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/index.html" class="btn btn-neutral float-right" title="API reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Gavriluț Dragoș.</p>
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

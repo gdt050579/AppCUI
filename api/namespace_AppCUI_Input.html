@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AppCUI::Input &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="KeyBinding" href="class_AppCUI_Input_KeyBinding.html" />
+    <link rel="prev" title="AppCUI::Graphics::ProgressStatus" href="namespace_AppCUI_Graphics_ProgressStatus.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+      <li class="breadcrumb-item active">AppCUI::Input</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/namespace_AppCUI_Input.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="appcui-input">
+<h1>AppCUI::Input<a class="headerlink" href="#appcui-input" title="Link to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5InputE">
+<span id="_CPPv3N6AppCUI5InputE"></span><span id="_CPPv2N6AppCUI5InputE"></span><span id="AppCUI::Input"></span><span class="target" id="namespaceAppCUI_1_1Input"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Input</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5InputE" title="Link to this definition"></a><br /></dt>
+<dd><p>Keyboard and mouse input: key codes and modifiers (<a class="reference internal" href="#namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36"><span class="std std-ref">Key</span></a>), mouse buttons and wheel, key bindings, key maps and keyboard modifier profiles (<a class="reference internal" href="class_AppCUI_Input_ModifierMap.html#classAppCUI_1_1Input_1_1ModifierMap"><span class="std std-ref">ModifierMap</span></a>). </p>
+</dd></dl>
+
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="class_AppCUI_Input_KeyBinding.html"><span class="doc">KeyBinding</span></a> - A named, rebindable keyboard shortcut. Key is the current (effective) key, DefaultKey the built-in one.</p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Input_KeyMap.html"><span class="doc">KeyMap</span></a> - Small open-addressing table: key -&gt; command id. Built when bindings change, queried once per key press.</p></li>
+<li><p><a class="reference internal" href="class_AppCUI_Input_ModifierMap.html"><span class="doc">ModifierMap</span></a> - Bijective remapping of the Ctrl/Alt/Shift modifier combinations, applied to every incoming input event (physical -&gt; logical) and to every displayed key (logical -&gt; physical).</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="enumerations">
+<h2>Enumerations<a class="headerlink" href="#enumerations" title="Link to this heading"></a></h2>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3KeyE">
+<span id="_CPPv3N6AppCUI5Input3KeyE"></span><span id="_CPPv2N6AppCUI5Input3KeyE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">Key</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI5Input3KeyE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key4NoneE">
+<span id="_CPPv3N6AppCUI5Input3Key4NoneE"></span><span id="_CPPv2N6AppCUI5Input3Key4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F1E">
+<span id="_CPPv3N6AppCUI5Input3Key2F1E"></span><span id="_CPPv2N6AppCUI5Input3Key2F1E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ae1dffc8709f31a4987c8a88334107e89"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F1E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F2E">
+<span id="_CPPv3N6AppCUI5Input3Key2F2E"></span><span id="_CPPv2N6AppCUI5Input3Key2F2E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36afe5c3684dce76cdd9f7f42430868aa74"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F2</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F2E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F3E">
+<span id="_CPPv3N6AppCUI5Input3Key2F3E"></span><span id="_CPPv2N6AppCUI5Input3Key2F3E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a4b6bf4b531770872d4328ce69bef5627"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F3</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F3E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F4E">
+<span id="_CPPv3N6AppCUI5Input3Key2F4E"></span><span id="_CPPv2N6AppCUI5Input3Key2F4E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ae7e0e72401a9f2718ed0f39f2861d702"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F4</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F4E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F5E">
+<span id="_CPPv3N6AppCUI5Input3Key2F5E"></span><span id="_CPPv2N6AppCUI5Input3Key2F5E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a37f438df6a6d5ba4c17ef8ca58562f00"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F5</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F5E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F6E">
+<span id="_CPPv3N6AppCUI5Input3Key2F6E"></span><span id="_CPPv2N6AppCUI5Input3Key2F6E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a1faf42f2823f184eb2c9f0dffe5d73f2"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F6</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F6E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F7E">
+<span id="_CPPv3N6AppCUI5Input3Key2F7E"></span><span id="_CPPv2N6AppCUI5Input3Key2F7E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a47489eb597b7db34caa24b1fc78fc839"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F7</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F7E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F8E">
+<span id="_CPPv3N6AppCUI5Input3Key2F8E"></span><span id="_CPPv2N6AppCUI5Input3Key2F8E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a4787509ad9f9d747a81a30e9dde3d4a7"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F8</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F8E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2F9E">
+<span id="_CPPv3N6AppCUI5Input3Key2F9E"></span><span id="_CPPv2N6AppCUI5Input3Key2F9E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a892a245e287c163080b23db737d3c4c9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F9</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2F9E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key3F10E">
+<span id="_CPPv3N6AppCUI5Input3Key3F10E"></span><span id="_CPPv2N6AppCUI5Input3Key3F10E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ab213ce22ca6ad4eda8db82966b9b6e5a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F10</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key3F10E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key3F11E">
+<span id="_CPPv3N6AppCUI5Input3Key3F11E"></span><span id="_CPPv2N6AppCUI5Input3Key3F11E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a643b0662422d1d0dffa3fca2e2bf28a8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F11</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key3F11E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key3F12E">
+<span id="_CPPv3N6AppCUI5Input3Key3F12E"></span><span id="_CPPv2N6AppCUI5Input3Key3F12E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ae902674982fc99aa343cdd94da7476c3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F12</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key3F12E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key5EnterE">
+<span id="_CPPv3N6AppCUI5Input3Key5EnterE"></span><span id="_CPPv2N6AppCUI5Input3Key5EnterE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36af1851d5600eae616ee802a31ac74701b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Enter</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key5EnterE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key6EscapeE">
+<span id="_CPPv3N6AppCUI5Input3Key6EscapeE"></span><span id="_CPPv2N6AppCUI5Input3Key6EscapeE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a013ec032d3460d4be4431c6ab1f8f224"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Escape</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key6EscapeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key6InsertE">
+<span id="_CPPv3N6AppCUI5Input3Key6InsertE"></span><span id="_CPPv2N6AppCUI5Input3Key6InsertE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36aa458be0f08b7e4ff3c0f633c100176c0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Insert</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key6InsertE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key6DeleteE">
+<span id="_CPPv3N6AppCUI5Input3Key6DeleteE"></span><span id="_CPPv2N6AppCUI5Input3Key6DeleteE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36af2a6c498fb90ee345d997f888fce3b18"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Delete</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key6DeleteE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key9BackspaceE">
+<span id="_CPPv3N6AppCUI5Input3Key9BackspaceE"></span><span id="_CPPv2N6AppCUI5Input3Key9BackspaceE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36acd7d13ceea728b08555f7c818cfb13ef"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Backspace</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key9BackspaceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key3TabE">
+<span id="_CPPv3N6AppCUI5Input3Key3TabE"></span><span id="_CPPv2N6AppCUI5Input3Key3TabE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a5c6ba25104401c9ee0650230fc6ba413"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Tab</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key3TabE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key4LeftE">
+<span id="_CPPv3N6AppCUI5Input3Key4LeftE"></span><span id="_CPPv2N6AppCUI5Input3Key4LeftE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a945d5e233cf7d6240f6b783b36a374ff"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Left</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key4LeftE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2UpE">
+<span id="_CPPv3N6AppCUI5Input3Key2UpE"></span><span id="_CPPv2N6AppCUI5Input3Key2UpE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a258f49887ef8d14ac268c92b02503aaa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Up</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2UpE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key4DownE">
+<span id="_CPPv3N6AppCUI5Input3Key4DownE"></span><span id="_CPPv2N6AppCUI5Input3Key4DownE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a08a38277b0309070706f6652eeae9a53"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Down</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key4DownE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key5RightE">
+<span id="_CPPv3N6AppCUI5Input3Key5RightE"></span><span id="_CPPv2N6AppCUI5Input3Key5RightE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a92b09c7c48c520c3c55e497875da437c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Right</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key5RightE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key6PageUpE">
+<span id="_CPPv3N6AppCUI5Input3Key6PageUpE"></span><span id="_CPPv2N6AppCUI5Input3Key6PageUpE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a9b869c510c75c5827ac82e49d4340927"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PageUp</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key6PageUpE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key8PageDownE">
+<span id="_CPPv3N6AppCUI5Input3Key8PageDownE"></span><span id="_CPPv2N6AppCUI5Input3Key8PageDownE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36aee3677bcca83ece9384b01e43952bf33"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PageDown</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key8PageDownE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key4HomeE">
+<span id="_CPPv3N6AppCUI5Input3Key4HomeE"></span><span id="_CPPv2N6AppCUI5Input3Key4HomeE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a8cf04a9734132302f96da8e113e80ce5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Home</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key4HomeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key3EndE">
+<span id="_CPPv3N6AppCUI5Input3Key3EndE"></span><span id="_CPPv2N6AppCUI5Input3Key3EndE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a87557f11575c0ad78e4e28abedc13b6e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">End</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key3EndE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key5SpaceE">
+<span id="_CPPv3N6AppCUI5Input3Key5SpaceE"></span><span id="_CPPv2N6AppCUI5Input3Key5SpaceE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ad511f8439ecde36647437fbba67a4394"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Space</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key5SpaceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1AE">
+<span id="_CPPv3N6AppCUI5Input3Key1AE"></span><span id="_CPPv2N6AppCUI5Input3Key1AE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a7fc56270e7a70fa81a5935b72eacbe29"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">A</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1AE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1BE">
+<span id="_CPPv3N6AppCUI5Input3Key1BE"></span><span id="_CPPv2N6AppCUI5Input3Key1BE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a9d5ed678fe57bcca610140957afab571"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">B</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1BE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1CE">
+<span id="_CPPv3N6AppCUI5Input3Key1CE"></span><span id="_CPPv2N6AppCUI5Input3Key1CE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a0d61f8370cad1d412f80b84d143e1257"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">C</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1CE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1DE">
+<span id="_CPPv3N6AppCUI5Input3Key1DE"></span><span id="_CPPv2N6AppCUI5Input3Key1DE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36af623e75af30e62bbd73d6df5b50bb7b5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">D</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1DE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1EE">
+<span id="_CPPv3N6AppCUI5Input3Key1EE"></span><span id="_CPPv2N6AppCUI5Input3Key1EE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a3a3ea00cfc35332cedf6e5e9a32e94da"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">E</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1EE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1FE">
+<span id="_CPPv3N6AppCUI5Input3Key1FE"></span><span id="_CPPv2N6AppCUI5Input3Key1FE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a800618943025315f869e4e1f09471012"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1FE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1GE">
+<span id="_CPPv3N6AppCUI5Input3Key1GE"></span><span id="_CPPv2N6AppCUI5Input3Key1GE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36adfcf28d0734569a6a693bc8194de62bf"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">G</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1GE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1HE">
+<span id="_CPPv3N6AppCUI5Input3Key1HE"></span><span id="_CPPv2N6AppCUI5Input3Key1HE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ac1d9f50f86825a1a2302ec2449c17196"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">H</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1HE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1IE">
+<span id="_CPPv3N6AppCUI5Input3Key1IE"></span><span id="_CPPv2N6AppCUI5Input3Key1IE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36add7536794b63bf90eccfd37f9b147d7f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">I</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1IE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1JE">
+<span id="_CPPv3N6AppCUI5Input3Key1JE"></span><span id="_CPPv2N6AppCUI5Input3Key1JE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36aff44570aca8241914870afbc310cdb85"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">J</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1JE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1KE">
+<span id="_CPPv3N6AppCUI5Input3Key1KE"></span><span id="_CPPv2N6AppCUI5Input3Key1KE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36aa5f3c6a11b03839d46af9fb43c97c188"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">K</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1KE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1LE">
+<span id="_CPPv3N6AppCUI5Input3Key1LE"></span><span id="_CPPv2N6AppCUI5Input3Key1LE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ad20caec3b48a1eef164cb4ca81ba2587"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1LE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1ME">
+<span id="_CPPv3N6AppCUI5Input3Key1ME"></span><span id="_CPPv2N6AppCUI5Input3Key1ME"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a69691c7bdcc3ce6d5d8a1361f22d04ac"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">M</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1ME" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1NE">
+<span id="_CPPv3N6AppCUI5Input3Key1NE"></span><span id="_CPPv2N6AppCUI5Input3Key1NE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a8d9c307cb7f3c4a32822a51922d1ceaa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1NE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1OE">
+<span id="_CPPv3N6AppCUI5Input3Key1OE"></span><span id="_CPPv2N6AppCUI5Input3Key1OE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36af186217753c37b9b9f958d906208506e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">O</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1OE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1PE">
+<span id="_CPPv3N6AppCUI5Input3Key1PE"></span><span id="_CPPv2N6AppCUI5Input3Key1PE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a44c29edb103a2872f519ad0c9a0fdaaa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">P</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1PE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1QE">
+<span id="_CPPv3N6AppCUI5Input3Key1QE"></span><span id="_CPPv2N6AppCUI5Input3Key1QE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36af09564c9ca56850d4cd6b3319e541aee"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Q</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1QE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1RE">
+<span id="_CPPv3N6AppCUI5Input3Key1RE"></span><span id="_CPPv2N6AppCUI5Input3Key1RE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ae1e1d3d40573127e9ee0480caf1283d6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1RE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1SE">
+<span id="_CPPv3N6AppCUI5Input3Key1SE"></span><span id="_CPPv2N6AppCUI5Input3Key1SE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a5dbc98dcc983a70728bd082d1a47546e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1SE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1TE">
+<span id="_CPPv3N6AppCUI5Input3Key1TE"></span><span id="_CPPv2N6AppCUI5Input3Key1TE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ab9ece18c950afbfa6b0fdbfa4ff731d3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1UE">
+<span id="_CPPv3N6AppCUI5Input3Key1UE"></span><span id="_CPPv2N6AppCUI5Input3Key1UE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a4c614360da93c0a041b22e537de151eb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1UE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1VE">
+<span id="_CPPv3N6AppCUI5Input3Key1VE"></span><span id="_CPPv2N6AppCUI5Input3Key1VE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a5206560a306a2e085a437fd258eb57ce"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">V</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1VE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1WE">
+<span id="_CPPv3N6AppCUI5Input3Key1WE"></span><span id="_CPPv2N6AppCUI5Input3Key1WE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a61e9c06ea9a85a5088a499df6458d276"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">W</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1WE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1XE">
+<span id="_CPPv3N6AppCUI5Input3Key1XE"></span><span id="_CPPv2N6AppCUI5Input3Key1XE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a02129bb861061d1a052c592e2dc6b383"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">X</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1XE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1YE">
+<span id="_CPPv3N6AppCUI5Input3Key1YE"></span><span id="_CPPv2N6AppCUI5Input3Key1YE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a57cec4137b614c87cb4e24a3d003a3e0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Y</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1YE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key1ZE">
+<span id="_CPPv3N6AppCUI5Input3Key1ZE"></span><span id="_CPPv2N6AppCUI5Input3Key1ZE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a21c2e59531c8710156d34a3c30ac81d5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Z</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key1ZE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N0E">
+<span id="_CPPv3N6AppCUI5Input3Key2N0E"></span><span id="_CPPv2N6AppCUI5Input3Key2N0E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a6b59730651c1344d678dee427c18b498"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N0</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N0E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N1E">
+<span id="_CPPv3N6AppCUI5Input3Key2N1E"></span><span id="_CPPv2N6AppCUI5Input3Key2N1E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a86bc43e556b1df283839f053eb02e2bb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N1</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N1E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N2E">
+<span id="_CPPv3N6AppCUI5Input3Key2N2E"></span><span id="_CPPv2N6AppCUI5Input3Key2N2E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ac74b82067996a9bc955560b9356f904c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N2</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N2E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N3E">
+<span id="_CPPv3N6AppCUI5Input3Key2N3E"></span><span id="_CPPv2N6AppCUI5Input3Key2N3E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36aabee0c793b3b1ded0e9b48057599957b"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N3</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N3E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N4E">
+<span id="_CPPv3N6AppCUI5Input3Key2N4E"></span><span id="_CPPv2N6AppCUI5Input3Key2N4E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ab1c49f839832f51f6d687a04db101d4c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N4</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N4E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N5E">
+<span id="_CPPv3N6AppCUI5Input3Key2N5E"></span><span id="_CPPv2N6AppCUI5Input3Key2N5E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36aba7d0834d23b91504bed685901dc3ac5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N5</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N5E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N6E">
+<span id="_CPPv3N6AppCUI5Input3Key2N6E"></span><span id="_CPPv2N6AppCUI5Input3Key2N6E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a43575ccd573f6ce83c2ce1c4a47cdfdc"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N6</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N6E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N7E">
+<span id="_CPPv3N6AppCUI5Input3Key2N7E"></span><span id="_CPPv2N6AppCUI5Input3Key2N7E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36abec20cee5d032151c66d7303207f2f00"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N7</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N7E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N8E">
+<span id="_CPPv3N6AppCUI5Input3Key2N8E"></span><span id="_CPPv2N6AppCUI5Input3Key2N8E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a7364f2afc5ceeebe184b9c484b69fa95"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N8</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N8E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key2N9E">
+<span id="_CPPv3N6AppCUI5Input3Key2N9E"></span><span id="_CPPv2N6AppCUI5Input3Key2N9E"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36af7ddf69df53a1ed75a633118b6eab1e9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N9</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key2N9E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key5CountE">
+<span id="_CPPv3N6AppCUI5Input3Key5CountE"></span><span id="_CPPv2N6AppCUI5Input3Key5CountE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36ae93f994f01c537c4e2f7d8528c3eb5e9"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Count</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key5CountE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key3AltE">
+<span id="_CPPv3N6AppCUI5Input3Key3AltE"></span><span id="_CPPv2N6AppCUI5Input3Key3AltE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36aa2e92861b757ab878312dd57993d60cf"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Alt</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x1000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key3AltE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key4CtrlE">
+<span id="_CPPv3N6AppCUI5Input3Key4CtrlE"></span><span id="_CPPv2N6AppCUI5Input3Key4CtrlE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a2b61e0d5977f2e38f06e16281c802b47"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ctrl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x2000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key4CtrlE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input3Key5ShiftE">
+<span id="_CPPv3N6AppCUI5Input3Key5ShiftE"></span><span id="_CPPv2N6AppCUI5Input3Key5ShiftE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a9b98f0716a389f78cc9872e6d815cc36a825a3d98017bab11815ad2817201324c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shift</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x4000</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input3Key5ShiftE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input11MouseButtonE">
+<span id="_CPPv3N6AppCUI5Input11MouseButtonE"></span><span id="_CPPv2N6AppCUI5Input11MouseButtonE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a832ef4d47d7ba1cf451e941c9cafcc1e"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">MouseButton</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI5Input11MouseButtonE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input11MouseButton4NoneE">
+<span id="_CPPv3N6AppCUI5Input11MouseButton4NoneE"></span><span id="_CPPv2N6AppCUI5Input11MouseButton4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a832ef4d47d7ba1cf451e941c9cafcc1ea6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input11MouseButton4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input11MouseButton4LeftE">
+<span id="_CPPv3N6AppCUI5Input11MouseButton4LeftE"></span><span id="_CPPv2N6AppCUI5Input11MouseButton4LeftE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a832ef4d47d7ba1cf451e941c9cafcc1ea945d5e233cf7d6240f6b783b36a374ff"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Left</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x01</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input11MouseButton4LeftE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input11MouseButton6CenterE">
+<span id="_CPPv3N6AppCUI5Input11MouseButton6CenterE"></span><span id="_CPPv2N6AppCUI5Input11MouseButton6CenterE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a832ef4d47d7ba1cf451e941c9cafcc1ea4f1f6016fc9f3f2353c0cc7c67b292bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Center</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x02</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input11MouseButton6CenterE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input11MouseButton5RightE">
+<span id="_CPPv3N6AppCUI5Input11MouseButton5RightE"></span><span id="_CPPv2N6AppCUI5Input11MouseButton5RightE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a832ef4d47d7ba1cf451e941c9cafcc1ea92b09c7c48c520c3c55e497875da437c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Right</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x04</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input11MouseButton5RightE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input11MouseButton13DoubleClickedE">
+<span id="_CPPv3N6AppCUI5Input11MouseButton13DoubleClickedE"></span><span id="_CPPv2N6AppCUI5Input11MouseButton13DoubleClickedE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a832ef4d47d7ba1cf451e941c9cafcc1ea8b30fa45122b0d171b402273ec23de83"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DoubleClicked</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0x08</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input11MouseButton13DoubleClickedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input10MouseWheelE">
+<span id="_CPPv3N6AppCUI5Input10MouseWheelE"></span><span id="_CPPv2N6AppCUI5Input10MouseWheelE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a5094315260d62c60ec5834937d3986f4"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">MouseWheel</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI5Input10MouseWheelE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input10MouseWheel4NoneE">
+<span id="_CPPv3N6AppCUI5Input10MouseWheel4NoneE"></span><span id="_CPPv2N6AppCUI5Input10MouseWheel4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a5094315260d62c60ec5834937d3986f4a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input10MouseWheel4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input10MouseWheel2UpE">
+<span id="_CPPv3N6AppCUI5Input10MouseWheel2UpE"></span><span id="_CPPv2N6AppCUI5Input10MouseWheel2UpE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a5094315260d62c60ec5834937d3986f4a258f49887ef8d14ac268c92b02503aaa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Up</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input10MouseWheel2UpE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input10MouseWheel4DownE">
+<span id="_CPPv3N6AppCUI5Input10MouseWheel4DownE"></span><span id="_CPPv2N6AppCUI5Input10MouseWheel4DownE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a5094315260d62c60ec5834937d3986f4a08a38277b0309070706f6652eeae9a53"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Down</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input10MouseWheel4DownE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input10MouseWheel4LeftE">
+<span id="_CPPv3N6AppCUI5Input10MouseWheel4LeftE"></span><span id="_CPPv2N6AppCUI5Input10MouseWheel4LeftE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a5094315260d62c60ec5834937d3986f4a945d5e233cf7d6240f6b783b36a374ff"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Left</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input10MouseWheel4LeftE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input10MouseWheel5RightE">
+<span id="_CPPv3N6AppCUI5Input10MouseWheel5RightE"></span><span id="_CPPv2N6AppCUI5Input10MouseWheel5RightE"></span><span class="target" id="namespaceAppCUI_1_1Input_1a5094315260d62c60ec5834937d3986f4a92b09c7c48c520c3c55e497875da437c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Right</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input10MouseWheel5RightE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input15KeyBindingFlagsE">
+<span id="_CPPv3N6AppCUI5Input15KeyBindingFlagsE"></span><span id="_CPPv2N6AppCUI5Input15KeyBindingFlagsE"></span><span class="target" id="namespaceAppCUI_1_1Input_1aaf03d0557428e06feaec3b42217fbaf4"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI5InputE" title="AppCUI::Input"><span class="n"><span class="pre">Input</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">KeyBindingFlags</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI5uint8E" title="AppCUI::uint8"><span class="n"><span class="pre">uint8</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI5Input15KeyBindingFlagsE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input15KeyBindingFlags4NoneE">
+<span id="_CPPv3N6AppCUI5Input15KeyBindingFlags4NoneE"></span><span id="_CPPv2N6AppCUI5Input15KeyBindingFlags4NoneE"></span><span class="target" id="namespaceAppCUI_1_1Input_1aaf03d0557428e06feaec3b42217fbaf4a6adf97f83acf6453d4a6a4b1070f3754"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">None</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input15KeyBindingFlags4NoneE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input15KeyBindingFlags21ShiftExtendsSelectionE">
+<span id="_CPPv3N6AppCUI5Input15KeyBindingFlags21ShiftExtendsSelectionE"></span><span id="_CPPv2N6AppCUI5Input15KeyBindingFlags21ShiftExtendsSelectionE"></span><span class="target" id="namespaceAppCUI_1_1Input_1aaf03d0557428e06feaec3b42217fbaf4a0f60c2c95edad48b113b31eafd8cb751"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ShiftExtendsSelection</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input15KeyBindingFlags21ShiftExtendsSelectionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input15KeyBindingFlags8ReadOnlyE">
+<span id="_CPPv3N6AppCUI5Input15KeyBindingFlags8ReadOnlyE"></span><span id="_CPPv2N6AppCUI5Input15KeyBindingFlags8ReadOnlyE"></span><span class="target" id="namespaceAppCUI_1_1Input_1aaf03d0557428e06feaec3b42217fbaf4a131fb182a881796e7606ed6da27f1197"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadOnly</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input15KeyBindingFlags8ReadOnlyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Input15KeyBindingFlags15RequiresRestartE">
+<span id="_CPPv3N6AppCUI5Input15KeyBindingFlags15RequiresRestartE"></span><span id="_CPPv2N6AppCUI5Input15KeyBindingFlags15RequiresRestartE"></span><span class="target" id="namespaceAppCUI_1_1Input_1aaf03d0557428e06feaec3b42217fbaf4a9cecc8bb439cc0b3079588234f198488"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RequiresRestart</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Input15KeyBindingFlags15RequiresRestartE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespace_AppCUI_Graphics_ProgressStatus.html" class="btn btn-neutral float-left" title="AppCUI::Graphics::ProgressStatus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Input_KeyBinding.html" class="btn btn-neutral float-right" title="KeyBinding" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

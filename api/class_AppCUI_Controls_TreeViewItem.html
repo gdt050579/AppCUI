@@ -1,0 +1,386 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TreeViewItem &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="UserControl" href="class_AppCUI_Controls_UserControl.html" />
+    <link rel="prev" title="TreeView" href="class_AppCUI_Controls_TreeView.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+      <li class="breadcrumb-item active">TreeViewItem</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Controls_TreeViewItem.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="treeviewitem">
+<h1>TreeViewItem<a class="headerlink" href="#treeviewitem" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Controls::TreeViewItem</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItemE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItemE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItemE"></span><span id="AppCUI::Controls::TreeViewItem"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TreeViewItem</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItemE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4TypeE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4TypeE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4TypeE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Type</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4TypeE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type6NormalE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type6NormalE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type6NormalE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a960b44c579bc2f6818d2daaf9e4c16f0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Normal</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type6NormalE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type11HighlightedE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type11HighlightedE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type11HighlightedE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a128f36ec46f7ca11bafb48cd2022a54c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Highlighted</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type11HighlightedE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type9GrayedOutE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type9GrayedOutE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type9GrayedOutE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a18fe6d6fcbbc54212d8bd332af8b5df3"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GrayedOut</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type9GrayedOutE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type16ErrorInformationE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type16ErrorInformationE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type16ErrorInformationE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a6fcedb81b269d75b583e392a25c1fb6e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ErrorInformation</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type16ErrorInformationE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type18WarningInformationE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type18WarningInformationE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type18WarningInformationE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a7f107fa21312d0769903a53aae151fa8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WarningInformation</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type18WarningInformationE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type12Emphasized_1E">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type12Emphasized_1E"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type12Emphasized_1E"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a3fc0489beb605ca1aadf35642b1c328c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Emphasized_1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type12Emphasized_1E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type12Emphasized_2E">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type12Emphasized_2E"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type12Emphasized_2E"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2aef795ad9b9c6ebd9f2e1a00a5fb20624"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Emphasized_2</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">6</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type12Emphasized_2E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type8CategoryE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type8CategoryE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type8CategoryE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a3adbdb3ac060038aa0e6e6c138ef9873"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Category</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">7</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type8CategoryE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4Type7ColoredE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4Type7ColoredE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4Type7ColoredE"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af10a064ecef794c9b8731de43ec4e0b2a23aad110ee43b97ef120fbbeb743d81c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Colored</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4Type7ColoredE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem12TreeViewItemEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem12TreeViewItemEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem12TreeViewItemEv"></span><span id="AppCUI::Controls::TreeViewItem::TreeViewItem"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a1fb52942847affb5711d3d9d8aec89a7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TreeViewItem</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem12TreeViewItemEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem7IsValidEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem7IsValidEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem7IsValidEv"></span><span id="AppCUI::Controls::TreeViewItem::IsValidC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a7623cf14986612ab0b750f9a2f4c3780"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsValid</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem7IsValidEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem8AddChildE11ConstStringb">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem8AddChildE11ConstStringb"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem8AddChildE11ConstStringb"></span><span id="AppCUI::Controls::TreeViewItem::AddChild__ConstString.b"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1ae511c769cc1a40c6ee0dddb83efc537b"></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls12TreeViewItemE" title="AppCUI::Controls::TreeViewItem"><span class="n"><span class="pre">TreeViewItem</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddChild</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isExpandable</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem8AddChildE11ConstStringb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem7SetTextE11ConstString">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem7SetTextE11ConstString"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem7SetTextE11ConstString"></span><span id="AppCUI::Controls::TreeViewItem::SetText__ConstString"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a10597d47d5849c1b5830e98d6b3b1196"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem7SetTextE11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem7GetTextEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem7GetTextEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem7GetTextEv"></span><span id="AppCUI::Controls::TreeViewItem::GetTextC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a82a45b9737c5a89668a7a71262cf22cb"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetText</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem7GetTextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem9SetValuesEKNSt16initializer_listI11ConstStringEE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem9SetValuesEKNSt16initializer_listI11ConstStringEE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem9SetValuesEKNSt16initializer_listI11ConstStringEE"></span><span id="AppCUI::Controls::TreeViewItem::SetValues__std::initializer_list:ConstString:C"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a3fe2b6108d450c7de82c9f5eb0818f3f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetValues</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">initializer_list</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">values</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem9SetValuesEKNSt16initializer_listI11ConstStringEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem7SetTextE6uint32RK11ConstString">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem7SetTextE6uint32RK11ConstString"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem7SetTextE6uint32RK11ConstString"></span><span id="AppCUI::Controls::TreeViewItem::SetText__uint32.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a3387f703e9b67381bca28203b94c401e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">subItemIndex</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI11ConstStringE" title="AppCUI::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem7SetTextE6uint32RK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem7GetTextE6uint32">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem7GetTextE6uint32"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem7GetTextE6uint32"></span><span id="AppCUI::Controls::TreeViewItem::GetText__uint32C"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1ab612ffb053244b1a54d08fe9a7b34a76"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetText</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">subItemIndex</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem7GetTextE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem7SetDataE6uint64">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem7SetDataE6uint64"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem7SetDataE6uint64"></span><span id="AppCUI::Controls::TreeViewItem::SetData__uint64"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a28542dab5f110040bc7463fdff9e37a4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetData</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem7SetDataE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem7GetDataE6uint64">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem7GetDataE6uint64"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem7GetDataE6uint64"></span><span id="AppCUI::Controls::TreeViewItem::GetData__uint64C"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a6d26b8150c633488c8876f6cfd72d902"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetData</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint64E" title="AppCUI::uint64"><span class="n"><span class="pre">uint64</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">errorValue</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem7GetDataE6uint64" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem7SetTypeEN12TreeViewItem4TypeE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem7SetTypeEN12TreeViewItem4TypeE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem7SetTypeEN12TreeViewItem4TypeE"></span><span id="AppCUI::Controls::TreeViewItem::SetType__TreeViewItem::Type"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1ab9dea63c7e37dcdc7c169d2ff7301157"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetType</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls12TreeViewItemE" title="AppCUI::Controls::TreeViewItem"><span class="n"><span class="pre">TreeViewItem</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4TypeE" title="AppCUI::Controls::TreeViewItem::Type"><span class="n"><span class="pre">Type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem7SetTypeEN12TreeViewItem4TypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem8SetColorERKN8Graphics9ColorPairE">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem8SetColorERKN8Graphics9ColorPairE"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem8SetColorERKN8Graphics9ColorPairE"></span><span id="AppCUI::Controls::TreeViewItem::SetColor__Graphics::ColorPairCR"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1ac7bba40419b8fe4f2d9b9db5aee10c68"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetColor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_ColorPair.html#_CPPv4N6AppCUI8Graphics9ColorPairE" title="AppCUI::Graphics::ColorPair"><span class="n"><span class="pre">ColorPair</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">color</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem8SetColorERKN8Graphics9ColorPairE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem10SetCurrentEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem10SetCurrentEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem10SetCurrentEv"></span><span id="AppCUI::Controls::TreeViewItem::SetCurrent"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a9f1c3d41845af1f9a49da407bc91bd64"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetCurrent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem10SetCurrentEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem9IsCurrentEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem9IsCurrentEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem9IsCurrentEv"></span><span id="AppCUI::Controls::TreeViewItem::IsCurrentC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1af0ce9789bc09eedd921efffacf928f96"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsCurrent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem9IsCurrentEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem10SetFoldingEb">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem10SetFoldingEb"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem10SetFoldingEb"></span><span id="AppCUI::Controls::TreeViewItem::SetFolding__b"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1aabfd66694d760009f1ad692247bbb9ae"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetFolding</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expanded</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem10SetFoldingEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem8IsFoldedEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem8IsFoldedEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem8IsFoldedEv"></span><span id="AppCUI::Controls::TreeViewItem::IsFolded"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1aec3d576993c57379ed915d02cf4f808d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsFolded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem8IsFoldedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem13SetExpandableEb">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem13SetExpandableEb"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem13SetExpandableEb"></span><span id="AppCUI::Controls::TreeViewItem::SetExpandable__b"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1aa5fec70f93116f9585fda4fb5fba57e8"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetExpandable</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">expandable</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem13SetExpandableEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem12IsExpandableEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem12IsExpandableEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem12IsExpandableEv"></span><span id="AppCUI::Controls::TreeViewItem::IsExpandableC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a0ec85eac5c6f17a90e0eaebe3735ea18"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsExpandable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem12IsExpandableEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem16GetChildrenCountEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem16GetChildrenCountEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem16GetChildrenCountEv"></span><span id="AppCUI::Controls::TreeViewItem::GetChildrenCountC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a60b582158bf03cd6588c2790704aa5e0"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetChildrenCount</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem16GetChildrenCountEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem8GetChildE6uint32">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem8GetChildE6uint32"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem8GetChildE6uint32"></span><span id="AppCUI::Controls::TreeViewItem::GetChild__uint32"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1ab11dfebb4fb47de0385ee2e8aecbc0b6"></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls12TreeViewItemE" title="AppCUI::Controls::TreeViewItem"><span class="n"><span class="pre">TreeViewItem</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetChild</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem8GetChildE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem14DeleteChildrenEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem14DeleteChildrenEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem14DeleteChildrenEv"></span><span id="AppCUI::Controls::TreeViewItem::DeleteChildren"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a1b60478708de9d5b5beecfd4c1ec5c90"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeleteChildren</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem14DeleteChildrenEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem9GetHandleEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem9GetHandleEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem9GetHandleEv"></span><span id="AppCUI::Controls::TreeViewItem::GetHandleC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a548073cfcd715c41745f0d76d857afa7"></span><a class="reference internal" href="namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls10ItemHandleE" title="AppCUI::Controls::ItemHandle"><span class="n"><span class="pre">ItemHandle</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHandle</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem9GetHandleEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem6ToggleEb">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem6ToggleEb"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem6ToggleEb"></span><span id="AppCUI::Controls::TreeViewItem::Toggle__b"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a2b13e53a2fa5465b4ff0ec474f969488"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Toggle</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">recursiveCall</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem6ToggleEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem17ToggleRecursivelyEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem17ToggleRecursivelyEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem17ToggleRecursivelyEv"></span><span id="AppCUI::Controls::TreeViewItem::ToggleRecursively"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1aa81580e7bbf8851ae3c433d554445309"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToggleRecursively</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem17ToggleRecursivelyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem4FoldEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem4FoldEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem4FoldEv"></span><span id="AppCUI::Controls::TreeViewItem::Fold"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a1db124f7f0d56f1c24c65d4e58dc1e59"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Fold</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem4FoldEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem6UnfoldEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem6UnfoldEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem6UnfoldEv"></span><span id="AppCUI::Controls::TreeViewItem::Unfold"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a1831435f8e1817b0e881ce4d18bcaba4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Unfold</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem6UnfoldEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem7FoldAllEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem7FoldAllEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem7FoldAllEv"></span><span id="AppCUI::Controls::TreeViewItem::FoldAll"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1ab07b67ac32f46341bd32f37a4f2b1c73"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FoldAll</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem7FoldAllEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI8Controls12TreeViewItem9UnfoldAllEv">
+<span id="_CPPv3N6AppCUI8Controls12TreeViewItem9UnfoldAllEv"></span><span id="_CPPv2N6AppCUI8Controls12TreeViewItem9UnfoldAllEv"></span><span id="AppCUI::Controls::TreeViewItem::UnfoldAll"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1ac889e5706033a4105d3fc944aec870b4"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnfoldAll</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI8Controls12TreeViewItem9UnfoldAllEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem9GetParentEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem9GetParentEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem9GetParentEv"></span><span id="AppCUI::Controls::TreeViewItem::GetParentC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1abfe078efb30e47b562076a348ddc2549"></span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls12TreeViewItemE" title="AppCUI::Controls::TreeViewItem"><span class="n"><span class="pre">TreeViewItem</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetParent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem9GetParentEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem11GetPriorityEv">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem11GetPriorityEv"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem11GetPriorityEv"></span><span id="AppCUI::Controls::TreeViewItem::GetPriorityC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1aae5a094d2ceef82f9dc53cfe93499889"></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPriority</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem11GetPriorityEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItem11SetPriorityE6uint32">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItem11SetPriorityE6uint32"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItem11SetPriorityE6uint32"></span><span id="AppCUI::Controls::TreeViewItem::SetPriority__uint32C"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a5cd24812961bf0d5b8e414964f7447fe"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetPriority</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">priority</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItem11SetPriorityE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6AppCUI8Controls12TreeViewItem7SetDataEb9ReferenceI1TE">
+<span id="_CPPv3I0EN6AppCUI8Controls12TreeViewItem7SetDataE9ReferenceI1TE"></span><span id="_CPPv2I0EN6AppCUI8Controls12TreeViewItem7SetDataE9ReferenceI1TE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1aa32f58217850614ebaa3112f7cf56f3f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6AppCUI8Controls12TreeViewItem7SetDataEb9ReferenceI1TE" title="AppCUI::Controls::TreeViewItem::SetData::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6AppCUI8Controls12TreeViewItem7SetDataEb9ReferenceI1TE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK6AppCUI8Controls12TreeViewItem7GetDataE9ReferenceI1TEv">
+<span id="_CPPv3I0ENK6AppCUI8Controls12TreeViewItem7GetDataEv"></span><span id="_CPPv2I0ENK6AppCUI8Controls12TreeViewItem7GetDataEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1a0ab91469aac122dabed2da8046afd6e2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">Reference</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENK6AppCUI8Controls12TreeViewItem7GetDataE9ReferenceI1TEv" title="AppCUI::Controls::TreeViewItem::GetData::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK6AppCUI8Controls12TreeViewItem7GetDataE9ReferenceI1TEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI8Controls12TreeViewItemeqERK12TreeViewItem">
+<span id="_CPPv3NK6AppCUI8Controls12TreeViewItemeqERK12TreeViewItem"></span><span id="_CPPv2NK6AppCUI8Controls12TreeViewItemeqERK12TreeViewItem"></span><span id="AppCUI::Controls::TreeViewItem::eq-operator__TreeViewItemCRC"></span><span class="target" id="classAppCUI_1_1Controls_1_1TreeViewItem_1aadb96195167b4d5e475a71df354e366a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI8Controls12TreeViewItemE" title="AppCUI::Controls::TreeViewItem"><span class="n"><span class="pre">TreeViewItem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI8Controls12TreeViewItemeqERK12TreeViewItem" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<span class="property"><span class="pre">friend</span> <span class="pre">class</span></span> <span class="pre">TreeView</span></dt>
+</dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Controls_TreeView.html" class="btn btn-neutral float-left" title="TreeView" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Controls_UserControl.html" class="btn btn-neutral float-right" title="UserControl" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GenericFixSizeString &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GenericRef" href="class_AppCUI_Utils_GenericRef.html" />
+    <link rel="prev" title="FunctionRef&lt; Return(Args…)&gt;" href="class_AppCUI_Utils_FunctionRef_Return_Args.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+      <li class="breadcrumb-item active">GenericFixSizeString</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Utils_GenericFixSizeString.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="genericfixsizestring">
+<h1>GenericFixSizeString<a class="headerlink" href="#genericfixsizestring" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Utils::GenericFixSizeString</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE">
+<span id="_CPPv3I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE"></span><span id="_CPPv2I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0xFFFF</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T_view</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GenericFixSizeString</span></span></span><a class="headerlink" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringEv">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringEv"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringEv"></span><span id="AppCUI::Utils::GenericFixSizeString::GenericFixSizeString"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1af703ed68072987077b1b3f05ca9bc122"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GenericFixSizeString</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringE6T_view">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringE6T_view"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringE6T_view"></span><span id="AppCUI::Utils::GenericFixSizeString::GenericFixSizeString__T_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1a796f0428733950d63872201a5a08d4c9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GenericFixSizeString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString::T_view"><span class="n"><span class="pre">T_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">txt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeString20GenericFixSizeStringE6T_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20GenericFixSizeStringcv6T_viewEv">
+<span id="_CPPv3NK6AppCUI5Utils20GenericFixSizeStringcv6T_viewEv"></span><span id="_CPPv2NK6AppCUI5Utils20GenericFixSizeStringcv6T_viewEv"></span><span id="AppCUI::Utils::GenericFixSizeString::castto-T_view-operatorCCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1a58047068e65b6fbd6e25ec719819bb70"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString::T_view"><span class="n"><span class="pre">T_view</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20GenericFixSizeStringcv6T_viewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20GenericFixSizeStringcvbEv">
+<span id="_CPPv3NK6AppCUI5Utils20GenericFixSizeStringcvbEv"></span><span id="_CPPv2NK6AppCUI5Utils20GenericFixSizeStringcvbEv"></span><span id="AppCUI::Utils::GenericFixSizeString::castto-b-operatorCCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1a879914224a772a4be40915a31d6db7e7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20GenericFixSizeStringcvbEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeString3SetE6T_view">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeString3SetE6T_view"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeString3SetE6T_view"></span><span id="AppCUI::Utils::GenericFixSizeString::Set__T_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1a52e170a2878e83e214446e2fa93df0fe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Set</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString::T_view"><span class="n"><span class="pre">T_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">txt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeString3SetE6T_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeString3SetEPK1T">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeString3SetEPK1T"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeString3SetEPK1T"></span><span id="AppCUI::Utils::GenericFixSizeString::Set__TCP"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1a94ee0d194450e2e0e4799f3a1825c674"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Set</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeString3SetEPK1T" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeString7AddCharE1T">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeString7AddCharE1T"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeString7AddCharE1T"></span><span id="AppCUI::Utils::GenericFixSizeString::AddChar__TCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1adde6cf27ef9068652393f768959bac1c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddChar</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeString7AddCharE1T" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeString8TruncateE6uint16">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeString8TruncateE6uint16"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeString8TruncateE6uint16"></span><span id="AppCUI::Utils::GenericFixSizeString::Truncate__uint16CE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1a0fa8a543464c47e4afc528de9bba9485"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Truncate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">newSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeString8TruncateE6uint16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20GenericFixSizeString3LenEv">
+<span id="_CPPv3NK6AppCUI5Utils20GenericFixSizeString3LenEv"></span><span id="_CPPv2NK6AppCUI5Utils20GenericFixSizeString3LenEv"></span><span id="AppCUI::Utils::GenericFixSizeString::LenCCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1afdeba4a702c6341c0aee987703a2ed1f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Len</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20GenericFixSizeString3LenEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20GenericFixSizeString7GetTextEv">
+<span id="_CPPv3NK6AppCUI5Utils20GenericFixSizeString7GetTextEv"></span><span id="_CPPv2NK6AppCUI5Utils20GenericFixSizeString7GetTextEv"></span><span id="AppCUI::Utils::GenericFixSizeString::GetTextCCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1aa25ae5384e665cfc504cba68a3821850"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetText</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20GenericFixSizeString7GetTextEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20GenericFixSizeString7MaxSizeEv">
+<span id="_CPPv3NK6AppCUI5Utils20GenericFixSizeString7MaxSizeEv"></span><span id="_CPPv2NK6AppCUI5Utils20GenericFixSizeString7MaxSizeEv"></span><span id="AppCUI::Utils::GenericFixSizeString::MaxSizeCCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1ace016a1a0f56dabda432f77c3ffd658b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint16E" title="AppCUI::uint16"><span class="n"><span class="pre">uint16</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MaxSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20GenericFixSizeString7MaxSizeEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeStringaSE6T_view">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeStringaSE6T_view"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeStringaSE6T_view"></span><span id="AppCUI::Utils::GenericFixSizeString::assign-operator__T_view"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1a407bb335e77d7fa8e20d21edb07ddc42"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString"><span class="n"><span class="pre">GenericFixSizeString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I_6uint1600EN6AppCUI5Utils20GenericFixSizeStringE" title="AppCUI::Utils::GenericFixSizeString::T_view"><span class="n"><span class="pre">T_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">txt</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeStringaSE6T_view" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20GenericFixSizeString5ClearEv">
+<span id="_CPPv3N6AppCUI5Utils20GenericFixSizeString5ClearEv"></span><span id="_CPPv2N6AppCUI5Utils20GenericFixSizeString5ClearEv"></span><span id="AppCUI::Utils::GenericFixSizeString::Clear"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1aaa0227ca53040b9222856371b75a4318"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20GenericFixSizeString5ClearEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20GenericFixSizeString5EmptyEv">
+<span id="_CPPv3NK6AppCUI5Utils20GenericFixSizeString5EmptyEv"></span><span id="_CPPv2NK6AppCUI5Utils20GenericFixSizeString5EmptyEv"></span><span id="AppCUI::Utils::GenericFixSizeString::EmptyCCE"></span><span class="target" id="classAppCUI_1_1Utils_1_1GenericFixSizeString_1ab2f305c02947990949d05771fd7e135f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20GenericFixSizeString5EmptyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Utils_FunctionRef_Return_Args.html" class="btn btn-neutral float-left" title="FunctionRef&lt; Return(Args…)&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_Utils_GenericRef.html" class="btn btn-neutral float-right" title="GenericRef" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

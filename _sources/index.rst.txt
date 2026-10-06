@@ -1,25 +1,37 @@
-.. AppCUI documentation master file, created by
-   sphinx-quickstart on Sun Aug 29 10:43:26 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+AppCUI
+======
 
-Welcome to AppCUI's documentation!
-==================================
+**AppCUI** is a cross-platform C++20 framework for text user interfaces (TUI). An application builds a virtual
+desktop with windows and controls - buttons, text fields, list views, tree views, grids, property lists, tabs,
+splitters, menus, images, ... - that work with the keyboard and the mouse, and AppCUI displays it in the Windows
+console, in any terminal (ncurses), in an SDL window or through a frontend implemented by the application.
+
+.. literalinclude:: ../snippets/hello.cpp
+   :language: c++
+   :start-after: // [hello]
+   :end-before: // [/hello]
 
 .. toctree::
    :maxdepth: 2
+   :caption: Guides
 
+   getting_started
    initialization
    layout
-   development
    colors
    terminals
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference
 
-Indices and tables
-==================
+   api/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Contributing
+
+   development
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
-* :ref:`layout`

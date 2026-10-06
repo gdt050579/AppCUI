@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnicodeStringBuilder &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AppCUI::Utils::Number" href="namespace_AppCUI_Utils_Number.html" />
+    <link rel="prev" title="String" href="class_AppCUI_Utils_String.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_OS.html">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+          <li class="breadcrumb-item"><a href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+      <li class="breadcrumb-item active">UnicodeStringBuilder</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/class_AppCUI_Utils_UnicodeStringBuilder.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unicodestringbuilder">
+<h1>UnicodeStringBuilder<a class="headerlink" href="#unicodestringbuilder" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">AppCUI::Utils::UnicodeStringBuilder</span></code> (class)</p>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderE"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderE"></span><span id="AppCUI::Utils::UnicodeStringBuilder"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="Link to this definition"></a><br /></dt>
+<dd><p>Subclassed by <a class="reference internal" href="class_AppCUI_Utils_LocalUnicodeStringBuilder.html#classAppCUI_1_1Utils_1_1LocalUnicodeStringBuilder"><span class="std std-ref">AppCUI::Utils::LocalUnicodeStringBuilder&lt; size &gt;</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEv">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEv"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a9cd1dce14c4ea9cbede6c5091974ce5e"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_t">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_t"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_t"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder__char16P.s"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a9c4e383d181b09805b0a86b9f3a81620"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localBuffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">localBufferSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK11ConstString">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK11ConstString"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK11ConstString"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1acb39c0f3d1484de548765d7ebe83b583"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5Utils11ConstStringE" title="AppCUI::Utils::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRK11ConstString">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRK11ConstString"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRK11ConstString"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder__char16P.s.ConstStringCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a5674a51552ecb6ab3742885b3811daf3"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localBuffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">localBufferSize</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5Utils11ConstStringE" title="AppCUI::Utils::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERKN8Graphics15CharacterBufferE">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERKN8Graphics15CharacterBufferE"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERKN8Graphics15CharacterBufferE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder__Graphics::CharacterBufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a4927a7ad6671ea7ab8f3f5237cfa382a"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">charBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERKN8Graphics15CharacterBufferE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRKN8Graphics15CharacterBufferE">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRKN8Graphics15CharacterBufferE"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRKN8Graphics15CharacterBufferE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder__char16P.s.Graphics::CharacterBufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1ac766e538ddff2bdaecbb3f4b137a5754"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">localBuffer</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">localBufferSize</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">charBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderEP6char166size_tRKN8Graphics15CharacterBufferE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK20UnicodeStringBuilder">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK20UnicodeStringBuilder"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK20UnicodeStringBuilder"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder__UnicodeStringBuilderCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1ad848c6db95a0537b3648b6bae3b0e242"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK20UnicodeStringBuilder" title="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERK20UnicodeStringBuilder" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERR20UnicodeStringBuilder">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERR20UnicodeStringBuilder"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERR20UnicodeStringBuilder"></span><span id="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder__UnicodeStringBuilderRR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a151acacb6b4bfafa64bff1496a1d6f35"></span><span class="sig-name descname"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERR20UnicodeStringBuilder" title="AppCUI::Utils::UnicodeStringBuilder::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder20UnicodeStringBuilderERR20UnicodeStringBuilder" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderD0Ev">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderD0Ev"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderD0Ev"></span><span id="AppCUI::Utils::UnicodeStringBuilder::~UnicodeStringBuilder"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a1aa697aa02b71e58317f87bcec0989ac"></span><span class="sig-name descname"><span class="n"><span class="pre">~UnicodeStringBuilder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder7DestroyEv">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder7DestroyEv"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder7DestroyEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Destroy"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a70a27cf9feffc7223d47c120a345b99d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Destroy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder7DestroyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3SetERK11ConstString">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder3SetERK11ConstString"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder3SetERK11ConstString"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Set__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1ad76d2a95a7cabedc49da68ddda037ba2"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Set</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5Utils11ConstStringE" title="AppCUI::Utils::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3SetERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3SetERKN8Graphics15CharacterBufferE">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder3SetERKN8Graphics15CharacterBufferE"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder3SetERKN8Graphics15CharacterBufferE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Set__Graphics::CharacterBufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1afe6aa0bb413554485802e435f1fa260e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Set</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">charBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3SetERKN8Graphics15CharacterBufferE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3AddERK11ConstString">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder3AddERK11ConstString"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder3AddERK11ConstString"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Add__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a7b055285bb8e1638105c5d6d77b24521"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Add</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5Utils11ConstStringE" title="AppCUI::Utils::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3AddERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3AddERKN8Graphics15CharacterBufferE">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder3AddERKN8Graphics15CharacterBufferE"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder3AddERKN8Graphics15CharacterBufferE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Add__Graphics::CharacterBufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1aa14f6be13ddeefd211ba7ef158556ae3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Add</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">charBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder3AddERKN8Graphics15CharacterBufferE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder7AddCharE6char16">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder7AddCharE6char16"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder7AddCharE6char16"></span><span id="AppCUI::Utils::UnicodeStringBuilder::AddChar__char16"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a6d25c15454e409067cac920ea0743256"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddChar</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder7AddCharE6char16" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder6ResizeE6size_t">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder6ResizeE6size_t"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder6ResizeE6size_t"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Resize__s"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a0e99e0787b808cc6ad321996621b7012"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Resize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder6ResizeE6size_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt6stringE">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt6stringE"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt6stringE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::ToString__ssRC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a3cbe54acfe8eef2f23099ffe081d9897"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt9u16stringE">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt9u16stringE"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt9u16stringE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::ToString__std::u16stringRC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a80c3aa1d7dd4f20433c9741893fbac0d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">u16string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt9u16stringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt8u8stringE">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt8u8stringE"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt8u8stringE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::ToString__std::u8stringRC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a712a984eb365d1d614a66a2980fed963"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">u8string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder8ToStringERNSt8u8stringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder6ToPathERNSt10filesystem4pathE">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuilder6ToPathERNSt10filesystem4pathE"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuilder6ToPathERNSt10filesystem4pathE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::ToPath__std::filesystem::pathRC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a45dc6c3c6996f585d23e604ee6bd66e7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToPath</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">output</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder6ToPathERNSt10filesystem4pathE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder5ClearEv">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder5ClearEv"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder5ClearEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Clear"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a3a812a41a429b3d67350a579064dd84b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder5ClearEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilder8TruncateE6uint32">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilder8TruncateE6uint32"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilder8TruncateE6uint32"></span><span id="AppCUI::Utils::UnicodeStringBuilder::Truncate__uint32"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a2712b4842d50059f9c3dc65d3c008803"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Truncate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">newSize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilder8TruncateE6uint32" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder3LenEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuilder3LenEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuilder3LenEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::LenC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a365233b62732454c1f941d50025d717c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Len</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder3LenEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder9GetStringEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuilder9GetStringEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuilder9GetStringEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::GetStringC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1aabe713ba9b86d257aa388b41e1bb917c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6char16E" title="AppCUI::char16"><span class="n"><span class="pre">char16</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetString</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder9GetStringEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder12ToStringViewEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuilder12ToStringViewEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuilder12ToStringViewEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::ToStringViewC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1ac02ff13cdb6c97e13743523408a2aae2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">u16string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToStringView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuilder12ToStringViewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt6stringEEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuildercvNSt6stringEEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuildercvNSt6stringEEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::castto-ss-operatorC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a25b27e0a1d8c2db29580145a8095d0ed"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt6stringEEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt8u8stringEEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuildercvNSt8u8stringEEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuildercvNSt8u8stringEEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::castto-std::u8string-operatorC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1af44ad44a1ba861413989421f36375bf1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">u8string</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt8u8stringEEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt9u16stringEEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuildercvNSt9u16stringEEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuildercvNSt9u16stringEEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::castto-std::u16string-operatorC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a24cd94deecbe88b6dbb45601327031c9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">u16string</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt9u16stringEEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt10filesystem4pathEEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuildercvNSt10filesystem4pathEEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuildercvNSt10filesystem4pathEEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::castto-std::filesystem::path-operatorC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1ae4401ced592a856f5d5a6918842e1ad1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercvNSt10filesystem4pathEEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercv14u16string_viewEv">
+<span id="_CPPv3NK6AppCUI5Utils20UnicodeStringBuildercv14u16string_viewEv"></span><span id="_CPPv2NK6AppCUI5Utils20UnicodeStringBuildercv14u16string_viewEv"></span><span id="AppCUI::Utils::UnicodeStringBuilder::castto-u16string_view-operatorC"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a2cd537dbaf09b54843680eb865807b39"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="n"><span class="pre">u16string_view</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6AppCUI5Utils20UnicodeStringBuildercv14u16string_viewEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderpLERK11ConstString">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderpLERK11ConstString"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderpLERK11ConstString"></span><span id="AppCUI::Utils::UnicodeStringBuilder::add-assign-operator__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a35b2af24c536b86ad7e6667b3156554d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5Utils11ConstStringE" title="AppCUI::Utils::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderpLERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderpLERKN8Graphics15CharacterBufferE">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderpLERKN8Graphics15CharacterBufferE"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderpLERKN8Graphics15CharacterBufferE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::add-assign-operator__Graphics::CharacterBufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a1160c7f66b17e0c0f4bc3f386eaa3535"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">charBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderpLERKN8Graphics15CharacterBufferE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERK11ConstString">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderaSERK11ConstString"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderaSERK11ConstString"></span><span id="AppCUI::Utils::UnicodeStringBuilder::assign-operator__ConstStringCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1afc2fef3ea2d18b09247b4fd9b0f5d460"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Utils.html#_CPPv4N6AppCUI5Utils11ConstStringE" title="AppCUI::Utils::ConstString"><span class="n"><span class="pre">ConstString</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">text</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERK11ConstString" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERKN8Graphics15CharacterBufferE">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderaSERKN8Graphics15CharacterBufferE"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderaSERKN8Graphics15CharacterBufferE"></span><span id="AppCUI::Utils::UnicodeStringBuilder::assign-operator__Graphics::CharacterBufferCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1ae726bdfcccd10aebe7ddb0ca8a069fdd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI_Graphics.html#_CPPv4N6AppCUI8GraphicsE" title="AppCUI::Graphics"><span class="n"><span class="pre">Graphics</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="class_AppCUI_Graphics_CharacterBuffer.html#_CPPv4N6AppCUI8Graphics15CharacterBufferE" title="AppCUI::Graphics::CharacterBuffer"><span class="n"><span class="pre">CharacterBuffer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">charBuffer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERKN8Graphics15CharacterBufferE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERK20UnicodeStringBuilder">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderaSERK20UnicodeStringBuilder"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderaSERK20UnicodeStringBuilder"></span><span id="AppCUI::Utils::UnicodeStringBuilder::assign-operator__UnicodeStringBuilderCR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1a0a78258476eca7765d71314004c1ad53"></span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERK20UnicodeStringBuilder" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERR20UnicodeStringBuilder">
+<span id="_CPPv3N6AppCUI5Utils20UnicodeStringBuilderaSERR20UnicodeStringBuilder"></span><span id="_CPPv2N6AppCUI5Utils20UnicodeStringBuilderaSERR20UnicodeStringBuilder"></span><span id="AppCUI::Utils::UnicodeStringBuilder::assign-operator__UnicodeStringBuilderRR"></span><span class="target" id="classAppCUI_1_1Utils_1_1UnicodeStringBuilder_1af8f9b33ebe895c6a66afb703bfc88fb3"></span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderE" title="AppCUI::Utils::UnicodeStringBuilder"><span class="n"><span class="pre">UnicodeStringBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6AppCUI5Utils20UnicodeStringBuilderaSERR20UnicodeStringBuilder" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="class_AppCUI_Utils_String.html" class="btn btn-neutral float-left" title="String" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="namespace_AppCUI_Utils_Number.html" class="btn btn-neutral float-right" title="AppCUI::Utils::Number" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

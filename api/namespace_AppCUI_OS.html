@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AppCUI::OS &mdash; AppCUI 1.247.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c1dd6b86"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Clipboard" href="class_AppCUI_OS_Clipboard.html" />
+    <link rel="prev" title="AppCUI::Utils::Number" href="namespace_AppCUI_Utils_Number.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            AppCUI
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#namespaces">Namespaces</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Application.html">AppCUI::Application</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls.html">AppCUI::Controls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Factory.html">AppCUI::Controls::Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Controls_Handlers.html">AppCUI::Controls::Handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics.html">AppCUI::Graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Graphics_ProgressStatus.html">AppCUI::Graphics::ProgressStatus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Input.html">AppCUI::Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils.html">AppCUI::Utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Utils_Number.html">AppCUI::Utils::Number</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AppCUI::OS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Dialogs.html">AppCUI::Dialogs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Log.html">AppCUI::Log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_Endian.html">AppCUI::Endian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI.html">AppCUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace_AppCUI_StdIncludes.html">AppCUI::StdIncludes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API reference</a></li>
+      <li class="breadcrumb-item active">AppCUI::OS</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/namespace_AppCUI_OS.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="appcui-os">
+<h1>AppCUI::OS<a class="headerlink" href="#appcui-os" title="Link to this heading"></a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OSE">
+<span id="_CPPv3N6AppCUI2OSE"></span><span id="_CPPv2N6AppCUI2OSE"></span><span id="AppCUI::OS"></span><span class="target" id="namespaceAppCUI_1_1OS"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OS</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OSE" title="Link to this definition"></a><br /></dt>
+<dd><p>Operating system services: files (<a class="reference internal" href="class_AppCUI_OS_File.html#classAppCUI_1_1OS_1_1File"><span class="std std-ref">File</span></a>, <a class="reference internal" href="class_AppCUI_OS_MemoryFile.html#classAppCUI_1_1OS_1_1MemoryFile"><span class="std std-ref">MemoryFile</span></a>, <a class="reference internal" href="class_AppCUI_OS_DataObject.html#classAppCUI_1_1OS_1_1DataObject"><span class="std std-ref">DataObject</span></a>), the clipboard, dynamic libraries, date / time and special folders. </p>
+</dd></dl>
+
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="class_AppCUI_OS_Clipboard.html"><span class="doc">Clipboard</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_OS_DataObject.html"><span class="doc">DataObject</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_OS_DateTime.html"><span class="doc">DateTime</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_OS_FSLocationData.html"><span class="doc">FSLocationData</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_OS_File.html"><span class="doc">File</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_OS_Library.html"><span class="doc">Library</span></a></p></li>
+<li><p><a class="reference internal" href="class_AppCUI_OS_MemoryFile.html"><span class="doc">MemoryFile</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="enumerations">
+<h2>Enumerations<a class="headerlink" href="#enumerations" title="Link to this heading"></a></h2>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolderE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolderE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolderE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81a"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">SpecialFolder</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="namespace_AppCUI.html#_CPPv4N6AppCUI6uint32E" title="AppCUI::uint32"><span class="n"><span class="pre">uint32</span></span></a><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolderE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder7AppPathE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder7AppPathE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder7AppPathE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa5b8378dd034570ab0edb0f2104f27feb"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AppPath</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder7AppPathE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder7DesktopE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder7DesktopE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder7DesktopE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa2310408a63388fe57e3a4177168a8798"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Desktop</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder7DesktopE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder9DocumentsE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder9DocumentsE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder9DocumentsE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aaf28128b38efbc6134dc40751ee21fd29"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Documents</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder9DocumentsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder14LocalDocumentsE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder14LocalDocumentsE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder14LocalDocumentsE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa785ff35a6771bfc6f4a31961568af7b6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocalDocuments</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder14LocalDocumentsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder9DownloadsE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder9DownloadsE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder9DownloadsE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aac20c35ef53bf1b70789ce94e66800147"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Downloads</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder9DownloadsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder14LocalDownloadsE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder14LocalDownloadsE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder14LocalDownloadsE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa344449f271519c67a4a7ef02fdf484de"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocalDownloads</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder14LocalDownloadsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder5MusicE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder5MusicE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder5MusicE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa47dcbd834e669233d7eb8a51456ed217"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Music</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder5MusicE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder10LocalMusicE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder10LocalMusicE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder10LocalMusicE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa7dfaea3af8043be1b40643a1797ad6d1"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocalMusic</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder10LocalMusicE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder8PicturesE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder8PicturesE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder8PicturesE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aab11ddc7e1671c0bd22dc89dd757508d4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Pictures</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder8PicturesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder13LocalPicturesE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder13LocalPicturesE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder13LocalPicturesE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa943e9e5dfeedbe863505315ce0edd1ef"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocalPictures</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder13LocalPicturesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder6VideosE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder6VideosE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder6VideosE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aa554cfab3938e21d9270bd6b75931f96f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Videos</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder6VideosE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS13SpecialFolder11LocalVideosE">
+<span id="_CPPv3N6AppCUI2OS13SpecialFolder11LocalVideosE"></span><span id="_CPPv2N6AppCUI2OS13SpecialFolder11LocalVideosE"></span><span class="target" id="namespaceAppCUI_1_1OS_1a67205288bbf2cc4e7f9a4d1c1561f81aabfb63633a72e0d3416af5dad1d551f11"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocalVideos</span></span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS13SpecialFolder11LocalVideosE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="type-aliases">
+<h2>Type aliases<a class="headerlink" href="#type-aliases" title="Link to this heading"></a></h2>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS16SpecialFolderMapE">
+<span id="_CPPv3N6AppCUI2OS16SpecialFolderMapE"></span><span id="_CPPv2N6AppCUI2OS16SpecialFolderMapE"></span><span class="target" id="namespaceAppCUI_1_1OS_1aec53b0bca70a2012ec9a92ef03cb1e16"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">SpecialFolderMap</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OS13SpecialFolderE" title="AppCUI::OS::SpecialFolder"><span class="n"><span class="pre">SpecialFolder</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="class_AppCUI_OS_FSLocationData.html#_CPPv4N6AppCUI2OS14FSLocationDataE" title="AppCUI::OS::FSLocationData"><span class="n"><span class="pre">FSLocationData</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS16SpecialFolderMapE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS11RootsVectorE">
+<span id="_CPPv3N6AppCUI2OS11RootsVectorE"></span><span id="_CPPv2N6AppCUI2OS11RootsVectorE"></span><span class="target" id="namespaceAppCUI_1_1OS_1afee2ee9dfc288b25f467caf7cf682092"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">RootsVector</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="class_AppCUI_OS_FSLocationData.html#_CPPv4N6AppCUI2OS14FSLocationDataE" title="AppCUI::OS::FSLocationData"><span class="n"><span class="pre">FSLocationData</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6AppCUI2OS11RootsVectorE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS17GetSpecialFoldersER16SpecialFolderMapR11RootsVector">
+<span id="_CPPv3N6AppCUI2OS17GetSpecialFoldersER16SpecialFolderMapR11RootsVector"></span><span id="_CPPv2N6AppCUI2OS17GetSpecialFoldersER16SpecialFolderMapR11RootsVector"></span><span id="AppCUI::OS::GetSpecialFolders__SpecialFolderMapR.RootsVectorR"></span><span class="target" id="namespaceAppCUI_1_1OS_1a6d93753d4b8184dfd9a481f027bc21cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">GetSpecialFolders</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6AppCUI2OS16SpecialFolderMapE" title="AppCUI::OS::SpecialFolderMap"><span class="n"><span class="pre">SpecialFolderMap</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">specialFolders</span></span>, <a class="reference internal" href="#_CPPv4N6AppCUI2OS11RootsVectorE" title="AppCUI::OS::RootsVector"><span class="n"><span class="pre">RootsVector</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">roots</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS17GetSpecialFoldersER16SpecialFolderMapR11RootsVector" title="Link to this definition"></a><br /></dt>
+<dd><p>Fills the specialFolders map and roots vector with paths. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS25GetCurrentApplicationPathEv">
+<span id="_CPPv3N6AppCUI2OS25GetCurrentApplicationPathEv"></span><span id="_CPPv2N6AppCUI2OS25GetCurrentApplicationPathEv"></span><span id="AppCUI::OS::GetCurrentApplicationPath"></span><span class="target" id="namespaceAppCUI_1_1OS_1a354cdaae1e36b57afa9a5870d09d08af"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentApplicationPath</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS25GetCurrentApplicationPathEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="namespace_AppCUI_Utils_Number.html" class="btn btn-neutral float-left" title="AppCUI::Utils::Number" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="class_AppCUI_OS_Clipboard.html" class="btn btn-neutral float-right" title="Clipboard" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,176 +1,167 @@
-AppCUI Initialization
-=====================
+Initialization
+==============
 
-AppCUI framework must be initilized using the following APIs:
+AppCUI must be initialized before any control is created, with one of:
 
 .. code-block:: c++
 
    bool AppCUI::Application::Init(InitializationFlags flags = InitializationFlags::None);
    bool AppCUI::Application::Init(InitializationData& initData);
 
-Where **InitializationFlags** is defined as follows:
+Both return ``false`` when AppCUI could not be initialized (for example when the selected frontend is not available).
+``Application::Run()`` runs the event loop and un-initializes AppCUI when it returns.
 
-.. code-block:: c++
+Initialization flags
+--------------------
 
-    enum class InitializationFlags : unsigned int
-    {
-        None                    = 0,       
+``InitializationFlags`` values can be combined with ``|``:
 
-        CommandBar              = 0x0001,
-        Menu                    = 0x0002,
-        Maximized               = 0x0004,
-        Fullscreen              = 0x0008,
-        FixedSize               = 0x0010,
-        LoadSettingsFile        = 0x0020,
-        AutoHotKeyForWindow     = 0x0040,
-        EnableFPSMode           = 0x0080,
-        SingleAppWindow         = 0x0100,
-        DisableAutoCloseDesktop = 0x0200,
-    };
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
 
-Width:
+   * - Flag
+     - Effect
+   * - ``CommandBar``
+     - a command bar with shortcut keys is shown on the last line of the screen (controls fill it in
+       ``Control::OnUpdateCommandBar``)
+   * - ``Menu``
+     - a menu bar is shown on the first line; menus are added with ``Application::AddMenu(...)``
+   * - ``Maximized``
+     - the terminal window is maximized (Windows console, SDL)
+   * - ``Fullscreen``
+     - the terminal window is full screen (Windows console, SDL)
+   * - ``FixedSize``
+     - the terminal window can not be resized (Windows console, SDL)
+   * - ``LoadSettingsFile``
+     - the file with the name of the executable and the ``.ini`` extension (``Application::GetAppSettingsFile()``)
+       is loaded. Its content is available through ``Application::GetAppSettings()`` and its ``[AppCUI]`` section
+       (see below) overrides the initialization parameters
+   * - ``AutoHotKeyForWindow``
+     - every new desktop window receives a free hot key (``Alt+1`` ... ``Alt+9``) unless it already has one
+   * - ``EnableFPSMode``
+     - ``Control::OnFrameUpdate`` is called about 30 times per second (animations, games, polling background work)
+   * - ``SingleWindowApp``
+     - single application mode: windows can not be added to the desktop and ``Application::Run()`` can not be used.
+       A class derived from ``Controls::SingleApp`` replaces the desktop and is started with
+       ``Application::RunSingleApp(...)``
+   * - ``DisableAutoCloseDesktop``
+     - the application keeps running after its last window was closed (by default it closes). Useful with a custom
+       desktop or with menus that open new windows
 
-* **CommandBar** - if set, this flags specifies that a command bar (with shortcut keys) will be available to use
-* **Menu** - if set, am application maenu bar will be created and ``Application::AddMenu(...)`` can be used to add Menus and Sub-menus to it 
-* **Maximized** - maximize AppCUI OS window. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.
-* **Fullscreen** - full screen mode. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.
-* **FixedSize** - if set, the AppCUI OS window can not change its size. Depending on the selected front-end, this feature may be limited. See AppCUI front ends for more details.
-* **LoadSettingsFile** - if set, a file with the same name as the main executable but with extension ``.ini`` will be search in the same folder as the main executable. If found, that file will be automatically loaded and its content will be available through ``Application::GetAppSettings()`` API. If a section named ``[APPCUI]`` exists in this file, the values described in this section will be used to initialized AppCUI envinronment. An example of such a ini file can be seen in the following example:
-* **AutoHotKeyForWindow** - if set, any new window that is being added in the application, will automatically be assign with a hotkey (from Alt+1 to Alt+9) if that hotkey is not being used by another window and if the window that is currently being added does not already have a hot key associated.
-* **EnableFPSMode** - if set, enables a mode when ``Control::OnFrameUpdate`` is called 30 times per second (basically enabling a game or video display mode).
-* **SingleAppWindow** - if set, it enable single app mode. This mode will not allow one to add multiple windows to the desktop or to use ``Application::Run()`` API. Instead, a class derived from `SingleApp` must be derived and AppCUI execution has to be started using ``Application::RunSingleApp(...)`` API.
-* **DisableAutoCloseDesktop** - if set, it will not close the App the moment the last window is closed (this is the default behavior). This is usefull if you have a custom deskopt or menus that can spawn anothe window and as such you do not need to close current application when all existing windows are closed.
+The settings file
+-----------------
+
+With ``InitializationFlags::LoadSettingsFile``, the ``[AppCUI]`` section of ``<executable>.ini`` configures the
+application. Missing keys keep the values of the initialization data. ``Application::UpdateAppCUISettings(...)``
+writes the section with its default values:
 
 .. code-block:: ini
 
    [AppCUI]
-   Frontend = default      ; possible values: default,SDL, terminal, windows
-   Size = default          ; possible values: a size (width x height), maximized, fullscreen
-   CharacterSize = default ; possible values: default, tiny, small, normal, large, huge
-   Fixed = false           ; possible values: true or false
-   Theme = default         ; possible values: default, dark, light or the name of a .theme file
+   Frontend = default        ; default, SDL, terminal (ncurses) or windows (Windows console)
+   Size = default            ; default, maximized, fullscreen or <width>x<height> (for example 120x40)
+   CharacterSize = default   ; default, tiny, small, normal, large or huge
+   Fixed = false             ; true = the terminal window can not be resized
+   Theme = default           ; default, dark, light or the name of a .theme file from ThemeFolder
+   ThemeFolder = Themes      ; folder (relative to the executable) with .theme files
+   CharacterSet = auto       ; auto, unicode, ascii or linux (special characters used to draw lines and borders)
+   Keyboard.Ctrl = Ctrl      ; keyboard profile: the modifier(s) produced by the physical Ctrl key
+   Keyboard.Alt = Alt        ; keyboard profile: the modifier(s) produced by the physical Alt key
 
+``Keyboard.Ctrl`` / ``Keyboard.Alt`` remap the modifier keys for every key press and mouse event (for example
+``Keyboard.Ctrl = Alt`` and ``Keyboard.Alt = Ctrl`` swap them, which helps on keyboards or terminals where some
+combinations are not available). Values are combinations of ``Ctrl``, ``Alt`` (or ``Opt`` / ``Option``) and
+``Shift`` joined with ``+``; the resulting mapping must be one-to-one, otherwise the default profile is used. The
+profile can also be changed at runtime with ``Application::SetModifierMap(...)``.
 
-InitializationData structure
-----------------------------
+The ``Frontend`` and ``Size`` keys are ignored by the test frontend (``Application::InitForTests``) and by custom
+frontends (see :doc:`terminals`).
 
-**InitializationData** represent a struct that described all parameters needed to initialized AppCUI framework
+InitializationData
+------------------
+
+``InitializationData`` describes every parameter of ``Application::Init``:
 
 .. code-block:: c++
 
    struct InitializationData
    {
-      unsigned int                  Width, Height;
-      FrontendType                  Frontend;
-      CharacterSize                 CharSize;
-      InitializationFlags           Flags;
-      std::string_view              FontName;
-      Utils::FixSizeString<32>      ThemeName;
-      ThemeType                     Theme;
-      SpecialCharacterSetType       SpecialCharacterSet;
-      AppCUI::Controls::Desktop*    CustomDesktop;
-   }
+       uint32 Width, Height;                             // size in characters (0 = frontend default)
+       FrontendType Frontend;                            // frontend used to display the application
+       CharacterSize CharSize;                           // character size (SDL, Windows console)
+       InitializationFlags Flags;                        // see above
+       string_view FontName;                             // font name (Windows console)
+       Utils::FixSizeString<32> ThemeName;               // name of a .theme file to load from ThemeFolder
+       Utils::String ThemeFolder;                        // default: "Themes"
+       ThemeType Theme;                                  // Default, Dark or Light
+       SpecialCharacterSetType SpecialCharacterSet;      // Auto, Unicode, LinuxTerminal or Ascii
+       Controls::Desktop* (*CustomDesktopConstructor)(); // creates a custom desktop (nullptr = default desktop)
+       CustomFrontendInterface* CustomFrontend;          // required when Frontend is FrontendType::Custom
+   };
 
-width **FrontendType** defined as follows:
+with:
 
 .. code-block:: c++
 
-   enum class FrontendType: unsigned int
+   enum class FrontendType : uint32
    {
-      Default        = 0,
-      SDL            = 1,
-      Terminal       = 2,
-      WindowsConsole = 3
+       Default        = 0, // Windows console on Windows, ncurses on Linux / macOS
+       SDL            = 1, // a separate window rendered with SDL2 (every OS)
+       Terminal       = 2, // ncurses (Linux / macOS)
+       WindowsConsole = 3, // Windows console
+       Tests          = 4, // in-memory screen driven by a test script (Application::InitForTests)
+       Custom         = 5, // implemented by the application (CustomFrontendInterface)
    };
 
-**CharacterSize** defined as:
+   enum class CharacterSize : uint32 { Default = 0, Tiny, Small, Normal, Large, Huge };
 
-.. code-block:: c++
+   enum class ThemeType : uint32 { Default = 0, Dark = 1, Light = 2 };
 
-   enum class CharacterSize: unsigned int
-   {
-      Default = 0,
-      Tiny,
-      Small,
-      Normal,
-      Large,
-      Huge
-   };
+   enum class SpecialCharacterSetType : uint32 { Auto = 0, Unicode = 1, LinuxTerminal = 2, Ascii = 3 };
 
-**SpecialCharacterSetType** defined as:
-
-.. code-block:: c++
-
-   enum class SpecialCharacterSetType: unsigned int
-   {
-      Auto          = 0,
-      Unicode       = 1,
-      LinuxTerminal = 2,
-      Ascii         = 3
-   };
-
-
-and **ThemeType** defined as:
-
-.. code-block:: c++
-
-   enum class ThemeType: unsigned int
-   {
-      Default = 0,
-      Dark,
-      Light,
-   };
-
+``SpecialCharacterSetType::Auto`` selects the best set the frontend supports (Unicode, then the Linux terminal
+subset, then ASCII). See :doc:`api/index` for the complete declarations.
 
 Examples
 --------
 
-1. Quick intialization
-   
-.. code-block:: c++
+1. Quick initialization
 
-   if (AppCUI::Application::Init()==false) {
-      // Appcui failed to initialize
-   }
+   .. literalinclude:: ../snippets/initialization.cpp
+      :language: c++
+      :start-after: // [quick]
+      :end-before: // [/quick]
+      :dedent: 4
 
-2. Initialize from **INI** file
-   
-.. code-block:: c++
+2. Initialization from the ``.ini`` file
 
-   if (AppCUI::Application::Init(InitializationFlags::LoadSettingsFile)==false) {
-      // Appcui failed to initialize
-   }
+   .. literalinclude:: ../snippets/initialization.cpp
+      :language: c++
+      :start-after: // [ini]
+      :end-before: // [/ini]
+      :dedent: 4
 
-3. Initialize from **INI** file but also specify that a Menu and Command bar will be used
-   
-.. code-block:: c++
+3. Initialization from the ``.ini`` file, with a menu bar and a command bar
 
-   if (AppCUI::Application::Init(InitializationFlags::LoadSettingsFile | 
-                                 InitializationFlags::Menu | 
-                                 InitializationFlags::CommandBar) == false) {
-      // Appcui failed to initialize
-   }
+   .. literalinclude:: ../snippets/initialization.cpp
+      :language: c++
+      :start-after: // [ini-menu]
+      :end-before: // [/ini-menu]
+      :dedent: 4
 
-4. Full customized initialization (an SDL based application , with the size of ``120x30`` characters, dark theme, using **Consolas** font (small size) and with a Menu and CommandBar.
+4. Fully customized initialization: an SDL window of ``120x30`` small characters, the dark theme, Unicode special
+   characters, a menu bar and a command bar
 
-.. code-block:: c++
+   .. literalinclude:: ../snippets/initialization.cpp
+      :language: c++
+      :start-after: // [custom]
+      :end-before: // [/custom]
+      :dedent: 4
 
-   InitializationData initData;
-   initData.Width               = 120;
-   initData.Height              = 30;
-   initData.FrontendType        = Frontend::SDL;
-   initData.CharSize            = CharacterSize::Small;
-   initData.FontName            = "Consolas";
-   initData.Theme               = ThemeType::Dark;
-   initData.SpecialCharacterSet = SpecialCharacterSetType::Unicode;
-   initData.Flags               = InitializationFlags::Menu | InitializationFlags::CommandBar;
-
-   if (AppCUI::Application::Init(initData) == false) {
-      // Appcui failed to initialize
-   } 
-
-For more example check out our examples code:
+These samples are compiled with the examples (``docs/snippets/initialization.cpp``). More examples:
 
 * `Initialization via INI file <https://github.com/gdt050579/AppCUI/tree/main/Examples/IniInitialization>`_
 * `Custom desktop <https://github.com/gdt050579/AppCUI/tree/main/Examples/CustomDesktop>`_
 * `Terminal settings <https://github.com/gdt050579/AppCUI/tree/main/Examples/TerminalSettings>`_
+* `Single window application <https://github.com/gdt050579/AppCUI/tree/main/Examples/SingleAppWindow>`_
