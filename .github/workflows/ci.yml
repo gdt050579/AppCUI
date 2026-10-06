@@ -1,13 +1,18 @@
 name: build
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ main ]
   pull_request:
   workflow_dispatch:
 
-env:
-  BUILD_TYPE: Release
+# A new push on the same pull request cancels the previous (now outdated) build
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -17,65 +22,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, macos-15-intel, windows-latest]
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+        with: { submodules: recursive }
+      - uses: ./.github/actions/build
         with:
-          submodules: recursive
+          build_type: Release
+          use_vcpkg_cache: "true"
+          jobs_count: "0"
 
-      # Cache vcpkg dependencies (saves significant time)
-      - name: Cache vcpkg
-        uses: actions/cache@v4
-        with:
-          path: |
-            build/vcpkg_installed
-            build/vcpkg_downloads
-          key: ${{ runner.os }}-${{ runner.arch }}-vcpkg-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-vcpkg-
-
-      # OS-specific dependencies
-      - name: Install dependencies (Linux)
-        if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y build-essential cmake ninja-build libsdl2-dev libsdl2-ttf-dev libltdl-dev
-
-      - name: Install dependencies (macOS)
-        if: startsWith(matrix.os, 'macos')
-        env:
-          # Homebrew does not provide bottles for Intel macOS anymore: `brew update` + upgrades are compiled from
-          # source (~40 minutes). cmake/ninja/pkg-config/zip are already on the runner image and SDL2/SDL2_ttf come
-          # from vcpkg -> only install what is missing, never update or upgrade.
-          HOMEBREW_NO_AUTO_UPDATE: "1"
-          HOMEBREW_NO_INSTALL_UPGRADE: "1"
-          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
-          HOMEBREW_NO_INSTALL_CLEANUP: "1"
-          HOMEBREW_NO_ANALYTICS: "1"
-          HOMEBREW_NO_ENV_HINTS: "1"
-        run: |
-          missing=""
-          for entry in cmake:cmake ninja:ninja; do
-            formula="${entry%%:*}"; tool="${entry##*:}"
-            command -v "$tool" >/dev/null 2>&1 || missing="$missing $formula"
-          done
-          if [ -n "$missing" ]; then brew install $missing; else echo "All build tools are already installed"; fi
-          echo "VCPKG_CMAKE_GENERATOR=Ninja" >> $GITHUB_ENV
-
-      - name: Install dependencies (Windows)
-        if: startsWith(matrix.os, 'windows')
-        shell: pwsh
-        run: |
-          choco install cmake ninja -y --no-progress
-          Write-Host "Windows dependencies installed successfully."
-
-      # Configure and build with CMake
-      - name: Configure CMake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-
-      - name: Build
-        run: cmake --build build --config ${{ env.BUILD_TYPE }}
-  
   # Currently turned off because of the SDL implicit memory leaks
   # Maybe one day we can remove SDL leaks to get actually useful output out of it
   # valgrind-test:

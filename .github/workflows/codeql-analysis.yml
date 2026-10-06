@@ -1,0 +1,56 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  security-events: write
+  packages: read
+  actions: read
+  contents: read
+
+# A new push on the same pull request cancels the previous (now outdated) analysis
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          - language: c-cpp
+            build-mode: manual
+          - language: python
+            build-mode: none
+
+    steps:
+      # Only the C++ build needs the submodules (vcpkg); the other languages would just scan vcpkg's own scripts
+      - uses: actions/checkout@v7
+        with:
+          submodules: ${{ matrix.language == 'c-cpp' && 'recursive' || 'false' }}
+
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      # Build inside the same job (after init) so CodeQL can observe the compilation
+      - name: Build C++
+        if: matrix.language == 'c-cpp'
+        uses: ./.github/actions/build
+        with:
+          build_type: RelWithDebInfo
+          use_vcpkg_cache: "true"
+          jobs_count: "0"
+
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"

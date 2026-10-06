@@ -1,0 +1,114 @@
+name: "Build (composite)"
+description: "Install the OS dependencies, restore the vcpkg binary cache, then configure and build AppCUI with CMake"
+inputs:
+  build_type:
+    description: "CMake build type"
+    default: "Release"
+  use_vcpkg_cache:
+    description: "Cache the vcpkg binary packages? ('true'|'false')"
+    default: "true"
+  jobs_count:
+    description: "Number of parallel jobs for build (string number, '0' = auto)"
+    default: "0"
+runs:
+  using: "composite"
+  steps:
+    # --------------------------
+    # NOTE: Do NOT checkout here.
+    # Let the caller run actions/checkout (with submodules) so this can be used after CodeQL init.
+    # --------------------------
+
+    # --------------------------
+    # Compute JOBS count
+    # --------------------------
+    - name: Set JOBS
+      shell: bash
+      run: |
+        if [ "${{ inputs.jobs_count }}" = "0" ]; then
+          echo "JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu)" >> "$GITHUB_ENV"
+        else
+          echo "JOBS=${{ inputs.jobs_count }}" >> "$GITHUB_ENV"
+        fi
+
+    # --------------------------
+    # Cache vcpkg (binary cache)
+    # --------------------------
+    # vcpkg stores one zip per built package in VCPKG_DEFAULT_BINARY_CACHE. Restoring them is a matter of seconds and,
+    # unlike caching build/vcpkg_installed, a change of one dependency (vcpkg.json, ports, compiler) only rebuilds the
+    # affected packages: the previous cache is restored through restore-keys and the new packages are added to it.
+    - name: Setup vcpkg binary cache
+      if: ${{ inputs.use_vcpkg_cache == 'true' }}
+      shell: bash
+      run: |
+        VCPKG_CACHE_DIR="${{ github.workspace }}/.vcpkg-binary-cache"
+        mkdir -p "$VCPKG_CACHE_DIR"
+        echo "VCPKG_DEFAULT_BINARY_CACHE=$VCPKG_CACHE_DIR" >> "$GITHUB_ENV"
+
+    - name: Cache vcpkg packages
+      if: ${{ inputs.use_vcpkg_cache == 'true' }}
+      uses: actions/cache@v6
+      with:
+        path: ${{ github.workspace }}/.vcpkg-binary-cache
+        key: vcpkg-bin-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('vcpkg.json', 'vcpkg/versions/baseline.json', 'vcpkg-ports/**') }}
+        restore-keys: |
+          vcpkg-bin-${{ runner.os }}-${{ runner.arch }}-
+
+    # --------------------------
+    # OS dependencies
+    # --------------------------
+    # SDL2/SDL2_ttf are built by vcpkg, but the vcpkg sdl2 port needs the X11/Wayland/audio development headers of the
+    # system: libsdl2-dev is the simplest way to get all of them (without it the configure step fails on Linux).
+    - name: Install dependencies (Linux)
+      if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y \
+          build-essential \
+          ninja-build \
+          zip \
+          libx11-dev \
+          libsdl2-dev \
+          libsdl2-ttf-dev \
+          libltdl-dev
+
+    - name: Install dependencies (macOS)
+      if: ${{ runner.os == 'macOS' }}
+      shell: bash
+      env:
+        # Homebrew does not provide bottles for Intel macOS anymore: `brew update` + upgrades are compiled from
+        # source (~40 minutes). cmake/ninja/pkg-config/zip are already on the runner image and SDL2/SDL2_ttf come
+        # from vcpkg -> only install what is missing, never update or upgrade.
+        HOMEBREW_NO_AUTO_UPDATE: "1"
+        HOMEBREW_NO_INSTALL_UPGRADE: "1"
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+        HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        HOMEBREW_NO_ANALYTICS: "1"
+        HOMEBREW_NO_ENV_HINTS: "1"
+      run: |
+        missing=""
+        # formula:command pairs (the command tells if the tool is already available)
+        for entry in cmake:cmake ninja:ninja pkgconf:pkg-config zip:zip; do
+          formula="${entry%%:*}"; tool="${entry##*:}"
+          command -v "$tool" >/dev/null 2>&1 || missing="$missing $formula"
+        done
+        if [ -n "$missing" ]; then
+          echo "Installing:$missing"
+          brew install $missing
+        else
+          echo "All build tools are already installed"
+        fi
+        echo "VCPKG_CMAKE_GENERATOR=Ninja" >> "$GITHUB_ENV"
+
+    # Windows: CMake, Visual Studio and 7-Zip are already on the runner image (vcpkg downloads its own ninja).
+
+    # --------------------------
+    # Configure & build
+    # --------------------------
+    - name: Configure CMake
+      shell: bash
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
+
+    - name: Build
+      shell: bash
+      run: cmake --build build --config ${{ inputs.build_type }} --parallel $JOBS

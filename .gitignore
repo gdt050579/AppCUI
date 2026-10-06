@@ -5,6 +5,8 @@
 *.vcxproj.user
 .vscode
 build
+# the composite GitHub action used by the workflows is not a build folder
+!/.github/actions/build/
 bin
 *.log
 docs/build
