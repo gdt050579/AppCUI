@@ -1,5 +1,8 @@
 name: Version Increase
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -7,39 +10,41 @@ on:
   workflow_dispatch:
     inputs:
       versionToUpdate:
-        description: 'Version to update'     
+        description: 'Version to update'
         required: true
-        default: 'minor' 
+        default: 'minor'
         type: choice
         options:
         - major
         - minor
         - patch
 
+# Runs one after another: each run bumps the version on top of the previous bump
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   version-ubuntu:
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    # Checkout the branch (not the pushed commit) so a queued run starts from the latest version bump.
+    # The submodules are not needed to update the version.
+    - uses: actions/checkout@v7
       with:
-        submodules: true
+        ref: ${{ github.ref }}
 
     - name: Get Version to ENV and increase it
       run: |
         output=$(python .github/workflows/get_version_and_update.py AppCUI/include/AppCUI.hpp ${{ github.event.inputs.versionToUpdate }})
         echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
-      
+
     - name: Show Version
       run: echo "${{ env.APPCUI_VERSION }}"
 
-    - name: Commit files
+    - name: Commit and push
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git commit -m "Updated AppCUI version ${{ env.APPCUI_VERSION }}" -a
-        
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
+        git push origin HEAD:${{ github.ref }}

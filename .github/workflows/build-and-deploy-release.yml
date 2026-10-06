@@ -1,9 +1,23 @@
 name: build-and-deploy-release
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      isPreRelease:
+        description: "Is this a pre-release?"
+        required: true
+        default: true
+        type: boolean
+
+# Releases are published one after another (never cancelled, each one has its own version)
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 env:
   BUILD_TYPE: Release
@@ -18,126 +32,88 @@ jobs:
         include:
           - os: windows-latest
             lib_ext: lib
-            bin_path: D:/a/AppCUI/AppCUI/bin
             vcpkg_triplet: x64-windows
             archive_tool: 7z
           - os: ubuntu-24.04
             lib_ext: a
-            bin_path: /home/runner/work/AppCUI/AppCUI/bin
             vcpkg_triplet: x64-linux
             archive_tool: zip
           - os: macos-15-intel
             lib_ext: a
-            bin_path: /Users/runner/work/AppCUI/AppCUI/bin
             vcpkg_triplet: x64-osx
             archive_tool: zip
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      # Install dependencies
-      - name: Install dependencies (Linux)
-        if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y build-essential cmake zip libx11-dev libltdl-dev
-
-      - name: Install dependencies (macOS)
-        if: startsWith(matrix.os, 'macos')
-        env:
-          # Homebrew does not provide bottles for Intel macOS anymore: `brew update` + upgrades are compiled from
-          # source (~40 minutes). cmake/ninja/pkg-config/zip are already on the runner image and SDL2/SDL2_ttf come
-          # from vcpkg -> only install what is missing, never update or upgrade.
-          HOMEBREW_NO_AUTO_UPDATE: "1"
-          HOMEBREW_NO_INSTALL_UPGRADE: "1"
-          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
-          HOMEBREW_NO_INSTALL_CLEANUP: "1"
-          HOMEBREW_NO_ANALYTICS: "1"
-          HOMEBREW_NO_ENV_HINTS: "1"
-        run: |
-          missing=""
-          for entry in cmake:cmake pkgconf:pkg-config zip:zip; do
-            formula="${entry%%:*}"; tool="${entry##*:}"
-            command -v "$tool" >/dev/null 2>&1 || missing="$missing $formula"
-          done
-          if [ -n "$missing" ]; then brew install $missing; else echo "All build tools are already installed"; fi
-
-      - name: Install dependencies (Windows)
-        if: startsWith(matrix.os, 'windows')
-        shell: pwsh
-        run: |
-          choco install cmake ninja 7zip -y --no-progress
-
-      # Configure + build
-      - name: Configure CMake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-
-      - name: Build
-        run: cmake --build build --config ${{ env.BUILD_TYPE }}
+      # The binaries are written in bin/ (APPCUI_ENABLE_OUTPUT_LOCATION -> ${CMAKE_BINARY_DIR}/../bin)
+      - uses: ./.github/actions/build
+        with:
+          build_type: ${{ env.BUILD_TYPE }}
+          use_vcpkg_cache: "true"
+          jobs_count: "0"
 
       - name: Extract version
-        id: version
-        shell: pwsh
+        shell: bash
         run: |
-          $output = python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp
-          echo "APPCUI_VERSION=$output" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "version=$output" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          version=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
+          echo "APPCUI_VERSION=$version" >> "$GITHUB_ENV"
 
       # Copy static libs and terminfo if available
       - name: Copy libraries
+        shell: bash
         run: |
-          mkdir -p "${{ matrix.bin_path }}"
+          mkdir -p bin
           if [ -d "build/vcpkg_installed/${{ matrix.vcpkg_triplet }}/lib" ]; then
-            cp -R build/vcpkg_installed/${{ matrix.vcpkg_triplet }}/lib/*.${{ matrix.lib_ext }} "${{ matrix.bin_path }}/" || true
+            cp -R build/vcpkg_installed/${{ matrix.vcpkg_triplet }}/lib/*.${{ matrix.lib_ext }} bin/ || true
           fi
           if [ -d "build/vcpkg_installed/${{ matrix.vcpkg_triplet }}/share/terminfo" ]; then
-            cp -R build/vcpkg_installed/${{ matrix.vcpkg_triplet }}/share/terminfo "${{ matrix.bin_path }}/" || true
+            cp -R build/vcpkg_installed/${{ matrix.vcpkg_triplet }}/share/terminfo bin/ || true
           fi
-        shell: bash
 
-      # List artifacts
       - name: List build outputs
-        run: ls -R "${{ matrix.bin_path }}"
         shell: bash
+        run: ls -R bin
 
-      # Create archive
+      # The archive is created next to bin/ (not inside it) so it never contains itself
       - name: Package build
         shell: bash
         run: |
-          cd "${{ matrix.bin_path }}"
           zipname="AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+          cd bin
           if [ "${{ matrix.archive_tool }}" = "7z" ]; then
-            7z a "$zipname" . > NUL
+            7z a "../$zipname" . > /dev/null
           else
-            zip -9 -r "$zipname" .
+            zip -9 -r "../$zipname" .
           fi
           echo "Created $zipname"
 
-      # Upload artifact
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.os }}_artifacts
-          path: "${{ matrix.bin_path }}/AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip"
+          path: AppCUI-${{ runner.os }}-${{ runner.arch }}-${{ env.APPCUI_VERSION }}.zip
+          if-no-files-found: error
           retention-days: 1
 
   publish:
     name: Publish Release
     runs-on: ubuntu-latest
     needs: [build]
+    permissions:
+      contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - name: Extract version again
+      - name: Extract version
         id: version
         run: |
-          output=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
-          echo "version=$output" >> $GITHUB_OUTPUT
-          echo "APPCUI_VERSION=$output" >> $GITHUB_ENV
+          version=$(python .github/workflows/get_version.py AppCUI/include/AppCUI.hpp)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
 
@@ -145,12 +121,15 @@ jobs:
         run: ls -R artifacts
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.version }}
+          # Tag the built commit: "Version Increase" pushes a new commit on main in parallel with this workflow
+          target_commitish: ${{ github.sha }}
           name: Build ${{ steps.version.outputs.version }}
           draft: false
-          prerelease: true
+          # Pushes on main are pre-releases; a manual run uses the isPreRelease input
+          prerelease: ${{ github.event_name != 'workflow_dispatch' || inputs.isPreRelease }}
           files: artifacts/**/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

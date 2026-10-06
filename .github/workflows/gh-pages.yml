@@ -16,13 +16,18 @@ on:
 permissions:
   contents: write
 
+# Publishing runs one after another (the gh-pages push would fail if two runs raced); outdated PR builds are cancelled
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   docs:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -30,7 +35,7 @@ jobs:
       # is tested with) instead of the distribution package.
       - name: Cache Doxygen
         id: cache-doxygen
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/doxygen
           key: doxygen-1.18.0-linux
