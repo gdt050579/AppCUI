@@ -87,8 +87,10 @@ constexpr int KEY_TAB             = '\t';
 constexpr ColorPair DEFAULT_COMBO_COLOR{ Color::White, Color::DarkBlue };
 constexpr ColorPair PRESSED_COMBO_COLOR{ Color::Green, Color::Red };
 
-bool NcursesTerminal::OnInit(const Application::InitializationData&)
+bool NcursesTerminal::OnInit(const Application::InitializationData& initData)
 {
+    fpsMode          = (initData.Flags & InitializationFlags::EnableFPSMode) != InitializationFlags::None;
+    lastFramesUpdate = std::chrono::steady_clock::now();
     bool setTerminInfo = false;
     if (const char* terminfo = std::getenv("TERMINFO"))
     {
@@ -225,12 +227,24 @@ void NcursesTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     evnt.eventType        = SystemEventType::None;
     evnt.keyCode          = Key::None;
     evnt.unicodeCharacter = 0;
+    evnt.updateFrames     = false;
     // select on stdin with timeout, should  translate to about ~30 fps
     pollfd readFD;
     readFD.fd     = STDIN_FILENO;
     readFD.events = POLLIN | POLLERR;
     // poll for 30 milliseconds
     poll(&readFD, 1, 30);
+
+    if (fpsMode)
+    {
+        // same frame rate as the other frontends (~30 fps)
+        const auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - lastFramesUpdate).count() >= 33)
+        {
+            evnt.updateFrames = true;
+            lastFramesUpdate  = now;
+        }
+    }
 
     int c = getch();
     if (c == ERR)

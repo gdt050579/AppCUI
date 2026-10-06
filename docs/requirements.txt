@@ -1,2 +1,5 @@
-sphinx
-sphinx-rtd-theme
+# Python packages of the documentation build (python -m pip install -r requirements.txt).
+# Doxygen (https://www.doxygen.nl) must be installed separately - see source/development.rst.
+sphinx>=8.0,<10
+breathe>=5.0
+sphinx-rtd-theme>=3.0

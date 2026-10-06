@@ -1,0 +1,60 @@
+# Doxygen configuration of the AppCUI API reference.
+#
+# Doxygen only parses the public header (AppCUI/include/AppCUI.hpp) and produces XML; the HTML pages are rendered by
+# Sphinx through Breathe (see source/conf.py and source/_ext/appcui_api.py). It is run automatically by the Sphinx
+# build - run it by hand (from the docs folder) only to debug the XML:  doxygen Doxyfile
+#
+# Paths are relative to the docs folder (Sphinx runs doxygen from there). Only non-default values are listed.
+
+PROJECT_NAME           = AppCUI
+PROJECT_BRIEF          = "Cross-platform text user interface (TUI) framework"
+OUTPUT_DIRECTORY       = build/doxygen
+INPUT                  = ../AppCUI/include/AppCUI.hpp \
+                         doxygen/namespaces.dox
+FILE_PATTERNS          = *.hpp *.dox
+RECURSIVE              = NO
+
+# every public declaration is documented, with or without a documentation comment
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_ANON_NSPACES   = NO
+HIDE_UNDOC_RELATIONS   = NO
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+MARKDOWN_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = YES
+SORT_MEMBER_DOCS       = NO
+INLINE_INHERITED_MEMB  = NO
+SHOW_INCLUDE_FILES     = NO
+
+# friend declarations are implementation details (and "friend X;" is not understood by the parsers)
+HIDE_FRIEND_COMPOUNDS  = YES
+
+# the header uses a few macros that must be resolved (or removed) to be parsed like the compiler sees it
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+# macros that declare functions: expanded with their definition from the header
+EXPAND_AS_DEFINED      = SWAP_SIGNED
+PREDEFINED             = EXPORT= \
+                         "NODISCARD(msg)=[[nodiscard]]" \
+                         "ADD_FLAG_OPERATORS(type,basic_type)=" \
+                         DOXYGEN_RUNNING
+
+# output: XML only (consumed by Breathe)
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+XML_PROGRAMLISTING     = NO
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+
+# diagnostics
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
+WARN_FORMAT            = "$file:$line: $text"

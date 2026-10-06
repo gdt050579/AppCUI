@@ -685,8 +685,10 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     auto charSet      = AppCUISection.GetValue("characterSet").ToString();
 
     // tests always run on the Tests frontend (with the size requested by the test) -> the settings file can not
-    // change them (a "Frontend = default" value would create a real console terminal and fail without one)
-    const bool isTestFrontend = initData.Frontend == Application::FrontendType::Tests;
+    // change them (a "Frontend = default" value would create a real console terminal and fail without one).
+    // The same applies to a custom frontend (implemented by the application, e.g. a headless/remote screen).
+    const bool isTestFrontend = (initData.Frontend == Application::FrontendType::Tests) ||
+                                (initData.Frontend == Application::FrontendType::Custom);
 
     // frontend
     if ((frontend) && (!isTestFrontend))
@@ -765,7 +767,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     {
         if (String::Equals(charSet, "unicode", true))
             initData.SpecialCharacterSet = Application::SpecialCharacterSetType::Unicode;
-        if (String::Equals(charSet, "ascii", true))
+        else if (String::Equals(charSet, "ascii", true))
             initData.SpecialCharacterSet = Application::SpecialCharacterSetType::Ascii;
         else if (String::StartsWith(charSet, "linux", true))
             initData.SpecialCharacterSet = Application::SpecialCharacterSetType::LinuxTerminal;
@@ -1285,7 +1287,7 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
 {
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
 
-    Internal::SystemEvent evnt;
+    Internal::SystemEvent evnt{};
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedControl = nullptr;
     this->mouseLockedObject  = MouseLockedObject::None;

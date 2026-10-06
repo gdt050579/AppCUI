@@ -5,6 +5,16 @@ namespace AppCUI::OS
 {
 using namespace Utils;
 
+// A custom frontend (headless / remote screen) never touches the OS clipboard of the machine it runs on: its content
+// may belong to the local user (and must not be disclosed to a remote viewer) and a remote viewer must not be able to
+// overwrite it. Copy / paste still work inside the application through this process-private clipboard.
+static std::u16string privateClipboard;
+static bool IsCustomFrontend()
+{
+    auto app = Application::GetApplication();
+    return (app != nullptr) && (app->GetFrontendType() == AppCUI::Application::FrontendType::Custom);
+}
+
 bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t length)
 {
 #ifdef _WIN32
@@ -48,6 +58,11 @@ bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t len
 
 bool Clipboard::Clear()
 {
+    if (IsCustomFrontend())
+    {
+        privateClipboard.clear();
+        return true;
+    }
     const auto& frontend = Application::GetApplication()->GetFrontendType();
 #ifdef _WIN32
     if (frontend == AppCUI::Application::FrontendType::Default ||
@@ -71,6 +86,8 @@ bool Clipboard::Clear()
 
 bool Clipboard::HasText()
 {
+    if (IsCustomFrontend())
+        return !privateClipboard.empty();
     const auto& frontend = Application::GetApplication()->GetFrontendType();
 #ifdef _WIN32
 
@@ -93,6 +110,13 @@ bool Clipboard::HasText()
 
 bool Clipboard::SetText(const ConstString& text)
 {
+    if (IsCustomFrontend())
+    {
+        Utils::UnicodeStringBuilder unicode;
+        CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
+        privateClipboard.assign(unicode.ToStringView());
+        return true;
+    }
     const auto& frontend = Application::GetApplication()->GetFrontendType();
 #ifdef _WIN32
     ConstStringObject textObj(text);
@@ -130,6 +154,8 @@ bool Clipboard::SetText(const ConstString& text)
 
 bool Clipboard::GetText(Utils::UnicodeStringBuilder& text)
 {
+    if (IsCustomFrontend())
+        return text.Set(std::u16string_view(privateClipboard));
     const auto& frontend = Application::GetApplication()->GetFrontendType();
 #ifdef _WIN32
     if (frontend == AppCUI::Application::FrontendType::Default ||

@@ -2,6 +2,7 @@
 #include "../TestTerminal/TestTerminal.hpp"
 #include "../SDLTerminal/SDLTerminal.hpp"
 #include "../NcursesTerminal/NcursesTerminal.hpp"
+#include "../CustomTerminal/CustomTerminal.hpp"
 
 namespace AppCUI::Internal
 {
@@ -18,6 +19,8 @@ static unique_ptr<AbstractTerminal> GetTerminalImpl(FrontendType frontend)
         return std::make_unique<SDLTerminal>();
     case FrontendType::Tests:
         return std::make_unique<TestTerminal>();
+    case FrontendType::Custom:
+        return std::make_unique<CustomTerminal>();
     }
     RETURNERROR(nullptr, "Unsuported terminal type for UNIX OS (%d)", (uint32) frontend);
 }

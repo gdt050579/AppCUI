@@ -17,6 +17,9 @@ constexpr uint16 LAYOUT_FLAG_HEIGHT = 0x0080;
 constexpr uint16 LAYOUT_FLAG_ALIGN  = 0x0100;
 constexpr uint16 LAYOUT_FLAG_DOCK   = 0x0200;
 
+// numerical values are in [-30000, 30000] characters and percentages in [-300%, 300%] (stored as hundredths of a percent)
+constexpr int32 LAYOUT_MAX_ABSOLUTE_VALUE = 30000;
+
 Control* currentControlBeingFocused = nullptr;
 
 // for gcc, building a field should look like var.field, not var.##field
@@ -408,6 +411,11 @@ bool AnalyzeLayout(string_view layout, LayoutInformation& inf)
         int32 value = item.Value.number;
         valueType   = (item.Value.type == KeyValuePair::Type::Percentage) ? LayoutValueType::Percentage
                                                                           : LayoutValueType::CharacterOffset;
+        if (isNumericalValue)
+        {
+            ASSERT((value >= -LAYOUT_MAX_ABSOLUTE_VALUE) && (value <= LAYOUT_MAX_ABSOLUTE_VALUE),
+                   "Layout values must be in [-30000, 30000] (numbers) or [-300%, 300%] (percentages)");
+        }
         switch (layoutType)
         {
         case ControlLayout::Type::X:

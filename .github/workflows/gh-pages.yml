@@ -1,39 +1,79 @@
 name: GithubPages
 
+# Builds the documentation (guides + API reference generated from AppCUI/include/AppCUI.hpp by Doxygen and Breathe).
+# Every warning is an error. Pushes to main publish the result to the gh-pages branch.
 on:
   push:
-    branches:    
+    branches:
       - main
+  pull_request:
+    paths:
+      - "docs/**"
+      - "AppCUI/include/AppCUI.hpp"
+      - ".github/workflows/gh-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  docs:
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v1
-    # Standard drop-in approach that should work for most people.
-    - uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: "docs/"
-    # Publish built docs to gh-pages branch.
-    # ===============================
-    - name: Commit documentation changes
-      run: |
-        git clone https://github.com/gdt050579/AppCUI.git --branch gh-pages --single-branch gh-pages
-        cp -r docs/build/html/* gh-pages/
-        cd gh-pages
-        touch .nojekyll
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add .
-        git commit -m "Update documentation" -a || true
-        # The above command will fail if no changes were present, so we ignore
-        # that.
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        branch: gh-pages
-        directory: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    # ===============================
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The XML of Doxygen changes between versions -> a pinned, checksum-verified release (the one the documentation
+      # is tested with) instead of the distribution package.
+      - name: Cache Doxygen
+        id: cache-doxygen
+        uses: actions/cache@v4
+        with:
+          path: ~/doxygen
+          key: doxygen-1.18.0-linux
+
+      - name: Install Doxygen
+        if: steps.cache-doxygen.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o doxygen.tar.gz \
+            https://github.com/doxygen/doxygen/releases/download/Release_1_18_0/doxygen-1.18.0.linux.bin.tar.gz
+          echo "14fa81bdc34171edb5f1f02b1d60e74802f0439b77fa44e592565d517d72df90  doxygen.tar.gz" | sha256sum --check
+          mkdir -p ~/doxygen
+          tar -xzf doxygen.tar.gz -C ~/doxygen --strip-components=1
+          rm doxygen.tar.gz
+
+      - name: Doxygen version
+        run: |
+          echo "$HOME/doxygen/bin" >> "$GITHUB_PATH"
+          ~/doxygen/bin/doxygen --version
+
+      - name: Install Sphinx
+        run: python -m pip install -r docs/requirements.txt
+
+      - name: Build documentation
+        working-directory: docs
+        run: python -m sphinx -W --keep-going -b html -d build/doctrees source build/html
+
+      - name: Publish to gh-pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone --branch gh-pages --single-branch --depth 1 \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" gh-pages
+          # replace the whole site (pages of removed classes must disappear), keep the git metadata
+          rsync -a --delete --exclude ".git" docs/build/html/ gh-pages/
+          touch gh-pages/.nojekyll
+          cd gh-pages
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Documentation unchanged"
+          else
+            git commit -m "Update documentation (${GITHUB_SHA::8})"
+            git push origin gh-pages
+          fi

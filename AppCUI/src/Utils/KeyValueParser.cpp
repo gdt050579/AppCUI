@@ -16,6 +16,7 @@ static constexpr uint8 CHAR_TYPE_SPACE     = 1;
 static constexpr uint8 CHAR_TYPE_SEPARATOR = 2;
 static constexpr uint8 CHAR_TYPE_EQ        = 3;
 static constexpr uint32 MAX_CHARS_IN_TABLE = 62;
+static constexpr int32 MAX_NUMERICAL_VALUE  = 1000000; // larger integer parts are not numbers (no int32 overflow)
 
 static uint8 ParserCharacterTypes[MAX_CHARS_IN_TABLE] = {
     CHAR_TYPE_OTHER, CHAR_TYPE_OTHER, CHAR_TYPE_OTHER,     CHAR_TYPE_OTHER, CHAR_TYPE_OTHER, CHAR_TYPE_OTHER,
@@ -122,10 +123,13 @@ class Parser
         while ((s < e) && (((*s) >= '0') && ((*s) <= '9')))
         {
             firstPart = firstPart * 10 + (int32) ((*s) - '0');
+            if (firstPart > MAX_NUMERICAL_VALUE)
+                return false; // too large (and it would overflow) -> not a valid number
             s++;
         }
         if ((s < e) && ((*s) == '.'))
         {
+            s++; // skip the decimal point
             auto cnt = 0U;
             while ((s < e) && (((*s) >= '0') && ((*s) <= '9')))
             {
@@ -134,6 +138,8 @@ class Parser
                 s++;
                 cnt++;
             }
+            if (cnt == 1)
+                secondPart *= 10; // "12.5" means 12.50
         }
         if ((s < e) && ((*s) == '%'))
         {

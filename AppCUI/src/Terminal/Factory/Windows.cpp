@@ -2,6 +2,7 @@
 #include "../WindowsTerminal/WindowsTerminal.hpp"
 #include "../TestTerminal/TestTerminal.hpp"
 #include "../SDLTerminal/SDLTerminal.hpp"
+#include "../CustomTerminal/CustomTerminal.hpp"
 
 namespace AppCUI::Internal
 {
@@ -21,6 +22,9 @@ unique_ptr<AbstractTerminal> GetTerminal(const InitializationData& initData)
         break;
     case FrontendType::Tests:
         term = std::make_unique<TestTerminal>();
+        break;
+    case FrontendType::Custom:
+        term = std::make_unique<CustomTerminal>();
         break;
     default:
         RETURNERROR(nullptr, "Unsuported terminal type for Windows OS (%d)", (uint32) initData.Frontend);
