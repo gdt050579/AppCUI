@@ -47,7 +47,6 @@ endif()
 
 # Add SDL
 include(FindSDL2)
-include(FindSDL2TTF)
 
 find_package(unofficial-brotli CONFIG REQUIRED)
 find_package(BZip2 REQUIRED)
@@ -56,7 +55,7 @@ find_package(libjpeg-turbo CONFIG REQUIRED)
 find_package(PNG REQUIRED) 
 find_package(Freetype REQUIRED) 
 find_package(SDL2 CONFIG REQUIRED)
-find_package(SDL2TTF REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
 
 if (UNIX)
     if (APPLE)
@@ -125,8 +124,10 @@ message("FONT_NAME => ${FONT_NAME}")
 message("FONT_PATH => ${FONT_PATH}")
 message("FONT_LIB_NAME => ${FONT_LIB_NAME}")
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR} ${SDL2TTF_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
+# Use the imported target so each configuration links its matching library (SDL2_ttfd in Debug, SDL2_ttf in Release)
+target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FONT_LIB_NAME})
 
 if (APPLE AND NOT APPCUI_ENABLE_OUTPUT_LOCATION)
