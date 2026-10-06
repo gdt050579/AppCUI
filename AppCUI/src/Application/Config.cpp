@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "Internal.hpp"
 
 namespace AppCUI
@@ -607,7 +609,7 @@ bool WriteKeyToString(ColorPair col, std::string_view name, std::string_view fie
 bool WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils::String& output)
 {
     CHECK(WriteKeyToString(col.Focused, name, "Focused", output), false, "");
-    CHECK(WriteKeyToString(col.Normal, name, "Regular", output), false, "");
+    CHECK(WriteKeyToString(col.Normal, name, "Normal", output), false, "");
     CHECK(WriteKeyToString(col.Inactive, name, "Inactive", output), false, "");
     CHECK(WriteKeyToString(col.Hovered, name, "Hovered", output), false, "");
     CHECK(WriteKeyToString(col.PressedOrSelected, name, "Pressed", output), false, "");
@@ -725,6 +727,9 @@ bool Internal::Config::Save(Application::Config& config, const std::filesystem::
     WRITE_COLOR(config.Window.Background.Warning, "Warning");
     WRITE_COLOR(config.Window.Background.Info, "Info");
 
+    if (!config.SerializeCustomColors(temp))
+        return false;
+
     // save
     return File::WriteContent(outputFile, temp.ToStringView());
 }
@@ -840,7 +845,8 @@ bool Internal::Config::Load(Application::Config& config, const std::filesystem::
         READ_COLOR(Window.Background.Warning, Warning);
         READ_COLOR(Window.Background.Info, Info);
     }
-    return true;
+
+    return config.DeserializeCustomColors(ini);
 }
 void Internal::Config::SetTheme(Application::Config& config, ThemeType theme)
 {
@@ -859,5 +865,135 @@ void Internal::Config::SetTheme(Application::Config& config, ThemeType theme)
         Config_SetDefaultTheme(config);
         break;
     }
+}
+
+std::string stringVectorToInitField(std::string_view fieldName, std::vector<std::string>& data)
+{
+    const char* first = data.empty() ? "" : data[0].c_str();
+    LocalString<512> entriesString;
+    entriesString.SetFormat("%s", first);
+    for (size_t i = 1; i < data.size(); i++)
+    {
+        entriesString.AddFormat(",%s", data[i].c_str());
+    }
+
+    LocalString<512> buffer;
+    buffer.SetFormat("%s = [%s]", fieldName.data(), entriesString.GetText());
+    std::string res = buffer.GetText();
+    return res;
+}
+
+bool Application::Config::SerializeCustomColors(AppCUI::Utils::LocalString<8192>& bufferToSerializeTo)
+{
+    AppCUI::Utils::LocalString<8192>& temp = bufferToSerializeTo;
+    LocalString<128> sectionName;
+    for (const auto& [categoryName, categoryColors] : CustomColors)
+    {
+        sectionName.SetFormat("\n[CustomColors.%s]\n", categoryName.c_str());
+        WRITE_SECTION(sectionName.GetText());
+        {
+            std::vector<std::string> fieldNames, fieldTypes;
+            fieldNames.reserve(categoryColors.data.size());
+            fieldTypes.reserve(categoryColors.data.size());
+            for (const auto& [colorName, customColor] : categoryColors.data)
+            {
+                fieldNames.push_back(colorName);
+                if (customColor.IsColorPair())
+                {
+                    fieldTypes.emplace_back("ColorPair");
+                }
+                else if (customColor.IsColorState())
+                {
+                    fieldTypes.emplace_back("ColorState");
+                }
+            }
+            auto fieldNamesIni = stringVectorToInitField("FieldNames", fieldNames);
+            auto fieldTypesIni = stringVectorToInitField("FieldTypes", fieldTypes);
+            temp.AddFormat("%s\n%s\n", fieldNamesIni.c_str(), fieldTypesIni.c_str());
+        }
+        
+        for (const auto& [colorName, customColor] : categoryColors.data)
+        {
+            if (customColor.IsColorPair())
+            {
+                const auto* colorPair = customColor.TryGetColorPair();
+                WRITE_COLORPAIR(*colorPair, colorName.c_str());
+            }
+            else if (customColor.IsColorState())
+            {
+                const auto* colorState = customColor.TryGetColorState();
+                WRITE_COLORSTATE(*colorState, colorName.c_str());
+            }
+            else
+            {
+                assert(false); // should not happen
+                // if we reach here, it means that the custom color is a single Color
+                // should be implemented if needed
+            }
+        }
+    }
+    return true;
+}
+
+bool Config::DeserializeCustomColors(Utils::IniObject& configFile)
+{
+    for (auto it : configFile)
+    {
+        auto secName = it.GetName();
+        auto nameIt  = secName.find("CustomColors.");
+        if (nameIt == std::string::npos)
+            continue;
+        auto categoryName      = secName.substr(13 /*strlen("CustomColors.")*/, secName.size() - nameIt);
+        Utils::IniSection sect = configFile.GetSection(secName);
+        if (!sect.Exists())
+        {
+            assert(false); // should not happen
+            continue;
+        }
+        auto fieldNamesIni = sect.GetValue("FieldNames");
+        auto fieldTypesIni = sect.GetValue("FieldTypes");
+        if (!fieldNamesIni.HasValue() || !fieldTypesIni.HasValue() || !fieldNamesIni.IsArray() ||
+            !fieldTypesIni.IsArray() || fieldNamesIni.GetArrayCount() != fieldTypesIni.GetArrayCount())
+            continue;
+        auto count                                                = fieldNamesIni.GetArrayCount();
+        Application::Config::CustomColorNameStorage colorsStorage = {};
+        for (uint32 i = 0; i < count; i++)
+        {
+            auto entryName = fieldNamesIni[i].ToStringView();
+            auto entryType = fieldTypesIni[i].ToStringView();
+            if (entryName.empty() || entryType.empty())
+                break;
+            if (entryType == "ColorState")
+            {
+                static_assert(
+                      OBJECT_COLOR_STATE_COUNT == 5, "If OBJECT_COLOR_STATE_COUNT changes, update the code below!");
+                LocalString<128> buffer;
+                ObjectColorState colorState = {};
+                for (uint32 state = 0; state < OBJECT_COLOR_STATE_COUNT; ++state)
+                {
+                    buffer.SetFormat("%s.%s", entryName.data(), OBJECT_COLOR_STATE_NAMES[state].data());
+                    auto colorPair               = sect.GetValue(buffer.GetText()).ToColorPair();
+                    colorState.StatesList[state] = colorPair;
+                }
+                colorsStorage[entryName.data()] = CustomColor(colorState);
+                continue;
+            }
+            if (entryType == "ColorPair")
+            {
+                auto colorPair                  = sect.GetValue(entryName).ToColorPair();
+                colorsStorage[entryName.data()] = CustomColor(colorPair);
+                continue;
+            }
+            // else: unknown type -> skip
+            LOG_WARNING("Unknown entryType: %s", entryType.data());
+        }
+        CategoryColorsData categoryColorsData   = {};
+        categoryColorsData.data                 = std::move(colorsStorage);
+        auto existingCategory                   = CustomColors.find(std::string(categoryName));
+        if (existingCategory != CustomColors.end())
+            categoryColorsData.previewInterface = existingCategory->second.previewInterface;
+        CustomColors[std::string(categoryName)] = std::move(categoryColorsData);
+    }
+    return true;
 }
 } // namespace AppCUI

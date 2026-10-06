@@ -145,14 +145,14 @@ FileDialogWindow::FileDialogWindow(
       const ConstString& fileName,
       const ConstString& extensionsFilter,
       const std::filesystem::path& specifiedPath)
-    : Window(open ? "Open" : "Save", "w:120,h:40,d:c", WindowFlags::None), extFilter(nullptr), openDialog(open)
+    : Window(open ? "Open" : "Save", "w:60%,h:80%,d:c", WindowFlags::Sizeable), extFilter(nullptr), openDialog(open)
 {
     const std::filesystem::path initialPath = CanonizePath(specifiedPath.empty() ? "." : specifiedPath);
 
-    lbLocation = Factory::Label::Create(this, "Location: ", "x:1,y:0,w:10%");
-    lbPath     = Factory::Label::Create(this, "", "x:11%,y:0,w:86%");
+    lbLocation = Factory::Label::Create(this, "Location: ", "t:0,l:1,w:11");
+    lbPath     = Factory::Label::Create(this, "", "t:0,l:11,r:2");
 
-    splitListView = Factory::Splitter::Create(this, "x:1,y:2,w:98%,h:82%", SplitterFlags::Vertical);
+    splitListView = Factory::Splitter::Create(this, "t:1,l:2,r:2,b:4", SplitterFlags::Vertical);
     splitListView->SetSecondPanelSize(static_cast<uint32>(0.75 * this->GetWidth()));
     splitPanelLeft  = Factory::Panel::Create(splitListView, "x:1,y:0,w:100%,h:100%");
     splitPanelRight = Factory::Panel::Create(splitListView, "x:1,y:0,w:100%,h:100%");
@@ -203,15 +203,15 @@ FileDialogWindow::FileDialogWindow(
     };
     files->Sort(0, SortDirection::Ascendent); // sort after the first column, ascendent
 
-    lbName = Factory::Label::Create(this, "File &Name", "x:1,y:90%,w:10%");
-    txName = Factory::TextField::Create(this, fileName, "x:11%,y:90%,w:75%", TextFieldFlags::ProcessEnter);
+    lbName = Factory::Label::Create(this, "File &Name", "b:3,l:1,w:11");
+    txName = Factory::TextField::Create(this, fileName, "b:3,l:12,r:11", TextFieldFlags::ProcessEnter);
     txName->SetHotKey('N');
-    btnOK = Factory::Button::Create(this, "&Ok", "x:87%,y:90%,w:12%", (int) Dialogs::Result::Ok);
+    btnOK = Factory::Button::Create(this, "&Ok", "b:2,r:1,w:8", (int) Dialogs::Result::Ok);
 
-    lbExt     = Factory::Label::Create(this, "File &Type", "x:1,y:96%,w:10%");
-    btnCancel = Factory::Button::Create(this, "&Cancel", "x:87%,y:96%,w:12%", (int) Dialogs::Result::Cancel);
+    lbExt     = Factory::Label::Create(this, "File &Type", "b:1,l:1,w:11");
+    btnCancel = Factory::Button::Create(this, "&Cancel", "b:0,r:1,w:8", (int) Dialogs::Result::Cancel);
 
-    comboType = Factory::ComboBox::Create(this, "x:11%,y:96%,w:75%");
+    comboType = Factory::ComboBox::Create(this, "b:1,l:12,r:11");
     comboType->SetHotKey('T');
     ProcessExtensionFilter(extensionsFilter);
     if (comboType->GetItemsCount() > 0)

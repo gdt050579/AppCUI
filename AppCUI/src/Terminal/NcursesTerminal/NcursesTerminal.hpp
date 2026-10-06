@@ -2,6 +2,7 @@
 
 #include "../../Internal.hpp"
 #include <array>
+#include <unordered_map>
 #include <ncursesw/ncurses.h>
 
 /*
@@ -59,7 +60,7 @@ namespace Internal
         const static size_t COMBO_DLG_COL = 8;
         const static size_t COMBO_DLG_ROW = 3;
         Character* canvasState;
-        std::map<int, Input::Key> keyTranslationMatrix;
+        std::unordered_map<int, Input::Key> keyTranslationMatrix;
         ColorManager colors;
         TerminalMode mode;
         uint32 comboKeysMask   = 0;
@@ -86,6 +87,8 @@ namespace Internal
         void HandleMouse(SystemEvent& evt, const int c);
         void HandleKey(SystemEvent& evt, const int c);
         void HandleKeyNormalMode(SystemEvent& evt, const int c);
+        void BuildKeyTranslationTable();
+        bool TranslateKey(const int c, Key& keyCode, char16& unicodeCharacter);
         void HandleKeyComboMode(SystemEvent& evt, const int c);
 
         void DrawModifiers(

@@ -38,7 +38,7 @@ int main()
     {
         Application::UpdateAppCUISettings(true);
         CHECK(Application::SaveAppSettings(), 1, "Fail to save application settings !");
-        LOG_INFO("IniInitialization.ini created succesifully. Modify it and re-run this executable");
+        LOG_INFO("IniInitialization.ini created successfully. Modify it and re-run this executable");
         return 0;
     }
     Application::AddWindow(std::make_unique<SimpleWin>());

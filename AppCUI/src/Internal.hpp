@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <set>
 
 namespace AppCUI
 {
@@ -239,7 +240,7 @@ namespace Internal
         bool Load(AppCUI::Application::Config& config, const std::filesystem::path& inputFile);
     }; // namespace Config
 
-    struct ApplicationImpl
+    struct ApplicationImpl : public Utils::PropertiesInterface
     {
         Application::Config config;
         Utils::IniObject settings;
@@ -248,6 +249,7 @@ namespace Internal
         unique_ptr<CommandBarController> cmdBar;
         unique_ptr<MenuBar> menu;
         vector<Controls::Control*> toDelete;
+        std::set<Dialogs::OnThemeChangedInterface*> themeChangedListeners;
 
         Controls::Desktop* AppDesktop;
         ToolTipController ToolTip;
@@ -268,9 +270,10 @@ namespace Internal
         int LastMouseX, LastMouseY;
         bool Inited;
         bool cmdBarUpdate;
+        Application::SpecialCharacterSetType SpecialCharsSet;
 
         ApplicationImpl();
-        ~ApplicationImpl();
+        ~ApplicationImpl() override;
 
         
         Application::FrontendType GetFrontendType() const;
@@ -314,7 +317,32 @@ namespace Internal
         bool SetToolTip(Utils::Reference<Controls::Control> control, const ConstString& text, int x, int y);
 
         void ArrangeWindows(Application::ArrangeWindowsMethod method);
+
+        // Theme changed
+        bool RegisterThemeChangeListener(Dialogs::OnThemeChangedInterface* listener);
+        void RemoveThemeChangeListener(Dialogs::OnThemeChangedInterface* listener);
+        void TriggerThemeChange() const;
+
+        bool GetPropertyValue(uint32 propertyID, Utils::PropertyValue& value) override;
+        bool SetPropertyValue(uint32 propertyID, const Utils::PropertyValue& value, Utils::String& error) override;
+        void SetCustomPropertyValue(uint32 propertyID) override;
+        bool IsPropertyValueReadOnly(uint32 propertyID) override;
+        const vector<Utils::Property> GetPropertiesList() override;
+        std::string_view GetCategoryNameForSerialization() const override
+        {
+            return "AppCUI";
+        }
+        bool AddCategoryBeforePropertyNameWhenSerializing() const override
+        {
+            return false;
+        }
     };
+
+    // loads the [AppCUI] Keyboard.Ctrl / Keyboard.Alt modifier profile (identity when missing or invalid)
+    void LoadKeyboardSettings(Utils::IniSection section);
+    // restores the identity modifier profile (the profile is process wide -> reset on every Init / teardown so that
+    // a new application never inherits the profile of a previous one)
+    void ResetKeyboardSettings();
 } // namespace Internal
 namespace Application
 {

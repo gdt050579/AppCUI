@@ -1175,6 +1175,7 @@ struct PropertyInfo
     uint32 category;
     uint32 id;
     PropertyType type;
+    bool isSerializable;
 };
 enum class PropertySeparatorStatus : uint8
 {
@@ -1186,6 +1187,20 @@ enum class PropertyItemLocation : uint8
 {
     None,
     CollapseExpandButton
+};
+enum class PropertySelectionType : uint8
+{
+    NonSerializable,
+    Serializable,
+    Both
+};
+struct PropertyListContext;
+struct PropertyListCallbacksInjector : public AppCUI::Handlers::OnComboBoxCurrentItemChangedInterface,
+                                       public AppCUI::Handlers::OnButtonPressedInterface
+{
+    Reference<PropertyListContext> context;
+    void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override;
+    void OnButtonPressed(Reference<Controls::Button> r) override;
 };
 struct PropertyListContext : public ControlContext
 {
@@ -1214,6 +1229,19 @@ struct PropertyListContext : public ControlContext
     PropertyItemLocation hoveredItemStatus;
     uint32 hoveredItemIDX;
     Reference<PropertyList> host;
+    Reference<ComboBox> selectionTypeComboBox;
+    Reference<Label> selectionTypeLabel;
+    Reference<Button> saveButton;
+    bool hasSerializableProperties;
+    PropertySelectionType selectionType = PropertySelectionType::Both;
+    Pointer<PropertyListCallbacksInjector> callbacksInjector = new PropertyListCallbacksInjector();
+    inline int GetCurrentHeight() const
+    {
+        auto h = this->hasBorder ? this->Layout.Height - 2 : this->Layout.Height;
+        if (hasSerializableProperties && h > 0)
+            --h;
+        return h;
+    }
 
     void ExecuteItemAction();
     void SetPropertyNameWidth(int32 value, bool adjustPercentage);
@@ -1239,6 +1267,7 @@ struct PropertyListContext : public ControlContext
     void DrawFilterBar(Graphics::Renderer& renderer);
     void Paint(Graphics::Renderer& renderer);
     bool ProcessFilterKey(Input::Key keyCode, char16 UnicodeChar);
+    void AdjustItemIndex();
     bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar);
     bool MouseToItem(int x, int y, uint32& itemIndex, PropertyItemLocation& loc);
     void OnMousePressed(int x, int y, Input::MouseButton button);
@@ -1247,7 +1276,7 @@ struct PropertyListContext : public ControlContext
     bool OnMouseOver(int x, int y, PropertyItemLocation& loc);
     bool OnMouseLeave();
     void OnMouseReleased(int x, int y, Input::MouseButton button);
-    bool IsItemFiltered(const PropertyInfo& prop);
+    bool IsItemFiltered(const PropertyInfo& prop) const;
     void Refilter();
     void EditAndUpdateText(const PropertyInfo& prop);
     void EditAndUpdateBool(const PropertyInfo& prop);
@@ -1257,6 +1286,7 @@ struct PropertyListContext : public ControlContext
     void EditAndUpdateColor(const PropertyInfo& prop);
     void EditAndUpdateColorPair(const PropertyInfo& prop);
     void EditAndUpdateChar(const PropertyInfo& prop, bool isChar8);
+    void SaveSerializableFields();
 
     inline constexpr int32 GetSeparatorXPos() const
     {

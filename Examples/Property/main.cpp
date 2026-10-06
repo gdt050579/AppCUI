@@ -282,6 +282,7 @@ class MyUserControl : public UserControl, public PropertiesInterface
               "Look & Feel",
               "Border Type",
               PropertyType::List,
+              false,
               "Single=1,Double=2,Thick=3" },
             { (uint32) MyControlProperty::Name, "General", "Name", PropertyType::Unicode },
             { (uint32) MyControlProperty::Version, "General", "Version", PropertyType::Ascii },
@@ -289,29 +290,42 @@ class MyUserControl : public UserControl, public PropertiesInterface
               "Animation",
               "Started",
               PropertyType::Boolean,
+              true,
               "Stopped,Running" },
-            { (uint32) MyControlProperty::AnimationKey, "Animation", "Key for start/stop", PropertyType::Key },
+            { (uint32) MyControlProperty::AnimationKey, "Animation", "Key for start/stop", PropertyType::Key, true },
             { (uint32) MyControlProperty::AnimationSpeed,
               "Animation",
               "Speed",
               PropertyType::List,
+              true,
               "  Very Slow   = 5,Slow=4,Normal=3,Fast=2, Super Fast = 1" },
             { (uint32) MyControlProperty::Flags,
               "General",
               "File flags",
               PropertyType::Flags,
+              false,
               "Read=1,Write=2,Execute=4,Shared=8" },
             { (uint32) MyControlProperty::Custom, "General", "Custom prop", PropertyType::Custom },
         };
     };
+
+    std::string_view GetCategoryNameForSerialization() const override
+    {
+        return "MyUserControlProperties";
+    }
+
+    bool AddCategoryBeforePropertyNameWhenSerializing() const override
+    {
+        return true;
+    }
 };
-class PropertyWindowExmaple : public Window
+class PropertyWindowExample : public Window
 {
     Reference<MyUserControl> ct;
     Reference<PropertyList> pl;
 
   public:
-    PropertyWindowExmaple() : Window("Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
+    PropertyWindowExample() : Window("Example", "d:c,w:60,h:20", WindowFlags::Sizeable)
     {
         auto sp = Factory::Splitter::Create(this, "d:c", SplitterFlags::Vertical);
         ct      = sp->CreateChildControl<MyUserControl>();
@@ -335,7 +349,7 @@ int main()
 {
     if (!Application::Init(InitializationFlags::EnableFPSMode))
         return 1;
-    Application::AddWindow(std::make_unique<PropertyWindowExmaple>());
+    Application::AddWindow(std::make_unique<PropertyWindowExample>());
     Application::Run();
     return 0;
 }

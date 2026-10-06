@@ -2,80 +2,79 @@ name: build
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]
   pull_request:
+  workflow_dispatch:
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
-  build-win:
-    runs-on: [windows-latest]
-    env:
-      SDL2_URL: "https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip"
-      SDL2_TTF_URL: "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-2.0.15-VC.zip"
-      SDL2_PATH: "C:\\SDL"
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Install requests
-      run: pip install requests
-    - name: Install SDL2
-      run: python .github/workflows/win_sdl2.py
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH="C:\SDL\SDL2-2.0.14;C:\SDL\SDL2_ttf-2.0.15"
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-      
-  build-macos:
-    runs-on: [macos-13] # avoid ARM for now - https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources 
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15-intel, windows-latest]
 
-    # https://github.com/dotnet/runtime/issues/82240
-    # temporarily install pkg-config via brew
-    # - name: Install pkg-config
-    #   run: |
-    #     # brew update
-    #     brew install pkg-config
-    #     # brew upgrade
-      
-    # - name: Install sdl
-    #   run: brew install sdl2
-    # - name: Install sdl2_ttf
-    #   run: brew install sdl2_ttf
-    # - name: Install updated ncurses
-    #   run: brew install ncurses
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_PREFIX_PATH=/usr/local/Cellar/ncurses/6.2
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-  build-ubuntu:
-    runs-on: [ubuntu-22.04]
-    env:
-      CC: gcc-10
-      CXX: g++-10
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Update
-      run: sudo apt-get update -y
-    - name: Install SDL2
-      run: sudo apt-get install libsdl2-dev -y
-    - name: Install SDL2ttf
-      run: sudo apt-get install libsdl2-ttf-dev -y
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Cache vcpkg dependencies (saves significant time)
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/vcpkg_installed
+            build/vcpkg_downloads
+          key: ${{ runner.os }}-${{ runner.arch }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-vcpkg-
+
+      # OS-specific dependencies
+      - name: Install dependencies (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential cmake ninja-build libsdl2-dev libsdl2-ttf-dev libltdl-dev
+
+      - name: Install dependencies (macOS)
+        if: startsWith(matrix.os, 'macos')
+        env:
+          # Homebrew does not provide bottles for Intel macOS anymore: `brew update` + upgrades are compiled from
+          # source (~40 minutes). cmake/ninja/pkg-config/zip are already on the runner image and SDL2/SDL2_ttf come
+          # from vcpkg -> only install what is missing, never update or upgrade.
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_UPGRADE: "1"
+          HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+          HOMEBREW_NO_ANALYTICS: "1"
+          HOMEBREW_NO_ENV_HINTS: "1"
+        run: |
+          missing=""
+          for entry in cmake:cmake ninja:ninja; do
+            formula="${entry%%:*}"; tool="${entry##*:}"
+            command -v "$tool" >/dev/null 2>&1 || missing="$missing $formula"
+          done
+          if [ -n "$missing" ]; then brew install $missing; else echo "All build tools are already installed"; fi
+          echo "VCPKG_CMAKE_GENERATOR=Ninja" >> $GITHUB_ENV
+
+      - name: Install dependencies (Windows)
+        if: startsWith(matrix.os, 'windows')
+        shell: pwsh
+        run: |
+          choco install cmake ninja -y --no-progress
+          Write-Host "Windows dependencies installed successfully."
+
+      # Configure and build with CMake
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }}
   
   # Currently turned off because of the SDL implicit memory leaks
   # Maybe one day we can remove SDL leaks to get actually useful output out of it

@@ -214,7 +214,7 @@ ItemHandle Application::AddWindow(unique_ptr<Window> wnd, Window* referalWindow,
 Controls::Menu* Application::AddMenu(const ConstString& name)
 {
     CHECK(app, nullptr, "Application has not been initialized !");
-    CHECK(app->Inited, nullptr, "Application has not been corectly initialized !");
+    CHECK(app->Inited, nullptr, "Application has not been correctly initialized !");
     CHECK(app->menu, nullptr, "Application was not initialized with HAS_MENU option set up !");
     ItemHandle itm         = app->menu->AddMenu(name);
     Controls::Menu* result = app->menu->GetMenu(itm);
@@ -263,8 +263,11 @@ void Application::UpdateAppCUISettings(Utils::IniObject& ini, bool clearExisting
     sect.UpdateValue("Size", "default", true);
     sect.UpdateValue("CharacterSize", "default", true);
     sect.UpdateValue("Fixed", "default", true);
-    sect.UpdateValue("Theme", "default", true);
+    sect.UpdateValue("Theme", "Default", true);
+    sect.UpdateValue("ThemeFolder", "Themes", true);
     sect.UpdateValue("CharacterSet", "auto", true);
+    sect.UpdateValue("Keyboard.Ctrl", "Ctrl", true);
+    sect.UpdateValue("Keyboard.Alt", "Alt", true);
 }
 bool Application::UpdateAppCUISettings(bool clearExistingSettings)
 {
@@ -566,6 +569,28 @@ Controls::Control* GetFocusedControl(Controls::Control* ctrl)
     // altfel nici un copil nu e ok - cer eu
     return ctrl;
 }
+bool ThemesFolderToLocalPath(const String& folder, std::filesystem::path &outPath)
+{
+    if (!folder.Len())
+    {
+        LOG_WARNING("Invalid Themes Folder %s", folder.GetText());
+        return false;
+    }
+    auto appPath = OS::GetCurrentApplicationPath();
+    if (appPath.empty())
+    {
+        LOG_WARNING("OS::GetCurrentApplicationPath failed (without current application path, path to theme file can "
+                    "not be found");
+        return false;
+    }
+    appPath = appPath.remove_filename();
+
+    appPath /= (string_view) folder;
+    appPath += std::filesystem::path::preferred_separator;
+    outPath = std::move(appPath);
+    return true;
+}
+
 
 ApplicationImpl::ApplicationImpl()
 {
@@ -595,6 +620,7 @@ Application::FrontendType ApplicationImpl::GetFrontendType() const
 }
 void ApplicationImpl::Destroy()
 {
+    Internal::ResetKeyboardSettings(); // do not leak the keyboard profile to a future application instance
     this->Inited             = false;
     this->MouseLockedControl = nullptr;
     this->MouseOverControl   = nullptr;
@@ -606,19 +632,19 @@ void ApplicationImpl::Destroy()
 }
 bool ApplicationImpl::LoadThemeFile(Application::InitializationData& initData)
 {
-    auto appPath = OS::GetCurrentApplicationPath();
-    if (appPath.empty())
+    auto appPath = config.ThemesFolder;
+    if (!std::filesystem::exists(appPath))
     {
-        LOG_WARNING("OS::GetCurrentApplicationPath failed (without current application path, path to theme file can "
-                    "not be found");
+        LOG_WARNING("Folder theme %s does not exist. It will be created.", appPath.string().c_str());
+        std::filesystem::create_directory(appPath);
         return false;
     }
-    appPath = appPath.remove_filename();
+
     appPath += (string_view) initData.ThemeName;
     appPath.replace_extension(".theme");
     if (Internal::Config::Load(this->config, appPath) == false)
     {
-        LOG_WARNING("Fail to load theme file from: %s --> reverting to defaul theme", appPath.string().c_str());
+        LOG_WARNING("Fail to load theme file from: %s --> reverting to default theme", appPath.string().c_str());
         return false;
     }
     return true;
@@ -642,6 +668,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     }
     // ini file is created --> let's load the section
     auto AppCUISection = this->settings.GetSection("appcui");
+    Internal::LoadKeyboardSettings(AppCUISection);
     if (AppCUISection.Exists() == false)
     {
         LOG_WARNING(
@@ -654,10 +681,15 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     auto charSize     = AppCUISection.GetValue("charactersize").ToString();
     bool fixedWindows = AppCUISection.GetValue("fixed").ToBool(false);
     auto themeName    = AppCUISection.GetValue("theme").ToString();
+    auto themeFolder    = AppCUISection.GetValue("themefolder").ToString();
     auto charSet      = AppCUISection.GetValue("characterSet").ToString();
 
+    // tests always run on the Tests frontend (with the size requested by the test) -> the settings file can not
+    // change them (a "Frontend = default" value would create a real console terminal and fail without one)
+    const bool isTestFrontend = initData.Frontend == Application::FrontendType::Tests;
+
     // frontend
-    if (frontend)
+    if ((frontend) && (!isTestFrontend))
     {
         if (String::Equals(frontend, "default", true))
             initData.Frontend = Application::FrontendType::Default;
@@ -687,7 +719,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     }
 
     // terminal size
-    const char* s_terminalSize = terminalSize.ToString();
+    const char* s_terminalSize = isTestFrontend ? nullptr : terminalSize.ToString();
     if (s_terminalSize)
     {
         if (String::Equals(s_terminalSize, "fullscreen", true))
@@ -712,17 +744,20 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     // themes
     if (themeName)
     {
-        if (String::Equals(themeName, "default", true))
-            initData.Theme = Application::ThemeType::Default;
-        else if (String::Equals(themeName, "dark", true))
+        initData.ThemeName = themeName;
+        if (String::Equals(themeName, "Dark", true))
             initData.Theme = Application::ThemeType::Dark;
-        else if (String::Equals(themeName, "light", true))
+        else if (String::Equals(themeName, "Light", true))
             initData.Theme = Application::ThemeType::Light;
         else
         {
             initData.Theme     = Application::ThemeType::Default;
-            initData.ThemeName = themeName;
         }
+    }
+
+    if (themeFolder)
+    {
+        initData.ThemeFolder = themeFolder;
     }
 
     // character set
@@ -744,6 +779,9 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
 {
     CHECK(!Inited, false, "Application has already been initialized !");
 
+    // the keyboard profile is process wide -> start from the default one; the settings file (if any) may change it
+    Internal::ResetKeyboardSettings();
+
     if ((initData.Flags & Application::InitializationFlags::LoadSettingsFile) != Application::InitializationFlags::None)
     {
         LoadSettingsFile(initData);
@@ -758,7 +796,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     CHECK((terminal = GetTerminal(initData)), false, "Fail to allocate a terminal object !");
     LOG_INFO("Terminal size: %d x %d", terminal->screenCanvas.GetWidth(), terminal->screenCanvas.GetHeight());
 
-    // configur other objects and settings
+    // configure other objects and settings
     if ((initData.Flags & Application::InitializationFlags::CommandBar) != Application::InitializationFlags::None)
     {
         cmdBar = std::make_unique<Internal::CommandBarController>(
@@ -773,8 +811,17 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     }
 
     // configure theme
+    std::filesystem::path themesFolderFullPath;
+    if (ThemesFolderToLocalPath(initData.ThemeFolder, themesFolderFullPath))
+    {
+        config.ThemesFolder = themesFolderFullPath;
+    }
+
+    config.Theme = initData.Theme;
     if (!initData.ThemeName.Empty())
     {
+        // Force the default theme first because some themes might be incomplete
+        Internal::Config::SetTheme(config, initData.Theme);
         if (!LoadThemeFile(initData))
         {
             Internal::Config::SetTheme(config, initData.Theme);
@@ -812,7 +859,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
     InitFlags          = initData.Flags;
 
     Inited = true;
-    LOG_INFO("AppCUI initialized succesifully");
+    LOG_INFO("AppCUI initialized successfully");
     return true;
 }
 void ApplicationImpl::Paint()
@@ -1304,6 +1351,9 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
             RepaintStatus = REPAINT_STATUS_NONE;
         }
         this->terminal->GetSystemEvent(evnt);
+        // keyboard profile: physical modifiers -> logical modifiers (keys, shift state and mouse modifiers)
+        if (!Application::GetModifierMap().IsIdentity())
+            evnt.keyCode = Application::GetModifierMap().ToLogical(evnt.keyCode);
         if (evnt.updateFrames)
         {
             if (ProcessUpdateFrameEvent(this->AppDesktop))
@@ -1621,4 +1671,29 @@ void ApplicationImpl::ArrangeWindows(Application::ArrangeWindowsMethod method)
 
     this->RepaintStatus = REPAINT_STATUS_ALL;
 }
+
+bool ApplicationImpl::RegisterThemeChangeListener(Dialogs::OnThemeChangedInterface* listener)
+{
+    if (!listener)
+        return true;
+    if (themeChangedListeners.contains(listener))
+        return false;
+    themeChangedListeners.emplace(listener);
+    return true;
+}
+void ApplicationImpl::RemoveThemeChangeListener(Dialogs::OnThemeChangedInterface* listener)
+{
+    auto it = themeChangedListeners.find(listener);
+    if (it != themeChangedListeners.end())
+        themeChangedListeners.erase(it);
+}
+
+void ApplicationImpl::TriggerThemeChange() const
+{
+    for (const auto& listener: themeChangedListeners)
+    {
+        listener->OnThemeChanged(config);
+    }
+}
+
 } // namespace AppCUI

@@ -219,7 +219,7 @@ void MenuContext::Paint(Graphics::Renderer& renderer, bool activ)
         if (item->ShortcutKey != Key::None)
         {
             auto k_n = KeyUtils::GetKeyName(item->ShortcutKey);
-            auto m_n = KeyUtils::GetKeyModifierName(item->ShortcutKey);
+            auto m_n = KeyUtils::GetKeyModifierDisplayName(item->ShortcutKey);
             renderer.WriteSingleLineText(this->Width - (uint32) k_n.size(), tr, k_n, shortCutCol);
             renderer.WriteSingleLineText(this->Width - (uint32) (k_n.size() + m_n.size()), tr, m_n, shortCutCol);
         }
@@ -634,7 +634,7 @@ void MenuContext::Show(
         if (i->ShortcutKey != Key::None)
         {
             w_right += (uint32) KeyUtils::GetKeyName(i->ShortcutKey).size();
-            w_right += (uint32) KeyUtils::GetKeyModifierName(i->ShortcutKey).size();
+            w_right += (uint32) KeyUtils::GetKeyModifierDisplayName(i->ShortcutKey).size();
             if (w_right > 0)
                 w_right += 2;
         }

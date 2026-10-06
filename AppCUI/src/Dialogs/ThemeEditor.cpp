@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "Internal.hpp"
 
 using namespace AppCUI::Controls;
@@ -160,7 +162,8 @@ enum class PreviewWindowID : uint32
     Warning,
     Notification
 };
-enum class CatID : uint32
+using CatID = uint32;
+enum class CatType : uint32
 {
     None = 0,
     Desktop,
@@ -183,13 +186,14 @@ enum class CatID : uint32
 
     Count // must be the last one
 };
-constexpr string_view catNames[static_cast<uint32>(CatID::Count)] = {
+constexpr string_view catNames[static_cast<uint32>(CatType::Count)] = {
     "",        "Desktop",        "Menu",        "Menu (parent)", "Window",    "ToolTip", "Progress Bar",
     "Buttons", "Text",           "Scroll bars", "Symbols",       "SearchBar", "Headers", "Cursor",
     "Editor",  "Border & Lines", "Tabs",        "Tabs (lists)"
 };
 
-enum class PropID : uint32
+using PropID = uint32;
+enum class PropType : uint32
 {
     None,
 
@@ -364,18 +368,114 @@ enum class PropID : uint32
     TabsListHotKeyHovered,
     TabsListHotKeyInactive,
     TabsListHotKeySelected,
+
+    Count
 };
+
+struct ConfigCustomEntry
+{
+    std::string_view category;
+    std::string colorName;
+    PropertyType propertyType;
+    CustomColor *color;
+    std::optional<uint8> stateIndex;
+};
+
+struct StringHash
+{
+    using is_transparent = void;
+    std::size_t operator()(std::string_view sv) const noexcept
+    {
+        return std::hash<std::string_view>{}(sv);
+    }
+};
+
+struct StringEqual
+{
+    using is_transparent = void;
+    bool operator()(std::string_view lhs, std::string_view rhs) const noexcept
+    {
+        return lhs == rhs;
+    }
+};
+
+struct CategoryRefWithName
+{
+    Reference<Application::Config::CategoryColorsData> categoryRef;
+    std::string_view categoryName;
+};
+
 class ConfigProperty : public PropertiesInterface
 {
+    // <propID, <category, color_name, value>>
+
     AppCUI::Application::Config obj;
     CatID catID;
     PropID propID;
     PreviewWindowID windowID;
+    CatID catIDCount;
+    std::unordered_map<std::string, CatID, StringHash, StringEqual> categoriesName;
+    std::unordered_map<CatID, CategoryRefWithName> categoriesData;
+    std::map<PropID, ConfigCustomEntry> customProperties;
 
   public:
-    ConfigProperty(const AppCUI::Application::Config& config) : obj(config), catID(CatID::None), propID(PropID::None)
+    ConfigProperty(const AppCUI::Application::Config& config)
+        : obj(config), catID(static_cast<CatID>(CatType::None)), propID(static_cast<PropID>(PropType::None)),
+          windowID(PreviewWindowID::Normal)
     {
+        ReInitializeFields();
     }
+
+    void ReInitializeFields()
+    {
+        categoriesName.clear();
+        categoriesData.clear();
+        catIDCount = static_cast<CatID>(CatType::Count) + static_cast<uint32>(obj.CustomColors.size());
+
+        CatID currentCategoryID = static_cast<CatID>(CatType::None);
+        for (; currentCategoryID < static_cast<CatID>(CatType::Count); currentCategoryID++)
+            categoriesName[std::string(catNames[static_cast<uint32>(currentCategoryID)])] = currentCategoryID;
+
+        PropID currentPropId = static_cast<PropID>(PropType::Count);
+        for (auto& [categoryName, categoryColors] : obj.CustomColors)
+        {
+            for (auto& [colorName, color] : categoryColors.data)
+            {
+                if (color.IsColorState())
+                {
+                    static_assert(
+                          OBJECT_COLOR_STATE_COUNT == 5, "If OBJECT_COLOR_STATE_COUNT changes, update the code below!");
+                    LocalString<128> buffer;
+                    for (uint32 state = 0; state < OBJECT_COLOR_STATE_COUNT; ++state)
+                    {
+                        buffer.SetFormat("%s (%s)", colorName.c_str(), OBJECT_COLOR_STATE_NAMES[state].data());
+                        ConfigCustomEntry entry           = { .category     = categoryName,
+                                                              .colorName    = buffer.GetText(),
+                                                              .propertyType = PropertyType::ColorPair,
+                                                              .color        = &color,
+                                                              .stateIndex   = state };
+                        customProperties[currentPropId++] = std::move(entry);
+                    }
+                    continue;
+                }
+
+                if (color.IsColorPair())
+                {
+                    ConfigCustomEntry entry           = { .category     = categoryName,
+                                                          .colorName    = colorName,
+                                                          .propertyType = PropertyType::ColorPair,
+                                                          .color        = &color,
+                                                          .stateIndex   = std::nullopt };
+                    customProperties[currentPropId++] = std::move(entry);
+                    continue;
+                }
+                assert(false && "Only ColorPair and ColorState are supported for custom colors!");
+            }
+            categoriesData[currentCategoryID] = { &categoryColors, categoryName };
+            categoriesName[categoryName]      = currentCategoryID++;
+        }
+    }
+
     inline AppCUI::Application::Config& GetConfig()
     {
         return obj;
@@ -383,15 +483,13 @@ class ConfigProperty : public PropertiesInterface
     void SetCategoryAndProperty(string_view name, PropID pID)
     {
         propID = pID;
-        for (auto i = 0U; i < static_cast<uint32>(CatID::Count); i++)
+        auto nameIt = categoriesName.find(name);
+        if (nameIt != categoriesName.end())
         {
-            if (catNames[i] == name)
-            {
-                catID = static_cast<CatID>(i);
-                return;
-            }
+            catID =  nameIt->second;
+            return;
         }
-        catID = CatID::None;
+        catID = static_cast<uint32>(CatType::None);
     }
     void SetPreviewWindowID(PreviewWindowID id)
     {
@@ -530,16 +628,16 @@ class ConfigProperty : public PropertiesInterface
             return;
         switch (propID)
         {
-        case PropID::WindowError:
+        case static_cast<uint32>(PropType::WindowError):
             DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Error ", obj.Window.Background.Error);
             break;
-        case PropID::WindowInfo:
+        case static_cast<uint32>(PropType::WindowInfo):
             DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Info ", obj.Window.Background.Info);
             break;
-        case PropID::WindowWarning:
+        case static_cast<uint32>(PropType::WindowWarning):
             DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Warning ", obj.Window.Background.Warning);
             break;
-        case PropID::WindowInactive:
+        case static_cast<uint32>(PropType::WindowInactive):
             DrawWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, " Title ", obj.Window.Background.Inactive, false);
             break;
         default:
@@ -582,7 +680,7 @@ class ConfigProperty : public PropertiesInterface
         PaintOneButton(r, x, y - 2, "  Focused  ", ControlState::Focused, true);
         PaintOneButton(r, x, y, "  Regular  ", ControlState::Normal, true);
         PaintOneButton(r, x, y + 2, "  Hovered  ", ControlState::Hovered, true);
-        PaintOneButton(r, x + 14, y, "  Inactiv  ", ControlState::Inactive, true);
+        PaintOneButton(r, x + 14, y, "  Inactive  ", ControlState::Inactive, true);
         PaintOneButton(r, x + 14, y + 2, "  Pressed  ", ControlState::PressedOrSelected, false);
     }
     void PaintTexts(Graphics::Renderer& r, Size sz)
@@ -862,995 +960,1078 @@ class ConfigProperty : public PropertiesInterface
     }
     void Paint(Graphics::Renderer& r, Size sz)
     {
-        switch (catID)
+        if (catID < static_cast<CatID>(CatType::Count))
         {
-        case CatID::None:
-            r.Clear();
-            break;
-        case CatID::Desktop:
-            PaintDesktop(r);
-            break;
-        case CatID::Menu:
-            PaintDesktop(r);
-            PaintMenusAndCommandBar(r, sz);
-            break;
-        case CatID::ParentMenu:
-            PaintDesktop(r);
-            PaintParentMenusAndCommandBar(r, sz);
-            break;
-        case CatID::Window:
-            PaintDesktop(r);
-            PaintWindow(r, sz);
-            break;
-        case CatID::ToolTip:
-            PaintDesktop(r);
-            PaintToolTip(r, sz);
-            break;
-        case CatID::ProgressBar:
-            PaintDesktop(r);
-            PaintProgressBar(r, sz);
-            break;
-        case CatID::Button:
-            PaintDesktop(r);
-            PaintButtons(r, sz);
-            break;
-        case CatID::Text:
-            PaintDesktop(r);
-            PaintTexts(r, sz);
-            break;
-        case CatID::ScrollBars:
-            PaintDesktop(r);
-            PaintScrollBars(r, sz);
-            break;
-        case CatID::Symbols:
-            PaintDesktop(r);
-            PaintSymbols(r, sz);
-            break;
-        case CatID::SearchBar:
-            PaintDesktop(r);
-            PaintSearchBar(r, sz);
-            break;
-        case CatID::Headers:
-            PaintDesktop(r);
-            PaintHeaders(r, sz);
-            break;
-        case CatID::Cursor:
-            PaintDesktop(r);
-            PaintCursors(r, sz);
-            break;
-        case CatID::Editor:
-            PaintDesktop(r);
-            PaintEditors(r, sz);
-            break;
-        case CatID::BorderAndLines:
-            PaintDesktop(r);
-            PaintBordersAndLines(r, sz);
-            break;
-        case CatID::Tabs:
-            PaintDesktop(r);
-            PaintTabs(r, sz);
-            break;
-        case CatID::TabsList:
-            PaintDesktop(r);
-            PaintTabsList(r, sz);
-            break;
+            switch (catID)
+            {
+            case static_cast<CatID>(CatType::None):
+                r.Clear();
+                break;
+            case static_cast<CatID>(CatType::Desktop):
+                PaintDesktop(r);
+                break;
+            case static_cast<CatID>(CatType::Menu):
+                PaintDesktop(r);
+                PaintMenusAndCommandBar(r, sz);
+                break;
+            case static_cast<CatID>(CatType::ParentMenu):
+                PaintDesktop(r);
+                PaintParentMenusAndCommandBar(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Window):
+                PaintDesktop(r);
+                PaintWindow(r, sz);
+                break;
+            case static_cast<CatID>(CatType::ToolTip):
+                PaintDesktop(r);
+                PaintToolTip(r, sz);
+                break;
+            case static_cast<CatID>(CatType::ProgressBar):
+                PaintDesktop(r);
+                PaintProgressBar(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Button):
+                PaintDesktop(r);
+                PaintButtons(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Text):
+                PaintDesktop(r);
+                PaintTexts(r, sz);
+                break;
+            case static_cast<CatID>(CatType::ScrollBars):
+                PaintDesktop(r);
+                PaintScrollBars(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Symbols):
+                PaintDesktop(r);
+                PaintSymbols(r, sz);
+                break;
+            case static_cast<CatID>(CatType::SearchBar):
+                PaintDesktop(r);
+                PaintSearchBar(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Headers):
+                PaintDesktop(r);
+                PaintHeaders(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Cursor):
+                PaintDesktop(r);
+                PaintCursors(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Editor):
+                PaintDesktop(r);
+                PaintEditors(r, sz);
+                break;
+            case static_cast<CatID>(CatType::BorderAndLines):
+                PaintDesktop(r);
+                PaintBordersAndLines(r, sz);
+                break;
+            case static_cast<CatID>(CatType::Tabs):
+                PaintDesktop(r);
+                PaintTabs(r, sz);
+                break;
+            case static_cast<CatID>(CatType::TabsList):
+                PaintDesktop(r);
+                PaintTabsList(r, sz);
+                break;
+            }
+
+            return;
+        }
+
+        auto it = categoriesData.find(catID);
+        if (it != categoriesData.end())
+        {
+            auto& data = it->second;
+            if (auto owner = data.categoryRef->previewInterface)
+            {
+                PaintDesktop(r);
+
+                DrawPreviewWindow(r, 2, 1, sz.Width - 3, sz.Height - 2, data.categoryName);
+                r.SetClipMargins(3, 2, 3, 2);
+
+                auto newSize = Size{ sz.Width - 6, sz.Height - 4 };
+
+                owner->OnPreviewWindowDraw(data.categoryName, r, 4, 3, newSize, data.categoryRef->data);
+                return;
+            }
         }
     }
     bool GetPropertyValue(uint32 propertyID, PropertyValue& value) override
     {
-        switch (static_cast<PropID>(propertyID))
+        if (propertyID < static_cast<PropID>(PropType::Count))
         {
-        case PropID::DesktopChar:
-            value = (char16) 186;
-            return true;
-        case PropID::DesktopColor:
-            value = obj.Symbol.Desktop;
-            return true;
+            switch (static_cast<PropID>(propertyID))
+            {
+            case static_cast<PropID>(PropType::DesktopChar):
+                value = (char16) 186;
+                return true;
+            case static_cast<PropID>(PropType::DesktopColor):
+                value = obj.Symbol.Desktop;
+                return true;
 
-        // Menus
-        case PropID::MenuTextNormal:
-            value = obj.Menu.Text.Normal;
-            return true;
-        case PropID::MenuTextHovered:
-            value = obj.Menu.Text.Hovered;
-            return true;
-        case PropID::MenuTextSelected:
-            value = obj.Menu.Text.PressedOrSelected;
-            return true;
-        case PropID::MenuHotKeyNormal:
-            value = obj.Menu.HotKey.Normal;
-            return true;
-        case PropID::MenuHotKeyHovered:
-            value = obj.Menu.HotKey.Hovered;
-            return true;
-        case PropID::MenuHotKeySelected:
-            value = obj.Menu.HotKey.PressedOrSelected;
-            return true;
-        case PropID::MenuShortCutNormal:
-            value = obj.Menu.ShortCut.Normal;
-            return true;
-        case PropID::MenuShortCutHovered:
-            value = obj.Menu.ShortCut.Hovered;
-            return true;
-        case PropID::MenuShortCutSelected:
-            value = obj.Menu.ShortCut.PressedOrSelected;
-            return true;
-        case PropID::MenuInactive:
-            value = obj.Menu.Text.Inactive.Foreground;
-            return true;
-        case PropID::MenuSymbolNormal:
-            value = obj.Menu.Symbol.Normal.Foreground;
-            return true;
-        case PropID::MenuSymbolHovered:
-            value = obj.Menu.Symbol.Hovered.Foreground;
-            return true;
-        case PropID::MenuSymbolSelected:
-            value = obj.Menu.Symbol.PressedOrSelected.Foreground;
-            return true;
+            // Menus
+            case static_cast<PropID>(PropType::MenuTextNormal):
+                value = obj.Menu.Text.Normal;
+                return true;
+            case static_cast<PropID>(PropType::MenuTextHovered):
+                value = obj.Menu.Text.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::MenuTextSelected):
+                value = obj.Menu.Text.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::MenuHotKeyNormal):
+                value = obj.Menu.HotKey.Normal;
+                return true;
+            case static_cast<PropID>(PropType::MenuHotKeyHovered):
+                value = obj.Menu.HotKey.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::MenuHotKeySelected):
+                value = obj.Menu.HotKey.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::MenuShortCutNormal):
+                value = obj.Menu.ShortCut.Normal;
+                return true;
+            case static_cast<PropID>(PropType::MenuShortCutHovered):
+                value = obj.Menu.ShortCut.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::MenuShortCutSelected):
+                value = obj.Menu.ShortCut.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::MenuInactive):
+                value = obj.Menu.Text.Inactive.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::MenuSymbolNormal):
+                value = obj.Menu.Symbol.Normal.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::MenuSymbolHovered):
+                value = obj.Menu.Symbol.Hovered.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::MenuSymbolSelected):
+                value = obj.Menu.Symbol.PressedOrSelected.Foreground;
+                return true;
 
-        // Parent Menus
-        case PropID::ParentMenuTextNormal:
-            value = obj.ParentMenu.Text.Normal;
-            return true;
-        case PropID::ParentMenuTextHovered:
-            value = obj.ParentMenu.Text.Hovered;
-            return true;
-        case PropID::ParentMenuHotKeyNormal:
-            value = obj.ParentMenu.HotKey.Normal;
-            return true;
-        case PropID::ParentMenuHotKeyHovered:
-            value = obj.ParentMenu.HotKey.Hovered;
-            return true;
-        case PropID::ParentMenuShortCutNormal:
-            value = obj.ParentMenu.ShortCut.Normal;
-            return true;
-        case PropID::ParentMenuShortCutHovered:
-            value = obj.ParentMenu.ShortCut.Hovered;
-            return true;
-        case PropID::ParentMenuInactive:
-            value = obj.ParentMenu.Text.Inactive.Foreground;
-            return true;
-        case PropID::ParentMenuSymbolNormal:
-            value = obj.ParentMenu.Symbol.Normal.Foreground;
-            return true;
-        case PropID::ParentMenuSymbolHovered:
-            value = obj.ParentMenu.Symbol.Hovered.Foreground;
-            return true;
+            // Parent Menus
+            case static_cast<PropID>(PropType::ParentMenuTextNormal):
+                value = obj.ParentMenu.Text.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuTextHovered):
+                value = obj.ParentMenu.Text.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuHotKeyNormal):
+                value = obj.ParentMenu.HotKey.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuHotKeyHovered):
+                value = obj.ParentMenu.HotKey.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuShortCutNormal):
+                value = obj.ParentMenu.ShortCut.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuShortCutHovered):
+                value = obj.ParentMenu.ShortCut.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuInactive):
+                value = obj.ParentMenu.Text.Inactive.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuSymbolNormal):
+                value = obj.ParentMenu.Symbol.Normal.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuSymbolHovered):
+                value = obj.ParentMenu.Symbol.Hovered.Foreground;
+                return true;
 
-        // Window
-        case PropID::WindowNormal:
-            value = obj.Window.Background.Normal;
-            return true;
-        case PropID::WindowInactive:
-            value = obj.Window.Background.Inactive;
-            return true;
-        case PropID::WindowError:
-            value = obj.Window.Background.Error;
-            return true;
-        case PropID::WindowInfo:
-            value = obj.Window.Background.Info;
-            return true;
-        case PropID::WindowWarning:
-            value = obj.Window.Background.Warning;
-            return true;
+            // Window
+            case static_cast<PropID>(PropType::WindowNormal):
+                value = obj.Window.Background.Normal;
+                return true;
+            case static_cast<PropID>(PropType::WindowInactive):
+                value = obj.Window.Background.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::WindowError):
+                value = obj.Window.Background.Error;
+                return true;
+            case static_cast<PropID>(PropType::WindowInfo):
+                value = obj.Window.Background.Info;
+                return true;
+            case static_cast<PropID>(PropType::WindowWarning):
+                value = obj.Window.Background.Warning;
+                return true;
 
-        // Tooltip
-        case PropID::ToolTipText:
-            value = obj.ToolTip.Text;
-            return true;
-        case PropID::ToolTipArrow:
-            value = obj.ToolTip.Arrow;
-            return true;
+            // Tooltip
+            case static_cast<PropID>(PropType::ToolTipText):
+                value = obj.ToolTip.Text;
+                return true;
+            case static_cast<PropID>(PropType::ToolTipArrow):
+                value = obj.ToolTip.Arrow;
+                return true;
 
-        // ProgressBar
-        case PropID::ProgressBarEmpty:
-            value = obj.ProgressStatus.Empty.Background;
-            return true;
-        case PropID::ProgressBarFull:
-            value = obj.ProgressStatus.Full.Background;
-            return true;
+            // ProgressBar
+            case static_cast<PropID>(PropType::ProgressBarEmpty):
+                value = obj.ProgressStatus.Empty.Background;
+                return true;
+            case static_cast<PropID>(PropType::ProgressBarFull):
+                value = obj.ProgressStatus.Full.Background;
+                return true;
 
-        // Buttons
-        case PropID::ButtonTextFocused:
-            value = obj.Button.Text.Focused;
-            return true;
-        case PropID::ButtonTextNormal:
-            value = obj.Button.Text.Normal;
-            return true;
-        case PropID::ButtonTextHovered:
-            value = obj.Button.Text.Hovered;
-            return true;
-        case PropID::ButtonTextInactive:
-            value = obj.Button.Text.Inactive;
-            return true;
-        case PropID::ButtonTextSelected:
-            value = obj.Button.Text.PressedOrSelected;
-            return true;
-        case PropID::ButtonHotKeyFocused:
-            value = obj.Button.HotKey.Focused;
-            return true;
-        case PropID::ButtonHotKeyNormal:
-            value = obj.Button.HotKey.Normal;
-            return true;
-        case PropID::ButtonHotKeyHovered:
-            value = obj.Button.HotKey.Hovered;
-            return true;
-        case PropID::ButtonHotKeyInactive:
-            value = obj.Button.HotKey.Inactive;
-            return true;
-        case PropID::ButtonHotKeySelected:
-            value = obj.Button.HotKey.PressedOrSelected;
-            return true;
-        case PropID::ButtonShadow:
-            value = obj.Button.ShadowColor.Foreground;
-            return true;
+            // Buttons
+            case static_cast<PropID>(PropType::ButtonTextFocused):
+                value = obj.Button.Text.Focused;
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextNormal):
+                value = obj.Button.Text.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextHovered):
+                value = obj.Button.Text.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextInactive):
+                value = obj.Button.Text.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextSelected):
+                value = obj.Button.Text.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyFocused):
+                value = obj.Button.HotKey.Focused;
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyNormal):
+                value = obj.Button.HotKey.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyHovered):
+                value = obj.Button.HotKey.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyInactive):
+                value = obj.Button.HotKey.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeySelected):
+                value = obj.Button.HotKey.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::ButtonShadow):
+                value = obj.Button.ShadowColor.Foreground;
+                return true;
 
-        // Text
-        case PropID::TextNormal:
-            value = obj.Text.Normal.Foreground;
-            return true;
-        case PropID::TextHotKey:
-            value = obj.Text.HotKey.Foreground;
-            return true;
-        case PropID::TextInactive:
-            value = obj.Text.Inactive.Foreground;
-            return true;
-        case PropID::TextError:
-            value = obj.Text.Error.Foreground;
-            return true;
-        case PropID::TextWarning:
-            value = obj.Text.Warning.Foreground;
-            return true;
-        case PropID::TextFocused:
-            value = obj.Text.Focused.Foreground;
-            return true;
-        case PropID::TextHovered:
-            value = obj.Text.Hovered.Foreground;
-            return true;
-        case PropID::TextHighlighted:
-            value = obj.Text.Highlighted.Foreground;
-            return true;
-        case PropID::TextEmphasized1:
-            value = obj.Text.Emphasized1.Foreground;
-            return true;
-        case PropID::TextEmphasized2:
-            value = obj.Text.Emphasized2.Foreground;
-            return true;
+            // Text
+            case static_cast<PropID>(PropType::TextNormal):
+                value = obj.Text.Normal.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextHotKey):
+                value = obj.Text.HotKey.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextInactive):
+                value = obj.Text.Inactive.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextError):
+                value = obj.Text.Error.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextWarning):
+                value = obj.Text.Warning.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextFocused):
+                value = obj.Text.Focused.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextHovered):
+                value = obj.Text.Hovered.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextHighlighted):
+                value = obj.Text.Highlighted.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextEmphasized1):
+                value = obj.Text.Emphasized1.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::TextEmphasized2):
+                value = obj.Text.Emphasized2.Foreground;
+                return true;
 
-        // Scroll bars
-        case PropID::ScrollBarButtonNormal:
-            value = obj.ScrollBar.Arrows.Normal;
-            return true;
-        case PropID::ScrollBarButtonHovered:
-            value = obj.ScrollBar.Arrows.Hovered;
-            return true;
-        case PropID::ScrollBarButtonPressed:
-            value = obj.ScrollBar.Arrows.PressedOrSelected;
-            return true;
-        case PropID::ScrollBarButtonInactive:
-            value = obj.ScrollBar.Arrows.Inactive;
-            return true;
-        case PropID::ScrollBarNormal:
-            value = obj.ScrollBar.Bar.Normal;
-            return true;
-        case PropID::ScrollBarHovered:
-            value = obj.ScrollBar.Bar.Hovered;
-            return true;
-        case PropID::ScrollBarPressed:
-            value = obj.ScrollBar.Bar.PressedOrSelected;
-            return true;
-        case PropID::ScrollBarInactive:
-            value = obj.ScrollBar.Bar.Inactive;
-            return true;
-        case PropID::ScrollBarPositionNormal:
-            value = obj.ScrollBar.Position.Normal;
-            return true;
-        case PropID::ScrollBarPositionHovered:
-            value = obj.ScrollBar.Position.Hovered;
-            return true;
-        case PropID::ScrollBarPositionPressed:
-            value = obj.ScrollBar.Position.PressedOrSelected;
-            return true;
+            // Scroll bars
+            case static_cast<PropID>(PropType::ScrollBarButtonNormal):
+                value = obj.ScrollBar.Arrows.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarButtonHovered):
+                value = obj.ScrollBar.Arrows.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarButtonPressed):
+                value = obj.ScrollBar.Arrows.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarButtonInactive):
+                value = obj.ScrollBar.Arrows.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarNormal):
+                value = obj.ScrollBar.Bar.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarHovered):
+                value = obj.ScrollBar.Bar.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPressed):
+                value = obj.ScrollBar.Bar.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarInactive):
+                value = obj.ScrollBar.Bar.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPositionNormal):
+                value = obj.ScrollBar.Position.Normal;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPositionHovered):
+                value = obj.ScrollBar.Position.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPositionPressed):
+                value = obj.ScrollBar.Position.PressedOrSelected;
+                return true;
 
-        // Symbols
-        case PropID::SymbolInactive:
-            value = obj.Symbol.Inactive.Foreground;
-            return true;
-        case PropID::SymbolHovered:
-            value = obj.Symbol.Hovered;
-            return true;
-        case PropID::SymbolPressed:
-            value = obj.Symbol.Hovered;
-            return true;
-        case PropID::SymbolChecked:
-            value = obj.Symbol.Checked.Foreground;
-            return true;
-        case PropID::SymbolUnchecked:
-            value = obj.Symbol.Unchecked.Foreground;
-            return true;
-        case PropID::SymbolUnknown:
-            value = obj.Symbol.Unknown.Foreground;
-            return true;
-        case PropID::SymbolArrows:
-            value = obj.Symbol.Arrows.Foreground;
-            return true;
-        case PropID::SymbolClose:
-            value = obj.Symbol.Close.Foreground;
-            return true;
-        case PropID::SymbolMaximized:
-            value = obj.Symbol.Maximized.Foreground;
-            return true;
-        case PropID::SymbolResize:
-            value = obj.Symbol.Resize.Foreground;
-            return true;
+            // Symbols
+            case static_cast<PropID>(PropType::SymbolInactive):
+                value = obj.Symbol.Inactive.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::SymbolHovered):
+                value = obj.Symbol.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::SymbolPressed):
+                value = obj.Symbol.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::SymbolChecked):
+                value = obj.Symbol.Checked.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::SymbolUnchecked):
+                value = obj.Symbol.Unchecked.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::SymbolUnknown):
+                value = obj.Symbol.Unknown.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::SymbolArrows):
+                value = obj.Symbol.Arrows.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::SymbolClose):
+                value = obj.Symbol.Close.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::SymbolMaximized):
+                value = obj.Symbol.Maximized.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::SymbolResize):
+                value = obj.Symbol.Resize.Foreground;
+                return true;
 
-        // SearchBar
-        case PropID::SearchBarNormal:
-            value = obj.SearchBar.Normal;
-            return true;
-        case PropID::SearchBarFocused:
-            value = obj.SearchBar.Focused;
-            return true;
-        case PropID::SearchBarHovered:
-            value = obj.SearchBar.Hovered;
-            return true;
-        case PropID::SearchBarInactive:
-            value = obj.SearchBar.Inactive;
-            return true;
+            // SearchBar
+            case static_cast<PropID>(PropType::SearchBarNormal):
+                value = obj.SearchBar.Normal;
+                return true;
+            case static_cast<PropID>(PropType::SearchBarFocused):
+                value = obj.SearchBar.Focused;
+                return true;
+            case static_cast<PropID>(PropType::SearchBarHovered):
+                value = obj.SearchBar.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::SearchBarInactive):
+                value = obj.SearchBar.Inactive;
+                return true;
 
-        // Headers
-        case PropID::HeaderTextNormal:
-            value = obj.Header.Text.Normal;
-            return true;
-        case PropID::HeaderTextFocused:
-            value = obj.Header.Text.Focused;
-            return true;
-        case PropID::HeaderTextInactive:
-            value = obj.Header.Text.Inactive;
-            return true;
-        case PropID::HeaderTextHovered:
-            value = obj.Header.Text.Hovered;
-            return true;
-        case PropID::HeaderTextSelected:
-            value = obj.Header.Text.PressedOrSelected;
-            return true;
-        case PropID::HeaderHotKeyNormal:
-            value = obj.Header.HotKey.Normal;
-            return true;
-        case PropID::HeaderHotKeyFocused:
-            value = obj.Header.HotKey.Focused;
-            return true;
-        case PropID::HeaderHotKeyInactive:
-            value = obj.Header.HotKey.Inactive;
-            return true;
-        case PropID::HeaderHotKeyHovered:
-            value = obj.Header.HotKey.Hovered;
-            return true;
-        case PropID::HeaderHotKeySelected:
-            value = obj.Header.HotKey.PressedOrSelected;
-            return true;
-        case PropID::HeaderSymbolNormal:
-            value = obj.Header.Symbol.Normal;
-            return true;
-        case PropID::HeaderSymbolFocused:
-            value = obj.Header.Symbol.Focused;
-            return true;
-        case PropID::HeaderSymbolInactive:
-            value = obj.Header.Symbol.Inactive;
-            return true;
-        case PropID::HeaderSymbolHovered:
-            value = obj.Header.Symbol.Hovered;
-            return true;
-        case PropID::HeaderSymbolSelected:
-            value = obj.Header.Symbol.PressedOrSelected;
-            return true;
+            // Headers
+            case static_cast<PropID>(PropType::HeaderTextNormal):
+                value = obj.Header.Text.Normal;
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextFocused):
+                value = obj.Header.Text.Focused;
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextInactive):
+                value = obj.Header.Text.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextHovered):
+                value = obj.Header.Text.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextSelected):
+                value = obj.Header.Text.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyNormal):
+                value = obj.Header.HotKey.Normal;
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyFocused):
+                value = obj.Header.HotKey.Focused;
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyInactive):
+                value = obj.Header.HotKey.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyHovered):
+                value = obj.Header.HotKey.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeySelected):
+                value = obj.Header.HotKey.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolNormal):
+                value = obj.Header.Symbol.Normal;
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolFocused):
+                value = obj.Header.Symbol.Focused;
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolInactive):
+                value = obj.Header.Symbol.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolHovered):
+                value = obj.Header.Symbol.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolSelected):
+                value = obj.Header.Symbol.PressedOrSelected;
+                return true;
 
-        // Cursor
-        case PropID::CursorNormal:
-            value = obj.Cursor.Normal;
-            return true;
-        case PropID::CursorInactive:
-            value = obj.Cursor.Inactive;
-            return true;
-        case PropID::CursorOverInactiveItem:
-            value = obj.Cursor.OverInactiveItem;
-            return true;
-        case PropID::CursorOverSelection:
-            value = obj.Cursor.OverSelection;
-            return true;
+            // Cursor
+            case static_cast<PropID>(PropType::CursorNormal):
+                value = obj.Cursor.Normal;
+                return true;
+            case static_cast<PropID>(PropType::CursorInactive):
+                value = obj.Cursor.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::CursorOverInactiveItem):
+                value = obj.Cursor.OverInactiveItem;
+                return true;
+            case static_cast<PropID>(PropType::CursorOverSelection):
+                value = obj.Cursor.OverSelection;
+                return true;
 
-        // Editor
-        case PropID::EditorBackground:
-            value = obj.Editor.Normal.Background;
-            return true;
-        case PropID::EditorNormal:
-            value = obj.Editor.Normal.Foreground;
-            return true;
-        case PropID::EditorFocus:
-            value = obj.Editor.Focused.Foreground;
-            return true;
-        case PropID::EditorInactive:
-            value = obj.Editor.Inactive.Foreground;
-            return true;
-        case PropID::EditorHovered:
-            value = obj.Editor.Hovered.Foreground;
-            return true;
-        case PropID::EditorSelection:
-            value = obj.Selection.Editor;
-            return true;
-        case PropID::EditorLineMarkerNormal:
-            value = obj.LineMarker.Normal;
-            return true;
-        case PropID::EditorLineMarkerFocused:
-            value = obj.LineMarker.Focused;
-            return true;
-        case PropID::EditorLineMarkerInactive:
-            value = obj.LineMarker.Inactive;
-            return true;
-        case PropID::EditorLineMarkerHovered:
-            value = obj.LineMarker.Hovered;
-            return true;
+            // Editor
+            case static_cast<PropID>(PropType::EditorBackground):
+                value = obj.Editor.Normal.Background;
+                return true;
+            case static_cast<PropID>(PropType::EditorNormal):
+                value = obj.Editor.Normal.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::EditorFocus):
+                value = obj.Editor.Focused.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::EditorInactive):
+                value = obj.Editor.Inactive.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::EditorHovered):
+                value = obj.Editor.Hovered.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::EditorSelection):
+                value = obj.Selection.Editor;
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerNormal):
+                value = obj.LineMarker.Normal;
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerFocused):
+                value = obj.LineMarker.Focused;
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerInactive):
+                value = obj.LineMarker.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerHovered):
+                value = obj.LineMarker.Hovered;
+                return true;
 
-        // Border & Lines
-        case PropID::BorderNormal:
-            value = obj.Border.Normal.Foreground;
-            return true;
-        case PropID::BorderFocused:
-            value = obj.Border.Focused.Foreground;
-            return true;
-        case PropID::BorderInactive:
-            value = obj.Border.Inactive.Foreground;
-            return true;
-        case PropID::BorderHovered:
-            value = obj.Border.Hovered.Foreground;
-            return true;
-        case PropID::BorderPressed:
-            value = obj.Border.PressedOrSelected;
-            return true;
-        case PropID::LineNormal:
-            value = obj.Lines.Normal.Foreground;
-            return true;
-        case PropID::LineFocused:
-            value = obj.Lines.Focused.Foreground;
-            return true;
-        case PropID::LineInactive:
-            value = obj.Lines.Inactive.Foreground;
-            return true;
-        case PropID::LineHovered:
-            value = obj.Lines.Hovered;
-            return true;
-        case PropID::LinePressed:
-            value = obj.Lines.PressedOrSelected;
-            return true;
+            // Border & Lines
+            case static_cast<PropID>(PropType::BorderNormal):
+                value = obj.Border.Normal.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::BorderFocused):
+                value = obj.Border.Focused.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::BorderInactive):
+                value = obj.Border.Inactive.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::BorderHovered):
+                value = obj.Border.Hovered.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::BorderPressed):
+                value = obj.Border.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::LineNormal):
+                value = obj.Lines.Normal.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::LineFocused):
+                value = obj.Lines.Focused.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::LineInactive):
+                value = obj.Lines.Inactive.Foreground;
+                return true;
+            case static_cast<PropID>(PropType::LineHovered):
+                value = obj.Lines.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::LinePressed):
+                value = obj.Lines.PressedOrSelected;
+                return true;
 
-        // Tabs
-        case PropID::TabsTextNormal:
-            value = obj.Tab.Text.Normal;
-            return true;
-        case PropID::TabsTextFocused:
-            value = obj.Tab.Text.Focused;
-            return true;
-        case PropID::TabsTextInactive:
-            value = obj.Tab.Text.Inactive;
-            return true;
-        case PropID::TabsTextHovered:
-            value = obj.Tab.Text.Hovered;
-            return true;
-        case PropID::TabsTextSelected:
-            value = obj.Tab.Text.PressedOrSelected;
-            return true;
-        case PropID::TabsHotKeyNormal:
-            value = obj.Tab.HotKey.Normal;
-            return true;
-        case PropID::TabsHotKeyFocused:
-            value = obj.Tab.HotKey.Focused;
-            return true;
-        case PropID::TabsHotKeyInactive:
-            value = obj.Tab.HotKey.Inactive;
-            return true;
-        case PropID::TabsHotKeyHovered:
-            value = obj.Tab.HotKey.Hovered;
-            return true;
-        case PropID::TabsHotKeySelected:
-            value = obj.Tab.HotKey.PressedOrSelected;
-            return true;
+            // Tabs
+            case static_cast<PropID>(PropType::TabsTextNormal):
+                value = obj.Tab.Text.Normal;
+                return true;
+            case static_cast<PropID>(PropType::TabsTextFocused):
+                value = obj.Tab.Text.Focused;
+                return true;
+            case static_cast<PropID>(PropType::TabsTextInactive):
+                value = obj.Tab.Text.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::TabsTextHovered):
+                value = obj.Tab.Text.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::TabsTextSelected):
+                value = obj.Tab.Text.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyNormal):
+                value = obj.Tab.HotKey.Normal;
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyFocused):
+                value = obj.Tab.HotKey.Focused;
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyInactive):
+                value = obj.Tab.HotKey.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyHovered):
+                value = obj.Tab.HotKey.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeySelected):
+                value = obj.Tab.HotKey.PressedOrSelected;
+                return true;
 
-        // Tabs list
-        case PropID::TabsListTextNormal:
-            value = obj.Tab.ListText.Normal;
-            return true;
-        case PropID::TabsListTextFocused:
-            value = obj.Tab.ListText.Focused;
-            return true;
-        case PropID::TabsListTextInactive:
-            value = obj.Tab.ListText.Inactive;
-            return true;
-        case PropID::TabsListTextHovered:
-            value = obj.Tab.ListText.Hovered;
-            return true;
-        case PropID::TabsListTextSelected:
-            value = obj.Tab.ListText.PressedOrSelected;
-            return true;
-        case PropID::TabsListHotKeyNormal:
-            value = obj.Tab.ListHotKey.Normal;
-            return true;
-        case PropID::TabsListHotKeyFocused:
-            value = obj.Tab.ListHotKey.Focused;
-            return true;
-        case PropID::TabsListHotKeyInactive:
-            value = obj.Tab.ListHotKey.Inactive;
-            return true;
-        case PropID::TabsListHotKeyHovered:
-            value = obj.Tab.ListHotKey.Hovered;
-            return true;
-        case PropID::TabsListHotKeySelected:
-            value = obj.Tab.ListHotKey.PressedOrSelected;
-            return true;
+            // Tabs list
+            case static_cast<PropID>(PropType::TabsListTextNormal):
+                value = obj.Tab.ListText.Normal;
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextFocused):
+                value = obj.Tab.ListText.Focused;
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextInactive):
+                value = obj.Tab.ListText.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextHovered):
+                value = obj.Tab.ListText.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextSelected):
+                value = obj.Tab.ListText.PressedOrSelected;
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyNormal):
+                value = obj.Tab.ListHotKey.Normal;
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyFocused):
+                value = obj.Tab.ListHotKey.Focused;
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyInactive):
+                value = obj.Tab.ListHotKey.Inactive;
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyHovered):
+                value = obj.Tab.ListHotKey.Hovered;
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeySelected):
+                value = obj.Tab.ListHotKey.PressedOrSelected;
+                return true;
+            }
+
+            return false; // Unhandled property
         }
-
+        if (GetCustomColorByPropertyId(propertyID, &value))
+            return true;
         return false;
     }
+
     bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) override
     {
-        switch (static_cast<PropID>(propertyID))
+        if (propertyID < static_cast<PropID>(PropType::Count))
         {
-        case PropID::DesktopColor:
-            obj.Symbol.Desktop = std::get<ColorPair>(value);
-            return true;
+            switch (static_cast<PropID>(propertyID))
+            {
+            case static_cast<PropID>(PropType::DesktopColor):
+                obj.Symbol.Desktop = std::get<ColorPair>(value);
+                return true;
 
-        case PropID::MenuTextNormal:
-            obj.Menu.Text.Normal              = std::get<ColorPair>(value);
-            obj.Menu.Symbol.Normal.Background = obj.Menu.Text.Normal.Background;
-            obj.Menu.Text.Inactive.Background = obj.Menu.Text.Normal.Background;
-            return true;
-        case PropID::MenuTextHovered:
-            obj.Menu.Text.Hovered              = std::get<ColorPair>(value);
-            obj.Menu.Symbol.Hovered.Background = obj.Menu.Text.Hovered.Background;
-            obj.Menu.Symbol.Hovered.Background = obj.Menu.Text.Hovered.Background;
-            return true;
-        case PropID::MenuTextSelected:
-            obj.Menu.Text.PressedOrSelected              = std::get<ColorPair>(value);
-            obj.Menu.Symbol.PressedOrSelected.Background = obj.Menu.Text.PressedOrSelected.Background;
-            obj.Menu.Symbol.PressedOrSelected.Background = obj.Menu.Text.PressedOrSelected.Background;
-            return true;
-        case PropID::MenuHotKeyNormal:
-            obj.Menu.HotKey.Normal              = std::get<ColorPair>(value);
-            obj.Menu.HotKey.Inactive.Background = obj.Menu.HotKey.Normal.Background;
-            return true;
-        case PropID::MenuHotKeyHovered:
-            obj.Menu.HotKey.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::MenuHotKeySelected:
-            obj.Menu.HotKey.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::MenuShortCutNormal:
-            obj.Menu.ShortCut.Normal              = std::get<ColorPair>(value);
-            obj.Menu.ShortCut.Inactive.Background = obj.Menu.ShortCut.Normal.Background;
-            return true;
-        case PropID::MenuShortCutHovered:
-            obj.Menu.ShortCut.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::MenuShortCutSelected:
-            obj.Menu.ShortCut.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::MenuSymbolNormal:
-            obj.Menu.Symbol.Normal.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::MenuSymbolHovered:
-            obj.Menu.Symbol.Hovered.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::MenuSymbolSelected:
-            obj.Menu.Symbol.PressedOrSelected.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::MenuInactive:
-            obj.Menu.Text.Inactive.Foreground     = std::get<Color>(value);
-            obj.Menu.HotKey.Inactive.Foreground   = std::get<Color>(value);
-            obj.Menu.ShortCut.Inactive.Foreground = std::get<Color>(value);
-            obj.Menu.Symbol.Inactive.Foreground   = std::get<Color>(value);
-            return true;
+            case static_cast<PropID>(PropType::MenuTextNormal):
+                obj.Menu.Text.Normal              = std::get<ColorPair>(value);
+                obj.Menu.Symbol.Normal.Background = obj.Menu.Text.Normal.Background;
+                obj.Menu.Text.Inactive.Background = obj.Menu.Text.Normal.Background;
+                return true;
+            case static_cast<PropID>(PropType::MenuTextHovered):
+                obj.Menu.Text.Hovered              = std::get<ColorPair>(value);
+                obj.Menu.Symbol.Hovered.Background = obj.Menu.Text.Hovered.Background;
+                obj.Menu.Symbol.Hovered.Background = obj.Menu.Text.Hovered.Background;
+                return true;
+            case static_cast<PropID>(PropType::MenuTextSelected):
+                obj.Menu.Text.PressedOrSelected              = std::get<ColorPair>(value);
+                obj.Menu.Symbol.PressedOrSelected.Background = obj.Menu.Text.PressedOrSelected.Background;
+                obj.Menu.Symbol.PressedOrSelected.Background = obj.Menu.Text.PressedOrSelected.Background;
+                return true;
+            case static_cast<PropID>(PropType::MenuHotKeyNormal):
+                obj.Menu.HotKey.Normal              = std::get<ColorPair>(value);
+                obj.Menu.HotKey.Inactive.Background = obj.Menu.HotKey.Normal.Background;
+                return true;
+            case static_cast<PropID>(PropType::MenuHotKeyHovered):
+                obj.Menu.HotKey.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::MenuHotKeySelected):
+                obj.Menu.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::MenuShortCutNormal):
+                obj.Menu.ShortCut.Normal              = std::get<ColorPair>(value);
+                obj.Menu.ShortCut.Inactive.Background = obj.Menu.ShortCut.Normal.Background;
+                return true;
+            case static_cast<PropID>(PropType::MenuShortCutHovered):
+                obj.Menu.ShortCut.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::MenuShortCutSelected):
+                obj.Menu.ShortCut.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::MenuSymbolNormal):
+                obj.Menu.Symbol.Normal.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::MenuSymbolHovered):
+                obj.Menu.Symbol.Hovered.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::MenuSymbolSelected):
+                obj.Menu.Symbol.PressedOrSelected.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::MenuInactive):
+                obj.Menu.Text.Inactive.Foreground     = std::get<Color>(value);
+                obj.Menu.HotKey.Inactive.Foreground   = std::get<Color>(value);
+                obj.Menu.ShortCut.Inactive.Foreground = std::get<Color>(value);
+                obj.Menu.Symbol.Inactive.Foreground   = std::get<Color>(value);
+                return true;
 
-        case PropID::ParentMenuTextNormal:
-            obj.ParentMenu.Text.Normal              = std::get<ColorPair>(value);
-            obj.ParentMenu.Symbol.Normal.Background = obj.ParentMenu.Text.Normal.Background;
-            obj.ParentMenu.Text.Inactive.Background = obj.ParentMenu.Text.Normal.Background;
-            return true;
-        case PropID::ParentMenuTextHovered:
-            obj.ParentMenu.Text.Hovered              = std::get<ColorPair>(value);
-            obj.ParentMenu.Symbol.Hovered.Background = obj.ParentMenu.Text.Hovered.Background;
-            obj.ParentMenu.Symbol.Hovered.Background = obj.ParentMenu.Text.Hovered.Background;
-            return true;
-        case PropID::ParentMenuHotKeyNormal:
-            obj.ParentMenu.HotKey.Normal              = std::get<ColorPair>(value);
-            obj.ParentMenu.HotKey.Inactive.Background = obj.ParentMenu.HotKey.Normal.Background;
-            return true;
-        case PropID::ParentMenuHotKeyHovered:
-            obj.ParentMenu.HotKey.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::ParentMenuShortCutNormal:
-            obj.ParentMenu.ShortCut.Normal              = std::get<ColorPair>(value);
-            obj.ParentMenu.ShortCut.Inactive.Background = obj.ParentMenu.ShortCut.Normal.Background;
-            return true;
-        case PropID::ParentMenuShortCutHovered:
-            obj.ParentMenu.ShortCut.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::ParentMenuSymbolNormal:
-            obj.ParentMenu.Symbol.Normal.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::ParentMenuSymbolHovered:
-            obj.ParentMenu.Symbol.Hovered.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::ParentMenuInactive:
-            obj.ParentMenu.Text.Inactive.Foreground     = std::get<Color>(value);
-            obj.ParentMenu.HotKey.Inactive.Foreground   = std::get<Color>(value);
-            obj.ParentMenu.ShortCut.Inactive.Foreground = std::get<Color>(value);
-            obj.ParentMenu.Symbol.Inactive.Foreground   = std::get<Color>(value);
-            return true;
+            case static_cast<PropID>(PropType::ParentMenuTextNormal):
+                obj.ParentMenu.Text.Normal              = std::get<ColorPair>(value);
+                obj.ParentMenu.Symbol.Normal.Background = obj.ParentMenu.Text.Normal.Background;
+                obj.ParentMenu.Text.Inactive.Background = obj.ParentMenu.Text.Normal.Background;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuTextHovered):
+                obj.ParentMenu.Text.Hovered              = std::get<ColorPair>(value);
+                obj.ParentMenu.Symbol.Hovered.Background = obj.ParentMenu.Text.Hovered.Background;
+                obj.ParentMenu.Symbol.Hovered.Background = obj.ParentMenu.Text.Hovered.Background;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuHotKeyNormal):
+                obj.ParentMenu.HotKey.Normal              = std::get<ColorPair>(value);
+                obj.ParentMenu.HotKey.Inactive.Background = obj.ParentMenu.HotKey.Normal.Background;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuHotKeyHovered):
+                obj.ParentMenu.HotKey.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuShortCutNormal):
+                obj.ParentMenu.ShortCut.Normal              = std::get<ColorPair>(value);
+                obj.ParentMenu.ShortCut.Inactive.Background = obj.ParentMenu.ShortCut.Normal.Background;
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuShortCutHovered):
+                obj.ParentMenu.ShortCut.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuSymbolNormal):
+                obj.ParentMenu.Symbol.Normal.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuSymbolHovered):
+                obj.ParentMenu.Symbol.Hovered.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::ParentMenuInactive):
+                obj.ParentMenu.Text.Inactive.Foreground     = std::get<Color>(value);
+                obj.ParentMenu.HotKey.Inactive.Foreground   = std::get<Color>(value);
+                obj.ParentMenu.ShortCut.Inactive.Foreground = std::get<Color>(value);
+                obj.ParentMenu.Symbol.Inactive.Foreground   = std::get<Color>(value);
+                return true;
 
-        case PropID::WindowNormal:
-            obj.Window.Background.Normal = std::get<Color>(value);
-            return true;
-        case PropID::WindowInactive:
-            obj.Window.Background.Inactive = std::get<Color>(value);
-            return true;
-        case PropID::WindowError:
-            obj.Window.Background.Error = std::get<Color>(value);
-            return true;
-        case PropID::WindowWarning:
-            obj.Window.Background.Warning = std::get<Color>(value);
-            return true;
-        case PropID::WindowInfo:
-            obj.Window.Background.Info = std::get<Color>(value);
-            return true;
+            case static_cast<PropID>(PropType::WindowNormal):
+                obj.Window.Background.Normal = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::WindowInactive):
+                obj.Window.Background.Inactive = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::WindowError):
+                obj.Window.Background.Error = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::WindowWarning):
+                obj.Window.Background.Warning = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::WindowInfo):
+                obj.Window.Background.Info = std::get<Color>(value);
+                return true;
 
-        case PropID::ToolTipText:
-            obj.ToolTip.Text = std::get<ColorPair>(value);
-            return true;
-        case PropID::ToolTipArrow:
-            obj.ToolTip.Arrow = std::get<ColorPair>(value);
-            return true;
+            case static_cast<PropID>(PropType::ToolTipText):
+                obj.ToolTip.Text = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ToolTipArrow):
+                obj.ToolTip.Arrow = std::get<ColorPair>(value);
+                return true;
 
-        case PropID::ProgressBarEmpty:
-            obj.ProgressStatus.Empty.Background = std::get<Color>(value);
-            return true;
-        case PropID::ProgressBarFull:
-            obj.ProgressStatus.Full.Background = std::get<Color>(value);
-            return true;
+            case static_cast<PropID>(PropType::ProgressBarEmpty):
+                obj.ProgressStatus.Empty.Background = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::ProgressBarFull):
+                obj.ProgressStatus.Full.Background = std::get<Color>(value);
+                return true;
 
-        case PropID::ButtonTextFocused:
-            obj.Button.Text.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonTextNormal:
-            obj.Button.Text.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonTextHovered:
-            obj.Button.Text.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonTextInactive:
-            obj.Button.Text.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonTextSelected:
-            obj.Button.Text.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonHotKeyFocused:
-            obj.Button.HotKey.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonHotKeyNormal:
-            obj.Button.HotKey.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonHotKeyHovered:
-            obj.Button.HotKey.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonHotKeyInactive:
-            obj.Button.HotKey.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonHotKeySelected:
-            obj.Button.HotKey.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::ButtonShadow:
-            obj.Button.ShadowColor.Foreground = std::get<Color>(value);
-            return true;
+            case static_cast<PropID>(PropType::ButtonTextFocused):
+                obj.Button.Text.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextNormal):
+                obj.Button.Text.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextHovered):
+                obj.Button.Text.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextInactive):
+                obj.Button.Text.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonTextSelected):
+                obj.Button.Text.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyFocused):
+                obj.Button.HotKey.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyNormal):
+                obj.Button.HotKey.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyHovered):
+                obj.Button.HotKey.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeyInactive):
+                obj.Button.HotKey.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonHotKeySelected):
+                obj.Button.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ButtonShadow):
+                obj.Button.ShadowColor.Foreground = std::get<Color>(value);
+                return true;
 
-        // Text
-        case PropID::TextNormal:
-            obj.Text.Normal.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextHotKey:
-            obj.Text.HotKey.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextInactive:
-            obj.Text.Inactive.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextError:
-            obj.Text.Error.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextWarning:
-            obj.Text.Warning.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextFocused:
-            obj.Text.Focused.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextHovered:
-            obj.Text.Hovered.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextHighlighted:
-            obj.Text.Highlighted.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextEmphasized1:
-            obj.Text.Emphasized1.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::TextEmphasized2:
-            obj.Text.Emphasized2.Foreground = std::get<Color>(value);
-            return true;
+            // Text
+            case static_cast<PropID>(PropType::TextNormal):
+                obj.Text.Normal.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextHotKey):
+                obj.Text.HotKey.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextInactive):
+                obj.Text.Inactive.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextError):
+                obj.Text.Error.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextWarning):
+                obj.Text.Warning.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextFocused):
+                obj.Text.Focused.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextHovered):
+                obj.Text.Hovered.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextHighlighted):
+                obj.Text.Highlighted.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextEmphasized1):
+                obj.Text.Emphasized1.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::TextEmphasized2):
+                obj.Text.Emphasized2.Foreground = std::get<Color>(value);
+                return true;
 
-        case PropID::ScrollBarButtonNormal:
-            obj.ScrollBar.Arrows.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarButtonHovered:
-            obj.ScrollBar.Arrows.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarButtonPressed:
-            obj.ScrollBar.Arrows.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarButtonInactive:
-            obj.ScrollBar.Arrows.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarNormal:
-            obj.ScrollBar.Bar.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarHovered:
-            obj.ScrollBar.Bar.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarPressed:
-            obj.ScrollBar.Bar.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarInactive:
-            obj.ScrollBar.Bar.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarPositionNormal:
-            obj.ScrollBar.Position.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarPositionHovered:
-            obj.ScrollBar.Position.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::ScrollBarPositionPressed:
-            obj.ScrollBar.Position.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
+            case static_cast<PropID>(PropType::ScrollBarButtonNormal):
+                obj.ScrollBar.Arrows.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarButtonHovered):
+                obj.ScrollBar.Arrows.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarButtonPressed):
+                obj.ScrollBar.Arrows.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarButtonInactive):
+                obj.ScrollBar.Arrows.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarNormal):
+                obj.ScrollBar.Bar.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarHovered):
+                obj.ScrollBar.Bar.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPressed):
+                obj.ScrollBar.Bar.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarInactive):
+                obj.ScrollBar.Bar.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPositionNormal):
+                obj.ScrollBar.Position.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPositionHovered):
+                obj.ScrollBar.Position.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::ScrollBarPositionPressed):
+                obj.ScrollBar.Position.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
 
-        case PropID::SymbolInactive:
-            obj.Symbol.Inactive.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::SymbolHovered:
-            obj.Symbol.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::SymbolPressed:
-            obj.Symbol.Pressed = std::get<ColorPair>(value);
-            return true;
-        case PropID::SymbolChecked:
-            obj.Symbol.Checked.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::SymbolUnchecked:
-            obj.Symbol.Unchecked.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::SymbolUnknown:
-            obj.Symbol.Unknown.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::SymbolArrows:
-            obj.Symbol.Arrows.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::SymbolClose:
-            obj.Symbol.Close.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::SymbolMaximized:
-            obj.Symbol.Maximized.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::SymbolResize:
-            obj.Symbol.Resize.Foreground = std::get<Color>(value);
-            return true;
+            case static_cast<PropID>(PropType::SymbolInactive):
+                obj.Symbol.Inactive.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolHovered):
+                obj.Symbol.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolPressed):
+                obj.Symbol.Pressed = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolChecked):
+                obj.Symbol.Checked.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolUnchecked):
+                obj.Symbol.Unchecked.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolUnknown):
+                obj.Symbol.Unknown.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolArrows):
+                obj.Symbol.Arrows.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolClose):
+                obj.Symbol.Close.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolMaximized):
+                obj.Symbol.Maximized.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::SymbolResize):
+                obj.Symbol.Resize.Foreground = std::get<Color>(value);
+                return true;
 
-        case PropID::SearchBarNormal:
-            obj.SearchBar.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::SearchBarFocused:
-            obj.SearchBar.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::SearchBarHovered:
-            obj.SearchBar.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::SearchBarInactive:
-            obj.SearchBar.Inactive = std::get<ColorPair>(value);
-            return true;
+            case static_cast<PropID>(PropType::SearchBarNormal):
+                obj.SearchBar.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::SearchBarFocused):
+                obj.SearchBar.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::SearchBarHovered):
+                obj.SearchBar.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::SearchBarInactive):
+                obj.SearchBar.Inactive = std::get<ColorPair>(value);
+                return true;
 
-        case PropID::HeaderTextNormal:
-            obj.Header.Text.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderTextFocused:
-            obj.Header.Text.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderTextInactive:
-            obj.Header.Text.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderTextHovered:
-            obj.Header.Text.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderTextSelected:
-            obj.Header.Text.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderHotKeyNormal:
-            obj.Header.HotKey.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderHotKeyFocused:
-            obj.Header.HotKey.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderHotKeyInactive:
-            obj.Header.HotKey.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderHotKeyHovered:
-            obj.Header.HotKey.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderHotKeySelected:
-            obj.Header.HotKey.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderSymbolNormal:
-            obj.Header.Symbol.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderSymbolFocused:
-            obj.Header.Symbol.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderSymbolInactive:
-            obj.Header.Symbol.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderSymbolHovered:
-            obj.Header.Symbol.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::HeaderSymbolSelected:
-            obj.Header.Symbol.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
+            case static_cast<PropID>(PropType::HeaderTextNormal):
+                obj.Header.Text.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextFocused):
+                obj.Header.Text.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextInactive):
+                obj.Header.Text.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextHovered):
+                obj.Header.Text.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderTextSelected):
+                obj.Header.Text.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyNormal):
+                obj.Header.HotKey.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyFocused):
+                obj.Header.HotKey.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyInactive):
+                obj.Header.HotKey.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeyHovered):
+                obj.Header.HotKey.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderHotKeySelected):
+                obj.Header.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolNormal):
+                obj.Header.Symbol.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolFocused):
+                obj.Header.Symbol.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolInactive):
+                obj.Header.Symbol.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolHovered):
+                obj.Header.Symbol.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::HeaderSymbolSelected):
+                obj.Header.Symbol.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
 
-        // Cursor
-        case PropID::CursorNormal:
-            obj.Cursor.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::CursorInactive:
-            obj.Cursor.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::CursorOverInactiveItem:
-            obj.Cursor.OverInactiveItem = std::get<ColorPair>(value);
-            return true;
-        case PropID::CursorOverSelection:
-            obj.Cursor.OverSelection = std::get<ColorPair>(value);
-            return true;
+            // Cursor
+            case static_cast<PropID>(PropType::CursorNormal):
+                obj.Cursor.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::CursorInactive):
+                obj.Cursor.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::CursorOverInactiveItem):
+                obj.Cursor.OverInactiveItem = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::CursorOverSelection):
+                obj.Cursor.OverSelection = std::get<ColorPair>(value);
+                return true;
 
-        // Editor
-        case PropID::EditorBackground:
-            obj.Editor.Normal.Background  = std::get<Color>(value);
-            obj.Editor.Focused.Background = std::get<Color>(value);
-            obj.Editor.Hovered.Background = std::get<Color>(value);
-            return true;
-        case PropID::EditorNormal:
-            obj.Editor.Normal.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::EditorFocus:
-            obj.Editor.Focused.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::EditorInactive:
-            obj.Editor.Inactive.Foreground = std::get<Color>(value);
-            obj.Editor.Inactive.Background = Color::Transparent;
-            return true;
-        case PropID::EditorHovered:
-            obj.Editor.Hovered.Foreground = std::get<Color>(value);
-            return true;
-        case PropID::EditorSelection:
-            obj.Selection.Editor = std::get<ColorPair>(value);
-            return true;
-        case PropID::EditorLineMarkerNormal:
-            obj.LineMarker.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::EditorLineMarkerFocused:
-            obj.LineMarker.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::EditorLineMarkerInactive:
-            obj.LineMarker.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::EditorLineMarkerHovered:
-            obj.LineMarker.Hovered = std::get<ColorPair>(value);
-            return true;
+            // Editor
+            case static_cast<PropID>(PropType::EditorBackground):
+                obj.Editor.Normal.Background  = std::get<Color>(value);
+                obj.Editor.Focused.Background = std::get<Color>(value);
+                obj.Editor.Hovered.Background = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorNormal):
+                obj.Editor.Normal.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorFocus):
+                obj.Editor.Focused.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorInactive):
+                obj.Editor.Inactive.Foreground = std::get<Color>(value);
+                obj.Editor.Inactive.Background = Color::Transparent;
+                return true;
+            case static_cast<PropID>(PropType::EditorHovered):
+                obj.Editor.Hovered.Foreground = std::get<Color>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorSelection):
+                obj.Selection.Editor = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerNormal):
+                obj.LineMarker.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerFocused):
+                obj.LineMarker.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerInactive):
+                obj.LineMarker.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::EditorLineMarkerHovered):
+                obj.LineMarker.Hovered = std::get<ColorPair>(value);
+                return true;
 
-        case PropID::BorderNormal:
-            obj.Border.Normal = { std::get<Color>(value), Color::Transparent };
-            return true;
-        case PropID::BorderFocused:
-            obj.Border.Focused = { std::get<Color>(value), Color::Transparent };
-            return true;
-        case PropID::BorderInactive:
-            obj.Border.Inactive = { std::get<Color>(value), Color::Transparent };
-            return true;
-        case PropID::BorderHovered:
-            obj.Border.Hovered = { std::get<Color>(value), Color::Transparent };
-            return true;
-        case PropID::BorderPressed:
-            obj.Border.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::LineNormal:
-            obj.Lines.Normal = { std::get<Color>(value), Color::Transparent };
-            return true;
-        case PropID::LineFocused:
-            obj.Lines.Focused = { std::get<Color>(value), Color::Transparent };
-            return true;
-        case PropID::LineInactive:
-            obj.Lines.Inactive = { std::get<Color>(value), Color::Transparent };
-            return true;
-        case PropID::LineHovered:
-            obj.Lines.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::LinePressed:
-            obj.Lines.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
+            case static_cast<PropID>(PropType::BorderNormal):
+                obj.Border.Normal = { std::get<Color>(value), Color::Transparent };
+                return true;
+            case static_cast<PropID>(PropType::BorderFocused):
+                obj.Border.Focused = { std::get<Color>(value), Color::Transparent };
+                return true;
+            case static_cast<PropID>(PropType::BorderInactive):
+                obj.Border.Inactive = { std::get<Color>(value), Color::Transparent };
+                return true;
+            case static_cast<PropID>(PropType::BorderHovered):
+                obj.Border.Hovered = { std::get<Color>(value), Color::Transparent };
+                return true;
+            case static_cast<PropID>(PropType::BorderPressed):
+                obj.Border.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::LineNormal):
+                obj.Lines.Normal = { std::get<Color>(value), Color::Transparent };
+                return true;
+            case static_cast<PropID>(PropType::LineFocused):
+                obj.Lines.Focused = { std::get<Color>(value), Color::Transparent };
+                return true;
+            case static_cast<PropID>(PropType::LineInactive):
+                obj.Lines.Inactive = { std::get<Color>(value), Color::Transparent };
+                return true;
+            case static_cast<PropID>(PropType::LineHovered):
+                obj.Lines.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::LinePressed):
+                obj.Lines.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
 
-        case PropID::TabsTextNormal:
-            obj.Tab.Text.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsTextFocused:
-            obj.Tab.Text.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsTextInactive:
-            obj.Tab.Text.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsTextHovered:
-            obj.Tab.Text.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsTextSelected:
-            obj.Tab.Text.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsHotKeyNormal:
-            obj.Tab.HotKey.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsHotKeyFocused:
-            obj.Tab.HotKey.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsHotKeyInactive:
-            obj.Tab.HotKey.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsHotKeyHovered:
-            obj.Tab.HotKey.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsHotKeySelected:
-            obj.Tab.HotKey.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
+            case static_cast<PropID>(PropType::TabsTextNormal):
+                obj.Tab.Text.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsTextFocused):
+                obj.Tab.Text.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsTextInactive):
+                obj.Tab.Text.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsTextHovered):
+                obj.Tab.Text.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsTextSelected):
+                obj.Tab.Text.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyNormal):
+                obj.Tab.HotKey.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyFocused):
+                obj.Tab.HotKey.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyInactive):
+                obj.Tab.HotKey.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeyHovered):
+                obj.Tab.HotKey.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsHotKeySelected):
+                obj.Tab.HotKey.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
 
-        case PropID::TabsListTextNormal:
-            obj.Tab.ListText.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListTextFocused:
-            obj.Tab.ListText.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListTextInactive:
-            obj.Tab.ListText.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListTextHovered:
-            obj.Tab.ListText.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListTextSelected:
-            obj.Tab.ListText.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListHotKeyNormal:
-            obj.Tab.ListHotKey.Normal = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListHotKeyFocused:
-            obj.Tab.ListHotKey.Focused = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListHotKeyInactive:
-            obj.Tab.ListHotKey.Inactive = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListHotKeyHovered:
-            obj.Tab.ListHotKey.Hovered = std::get<ColorPair>(value);
-            return true;
-        case PropID::TabsListHotKeySelected:
-            obj.Tab.ListHotKey.PressedOrSelected = std::get<ColorPair>(value);
-            return true;
+            case static_cast<PropID>(PropType::TabsListTextNormal):
+                obj.Tab.ListText.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextFocused):
+                obj.Tab.ListText.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextInactive):
+                obj.Tab.ListText.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextHovered):
+                obj.Tab.ListText.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListTextSelected):
+                obj.Tab.ListText.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyNormal):
+                obj.Tab.ListHotKey.Normal = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyFocused):
+                obj.Tab.ListHotKey.Focused = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyInactive):
+                obj.Tab.ListHotKey.Inactive = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeyHovered):
+                obj.Tab.ListHotKey.Hovered = std::get<ColorPair>(value);
+                return true;
+            case static_cast<PropID>(PropType::TabsListHotKeySelected):
+                obj.Tab.ListHotKey.PressedOrSelected = std::get<ColorPair>(value);
+                return true;
+            }
+            error.SetFormat("Invalid default property id (%d)", propertyID);
+            return false;
         }
-        error.SetFormat("Invalid property id (%d)", propertyID);
+
+        if (GetCustomColorByPropertyId(propertyID, nullptr, &value))
+            return true;
+
         return false;
     }
+
+    bool GetCustomColorByPropertyId(
+          PropID propertyID, PropertyValue* valueToObtain = nullptr, const PropertyValue* valueToSet = nullptr)
+    {
+        if (propertyID < static_cast<PropID>(PropType::Count))
+            return false;
+        auto it = customProperties.find(propertyID);
+        if (it == customProperties.end())
+            return false;
+
+        auto& propData = it->second;
+        if (propData.color->IsColorState())
+        {
+            auto colorState = propData.color->TryGetColorState();
+            assert(colorState != nullptr);
+            assert(propData.stateIndex.has_value() && propData.stateIndex.value() < OBJECT_COLOR_STATE_COUNT);
+            if (!propData.stateIndex.has_value()) // should not happen but return on release and abort on debug
+                return false;
+            auto& specifiedColor = colorState->StatesList[propData.stateIndex.value()];
+            if (valueToObtain)
+            {
+                *valueToObtain = specifiedColor;
+            }
+            if (valueToSet)
+            {
+                auto newColorState                                    = *colorState;
+                newColorState.StatesList[propData.stateIndex.value()] = std::get<ColorPair>(*valueToSet);
+                *it->second.color                                     = CustomColor(newColorState);
+            }
+            return true;
+        }
+        if (propData.color->IsColorPair())
+        {
+            auto colorPair = propData.color->TryGetColorPair();
+            assert(colorPair != nullptr);
+            if (valueToObtain)
+                *valueToObtain = *colorPair;
+            if (valueToSet)
+                *it->second.color = CustomColor(std::get<ColorPair>(*valueToSet));
+            return true;
+        }
+        assert(false && "Only ColorPair and ColorState are supported for custom colors!");
+        return false;
+    }
+
     void SetCustomPropertyValue(uint32 /*propertyID*/) override
     {
     }
@@ -1862,199 +2043,215 @@ class ConfigProperty : public PropertiesInterface
     {
 #define PT(t)  static_cast<uint32>(t)
 #define CAT(t) catNames[static_cast<uint32>(t)]
-        return {
-            { PT(PropID::DesktopChar), CAT(CatID::Desktop), "Symbol", PropertyType::Char16 },
-            { PT(PropID::DesktopColor), CAT(CatID::Desktop), "Color", PropertyType::ColorPair },
+        vector<Property> properties = {
+            { PT(PropType::DesktopChar), CAT(CatType::Desktop), "Symbol", PropertyType::Char16 },
+            { PT(PropType::DesktopColor), CAT(CatType::Desktop), "Color", PropertyType::ColorPair },
             // Menus
-            { PT(PropID::MenuTextNormal), CAT(CatID::Menu), "Text (normal)", PropertyType::ColorPair },
-            { PT(PropID::MenuTextHovered), CAT(CatID::Menu), "Text (hovered)", PropertyType::ColorPair },
-            { PT(PropID::MenuTextSelected), CAT(CatID::Menu), "Text (selected)", PropertyType::ColorPair },
-            { PT(PropID::MenuHotKeyNormal), CAT(CatID::Menu), "HotKey (normal)", PropertyType::ColorPair },
-            { PT(PropID::MenuHotKeyHovered), CAT(CatID::Menu), "HotKey (hovered)", PropertyType::ColorPair },
-            { PT(PropID::MenuHotKeySelected), CAT(CatID::Menu), "HotKey (selected)", PropertyType::ColorPair },
-            { PT(PropID::MenuShortCutNormal), CAT(CatID::Menu), "ShortCut (normal)", PropertyType::ColorPair },
-            { PT(PropID::MenuShortCutHovered), CAT(CatID::Menu), "ShortCut (hovered)", PropertyType::ColorPair },
-            { PT(PropID::MenuShortCutSelected), CAT(CatID::Menu), "ShortCut (selected)", PropertyType::ColorPair },
-            { PT(PropID::MenuInactive), CAT(CatID::Menu), "Inactive", PropertyType::Color },
-            { PT(PropID::MenuSymbolNormal), CAT(CatID::Menu), "Symbols (normal)", PropertyType::Color },
-            { PT(PropID::MenuSymbolSelected), CAT(CatID::Menu), "Symbols (selected)", PropertyType::Color },
-            { PT(PropID::MenuSymbolHovered), CAT(CatID::Menu), "Symbols (hovered)", PropertyType::Color },
+            { PT(PropType::MenuTextNormal), CAT(CatType::Menu), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropType::MenuTextHovered), CAT(CatType::Menu), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropType::MenuTextSelected), CAT(CatType::Menu), "Text (selected)", PropertyType::ColorPair },
+            { PT(PropType::MenuHotKeyNormal), CAT(CatType::Menu), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropType::MenuHotKeyHovered), CAT(CatType::Menu), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropType::MenuHotKeySelected), CAT(CatType::Menu), "HotKey (selected)", PropertyType::ColorPair },
+            { PT(PropType::MenuShortCutNormal), CAT(CatType::Menu), "ShortCut (normal)", PropertyType::ColorPair },
+            { PT(PropType::MenuShortCutHovered), CAT(CatType::Menu), "ShortCut (hovered)", PropertyType::ColorPair },
+            { PT(PropType::MenuShortCutSelected), CAT(CatType::Menu), "ShortCut (selected)", PropertyType::ColorPair },
+            { PT(PropType::MenuInactive), CAT(CatType::Menu), "Inactive", PropertyType::Color },
+            { PT(PropType::MenuSymbolNormal), CAT(CatType::Menu), "Symbols (normal)", PropertyType::Color },
+            { PT(PropType::MenuSymbolSelected), CAT(CatType::Menu), "Symbols (selected)", PropertyType::Color },
+            { PT(PropType::MenuSymbolHovered), CAT(CatType::Menu), "Symbols (hovered)", PropertyType::Color },
             // parent menu
-            { PT(PropID::ParentMenuTextNormal), CAT(CatID::ParentMenu), "Text (normal)", PropertyType::ColorPair },
-            { PT(PropID::ParentMenuTextHovered), CAT(CatID::ParentMenu), "Text (hovered)", PropertyType::ColorPair },
-            { PT(PropID::ParentMenuHotKeyNormal), CAT(CatID::ParentMenu), "HotKey (normal)", PropertyType::ColorPair },
-            { PT(PropID::ParentMenuHotKeyHovered),
-              CAT(CatID::ParentMenu),
+            { PT(PropType::ParentMenuTextNormal), CAT(CatType::ParentMenu), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropType::ParentMenuTextHovered), CAT(CatType::ParentMenu), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropType::ParentMenuHotKeyNormal), CAT(CatType::ParentMenu), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropType::ParentMenuHotKeyHovered),
+              CAT(CatType::ParentMenu),
               "HotKey (hovered)",
               PropertyType::ColorPair },
-            { PT(PropID::ParentMenuShortCutNormal),
-              CAT(CatID::ParentMenu),
+            { PT(PropType::ParentMenuShortCutNormal),
+              CAT(CatType::ParentMenu),
               "ShortCut (normal)",
               PropertyType::ColorPair },
-            { PT(PropID::ParentMenuShortCutHovered),
-              CAT(CatID::ParentMenu),
+            { PT(PropType::ParentMenuShortCutHovered),
+              CAT(CatType::ParentMenu),
               "ShortCut (hovered)",
               PropertyType::ColorPair },
-            { PT(PropID::ParentMenuInactive), CAT(CatID::ParentMenu), "Inactive", PropertyType::Color },
-            { PT(PropID::ParentMenuSymbolNormal), CAT(CatID::ParentMenu), "Symbols (normal)", PropertyType::Color },
-            { PT(PropID::ParentMenuSymbolHovered), CAT(CatID::ParentMenu), "Symbols (hovered)", PropertyType::Color },
+            { PT(PropType::ParentMenuInactive), CAT(CatType::ParentMenu), "Inactive", PropertyType::Color },
+            { PT(PropType::ParentMenuSymbolNormal), CAT(CatType::ParentMenu), "Symbols (normal)", PropertyType::Color },
+            { PT(PropType::ParentMenuSymbolHovered), CAT(CatType::ParentMenu), "Symbols (hovered)", PropertyType::Color },
             // Window
-            { PT(PropID::WindowNormal), CAT(CatID::Window), "Regular", PropertyType::Color },
-            { PT(PropID::WindowInactive), CAT(CatID::Window), "Inactive", PropertyType::Color },
-            { PT(PropID::WindowError), CAT(CatID::Window), "Error", PropertyType::Color },
-            { PT(PropID::WindowInfo), CAT(CatID::Window), "Notification", PropertyType::Color },
-            { PT(PropID::WindowWarning), CAT(CatID::Window), "Warning", PropertyType::Color },
+            { PT(PropType::WindowNormal), CAT(CatType::Window), "Regular", PropertyType::Color },
+            { PT(PropType::WindowInactive), CAT(CatType::Window), "Inactive", PropertyType::Color },
+            { PT(PropType::WindowError), CAT(CatType::Window), "Error", PropertyType::Color },
+            { PT(PropType::WindowInfo), CAT(CatType::Window), "Notification", PropertyType::Color },
+            { PT(PropType::WindowWarning), CAT(CatType::Window), "Warning", PropertyType::Color },
             // ToolTip
-            { PT(PropID::ToolTipText), CAT(CatID::ToolTip), "Text", PropertyType::ColorPair },
-            { PT(PropID::ToolTipArrow), CAT(CatID::ToolTip), "Arrow", PropertyType::ColorPair },
+            { PT(PropType::ToolTipText), CAT(CatType::ToolTip), "Text", PropertyType::ColorPair },
+            { PT(PropType::ToolTipArrow), CAT(CatType::ToolTip), "Arrow", PropertyType::ColorPair },
             // Progress Bar
-            { PT(PropID::ProgressBarEmpty), CAT(CatID::ProgressBar), "Empty", PropertyType::Color },
-            { PT(PropID::ProgressBarFull), CAT(CatID::ProgressBar), "Full", PropertyType::Color },
+            { PT(PropType::ProgressBarEmpty), CAT(CatType::ProgressBar), "Empty", PropertyType::Color },
+            { PT(PropType::ProgressBarFull), CAT(CatType::ProgressBar), "Full", PropertyType::Color },
             // Buttons
-            { PT(PropID::ButtonTextFocused), CAT(CatID::Button), "Text (focused)", PropertyType::ColorPair },
-            { PT(PropID::ButtonTextNormal), CAT(CatID::Button), "Text (normal)", PropertyType::ColorPair },
-            { PT(PropID::ButtonTextHovered), CAT(CatID::Button), "Text (hovered)", PropertyType::ColorPair },
-            { PT(PropID::ButtonTextSelected), CAT(CatID::Button), "Text (pressed)", PropertyType::ColorPair },
-            { PT(PropID::ButtonTextInactive), CAT(CatID::Button), "Text (inactive)", PropertyType::ColorPair },
-            { PT(PropID::ButtonHotKeyFocused), CAT(CatID::Button), "HotKey (focused)", PropertyType::ColorPair },
-            { PT(PropID::ButtonHotKeyNormal), CAT(CatID::Button), "HotKey (normal)", PropertyType::ColorPair },
-            { PT(PropID::ButtonHotKeyHovered), CAT(CatID::Button), "HotKey (hovered)", PropertyType::ColorPair },
-            { PT(PropID::ButtonHotKeySelected), CAT(CatID::Button), "HotKey (pressed)", PropertyType::ColorPair },
-            { PT(PropID::ButtonHotKeyInactive), CAT(CatID::Button), "HotKey (inactive)", PropertyType::ColorPair },
-            { PT(PropID::ButtonShadow), CAT(CatID::Button), "Shaddow", PropertyType::Color },
+            { PT(PropType::ButtonTextFocused), CAT(CatType::Button), "Text (focused)", PropertyType::ColorPair },
+            { PT(PropType::ButtonTextNormal), CAT(CatType::Button), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropType::ButtonTextHovered), CAT(CatType::Button), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropType::ButtonTextSelected), CAT(CatType::Button), "Text (pressed)", PropertyType::ColorPair },
+            { PT(PropType::ButtonTextInactive), CAT(CatType::Button), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropType::ButtonHotKeyFocused), CAT(CatType::Button), "HotKey (focused)", PropertyType::ColorPair },
+            { PT(PropType::ButtonHotKeyNormal), CAT(CatType::Button), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropType::ButtonHotKeyHovered), CAT(CatType::Button), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropType::ButtonHotKeySelected), CAT(CatType::Button), "HotKey (pressed)", PropertyType::ColorPair },
+            { PT(PropType::ButtonHotKeyInactive), CAT(CatType::Button), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropType::ButtonShadow), CAT(CatType::Button), "Shaddow", PropertyType::Color },
             // Text
-            { PT(PropID::TextNormal), CAT(CatID::Text), "Regular", PropertyType::Color },
-            { PT(PropID::TextHotKey), CAT(CatID::Text), "Hot Key", PropertyType::Color },
-            { PT(PropID::TextInactive), CAT(CatID::Text), "Inactive", PropertyType::Color },
-            { PT(PropID::TextError), CAT(CatID::Text), "Error", PropertyType::Color },
-            { PT(PropID::TextWarning), CAT(CatID::Text), "Warning", PropertyType::Color },
-            { PT(PropID::TextFocused), CAT(CatID::Text), "Focused", PropertyType::Color },
-            { PT(PropID::TextHovered), CAT(CatID::Text), "HOvered", PropertyType::Color },
-            { PT(PropID::TextHighlighted), CAT(CatID::Text), "Highlighted", PropertyType::Color },
-            { PT(PropID::TextEmphasized1), CAT(CatID::Text), "Emphasized (1)", PropertyType::Color },
-            { PT(PropID::TextEmphasized2), CAT(CatID::Text), "Emphasized (2)", PropertyType::Color },
+            { PT(PropType::TextNormal), CAT(CatType::Text), "Regular", PropertyType::Color },
+            { PT(PropType::TextHotKey), CAT(CatType::Text), "Hot Key", PropertyType::Color },
+            { PT(PropType::TextInactive), CAT(CatType::Text), "Inactive", PropertyType::Color },
+            { PT(PropType::TextError), CAT(CatType::Text), "Error", PropertyType::Color },
+            { PT(PropType::TextWarning), CAT(CatType::Text), "Warning", PropertyType::Color },
+            { PT(PropType::TextFocused), CAT(CatType::Text), "Focused", PropertyType::Color },
+            { PT(PropType::TextHovered), CAT(CatType::Text), "HOvered", PropertyType::Color },
+            { PT(PropType::TextHighlighted), CAT(CatType::Text), "Highlighted", PropertyType::Color },
+            { PT(PropType::TextEmphasized1), CAT(CatType::Text), "Emphasized (1)", PropertyType::Color },
+            { PT(PropType::TextEmphasized2), CAT(CatType::Text), "Emphasized (2)", PropertyType::Color },
             // Scroll Bar
-            { PT(PropID::ScrollBarButtonNormal), CAT(CatID::ScrollBars), "Buttons (normal)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarButtonHovered),
-              CAT(CatID::ScrollBars),
+            { PT(PropType::ScrollBarButtonNormal), CAT(CatType::ScrollBars), "Buttons (normal)", PropertyType::ColorPair },
+            { PT(PropType::ScrollBarButtonHovered),
+              CAT(CatType::ScrollBars),
               "Buttons (hovered)",
               PropertyType::ColorPair },
-            { PT(PropID::ScrollBarButtonPressed),
-              CAT(CatID::ScrollBars),
+            { PT(PropType::ScrollBarButtonPressed),
+              CAT(CatType::ScrollBars),
               "Buttons (pressed)",
               PropertyType::ColorPair },
-            { PT(PropID::ScrollBarButtonInactive),
-              CAT(CatID::ScrollBars),
+            { PT(PropType::ScrollBarButtonInactive),
+              CAT(CatType::ScrollBars),
               "Buttons (Inactive)",
               PropertyType::ColorPair },
-            { PT(PropID::ScrollBarNormal), CAT(CatID::ScrollBars), "Bar (normal)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarHovered), CAT(CatID::ScrollBars), "Bar (hovered)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarPressed), CAT(CatID::ScrollBars), "Bar (pressed)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarInactive), CAT(CatID::ScrollBars), "Bar (Inactive)", PropertyType::ColorPair },
-            { PT(PropID::ScrollBarPositionNormal),
-              CAT(CatID::ScrollBars),
+            { PT(PropType::ScrollBarNormal), CAT(CatType::ScrollBars), "Bar (normal)", PropertyType::ColorPair },
+            { PT(PropType::ScrollBarHovered), CAT(CatType::ScrollBars), "Bar (hovered)", PropertyType::ColorPair },
+            { PT(PropType::ScrollBarPressed), CAT(CatType::ScrollBars), "Bar (pressed)", PropertyType::ColorPair },
+            { PT(PropType::ScrollBarInactive), CAT(CatType::ScrollBars), "Bar (Inactive)", PropertyType::ColorPair },
+            { PT(PropType::ScrollBarPositionNormal),
+              CAT(CatType::ScrollBars),
               "Position (normal)",
               PropertyType::ColorPair },
-            { PT(PropID::ScrollBarPositionHovered),
-              CAT(CatID::ScrollBars),
+            { PT(PropType::ScrollBarPositionHovered),
+              CAT(CatType::ScrollBars),
               "Position (hovered)",
               PropertyType::ColorPair },
-            { PT(PropID::ScrollBarPositionPressed),
-              CAT(CatID::ScrollBars),
+            { PT(PropType::ScrollBarPositionPressed),
+              CAT(CatType::ScrollBars),
               "Position (pressed)",
               PropertyType::ColorPair },
             // symbols
-            { PT(PropID::SymbolInactive), CAT(CatID::Symbols), "Inactive", PropertyType::Color },
-            { PT(PropID::SymbolHovered), CAT(CatID::Symbols), "Hovered", PropertyType::ColorPair },
-            { PT(PropID::SymbolPressed), CAT(CatID::Symbols), "Pressed", PropertyType::ColorPair },
-            { PT(PropID::SymbolChecked), CAT(CatID::Symbols), "Check", PropertyType::Color },
-            { PT(PropID::SymbolUnchecked), CAT(CatID::Symbols), "Uncheck", PropertyType::Color },
-            { PT(PropID::SymbolUnknown), CAT(CatID::Symbols), "Unknown", PropertyType::Color },
-            { PT(PropID::SymbolArrows), CAT(CatID::Symbols), "Arrows", PropertyType::Color },
-            { PT(PropID::SymbolClose), CAT(CatID::Symbols), "Windows close", PropertyType::Color },
-            { PT(PropID::SymbolMaximized), CAT(CatID::Symbols), "Window maximize", PropertyType::Color },
-            { PT(PropID::SymbolResize), CAT(CatID::Symbols), "Window resize", PropertyType::Color },
+            { PT(PropType::SymbolInactive), CAT(CatType::Symbols), "Inactive", PropertyType::Color },
+            { PT(PropType::SymbolHovered), CAT(CatType::Symbols), "Hovered", PropertyType::ColorPair },
+            { PT(PropType::SymbolPressed), CAT(CatType::Symbols), "Pressed", PropertyType::ColorPair },
+            { PT(PropType::SymbolChecked), CAT(CatType::Symbols), "Check", PropertyType::Color },
+            { PT(PropType::SymbolUnchecked), CAT(CatType::Symbols), "Uncheck", PropertyType::Color },
+            { PT(PropType::SymbolUnknown), CAT(CatType::Symbols), "Unknown", PropertyType::Color },
+            { PT(PropType::SymbolArrows), CAT(CatType::Symbols), "Arrows", PropertyType::Color },
+            { PT(PropType::SymbolClose), CAT(CatType::Symbols), "Windows close", PropertyType::Color },
+            { PT(PropType::SymbolMaximized), CAT(CatType::Symbols), "Window maximize", PropertyType::Color },
+            { PT(PropType::SymbolResize), CAT(CatType::Symbols), "Window resize", PropertyType::Color },
 
             // search bar
-            { PT(PropID::SearchBarNormal), CAT(CatID::SearchBar), "Regular", PropertyType::ColorPair },
-            { PT(PropID::SearchBarFocused), CAT(CatID::SearchBar), "Focused", PropertyType::ColorPair },
-            { PT(PropID::SearchBarHovered), CAT(CatID::SearchBar), "Hovered", PropertyType::ColorPair },
-            { PT(PropID::SearchBarInactive), CAT(CatID::SearchBar), "Inactive", PropertyType::ColorPair },
+            { PT(PropType::SearchBarNormal), CAT(CatType::SearchBar), "Regular", PropertyType::ColorPair },
+            { PT(PropType::SearchBarFocused), CAT(CatType::SearchBar), "Focused", PropertyType::ColorPair },
+            { PT(PropType::SearchBarHovered), CAT(CatType::SearchBar), "Hovered", PropertyType::ColorPair },
+            { PT(PropType::SearchBarInactive), CAT(CatType::SearchBar), "Inactive", PropertyType::ColorPair },
 
             // Header
-            { PT(PropID::HeaderTextNormal), CAT(CatID::Headers), "Text (regular)", PropertyType::ColorPair },
-            { PT(PropID::HeaderTextFocused), CAT(CatID::Headers), "Text (focused)", PropertyType::ColorPair },
-            { PT(PropID::HeaderTextInactive), CAT(CatID::Headers), "Text (inactive)", PropertyType::ColorPair },
-            { PT(PropID::HeaderTextHovered), CAT(CatID::Headers), "Text (hovered)", PropertyType::ColorPair },
-            { PT(PropID::HeaderTextSelected), CAT(CatID::Headers), "Text (pressed)", PropertyType::ColorPair },
-            { PT(PropID::HeaderHotKeyNormal), CAT(CatID::Headers), "HotKey (regular)", PropertyType::ColorPair },
-            { PT(PropID::HeaderHotKeyFocused), CAT(CatID::Headers), "HotKey (focused)", PropertyType::ColorPair },
-            { PT(PropID::HeaderHotKeyInactive), CAT(CatID::Headers), "HotKey (inactive)", PropertyType::ColorPair },
-            { PT(PropID::HeaderHotKeyHovered), CAT(CatID::Headers), "HotKey (hovered)", PropertyType::ColorPair },
-            { PT(PropID::HeaderHotKeySelected), CAT(CatID::Headers), "HotKey (pressed)", PropertyType::ColorPair },
-            { PT(PropID::HeaderSymbolNormal), CAT(CatID::Headers), "Symbol (regular)", PropertyType::ColorPair },
-            { PT(PropID::HeaderSymbolFocused), CAT(CatID::Headers), "Symbol (focused)", PropertyType::ColorPair },
-            { PT(PropID::HeaderSymbolInactive), CAT(CatID::Headers), "Symbol (inactive)", PropertyType::ColorPair },
-            { PT(PropID::HeaderSymbolHovered), CAT(CatID::Headers), "Symbol (hovered)", PropertyType::ColorPair },
-            { PT(PropID::HeaderSymbolSelected), CAT(CatID::Headers), "Symbol (pressed)", PropertyType::ColorPair },
+            { PT(PropType::HeaderTextNormal), CAT(CatType::Headers), "Text (regular)", PropertyType::ColorPair },
+            { PT(PropType::HeaderTextFocused), CAT(CatType::Headers), "Text (focused)", PropertyType::ColorPair },
+            { PT(PropType::HeaderTextInactive), CAT(CatType::Headers), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropType::HeaderTextHovered), CAT(CatType::Headers), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropType::HeaderTextSelected), CAT(CatType::Headers), "Text (pressed)", PropertyType::ColorPair },
+            { PT(PropType::HeaderHotKeyNormal), CAT(CatType::Headers), "HotKey (regular)", PropertyType::ColorPair },
+            { PT(PropType::HeaderHotKeyFocused), CAT(CatType::Headers), "HotKey (focused)", PropertyType::ColorPair },
+            { PT(PropType::HeaderHotKeyInactive), CAT(CatType::Headers), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropType::HeaderHotKeyHovered), CAT(CatType::Headers), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropType::HeaderHotKeySelected), CAT(CatType::Headers), "HotKey (pressed)", PropertyType::ColorPair },
+            { PT(PropType::HeaderSymbolNormal), CAT(CatType::Headers), "Symbol (regular)", PropertyType::ColorPair },
+            { PT(PropType::HeaderSymbolFocused), CAT(CatType::Headers), "Symbol (focused)", PropertyType::ColorPair },
+            { PT(PropType::HeaderSymbolInactive), CAT(CatType::Headers), "Symbol (inactive)", PropertyType::ColorPair },
+            { PT(PropType::HeaderSymbolHovered), CAT(CatType::Headers), "Symbol (hovered)", PropertyType::ColorPair },
+            { PT(PropType::HeaderSymbolSelected), CAT(CatType::Headers), "Symbol (pressed)", PropertyType::ColorPair },
 
             // Cursor
-            { PT(PropID::CursorNormal), CAT(CatID::Cursor), "Normal", PropertyType::ColorPair },
-            { PT(PropID::CursorInactive), CAT(CatID::Cursor), "Inactive", PropertyType::ColorPair },
-            { PT(PropID::CursorOverInactiveItem), CAT(CatID::Cursor), "Over inactive item", PropertyType::ColorPair },
-            { PT(PropID::CursorOverSelection), CAT(CatID::Cursor), "Over selection", PropertyType::ColorPair },
+            { PT(PropType::CursorNormal), CAT(CatType::Cursor), "Normal", PropertyType::ColorPair },
+            { PT(PropType::CursorInactive), CAT(CatType::Cursor), "Inactive", PropertyType::ColorPair },
+            { PT(PropType::CursorOverInactiveItem), CAT(CatType::Cursor), "Over inactive item", PropertyType::ColorPair },
+            { PT(PropType::CursorOverSelection), CAT(CatType::Cursor), "Over selection", PropertyType::ColorPair },
 
             // Editor
-            { PT(PropID::EditorBackground), CAT(CatID::Editor), "Background", PropertyType::Color },
-            { PT(PropID::EditorNormal), CAT(CatID::Editor), "Text (normal)", PropertyType::Color },
-            { PT(PropID::EditorInactive), CAT(CatID::Editor), "Text (inactive)", PropertyType::Color },
-            { PT(PropID::EditorFocus), CAT(CatID::Editor), "Text (focused)", PropertyType::Color },
-            { PT(PropID::EditorHovered), CAT(CatID::Editor), "Text (selected)", PropertyType::Color },
-            { PT(PropID::EditorSelection), CAT(CatID::Editor), "Selection", PropertyType::ColorPair },
-            { PT(PropID::EditorLineMarkerNormal), CAT(CatID::Editor), "Line (normal)", PropertyType::ColorPair },
-            { PT(PropID::EditorLineMarkerFocused), CAT(CatID::Editor), "Line (focused)", PropertyType::ColorPair },
-            { PT(PropID::EditorLineMarkerInactive), CAT(CatID::Editor), "Line (inactive)", PropertyType::ColorPair },
-            { PT(PropID::EditorLineMarkerHovered), CAT(CatID::Editor), "Line (hovered)", PropertyType::ColorPair },
+            { PT(PropType::EditorBackground), CAT(CatType::Editor), "Background", PropertyType::Color },
+            { PT(PropType::EditorNormal), CAT(CatType::Editor), "Text (normal)", PropertyType::Color },
+            { PT(PropType::EditorInactive), CAT(CatType::Editor), "Text (inactive)", PropertyType::Color },
+            { PT(PropType::EditorFocus), CAT(CatType::Editor), "Text (focused)", PropertyType::Color },
+            { PT(PropType::EditorHovered), CAT(CatType::Editor), "Text (selected)", PropertyType::Color },
+            { PT(PropType::EditorSelection), CAT(CatType::Editor), "Selection", PropertyType::ColorPair },
+            { PT(PropType::EditorLineMarkerNormal), CAT(CatType::Editor), "Line (normal)", PropertyType::ColorPair },
+            { PT(PropType::EditorLineMarkerFocused), CAT(CatType::Editor), "Line (focused)", PropertyType::ColorPair },
+            { PT(PropType::EditorLineMarkerInactive), CAT(CatType::Editor), "Line (inactive)", PropertyType::ColorPair },
+            { PT(PropType::EditorLineMarkerHovered), CAT(CatType::Editor), "Line (hovered)", PropertyType::ColorPair },
 
             // Border & Lines
-            { PT(PropID::BorderNormal), CAT(CatID::BorderAndLines), "Border (normal)", PropertyType::Color },
-            { PT(PropID::BorderFocused), CAT(CatID::BorderAndLines), "Border (focused)", PropertyType::Color },
-            { PT(PropID::BorderInactive), CAT(CatID::BorderAndLines), "Border (inactive)", PropertyType::Color },
-            { PT(PropID::BorderHovered), CAT(CatID::BorderAndLines), "Border (hovered)", PropertyType::Color },
-            { PT(PropID::BorderPressed), CAT(CatID::BorderAndLines), "Border (pressed)", PropertyType::ColorPair },
-            { PT(PropID::LineNormal), CAT(CatID::BorderAndLines), "Line (normal)", PropertyType::Color },
-            { PT(PropID::LineFocused), CAT(CatID::BorderAndLines), "Line (focused)", PropertyType::Color },
-            { PT(PropID::LineInactive), CAT(CatID::BorderAndLines), "Line (inactive)", PropertyType::Color },
-            { PT(PropID::LineHovered), CAT(CatID::BorderAndLines), "Line (hovered)", PropertyType::ColorPair },
-            { PT(PropID::LinePressed), CAT(CatID::BorderAndLines), "Line (pressed)", PropertyType::ColorPair },
+            { PT(PropType::BorderNormal), CAT(CatType::BorderAndLines), "Border (normal)", PropertyType::Color },
+            { PT(PropType::BorderFocused), CAT(CatType::BorderAndLines), "Border (focused)", PropertyType::Color },
+            { PT(PropType::BorderInactive), CAT(CatType::BorderAndLines), "Border (inactive)", PropertyType::Color },
+            { PT(PropType::BorderHovered), CAT(CatType::BorderAndLines), "Border (hovered)", PropertyType::Color },
+            { PT(PropType::BorderPressed), CAT(CatType::BorderAndLines), "Border (pressed)", PropertyType::ColorPair },
+            { PT(PropType::LineNormal), CAT(CatType::BorderAndLines), "Line (normal)", PropertyType::Color },
+            { PT(PropType::LineFocused), CAT(CatType::BorderAndLines), "Line (focused)", PropertyType::Color },
+            { PT(PropType::LineInactive), CAT(CatType::BorderAndLines), "Line (inactive)", PropertyType::Color },
+            { PT(PropType::LineHovered), CAT(CatType::BorderAndLines), "Line (hovered)", PropertyType::ColorPair },
+            { PT(PropType::LinePressed), CAT(CatType::BorderAndLines), "Line (pressed)", PropertyType::ColorPair },
 
             // Tabs
-            { PT(PropID::TabsTextNormal), CAT(CatID::Tabs), "Text (normal)", PropertyType::ColorPair },
-            { PT(PropID::TabsTextFocused), CAT(CatID::Tabs), "Text (focused)", PropertyType::ColorPair },
-            { PT(PropID::TabsTextInactive), CAT(CatID::Tabs), "Text (inactive)", PropertyType::ColorPair },
-            { PT(PropID::TabsTextHovered), CAT(CatID::Tabs), "Text (hovered)", PropertyType::ColorPair },
-            { PT(PropID::TabsTextSelected), CAT(CatID::Tabs), "Text (selected)", PropertyType::ColorPair },
-            { PT(PropID::TabsHotKeyNormal), CAT(CatID::Tabs), "HotKey (normal)", PropertyType::ColorPair },
-            { PT(PropID::TabsHotKeyFocused), CAT(CatID::Tabs), "HotKey (focused)", PropertyType::ColorPair },
-            { PT(PropID::TabsHotKeyInactive), CAT(CatID::Tabs), "HotKey (inactive)", PropertyType::ColorPair },
-            { PT(PropID::TabsHotKeyHovered), CAT(CatID::Tabs), "HotKey (hovered)", PropertyType::ColorPair },
-            { PT(PropID::TabsHotKeySelected), CAT(CatID::Tabs), "HotKey (selected)", PropertyType::ColorPair },
+            { PT(PropType::TabsTextNormal), CAT(CatType::Tabs), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropType::TabsTextFocused), CAT(CatType::Tabs), "Text (focused)", PropertyType::ColorPair },
+            { PT(PropType::TabsTextInactive), CAT(CatType::Tabs), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropType::TabsTextHovered), CAT(CatType::Tabs), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropType::TabsTextSelected), CAT(CatType::Tabs), "Text (selected)", PropertyType::ColorPair },
+            { PT(PropType::TabsHotKeyNormal), CAT(CatType::Tabs), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropType::TabsHotKeyFocused), CAT(CatType::Tabs), "HotKey (focused)", PropertyType::ColorPair },
+            { PT(PropType::TabsHotKeyInactive), CAT(CatType::Tabs), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropType::TabsHotKeyHovered), CAT(CatType::Tabs), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropType::TabsHotKeySelected), CAT(CatType::Tabs), "HotKey (selected)", PropertyType::ColorPair },
 
             // Tabs (lists)
-            { PT(PropID::TabsListTextNormal), CAT(CatID::TabsList), "Text (normal)", PropertyType::ColorPair },
-            { PT(PropID::TabsListTextFocused), CAT(CatID::TabsList), "Text (focused)", PropertyType::ColorPair },
-            { PT(PropID::TabsListTextInactive), CAT(CatID::TabsList), "Text (inactive)", PropertyType::ColorPair },
-            { PT(PropID::TabsListTextHovered), CAT(CatID::TabsList), "Text (hovered)", PropertyType::ColorPair },
-            { PT(PropID::TabsListTextSelected), CAT(CatID::TabsList), "Text (selected)", PropertyType::ColorPair },
-            { PT(PropID::TabsListHotKeyNormal), CAT(CatID::TabsList), "HotKey (normal)", PropertyType::ColorPair },
-            { PT(PropID::TabsListHotKeyFocused), CAT(CatID::TabsList), "HotKey (focused)", PropertyType::ColorPair },
-            { PT(PropID::TabsListHotKeyInactive), CAT(CatID::TabsList), "HotKey (inactive)", PropertyType::ColorPair },
-            { PT(PropID::TabsListHotKeyHovered), CAT(CatID::TabsList), "HotKey (hovered)", PropertyType::ColorPair },
-            { PT(PropID::TabsListHotKeySelected), CAT(CatID::TabsList), "HotKey (selected)", PropertyType::ColorPair },
+            { PT(PropType::TabsListTextNormal), CAT(CatType::TabsList), "Text (normal)", PropertyType::ColorPair },
+            { PT(PropType::TabsListTextFocused), CAT(CatType::TabsList), "Text (focused)", PropertyType::ColorPair },
+            { PT(PropType::TabsListTextInactive), CAT(CatType::TabsList), "Text (inactive)", PropertyType::ColorPair },
+            { PT(PropType::TabsListTextHovered), CAT(CatType::TabsList), "Text (hovered)", PropertyType::ColorPair },
+            { PT(PropType::TabsListTextSelected), CAT(CatType::TabsList), "Text (selected)", PropertyType::ColorPair },
+            { PT(PropType::TabsListHotKeyNormal), CAT(CatType::TabsList), "HotKey (normal)", PropertyType::ColorPair },
+            { PT(PropType::TabsListHotKeyFocused), CAT(CatType::TabsList), "HotKey (focused)", PropertyType::ColorPair },
+            { PT(PropType::TabsListHotKeyInactive), CAT(CatType::TabsList), "HotKey (inactive)", PropertyType::ColorPair },
+            { PT(PropType::TabsListHotKeyHovered), CAT(CatType::TabsList), "HotKey (hovered)", PropertyType::ColorPair },
+            { PT(PropType::TabsListHotKeySelected), CAT(CatType::TabsList), "HotKey (selected)", PropertyType::ColorPair },
         };
 #undef PT
 #undef CAT
-    };
+        properties.reserve(properties.size() + customProperties.size());
+
+        for (const auto& [propId, propData] : customProperties)
+        {
+            properties.emplace_back(propId, propData.category, propData.colorName, PropertyType::ColorPair);
+        }
+        return properties;
+    }
+
+    std::string_view GetCategoryNameForSerialization() const override
+    {
+        return "ConfigProperty";
+    }
+    bool AddCategoryBeforePropertyNameWhenSerializing() const override
+    {
+        return false;
+    }
 };
 class PreviewControl : public UserControl
 {
@@ -2109,6 +2306,21 @@ class ThemeEditorDialog : public Window
         themeMode->SetCurentItemIndex(0);
         themeMode->SetHotKey('T');
         cfg.SetPreviewWindowID(PreviewWindowID::Normal);
+
+        switch (cfg.GetConfig().Theme)
+        {
+        case Application::ThemeType::Default:
+            themeMode->SetCurentItemIndex(0);
+            break;
+        case Application::ThemeType::Dark:
+            themeMode->SetCurentItemIndex(1);
+            break;
+        case Application::ThemeType::Light:
+            themeMode->SetCurentItemIndex(2);
+            break;
+        default:
+            break;
+        }
     }
     void UpdateCategoryAndProperty()
     {
@@ -2119,16 +2331,20 @@ class ThemeEditorDialog : public Window
         }
         else
         {
-            cfg.SetCategoryAndProperty(prop->GetCurrentItemCategory(), PropID::None);
+            cfg.SetCategoryAndProperty(prop->GetCurrentItemCategory(), static_cast<uint32>(PropType::None));
         }
     }
+
     void SaveTheme()
     {
-        auto res =
-              FileDialog::ShowSaveFileWindow("", "Theme:theme", AppCUI::OS::GetCurrentApplicationPath().parent_path());
+        auto [themeFolder, fileName] = GetThemesFolderAndCurrentFileName();
+        auto res = FileDialog::ShowSaveFileWindow(fileName, "Theme:theme", themeFolder);
         if (res.has_value())
         {
-            if (Internal::Config::Save(this->cfg.GetConfig(), res.value()) == false)
+            auto file = res.value();
+            if (!file.has_extension())
+                file += ".theme";
+            if (Internal::Config::Save(this->cfg.GetConfig(), file) == false)
             {
                 MessageBox::ShowError("Save", "Fail to save theme file !");
             }
@@ -2140,8 +2356,8 @@ class ThemeEditorDialog : public Window
     }
     void LoadTheme()
     {
-        auto res =
-              FileDialog::ShowOpenFileWindow("", "Theme:theme", AppCUI::OS::GetCurrentApplicationPath().parent_path());
+        auto [themeFolder, fileName] = GetThemesFolderAndCurrentFileName();
+        auto res = FileDialog::ShowOpenFileWindow(fileName, "Theme:theme", themeFolder);
         if (res.has_value())
         {
             if (Internal::Config::Load(this->cfg.GetConfig(), res.value()) == false)
@@ -2149,7 +2365,15 @@ class ThemeEditorDialog : public Window
                 MessageBox::ShowError("Load", "Fail to load theme from file !");
             }
         }
+        cfg.ReInitializeFields();
     }
+
+    void OnApplyTheme()
+    {
+        (*Application::GetAppConfig()) = cfg.GetConfig();
+        Application::GetApplication()->TriggerThemeChange();
+    }
+
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
     {
         if (Window::OnEvent(control, eventType, ID))
@@ -2162,7 +2386,7 @@ class ThemeEditorDialog : public Window
                 this->Exit(Dialogs::Result::Cancel);
                 return true;
             case BUTTON_CMD_APPLY:
-                (*Application::GetAppConfig()) = cfg.GetConfig();
+                OnApplyTheme();
                 this->Exit(Dialogs::Result::Ok);
                 return true;
             case BUTTON_CMD_SAVE:
@@ -2210,6 +2434,20 @@ class ThemeEditorDialog : public Window
 #endif
         return false;
     }
+private:
+
+    std::tuple<std::filesystem::path, std::string> GetThemesFolderAndCurrentFileName()
+    {
+        auto themeFolder = cfg.GetConfig().ThemesFolder;
+        if (themeFolder.empty())
+            themeFolder = OS::GetCurrentApplicationPath().parent_path();
+        auto themeName = themeMode->GetCurrentItemText();
+        themeName.Add(".theme");
+        std::string fileName;
+        themeName.ToString(fileName);
+
+        return { themeFolder, fileName };
+    }
 };
 
 void ThemeEditor::Show()
@@ -2221,4 +2459,96 @@ void ThemeEditor::Show()
         dlg.Show();
     }
 }
+
+bool ThemeEditor::RegisterCustomColors(
+      std::string category_name,
+      Application::Config::CustomColorNameStorage colors,
+      OnThemePreviewWindowDrawInterface* previewInterface)
+{
+    auto app = Application::GetApplication();
+    CHECK(app, false, "Application has not been initialized !");
+    CHECK(app->Inited, false, "Application has not been correctly initialized !");
+
+    if (category_name.find(' ') != std::string::npos)
+    {
+        MessageBox::ShowError("Error", "You cannot have spaces inside the color category name!");
+        return false;
+    }
+
+    if (colors.empty())
+    {
+        RETURNERROR(false, "No colors specified for category '%s'!", category_name.c_str());
+    }
+
+    for (const auto& [colorName, color]: colors)
+    {
+        if (colorName.find(' ') != std::string::npos)
+        {
+            MessageBox::ShowError("Error", "You cannot have spaces inside the color name!");
+            return false;
+        }
+    }
+
+    if (catNames->find(category_name) != std::string::npos)
+    {
+        RETURNERROR(false, "Category '%s' is already registered in default category names!", category_name.c_str());
+    }
+
+    auto& config = app->config;
+    auto& colorsCategory = config.CustomColors[category_name];
+    if (colorsCategory.previewInterface)
+    {
+        RETURNERROR(false, "Category '%s' is already registered in custom config colors !", category_name.c_str());
+    }
+
+    for (auto& [colorName, color] : colors)
+    {
+        if (colorsCategory.data.contains(colorName))
+            continue;
+        colorsCategory.data[colorName] = color;
+    }
+    colorsCategory.previewInterface = previewInterface;
+    return true;
+}
+
+void ThemeEditor::RemovePreviewDrawListener(OnThemePreviewWindowDrawInterface* previewInterface)
+{
+    auto app = Application::GetApplication();
+    if (!app || !app->Inited)
+        return;
+
+    auto& config = app->config;
+    for (auto& [catName, catData] : config.CustomColors)
+    {
+        if (catData.previewInterface == previewInterface)
+        {
+            catData.previewInterface = nullptr;
+            // no break in case the same listener is registered for multiple categories
+        }
+    }
+
+    //app->RemoveListener(previewInterface);
+}
+
+bool ThemeEditor::RegisterOnThemeChangeCallback(OnThemeChangedInterface* listener)
+{
+    if (!listener)
+        return false;
+    auto app = Application::GetApplication();
+    CHECK(app, false, "Application has not been initialized !");
+    CHECK(app->Inited, false, "Application has not been correctly initialized !");
+    return app->RegisterThemeChangeListener(listener);
+
+}
+
+void ThemeEditor::RemoveOnThemeChangeCallback(OnThemeChangedInterface* listener)
+{
+    if (!listener)
+        return;
+    auto app = Application::GetApplication();
+    if (!app || !app->Inited)
+        return;
+    app->RemoveThemeChangeListener(listener);
+}
+
 } // namespace AppCUI::Dialogs

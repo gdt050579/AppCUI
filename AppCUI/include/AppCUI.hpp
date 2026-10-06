@@ -1,7 +1,7 @@
 #pragma once
 
 // Version MUST be in the following format <Major>.<Minor>.<Patch>
-#define APPCUI_VERSION "1.237.0"
+#define APPCUI_VERSION "1.247.0"
 
 #include <filesystem>
 #include <map>
@@ -310,6 +310,7 @@ namespace Input
         Left,
         Right
     };
+    class EXPORT ModifierMap;
 }; // namespace Input
 namespace Controls
 {
@@ -397,11 +398,15 @@ namespace Graphics
     constexpr ColorPair NoColorPair      = ColorPair{ Color::Transparent, Color::Transparent };
     constexpr ColorPair DefaultColorPair = ColorPair{ Color::White, Color::Black };
 
+    constexpr uint32 OBJECT_COLOR_STATE_COUNT = 5;
+    constexpr std::string_view OBJECT_COLOR_STATE_NAMES[OBJECT_COLOR_STATE_COUNT] = {
+        "Focused", "Normal", "Hovered", "Inactive", "Pressed"
+    };
     struct ObjectColorState
     {
         union
         {
-            ColorPair StatesList[5];
+            ColorPair StatesList[OBJECT_COLOR_STATE_COUNT];
             struct
             {
                 ColorPair Focused, Normal, Hovered, Inactive, PressedOrSelected;
@@ -462,6 +467,55 @@ namespace Graphics
         {
             return this->StatesList[static_cast<uint32>(state)];
         }
+    };
+
+    class CustomColor
+    {
+      public:
+        using VariantT = std::variant<ColorPair, ObjectColorState>;
+
+        CustomColor() = default;
+        CustomColor(ObjectColorState s) noexcept(std::is_nothrow_move_constructible_v<VariantT>)
+            : variant_(std::move(s)) {}
+        CustomColor(ColorPair c) noexcept(std::is_nothrow_move_constructible_v<VariantT>) : variant_(std::move(c)) {}
+
+        CustomColor(const CustomColor&)                = default;
+        CustomColor(CustomColor&&) noexcept            = default;
+        CustomColor& operator=(const CustomColor&)     = default;
+        CustomColor& operator=(CustomColor&&) noexcept = default;
+
+        template <typename Visitor>
+        decltype(auto) Visit(Visitor&& vis)
+        {
+            return std::visit(std::forward<Visitor>(vis), variant_);
+        }
+
+        template <typename Visitor>
+        decltype(auto) Visit(Visitor&& vis) const
+        {
+            return std::visit(std::forward<Visitor>(vis), variant_);
+        }
+
+        bool IsColorState() const noexcept
+        {
+            return std::holds_alternative<ObjectColorState>(variant_);
+        }
+        bool IsColorPair() const noexcept
+        {
+            return std::holds_alternative<ColorPair>(variant_);
+        }
+
+        const ObjectColorState* TryGetColorState() const noexcept
+        {
+            return std::get_if<ObjectColorState>(&variant_);
+        }
+        const ColorPair* TryGetColorPair() const noexcept
+        {
+            return std::get_if<ColorPair>(&variant_);
+        }
+
+      private:
+        VariantT variant_;
     };
 
     struct Character
@@ -736,24 +790,34 @@ namespace Utils
         uint32 id;
         string_view category, name, help;
         PropertyType type;
+        bool isSerializable;
         ConstString values;
 
-        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type)
-            : id(ID), category(_category), name(_name), type(_type)
+        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type, bool _serializable = false)
+            : id(ID), category(_category), name(_name), type(_type), isSerializable(_serializable)
         {
         }
-        Property(uint32 ID, string_view _category, string_view _name, PropertyType _type, const ConstString _values)
-            : id(ID), category(_category), name(_name), type(_type), values(_values)
+        Property(
+              uint32 ID,
+              string_view _category,
+              string_view _name,
+              PropertyType _type,
+              bool _serializable,
+              const ConstString _values)
+            : id(ID), category(_category), name(_name), type(_type), isSerializable(_serializable) , values(_values)
         {
         }
     };
     struct EXPORT PropertiesInterface
     {
+        virtual ~PropertiesInterface() = default;
         virtual bool GetPropertyValue(uint32 propertyID, PropertyValue& value)                      = 0;
         virtual bool SetPropertyValue(uint32 propertyID, const PropertyValue& value, String& error) = 0;
         virtual void SetCustomPropertyValue(uint32 propertyID)                                      = 0;
         virtual bool IsPropertyValueReadOnly(uint32 propertyID)                                     = 0;
         virtual const vector<Property> GetPropertiesList()                                          = 0;
+        virtual std::string_view GetCategoryNameForSerialization() const                            = 0;
+        virtual bool AddCategoryBeforePropertyNameWhenSerializing() const                           = 0;
     };
 
     // Example:
@@ -1933,8 +1997,127 @@ namespace Utils
         static Input::Key FromString(string_view stringRepresentation);
         static Input::Key KeyModifiersFromString(string_view stringRepresentation);
 
+        // Display helpers: map the logical key to the physical key the user presses (see Input::ModifierMap)
+        // and use platform modifier names (e.g. "Opt+" for Alt on macOS). ToString stays canonical (serialization).
+        static string_view GetKeyModifierDisplayName(Input::Key keyCode);
+        static bool ToDisplayString(Input::Key keyCode, Utils::String& text);
+        // same as ToDisplayString but with an explicit modifier profile (e.g. to preview a profile before applying it)
+        static bool ToDisplayString(Input::Key keyCode, const Input::ModifierMap& map, Utils::String& text);
+
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
     };
+} // namespace Utils
+
+namespace Input
+{
+    // Bijective remapping of the Ctrl/Alt/Shift modifier combinations, applied to every incoming input event
+    // (physical -> logical) and to every displayed key (logical -> physical). Identity costs one branch per event.
+    class EXPORT ModifierMap
+    {
+        uint8 toLogical[8];
+        uint8 toPhysical[8];
+        bool identity;
+
+      public:
+        ModifierMap();
+        static ModifierMap Identity();
+        // ctrlActsAs / altActsAs: the logical modifier(s) produced by the physical Ctrl / Alt key.
+        // Returns nullopt when the result is not a bijection (it would make some shortcuts unreachable).
+        static std::optional<ModifierMap> FromAssignments(Key ctrlActsAs, Key altActsAs);
+
+        Key ToLogical(Key physical) const;
+        Key ToPhysical(Key logical) const;
+        Key GetCtrlActsAs() const;
+        Key GetAltActsAs() const;
+        inline bool IsIdentity() const
+        {
+            return identity;
+        }
+    };
+
+    enum class KeyBindingFlags : uint8
+    {
+        None                  = 0,
+        ShiftExtendsSelection = 1, // also matches the same key + Shift (and reports it as "extend selection")
+        ReadOnly              = 2, // listed for discoverability, can not be rebound
+        RequiresRestart       = 4, // a new value is used only after the application restarts
+    };
+
+    // A named, rebindable keyboard shortcut. `Key` is the current (effective) key, `DefaultKey` the built-in one.
+    struct KeyBinding
+    {
+        Input::Key Key;
+        Input::Key DefaultKey;
+        const char* Caption;     // stable identifier (used as the settings name)
+        const char* Explanation; // human readable description
+        uint32 CommandId;
+        KeyBindingFlags Flags;
+
+        constexpr KeyBinding(
+              Input::Key key, const char* caption, const char* explanation, uint32 commandId, KeyBindingFlags flags = KeyBindingFlags::None)
+            : Key(key), DefaultKey(key), Caption(caption), Explanation(explanation), CommandId(commandId), Flags(flags)
+        {
+        }
+        constexpr bool Matches(Input::Key key) const
+        {
+            return (Key != Input::Key::None) && (Key == key);
+        }
+        constexpr bool IsModified() const
+        {
+            return Key != DefaultKey;
+        }
+        constexpr bool HasFlag(KeyBindingFlags flag) const
+        {
+            return (static_cast<uint8>(Flags) & static_cast<uint8>(flag)) != 0;
+        }
+    };
+
+    // Small open-addressing table: key -> command id. Built when bindings change, queried once per key press.
+    class EXPORT KeyMap
+    {
+        struct Slot
+        {
+            uint32 key;
+            uint32 commandId;
+            uint8 flags;
+        };
+        Slot* slots;
+        uint32 capacity; // power of two, 0 = not allocated
+        uint32 count;
+        uint32 mask;
+
+        const Slot* Find(uint32 key) const;
+        void Rehash(uint32 newCapacity);
+
+      public:
+        static constexpr uint32 NO_COMMAND = 0xFFFFFFFF;
+        struct Result
+        {
+            uint32 commandId;
+            bool extendSelection;
+        };
+
+        KeyMap();
+        ~KeyMap();
+        KeyMap(const KeyMap&)            = delete;
+        KeyMap& operator=(const KeyMap&) = delete;
+        void Clear();
+        // Ignores Key::None; when two bindings share a key, the first one wins
+        void Add(const KeyBinding& binding);
+        template <typename Container>
+        void Build(const Container& bindings)
+        {
+            Clear();
+            for (const KeyBinding* b : bindings)
+                Add(*b);
+        }
+        // exact match first; then (if Shift is pressed) the same key without Shift for ShiftExtendsSelection bindings
+        Result Resolve(Key keyCode) const;
+    };
+} // namespace Input
+
+namespace Utils
+{
 
     class EXPORT ColorUtils
     {
@@ -2034,7 +2217,7 @@ namespace Utils
 
         bool IsArray() const;
         uint32 GetArrayCount() const;
-        IniValueArray operator[](int32 index) const;
+        IniValueArray operator[](uint32 index) const;
 
         string_view GetName() const;
 
@@ -2054,6 +2237,8 @@ namespace Utils
         void operator=(string_view value);
         void operator=(Graphics::Size value);
         void operator=(Input::Key value);
+        void operator=(Graphics::Color value);
+        void operator=(Graphics::ColorPair value);
         void operator=(const initializer_list<const char*>& values);
         void operator=(const initializer_list<std::string>& values);
         void operator=(const initializer_list<bool>& values);
@@ -2115,6 +2300,8 @@ namespace Utils
         void UpdateValue(string_view name, string_view value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Graphics::Size value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, Input::Key value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::Color value, bool dontUpdateIfValueExits);
+        void UpdateValue(string_view name, Graphics::ColorPair value, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<std::string>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<const char*>& values, bool dontUpdateIfValueExits);
         void UpdateValue(string_view name, const initializer_list<bool>& values, bool dontUpdateIfValueExits);
@@ -3081,6 +3268,7 @@ namespace Controls
         PropertyItemChanged,
         SplitterPanelAutoExpanded,
         SplitterPanelAutoCollapsed,
+        KeySelectorChanged,
         Custom,
     };
 
@@ -5301,60 +5489,6 @@ namespace Controls
 
 }; // namespace Controls
 
-namespace Dialogs
-{
-    class EXPORT MessageBox
-    {
-        MessageBox() = delete;
-
-      public:
-        static void ShowError(const ConstString& title, const ConstString& message);
-        static void ShowNotification(const ConstString& title, const ConstString& message);
-        static void ShowWarning(const ConstString& title, const ConstString& message);
-        static Result ShowOkCancel(const ConstString& title, const ConstString& message);
-        static Result ShowYesNoCancel(const ConstString& title, const ConstString& message);
-    };
-
-    class EXPORT FileDialog
-    {
-        FileDialog() = delete;
-
-        // Add additional extension filters so that FileDialog will show only the specified extensions,
-        // other extensions will be filtered. If no filter is passed (empty string) - "All files" is chosen
-        //
-        // Filter format is: <Name>:ext|<Name>:ext| ...
-        //               or: <Name>:ext1,ext2,ext3|<Name>:ext|....
-        //
-        // For example:
-        //       "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx"
-        //
-        // Will show "Text Files" and, if selected, only .txt files will be shown
-        // If the user selects "Images" - .jpg, .jpeg and .png files will be shown
-
-      public:
-        static optional<std::filesystem::path> ShowSaveFileWindow(
-              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
-        static optional<std::filesystem::path> ShowOpenFileWindow(
-              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
-    };
-
-    class EXPORT WindowManager
-    {
-        WindowManager() = delete;
-
-      public:
-        static void Show();
-    };
-
-    class EXPORT ThemeEditor
-    {
-        ThemeEditor() = delete;
-
-      public:
-        static void Show();
-    };
-} // namespace Dialogs
-
 namespace Log
 {
     enum class Severity : uint32
@@ -5388,6 +5522,12 @@ namespace Log
     bool EXPORT ToStdErr();
     bool EXPORT ToStdOut();
 } // namespace Log
+
+namespace Dialogs
+{
+    struct OnThemePreviewWindowDrawInterface;
+}
+
 namespace Application
 {
     enum class InitializationFlags : uint32
@@ -5445,13 +5585,14 @@ namespace Application
         InitializationFlags Flags;
         string_view FontName;
         Utils::FixSizeString<32> ThemeName;
+        Utils::String ThemeFolder;
         ThemeType Theme;
         SpecialCharacterSetType SpecialCharacterSet;
         Controls::Desktop* (*CustomDesktopConstructor)();
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
-              Flags(InitializationFlags::None), FontName(""), Theme(ThemeType::Default),
+              Flags(InitializationFlags::None), FontName(""), ThemeFolder("Themes"), Theme(ThemeType::Default),
               SpecialCharacterSet(SpecialCharacterSetType::Auto), CustomDesktopConstructor(nullptr)
         {
         }
@@ -5474,10 +5615,20 @@ namespace Application
         CommandBar();
         void Init(void* controller);
         bool SetCommand(Input::Key keyCode, const ConstString& caption, int CommandID);
+        // Uses binding.Key / binding.Caption; an unassigned binding (Key::None) is skipped
+        bool SetCommand(const Input::KeyBinding& binding, int CommandID);
     };
 
     struct Config
     {
+        using CustomColorNameStorage = std::map<std::string, Graphics::CustomColor>;
+        struct CategoryColorsData
+        {
+            CustomColorNameStorage data;
+            Dialogs::OnThemePreviewWindowDrawInterface* previewInterface;
+        };
+        using CustomColorStorage = std::map<std::string, CategoryColorsData>;
+
         Graphics::ObjectColorState SearchBar, Border, Lines, Editor, LineMarker;
 
         struct
@@ -5534,6 +5685,13 @@ namespace Application
                 Graphics::Color Normal, Inactive, Error, Warning, Info;
             } Background;
         } Window;
+
+        std::filesystem::path ThemesFolder;
+        ThemeType Theme;
+        CustomColorStorage CustomColors;
+
+        bool SerializeCustomColors(AppCUI::Utils::LocalString<8192> &bufferToSerializeTo);
+        bool DeserializeCustomColors(Utils::IniObject& configFile);
     };
 
     EXPORT Config* GetAppConfig();
@@ -5542,6 +5700,11 @@ namespace Application
     EXPORT void UpdateAppCUISettings(Utils::IniObject& ini, bool clearExistingSettings = false);
     EXPORT bool UpdateAppCUISettings(bool clearExistingSettings = false);
     EXPORT std::filesystem::path GetAppSettingsFile();
+
+    // Keyboard modifier profile ([AppCUI] Keyboard.Ctrl / Keyboard.Alt). SetModifierMap applies it immediately and
+    // updates the in-memory settings (call SaveAppSettings to persist).
+    EXPORT const Input::ModifierMap& GetModifierMap();
+    EXPORT void SetModifierMap(const Input::ModifierMap& map);
 
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
@@ -5582,7 +5745,88 @@ namespace Application
     EXPORT void Close();
     EXPORT void SetTheme(ThemeType themeType);
     EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
+    EXPORT Utils::PropertiesInterface* GetAppPropertiesObject();
 }; // namespace Application
+
+namespace Dialogs
+{
+    class EXPORT MessageBox
+    {
+        MessageBox() = delete;
+
+      public:
+        static void ShowError(const ConstString& title, const ConstString& message);
+        static void ShowNotification(const ConstString& title, const ConstString& message);
+        static void ShowWarning(const ConstString& title, const ConstString& message);
+        static Result ShowOkCancel(const ConstString& title, const ConstString& message);
+        static Result ShowYesNoCancel(const ConstString& title, const ConstString& message);
+    };
+
+    class EXPORT FileDialog
+    {
+        FileDialog() = delete;
+
+        // Add additional extension filters so that FileDialog will show only the specified extensions,
+        // other extensions will be filtered. If no filter is passed (empty string) - "All files" is chosen
+        //
+        // Filter format is: <Name>:ext|<Name>:ext| ...
+        //               or: <Name>:ext1,ext2,ext3|<Name>:ext|....
+        //
+        // For example:
+        //       "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx"
+        //
+        // Will show "Text Files" and, if selected, only .txt files will be shown
+        // If the user selects "Images" - .jpg, .jpeg and .png files will be shown
+
+      public:
+        static optional<std::filesystem::path> ShowSaveFileWindow(
+              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
+        static optional<std::filesystem::path> ShowOpenFileWindow(
+              const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path);
+    };
+
+    class EXPORT WindowManager
+    {
+        WindowManager() = delete;
+
+      public:
+        static void Show();
+    };
+
+    struct OnThemeChangedInterface
+    {
+        virtual ~OnThemeChangedInterface() = default;
+        virtual void OnThemeChanged(const Application::Config& config) = 0;
+    };
+
+    struct OnThemePreviewWindowDrawInterface
+    {
+        virtual ~OnThemePreviewWindowDrawInterface() = default;
+        virtual void OnPreviewWindowDraw(
+              std::string_view categoryName,
+              Graphics::Renderer& r,
+              int startingX,
+              int startingY,
+              Graphics::Size sz,
+              const Application::Config::CustomColorNameStorage& colors) = 0;
+    };
+
+    class EXPORT ThemeEditor
+    {
+        ThemeEditor() = delete;
+
+      public:
+        static void Show();
+        static bool RegisterCustomColors(
+              std::string category_name,
+              Application::Config::CustomColorNameStorage colors,
+              OnThemePreviewWindowDrawInterface* previewInterface);
+        static void RemovePreviewDrawListener(OnThemePreviewWindowDrawInterface* previewInterface);
+        static bool RegisterOnThemeChangeCallback(OnThemeChangedInterface* listener);
+        static void RemoveOnThemeChangeCallback(OnThemeChangedInterface* listener);
+    };
+} // namespace Dialogs
+
 namespace Endian
 {
 

@@ -399,7 +399,7 @@ bool AnalyzeLayout(string_view layout, LayoutInformation& inf)
         const auto& item = parser[idx];
         if (ControlLayout::HashToType(item.Key.hash, layoutType) == false)
         {
-            error.Set("Unknwon layout item: ");
+            error.Set("Unknown layout item: ");
             error.Add((const char*) item.Key.data, item.Key.dataSize);
             ASSERT(false, error.GetText());
         }
@@ -444,12 +444,12 @@ bool AnalyzeLayout(string_view layout, LayoutInformation& inf)
             break;
         case ControlLayout::Type::Align:
             ASSERT(item.Value.type == KeyValuePair::Type::String, "Align parameter requires a string value");
-            ASSERT(ControlAlignament::HashToType(item.Value.hash, inf.align), "Unknwon align value");
+            ASSERT(ControlAlignament::HashToType(item.Value.hash, inf.align), "Unknown align value");
             inf.flags |= LAYOUT_FLAG_ALIGN;
             break;
         case ControlLayout::Type::Dock:
             ASSERT(item.Value.type == KeyValuePair::Type::String, "Dock parameter requires a string value");
-            ASSERT(ControlAlignament::HashToType(item.Value.hash, inf.dock), "Unknwon dock value");
+            ASSERT(ControlAlignament::HashToType(item.Value.hash, inf.dock), "Unknown dock value");
             inf.flags |= LAYOUT_FLAG_DOCK;
             break;
         default:
@@ -499,7 +499,7 @@ bool ControlContext::ProcessDockedLayout(LayoutInformation& inf)
                         LAYOUT_FLAG_Y)) == 0,
           false,
           "When dock|d parameter is used, none of the position (x,y) or anchor (left,right,bottom,top) parameters can "
-          "not be uesd");
+          "not be used");
     // similar - align can not be used
     CHECK((inf.flags & LAYOUT_FLAG_ALIGN) == 0,
           false,
@@ -554,7 +554,7 @@ bool ControlContext::ProcessCornerAnchorLayout(LayoutInformation& inf, Alignamen
 {
     CHECK((inf.flags & (LAYOUT_FLAG_X | LAYOUT_FLAG_Y)) == 0,
           false,
-          "When a corner anchor is being use (top,left,righ,bottom) , (X,Y) coordonates can not be used");
+          "When a corner anchor is being use (top,left,right,bottom) , (X,Y) coordinates can not be used");
     // if align is not set --> default it to TopLeft
     if ((inf.flags & LAYOUT_FLAG_ALIGN) == 0)
         inf.align = Alignament::TopLeft;
@@ -602,10 +602,10 @@ bool ControlContext::ProcessHorizontalParalelAnchors(LayoutInformation& inf)
     // horizontal (left-right) are provided
     CHECK((inf.flags & LAYOUT_FLAG_X) == 0,
           false,
-          "When (left,right) parameters are used toghere, 'X' parameter can not be used");
+          "When (left,right) parameters are used together, 'X' parameter can not be used");
     CHECK((inf.flags & LAYOUT_FLAG_WIDTH) == 0,
           false,
-          "When (left,right) parameters are used toghere, width can not be used as it is deduced from left-right "
+          "When (left,right) parameters are used together, width can not be used as it is deduced from left-right "
           "difference");
 
     // if "align" is not provided, it is defaulted to center
@@ -616,7 +616,7 @@ bool ControlContext::ProcessHorizontalParalelAnchors(LayoutInformation& inf)
         // check layout
         CHECK((inf.align == Alignament::Top) || (inf.align == Alignament::Center) || (inf.align == Alignament::Bottom),
               false,
-              "When (left,right) are provided, only Top(t), Center(c) and Bottom(b) alignament values are allowed !");
+              "When (left,right) are provided, only Top(t), Center(c) and Bottom(b) alignment values are allowed !");
     }
 
     // if "height" is not provided, it is defaulted to 1
@@ -645,10 +645,10 @@ bool ControlContext::ProcessVerticalParalelAnchors(LayoutInformation& inf)
     // vertical (up-down) are provided
     CHECK((inf.flags & LAYOUT_FLAG_Y) == 0,
           false,
-          "When (top,down) parameters are used toghere, 'Y' parameter can not be used");
+          "When (top,down) parameters are used together, 'Y' parameter can not be used");
     CHECK((inf.flags & LAYOUT_FLAG_HEIGHT) == 0,
           false,
-          "When (top,down) parameters are used toghere, height can not be used as it is deduced from bottom-top "
+          "When (top,down) parameters are used together, height can not be used as it is deduced from bottom-top "
           "difference");
 
     // if "align" is not provided, it is defaulted to center
@@ -659,7 +659,7 @@ bool ControlContext::ProcessVerticalParalelAnchors(LayoutInformation& inf)
         // check layout
         CHECK((inf.align == Alignament::Left) || (inf.align == Alignament::Center) || (inf.align == Alignament::Right),
               false,
-              "When (top,down) are provided, only Left(l), Center(c) and Right(r) alignament values are allowed !");
+              "When (top,down) are provided, only Left(l), Center(c) and Right(r) alignment values are allowed !");
     }
 
     // if "width" is not provided, it is defaulted to 1
@@ -901,7 +901,7 @@ bool ControlContext::RecomputeLayout_PointAndSize(const LayoutMetricData& md)
         this->Layout.Y -= this->Layout.Height / 2;
         break;
     default:
-        RETURNERROR(false, "Invalid alignament value: %d", md.Align);
+        RETURNERROR(false, "Invalid alignment value: %d", md.Align);
     };
     return true;
 }
@@ -923,7 +923,7 @@ bool ControlContext::RecomputeLayout_LeftRightAnchorsAndHeight(const LayoutMetri
         this->Layout.Y = md.Y - this->Layout.Height;
         break;
     default:
-        RETURNERROR(false, "Invalid alignamet (%d) --> only Top, Center and Bottom are allowed !", md.Align);
+        RETURNERROR(false, "Invalid alignment (%d) --> only Top, Center and Bottom are allowed !", md.Align);
     }
 
     return true;
@@ -946,7 +946,7 @@ bool ControlContext::RecomputeLayout_TopBottomAnchorsAndWidth(const LayoutMetric
         this->Layout.X = md.X - this->Layout.Width;
         break;
     default:
-        RETURNERROR(false, "Invalid alignamet (%d) --> only Left, Center and Right are allowed !", md.Align);
+        RETURNERROR(false, "Invalid alignment (%d) --> only Left, Center and Right are allowed !", md.Align);
     }
 
     return true;
@@ -1019,7 +1019,7 @@ bool ControlContext::RecomputeLayout(Control* controlParent)
         this->Layout.Y = md.AnchorTop;
         return true;
     default:
-        RETURNERROR(false, "Unknwon layout format mode: %d", (int) this->Layout.Format.LayoutMode);
+        RETURNERROR(false, "Unknown layout format mode: %d", (int) this->Layout.Format.LayoutMode);
     }
 }
 void ControlContext::PaintScrollbars(Graphics::Renderer& renderer)
