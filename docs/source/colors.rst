@@ -32,7 +32,18 @@ Transparent value can be used to specify that the existing color should be used,
 Colors and RGB
 --------------
 
-Colors can be used with **AppCUI::Graphics::Image** object. There is also a `string` format available  where each character represents a color. The following table explaings the colors and characters that can be used to represent it in a string view.
+Each of the 16 colors has an RGB value (used, for example, by **AppCUI::Graphics::Image** and by the SDL frontend).
+An image can also be created from a string where every character is the color of one pixel:
+
+.. code-block:: c++
+
+   Image img;
+   img.Create(4, 2, "rRgG"
+                    "bByY"); // 4x2 pixels: Red, DarkRed, Green, DarkGreen / Blue, DarkBlue, Yellow, Yellow
+
+The string is read row by row (``width`` characters per row); a character that is not in the table below leaves
+its pixel unchanged (transparent black - all channels 0 - after ``Create``) and a shorter string leaves the remaining pixels unchanged. The
+following table shows the characters that represent each color:
 
 +------------------+-----------------------------+--------------------------------+
 | Color            | RGB                         | String representation          |
@@ -53,11 +64,11 @@ Colors can be used with **AppCUI::Graphics::Image** object. There is also a `str
 +------------------+-----------------------------+--------------------------------+
 | Color::Silver    | R:192, G:192, B:192 #C0C0C0 | ``7`` , ``S``                  |
 +------------------+-----------------------------+--------------------------------+
-| Color::Gray      | R:128, G:128, B:128 #808080 | ``8`` , ``S``                  |
+| Color::Gray      | R:128, G:128, B:128 #808080 | ``8``                          |
 +------------------+-----------------------------+--------------------------------+
 | Color::Blue      | R:0, G:0, B:255 #0000FF     | ``9`` , ``b``                  |
 +------------------+-----------------------------+--------------------------------+
-| Color::Green     | R:0, G:255, B:0 #00FF00     | ``G``                          |
+| Color::Green     | R:0, G:255, B:0 #00FF00     | ``g``                          |
 +------------------+-----------------------------+--------------------------------+
 | Color::Aqua      | R:0, G:255, B:255 #00FFFF   | ``A`` , ``a``, ``t``           |
 +------------------+-----------------------------+--------------------------------+

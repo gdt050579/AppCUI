@@ -1,0 +1,60 @@
+/**
+\namespace AppCUI
+\brief Root namespace of the AppCUI framework (`#include <AppCUI.hpp>`).
+
+Besides the namespaces below, it defines the fixed-size integer aliases used everywhere in the API
+(`uint8` ... `uint64`, `int8` ... `int64`, `char8`, `char16`).
+
+\namespace AppCUI::StdIncludes
+\brief Standard library names (`string_view`, `u16string_view`, `unique_ptr`, `vector`, `optional`, ...) imported into
+the `AppCUI` namespace.
+
+\namespace AppCUI::Application
+\brief Application lifetime: initialization (Init, InitializationData), the event loop (Run), desktop windows
+(AddWindow, ArrangeWindows), menus, themes, settings (`<executable>.ini`) and custom frontends.
+
+\namespace AppCUI::Controls
+\brief Every visual element: windows, buttons, text fields, lists, trees, grids, splitters, tabs, menus and the base
+Control class. Controls are created through the AppCUI::Controls::Factory classes and positioned with layout strings.
+
+\namespace AppCUI::Controls::Factory
+\brief Creation helpers: `Factory::<Control>::Create(parent, ..., layout, ...)` creates a control and adds it to its
+parent (returning a non-owning Reference) or returns an owning Pointer when no parent is given.
+
+\namespace AppCUI::Controls::Handlers
+\brief Event handlers that can be attached to a control (`control->Handlers()->OnXXX = ...`) instead of deriving a new
+control class: either a pointer to an object that implements the matching `On...Interface` or a plain function (a
+lambda without captures).
+
+\namespace AppCUI::Graphics
+\brief Drawing: colors, characters, the Renderer used by Control::Paint, canvases, images, rectangles, clipping,
+special characters (box drawing, arrows, ...), code pages and text formatting.
+
+\namespace AppCUI::Graphics::ProgressStatus
+\brief A modal progress window for long operations.
+
+\namespace AppCUI::Input
+\brief Keyboard and mouse input: key codes and modifiers (Key), mouse buttons and wheel, key bindings, key maps and
+keyboard modifier profiles (ModifierMap).
+
+\namespace AppCUI::Utils
+\brief General purpose utilities: strings (String, LocalString, UnicodeStringBuilder, FixSizeString), buffers
+(Buffer, BufferView), INI files (IniObject), number formatting and parsing, smart references (Reference, Pointer),
+properties (PropertiesInterface) and key helpers (KeyUtils).
+
+\namespace AppCUI::Utils::Number
+\brief Parsing of numbers from strings (decimal, hexadecimal, ...).
+
+\namespace AppCUI::OS
+\brief Operating system services: files (File, MemoryFile, DataObject), the clipboard, dynamic libraries, date / time
+and special folders.
+
+\namespace AppCUI::Dialogs
+\brief Ready made modal dialogs: message boxes, open / save file dialogs, the windows manager and the theme editor.
+
+\namespace AppCUI::Log
+\brief Logging of AppCUI (and application) messages to a file, to stdout / stderr or to the debugger.
+
+\namespace AppCUI::Endian
+\brief Byte order helpers: byte swapping and conversions between the host order and little / big endian.
+*/

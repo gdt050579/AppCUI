@@ -767,7 +767,7 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     {
         if (String::Equals(charSet, "unicode", true))
             initData.SpecialCharacterSet = Application::SpecialCharacterSetType::Unicode;
-        if (String::Equals(charSet, "ascii", true))
+        else if (String::Equals(charSet, "ascii", true))
             initData.SpecialCharacterSet = Application::SpecialCharacterSetType::Ascii;
         else if (String::StartsWith(charSet, "linux", true))
             initData.SpecialCharacterSet = Application::SpecialCharacterSetType::LinuxTerminal;

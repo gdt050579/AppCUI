@@ -820,19 +820,21 @@ namespace Utils
         virtual bool AddCategoryBeforePropertyNameWhenSerializing() const                           = 0;
     };
 
-    // Example:
-    // void f(FunctionRef<bool(int)> pred)
-    // {
-    //     pred(6);
-    // }
-    // int x     = 5;
-    // auto pred = [&x](int arg)
-    // {
-    //     x = arg + 1;
-    //     return x + arg == 10;
-    // };
-    // f(pred);
-
+    /// Non-owning, non-allocating reference to a callable (a light `std::function` for callbacks that do not outlive
+    /// the call). Example:
+    /// \code{.cpp}
+    /// void f(FunctionRef<bool(int)> pred)
+    /// {
+    ///     pred(6);
+    /// }
+    /// int x     = 5;
+    /// auto pred = [&x](int arg)
+    /// {
+    ///     x = arg + 1;
+    ///     return x + arg == 10;
+    /// };
+    /// f(pred);
+    /// \endcode
     template <typename Fn>
     class FunctionRef;
 
@@ -1988,7 +1990,7 @@ namespace Utils
         constexpr static const uint32 KEY_SHIFT_BITS = 12;
         constexpr static const uint32 KEY_CODE_MASK  = 0xFF;
 
-        // Returns the name of the Key without modifiers
+        /// Returns the name of the Key without modifiers
         static string_view GetKeyName(Input::Key keyCode);
         static string_view GetKeyModifierName(Input::Key keyCode);
         static string_view GetKeyNamePadded(Input::Key keyCode);
@@ -1997,11 +1999,11 @@ namespace Utils
         static Input::Key FromString(string_view stringRepresentation);
         static Input::Key KeyModifiersFromString(string_view stringRepresentation);
 
-        // Display helpers: map the logical key to the physical key the user presses (see Input::ModifierMap)
-        // and use platform modifier names (e.g. "Opt+" for Alt on macOS). ToString stays canonical (serialization).
+        /// Display helpers: map the logical key to the physical key the user presses (see Input::ModifierMap)
+        /// and use platform modifier names (e.g. "Opt+" for Alt on macOS). ToString stays canonical (serialization).
         static string_view GetKeyModifierDisplayName(Input::Key keyCode);
         static bool ToDisplayString(Input::Key keyCode, Utils::String& text);
-        // same as ToDisplayString but with an explicit modifier profile (e.g. to preview a profile before applying it)
+        /// same as ToDisplayString but with an explicit modifier profile (e.g. to preview a profile before applying it)
         static bool ToDisplayString(Input::Key keyCode, const Input::ModifierMap& map, Utils::String& text);
 
         static Input::Key CreateHotKey(char16 hotKey, Input::Key modifier = Input::Key::None);
@@ -2010,8 +2012,8 @@ namespace Utils
 
 namespace Input
 {
-    // Bijective remapping of the Ctrl/Alt/Shift modifier combinations, applied to every incoming input event
-    // (physical -> logical) and to every displayed key (logical -> physical). Identity costs one branch per event.
+    /// Bijective remapping of the Ctrl/Alt/Shift modifier combinations, applied to every incoming input event
+    /// (physical -> logical) and to every displayed key (logical -> physical). Identity costs one branch per event.
     class EXPORT ModifierMap
     {
         uint8 toLogical[8];
@@ -2021,8 +2023,8 @@ namespace Input
       public:
         ModifierMap();
         static ModifierMap Identity();
-        // ctrlActsAs / altActsAs: the logical modifier(s) produced by the physical Ctrl / Alt key.
-        // Returns nullopt when the result is not a bijection (it would make some shortcuts unreachable).
+        /// ctrlActsAs / altActsAs: the logical modifier(s) produced by the physical Ctrl / Alt key.
+        /// Returns nullopt when the result is not a bijection (it would make some shortcuts unreachable).
         static std::optional<ModifierMap> FromAssignments(Key ctrlActsAs, Key altActsAs);
 
         Key ToLogical(Key physical) const;
@@ -2043,7 +2045,7 @@ namespace Input
         RequiresRestart       = 4, // a new value is used only after the application restarts
     };
 
-    // A named, rebindable keyboard shortcut. `Key` is the current (effective) key, `DefaultKey` the built-in one.
+    /// A named, rebindable keyboard shortcut. `Key` is the current (effective) key, `DefaultKey` the built-in one.
     struct KeyBinding
     {
         Input::Key Key;
@@ -2072,7 +2074,7 @@ namespace Input
         }
     };
 
-    // Small open-addressing table: key -> command id. Built when bindings change, queried once per key press.
+    /// Small open-addressing table: key -> command id. Built when bindings change, queried once per key press.
     class EXPORT KeyMap
     {
         struct Slot
@@ -2102,7 +2104,7 @@ namespace Input
         KeyMap(const KeyMap&)            = delete;
         KeyMap& operator=(const KeyMap&) = delete;
         void Clear();
-        // Ignores Key::None; when two bindings share a key, the first one wins
+        /// Ignores Key::None; when two bindings share a key, the first one wins
         void Add(const KeyBinding& binding);
         template <typename Container>
         void Build(const Container& bindings)
@@ -2111,7 +2113,7 @@ namespace Input
             for (const KeyBinding* b : bindings)
                 Add(*b);
         }
-        // exact match first; then (if Shift is pressed) the same key without Shift for ShiftExtendsSelection bindings
+        /// exact match first; then (if Shift is pressed) the same key without Shift for ShiftExtendsSelection bindings
         Result Resolve(Key keyCode) const;
     };
 } // namespace Input
@@ -2576,7 +2578,7 @@ namespace OS
     using SpecialFolderMap = std::map<SpecialFolder, FSLocationData>;
     using RootsVector      = vector<FSLocationData>;
 
-    // Fills the specialFolders map and roots vector with paths
+    /// Fills the specialFolders map and roots vector with paths
     EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
     EXPORT std::filesystem::path GetCurrentApplicationPath();
 
@@ -5530,22 +5532,24 @@ namespace Dialogs
 
 namespace Application
 {
+    /// Options of Application::Init (they can be combined with `|`).
     enum class InitializationFlags : uint32
     {
         None = 0,
 
-        CommandBar              = 0x0001,
-        Menu                    = 0x0002,
-        Maximized               = 0x0004,
-        Fullscreen              = 0x0008,
-        FixedSize               = 0x0010,
-        LoadSettingsFile        = 0x0020,
-        AutoHotKeyForWindow     = 0x0040,
-        EnableFPSMode           = 0x0080,
-        SingleWindowApp         = 0x0100,
-        DisableAutoCloseDesktop = 0x0200,
+        CommandBar              = 0x0001, ///< a command bar (shortcut keys) is shown on the last line
+        Menu                    = 0x0002, ///< a menu bar is shown on the first line (see Application::AddMenu)
+        Maximized               = 0x0004, ///< the terminal window is maximized (frontend dependent)
+        Fullscreen              = 0x0008, ///< the terminal window is full screen (frontend dependent)
+        FixedSize               = 0x0010, ///< the terminal window can not be resized (frontend dependent)
+        LoadSettingsFile        = 0x0020, ///< loads `<executable>.ini`; its [AppCUI] section configures the application
+        AutoHotKeyForWindow     = 0x0040, ///< every new window receives a free Alt+1 .. Alt+9 hot key
+        EnableFPSMode           = 0x0080, ///< Control::OnFrameUpdate is called ~30 times per second
+        SingleWindowApp         = 0x0100, ///< single application mode: start with Application::RunSingleApp
+        DisableAutoCloseDesktop = 0x0200, ///< the application keeps running after its last window was closed
     };
 
+    /// Size of a character (SDL and Windows console frontends).
     enum class CharacterSize : uint32
     {
         Default = 0,
@@ -5555,6 +5559,7 @@ namespace Application
         Large,
         Huge
     };
+    /// The frontend (terminal implementation) that displays the application.
     enum class FrontendType : uint32
     {
         Default        = 0,
@@ -5564,12 +5569,14 @@ namespace Application
         Tests          = 4,
         Custom         = 5, // implemented by the application (see CustomFrontendInterface)
     };
+    /// Built-in color themes.
     enum class ThemeType : uint32
     {
         Default = 0,
         Dark    = 1,
         Light   = 2,
     };
+    /// Characters used to draw lines, borders, arrows and other special characters.
     enum class SpecialCharacterSetType : uint32
     {
         Auto          = 0,
@@ -5578,6 +5585,7 @@ namespace Application
         Ascii         = 3
     };
 
+    /// Type of a FrontendEvent produced by a CustomFrontendInterface.
     enum class FrontendEventType : uint32
     {
         None = 0,
@@ -5591,6 +5599,7 @@ namespace Application
         Closed,            // the application should close
         RedrawRequested,   // repaint everything (and flush the whole screen again)
     };
+    /// An input event produced by a custom frontend (see CustomFrontendInterface::WaitForEvent).
     struct FrontendEvent
     {
         FrontendEventType Type    = FrontendEventType::None;
@@ -5604,42 +5613,49 @@ namespace Application
         uint32 Height             = 0;
     };
 
-    // A frontend implemented by the application instead of a real terminal (headless / remote / recording screens).
-    // Select it with InitializationData::Frontend = FrontendType::Custom and InitializationData::CustomFrontend.
-    // AppCUI calls every method from the UI thread; the object is NOT owned by AppCUI and must outlive the application.
-    // The clipboard of a custom frontend is private to the process (it never reaches the OS clipboard).
+    /// A frontend implemented by the application instead of a real terminal (headless / remote / recording screens).
+    /// Select it with InitializationData::Frontend = FrontendType::Custom and InitializationData::CustomFrontend.
+    /// AppCUI calls every method from the UI thread; the object is NOT owned by AppCUI and must outlive the application.
+    /// The clipboard of a custom frontend is private to the process (it never reaches the OS clipboard).
     class CustomFrontendInterface
     {
       public:
         virtual ~CustomFrontendInterface() = default;
 
-        // width / height hold the requested size (InitializationData::Width/Height, may be 0); both must be > 0 on return
+        /// `width` / `height` hold the requested size (InitializationData::Width/Height, may be 0); both must be > 0
+        /// on return.
         virtual bool OnInit(uint32& width, uint32& height) = 0;
-        virtual void OnUnInit()                            = 0;
-        // the entire screen: width * height characters, row major (valid only during the call)
+        /// Called once when the application stops; the frontend receives no other call afterwards.
+        virtual void OnUnInit() = 0;
+        /// The entire screen: `width * height` characters, row major (valid only during the call).
         virtual void OnFlushToScreen(const Graphics::Character* characters, uint32 width, uint32 height) = 0;
-        virtual void OnUpdateCursor(uint32 x, uint32 y, bool visible)                                     = 0;
-        // waits at most timeoutMs for the next event; returns false on timeout
+        /// New position / visibility of the text cursor.
+        virtual void OnUpdateCursor(uint32 x, uint32 y, bool visible) = 0;
+        /// Waits at most `timeoutMs` milliseconds for the next event; returns false on timeout.
         virtual bool WaitForEvent(FrontendEvent& evnt, uint32 timeoutMs) = 0;
+        /// Whether a special character set can be displayed (queried when the set is SpecialCharacterSetType::Auto).
         virtual bool HasSupportFor(SpecialCharacterSetType type)
         {
             return type != SpecialCharacterSetType::Auto;
         }
     };
 
+    /// Every parameter of Application::Init. Values read from the settings file (InitializationFlags::LoadSettingsFile)
+    /// override the corresponding fields.
     struct InitializationData
     {
-        uint32 Width, Height;
-        FrontendType Frontend;
-        CharacterSize CharSize;
-        InitializationFlags Flags;
-        string_view FontName;
-        Utils::FixSizeString<32> ThemeName;
-        Utils::String ThemeFolder;
-        ThemeType Theme;
-        SpecialCharacterSetType SpecialCharacterSet;
-        Controls::Desktop* (*CustomDesktopConstructor)();
-        CustomFrontendInterface* CustomFrontend; // required (and only used) when Frontend is FrontendType::Custom
+        uint32 Width;                                     ///< width in characters (0 = frontend default)
+        uint32 Height;                                    ///< height in characters (0 = frontend default)
+        FrontendType Frontend;                            ///< frontend used to display the application
+        CharacterSize CharSize;                           ///< character size (SDL / Windows console)
+        InitializationFlags Flags;                        ///< initialization options
+        string_view FontName;                             ///< font name (Windows console)
+        Utils::FixSizeString<32> ThemeName;               ///< name of a `.theme` file (from ThemeFolder) to load
+        Utils::String ThemeFolder;                        ///< folder with `.theme` files (relative to the executable)
+        ThemeType Theme;                                  ///< built-in theme (also the base of a loaded `.theme`)
+        SpecialCharacterSetType SpecialCharacterSet;      ///< characters used to draw lines and borders
+        Controls::Desktop* (*CustomDesktopConstructor)(); ///< creates a custom desktop (nullptr = default desktop)
+        CustomFrontendInterface* CustomFrontend;          ///< required (and only used) when Frontend is FrontendType::Custom
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
@@ -5650,6 +5666,7 @@ namespace Application
         }
     };
 
+    /// How Application::ArrangeWindows places the desktop windows.
     enum class ArrangeWindowsMethod
     {
         MaximizedAll,
@@ -5667,7 +5684,7 @@ namespace Application
         CommandBar();
         void Init(void* controller);
         bool SetCommand(Input::Key keyCode, const ConstString& caption, int CommandID);
-        // Uses binding.Key / binding.Caption; an unassigned binding (Key::None) is skipped
+        /// Uses binding.Key / binding.Caption; an unassigned binding (Key::None) is skipped
         bool SetCommand(const Input::KeyBinding& binding, int CommandID);
     };
 
@@ -5746,24 +5763,36 @@ namespace Application
         bool DeserializeCustomColors(Utils::IniObject& configFile);
     };
 
+    /// Colors of the current theme (nullptr if the application is not initialized).
     EXPORT Config* GetAppConfig();
+    /// Settings read from `<executable>.ini` (InitializationFlags::LoadSettingsFile); nullptr if the application is
+    /// not initialized.
     EXPORT Utils::IniObject* GetAppSettings();
+    /// Writes the settings (GetAppSettings) back to GetAppSettingsFile().
     EXPORT bool SaveAppSettings();
+    /// Adds the default [AppCUI] keys that are missing from `ini` (rewrites all of them when clearExistingSettings is
+    /// true).
     EXPORT void UpdateAppCUISettings(Utils::IniObject& ini, bool clearExistingSettings = false);
+    /// Same as above, applied to the settings of the running application.
     EXPORT bool UpdateAppCUISettings(bool clearExistingSettings = false);
+    /// Path of the settings file: the path of the executable with the `.ini` extension.
     EXPORT std::filesystem::path GetAppSettingsFile();
 
-    // Keyboard modifier profile ([AppCUI] Keyboard.Ctrl / Keyboard.Alt). SetModifierMap applies it immediately and
-    // updates the in-memory settings (call SaveAppSettings to persist).
+    /// Keyboard modifier profile ([AppCUI] Keyboard.Ctrl / Keyboard.Alt).
     EXPORT const Input::ModifierMap& GetModifierMap();
+    /// Applies a keyboard modifier profile immediately and updates the in-memory settings (call SaveAppSettings to
+    /// persist it).
     EXPORT void SetModifierMap(const Input::ModifierMap& map);
 
+    /// Initializes AppCUI with the default parameters and the given flags. Returns false on failure.
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(Application::InitializationFlags flags = Application::InitializationFlags::None);
 
+    /// Initializes AppCUI with the parameters described by `initData` (the settings file, if loaded, may change them).
     NODISCARD("Check the return of the Init function. If false, AppCUI has not been initialized properly")
     EXPORT bool Init(InitializationData& initData);
 
+    /// Initializes AppCUI on the in-memory test frontend (FrontendType::Tests); see RunTestScript.
     NODISCARD("Check the return of the InitForTests function. If false, AppCUI has not been initialized properly")
     EXPORT bool InitForTests(
           uint32 width,
@@ -5771,32 +5800,52 @@ namespace Application
           Application::InitializationFlags flags = Application::InitializationFlags::None,
           bool asciiMode                         = false);
 
+    /// Runs the event loop until Close() is called (or, by default, until the last window is closed), then
+    /// un-initializes AppCUI.
     EXPORT bool Run();
+    /// Runs a test script (key presses, mouse events, screen hash checks) on an application started with
+    /// InitForTests. Returns false if a check of the script failed.
     EXPORT bool RunTestScript(std::string_view script);
+    /// Runs an application initialized with InitializationFlags::SingleWindowApp: `singleApp` replaces the desktop.
     EXPORT bool RunSingleApp(unique_ptr<Controls::SingleApp> singleApp);
+    /// Adds a top level window to the desktop. `referal` is the window that opened it (the windows manager shows the
+    /// windows as a tree) and the last parameter describes how it was created. Returns the handle of the new window.
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd,
           Controls::ItemHandle referal = Controls::InvalidItemHandle,
           const ConstString&  = "");
+    /// Adds a top level window opened from `referalWindow`.
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd, Controls::Window* referalWindow, const ConstString& = "");
+    /// Adds a top level window opened from `referalWindow`.
     EXPORT Controls::ItemHandle AddWindow(
           unique_ptr<Controls::Window> wnd,
           Utils::Reference<Controls::Window> referalWindow, const ConstString& = "");
+    /// Adds a menu to the menu bar (requires InitializationFlags::Menu). Returns nullptr on failure.
     EXPORT Controls::Menu* AddMenu(const ConstString& name);
+    /// Size of the whole application (terminal) in characters.
     EXPORT bool GetApplicationSize(Graphics::Size& size);
+    /// Size of the desktop client area (without the menu bar and the command bar).
     EXPORT bool GetDesktopSize(Graphics::Size& size);
+    /// The focused desktop window (or nullptr).
     EXPORT Utils::Reference<Controls::Window> GetCurrentWindow();
+    /// Re-arranges every desktop window.
     EXPORT void ArrangeWindows(ArrangeWindowsMethod method);
+    /// Sends an event to `control` as if `sourceControl` had raised it (only valid after Init).
     EXPORT void RaiseEvent(
           Utils::Reference<Controls::Control> control,
           Utils::Reference<Controls::Control> sourceControl,
           Controls::Event eventType,
           int controlID);
+    /// The desktop (only valid after Init).
     EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
+    /// Stops the event loop (the application closes).
     EXPORT void Close();
+    /// Switches to a built-in theme.
     EXPORT void SetTheme(ThemeType themeType);
+    /// Changes the characters used to draw lines, borders and other special characters.
     EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
+    /// AppCUI settings exposed as properties (for a PropertyList).
     EXPORT Utils::PropertiesInterface* GetAppPropertiesObject();
 }; // namespace Application
 
@@ -5814,21 +5863,15 @@ namespace Dialogs
         static Result ShowYesNoCancel(const ConstString& title, const ConstString& message);
     };
 
+    /// Modal open / save file dialogs.
+    ///
+    /// `extensionsFilter` restricts the files that are shown. If it is empty, "All files" is used. Format:
+    /// `<Name>:ext|<Name>:ext|...` or `<Name>:ext1,ext2,ext3|<Name>:ext|...`. For example
+    /// `"Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx"` shows the "Text Files" filter
+    /// (only `.txt` files); if the user selects "Images", `.jpg`, `.jpeg` and `.png` files are shown.
     class EXPORT FileDialog
     {
         FileDialog() = delete;
-
-        // Add additional extension filters so that FileDialog will show only the specified extensions,
-        // other extensions will be filtered. If no filter is passed (empty string) - "All files" is chosen
-        //
-        // Filter format is: <Name>:ext|<Name>:ext| ...
-        //               or: <Name>:ext1,ext2,ext3|<Name>:ext|....
-        //
-        // For example:
-        //       "Text Files:txt|Images:jpg,jpeg,png|Documents:pdf,doc,docx,xlsx,xls,ppt,pptx"
-        //
-        // Will show "Text Files" and, if selected, only .txt files will be shown
-        // If the user selects "Images" - .jpg, .jpeg and .png files will be shown
 
       public:
         static optional<std::filesystem::path> ShowSaveFileWindow(

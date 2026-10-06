@@ -175,6 +175,8 @@ if(APPCUI_ENABLE_EXAMPLES)
     add_subdirectory(Examples/MemoryFile)
     add_subdirectory(Examples/TestScript)
     add_subdirectory(Examples/WindowManager)
+    # code samples shown in the documentation (they must keep compiling)
+    add_subdirectory(docs/snippets)
 endif()
 
 if (APPLE)
