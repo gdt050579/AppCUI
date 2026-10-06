@@ -3,6 +3,7 @@
 #include "../../Internal.hpp"
 #include <array>
 #include <unordered_map>
+#include <chrono>
 #include <ncursesw/ncurses.h>
 
 /*
@@ -65,6 +66,8 @@ namespace Internal
         TerminalMode mode;
         uint32 comboKeysMask   = 0;
         bool isComboModeLocked = false;
+        bool fpsMode           = false;
+        std::chrono::steady_clock::time_point lastFramesUpdate;
 
       public:
         virtual bool OnInit(const Application::InitializationData& initData) override;

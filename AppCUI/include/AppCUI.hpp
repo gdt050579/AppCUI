@@ -5562,6 +5562,7 @@ namespace Application
         Terminal       = 2,
         WindowsConsole = 3,
         Tests          = 4,
+        Custom         = 5, // implemented by the application (see CustomFrontendInterface)
     };
     enum class ThemeType : uint32
     {
@@ -5577,6 +5578,55 @@ namespace Application
         Ascii         = 3
     };
 
+    enum class FrontendEventType : uint32
+    {
+        None = 0,
+        KeyPressed,        // Key (code + modifiers) and UnicodeChar
+        ShiftStateChanged, // Key holds the new modifiers (Alt / Ctrl / Shift)
+        MouseDown,         // X, Y, Button, Key (modifiers)
+        MouseUp,           // X, Y, Button, Key (modifiers)
+        MouseMove,         // X, Y, Button (buttons still pressed), Key (modifiers)
+        MouseWheel,        // X, Y, Wheel, Key (modifiers)
+        Resized,           // Width, Height
+        Closed,            // the application should close
+        RedrawRequested,   // repaint everything (and flush the whole screen again)
+    };
+    struct FrontendEvent
+    {
+        FrontendEventType Type    = FrontendEventType::None;
+        Input::Key Key            = Input::Key::None;
+        char16 UnicodeChar        = 0;
+        int32 X                   = 0;
+        int32 Y                   = 0;
+        Input::MouseButton Button = Input::MouseButton::None;
+        Input::MouseWheel Wheel   = Input::MouseWheel::None;
+        uint32 Width              = 0;
+        uint32 Height             = 0;
+    };
+
+    // A frontend implemented by the application instead of a real terminal (headless / remote / recording screens).
+    // Select it with InitializationData::Frontend = FrontendType::Custom and InitializationData::CustomFrontend.
+    // AppCUI calls every method from the UI thread; the object is NOT owned by AppCUI and must outlive the application.
+    // The clipboard of a custom frontend is private to the process (it never reaches the OS clipboard).
+    class CustomFrontendInterface
+    {
+      public:
+        virtual ~CustomFrontendInterface() = default;
+
+        // width / height hold the requested size (InitializationData::Width/Height, may be 0); both must be > 0 on return
+        virtual bool OnInit(uint32& width, uint32& height) = 0;
+        virtual void OnUnInit()                            = 0;
+        // the entire screen: width * height characters, row major (valid only during the call)
+        virtual void OnFlushToScreen(const Graphics::Character* characters, uint32 width, uint32 height) = 0;
+        virtual void OnUpdateCursor(uint32 x, uint32 y, bool visible)                                     = 0;
+        // waits at most timeoutMs for the next event; returns false on timeout
+        virtual bool WaitForEvent(FrontendEvent& evnt, uint32 timeoutMs) = 0;
+        virtual bool HasSupportFor(SpecialCharacterSetType type)
+        {
+            return type != SpecialCharacterSetType::Auto;
+        }
+    };
+
     struct InitializationData
     {
         uint32 Width, Height;
@@ -5589,11 +5639,13 @@ namespace Application
         ThemeType Theme;
         SpecialCharacterSetType SpecialCharacterSet;
         Controls::Desktop* (*CustomDesktopConstructor)();
+        CustomFrontendInterface* CustomFrontend; // required (and only used) when Frontend is FrontendType::Custom
 
         InitializationData()
             : Width(0), Height(0), Frontend(FrontendType::Default), CharSize(CharacterSize::Default),
               Flags(InitializationFlags::None), FontName(""), ThemeFolder("Themes"), Theme(ThemeType::Default),
-              SpecialCharacterSet(SpecialCharacterSetType::Auto), CustomDesktopConstructor(nullptr)
+              SpecialCharacterSet(SpecialCharacterSetType::Auto), CustomDesktopConstructor(nullptr),
+              CustomFrontend(nullptr)
         {
         }
     };

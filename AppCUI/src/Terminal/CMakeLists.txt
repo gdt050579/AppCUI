@@ -1,5 +1,6 @@
 add_subdirectory(Factory)
 add_subdirectory(TestTerminal)
+add_subdirectory(CustomTerminal)
 if (MSVC)
     if (SDL2_FOUND)
         add_subdirectory(SDLTerminal)
