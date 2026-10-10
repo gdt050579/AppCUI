@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frontends (terminals) &mdash; AppCUI 1.249.0</title>
+  <title>Frontends (terminals) &mdash; AppCUI 1.250.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=061b8e5b"></script>
+      <script src="_static/documentation_options.js?v=5d40a652"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Frontends (terminals)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#frontends-linked-into-libappcui">Frontends linked into libAppCUI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#supported-features">Supported features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#keyboard-on-ncurses-terminals">Keyboard on ncurses terminals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-frontends">Custom frontends</a></li>
@@ -130,6 +131,47 @@ settings file (see <a class="reference internal" href="initialization.html"><spa
 </tr>
 </tbody>
 </table>
+<section id="frontends-linked-into-libappcui">
+<h2>Frontends linked into libAppCUI<a class="headerlink" href="#frontends-linked-into-libappcui" title="Link to this heading"></a></h2>
+<p>Each native frontend is a separate CMake component, linked statically into <code class="docutils literal notranslate"><span class="pre">libAppCUI</span></code>. <code class="docutils literal notranslate"><span class="pre">AppCUI::Core</span></code> holds
+everything else (including the <code class="docutils literal notranslate"><span class="pre">Tests</span></code> and <code class="docutils literal notranslate"><span class="pre">Custom</span></code> frontends) and depends on none of the UI libraries:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 35.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>CMake target</p></th>
+<th class="head"><p>Option (default)</p></th>
+<th class="head"><p>Dependencies</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AppCUI::Core</span></code></p></td>
+<td><p>always built</p></td>
+<td><p>libpng, libjpeg-turbo</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AppCUI::Frontend::SDL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">APPCUI_FRONTEND_SDL</span></code> (<code class="docutils literal notranslate"><span class="pre">ON</span></code>)</p></td>
+<td><p>SDL2, SDL2_ttf, FreeType (+ X11 on Linux)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AppCUI::Frontend::Ncurses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">APPCUI_FRONTEND_NCURSES</span></code> (<code class="docutils literal notranslate"><span class="pre">ON</span></code> on Linux / macOS)</p></td>
+<td><p>ncursesw</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AppCUI::Frontend::WindowsConsole</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">APPCUI_FRONTEND_WINDOWS_CONSOLE</span></code> (<code class="docutils literal notranslate"><span class="pre">ON</span></code> on Windows)</p></td>
+<td><p>none</p></td>
+</tr>
+</tbody>
+</table>
+<p>By default every frontend available on the platform is linked. Turning an option <code class="docutils literal notranslate"><span class="pre">OFF</span></code> (for example
+<code class="docutils literal notranslate"><span class="pre">-DAPPCUI_FRONTEND_SDL=OFF</span></code> for a console-only application) removes that frontend and its libraries from
+<code class="docutils literal notranslate"><span class="pre">libAppCUI</span></code>; requesting it afterwards makes <code class="docutils literal notranslate"><span class="pre">Application::Init</span></code> fail (the error is logged).
+<code class="docutils literal notranslate"><span class="pre">FrontendType::Default</span></code> selects the native frontend of the platform (Windows console or ncurses) or, when that one is
+not linked, SDL.</p>
+</section>
 <section id="supported-features">
 <h2>Supported features<a class="headerlink" href="#supported-features" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
