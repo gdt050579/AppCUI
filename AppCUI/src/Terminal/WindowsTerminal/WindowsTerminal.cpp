@@ -1,4 +1,5 @@
 #include "WindowsTerminal.hpp"
+#include "../TerminalFactory.hpp"
 
 namespace AppCUI::Internal
 {
@@ -784,4 +785,8 @@ bool WindowsTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
     // Windows terminal supports all special character set types
     return true;
 }
+
+// AppCUI::Frontend::WindowsConsole -> FrontendType::WindowsConsole (and FrontendType::Default on Windows)
+static const TerminalRegistrar windowsTerminalRegistrar(
+      Application::FrontendType::WindowsConsole, CreateTerminal<WindowsTerminal>, DefaultFrontendPriority::Native);
 } // namespace AppCUI::Internal

@@ -28,6 +28,38 @@ settings file (see :doc:`initialization`):
      - all
      - an in-memory screen driven by a test script (``Application::InitForTests`` / ``RunTestScript``)
 
+Frontends linked into libAppCUI
+-------------------------------
+
+Each native frontend is a separate CMake component, linked statically into ``libAppCUI``. ``AppCUI::Core`` holds
+everything else (including the ``Tests`` and ``Custom`` frontends) and depends on none of the UI libraries:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 35 30
+
+   * - CMake target
+     - Option (default)
+     - Dependencies
+   * - ``AppCUI::Core``
+     - always built
+     - libpng, libjpeg-turbo
+   * - ``AppCUI::Frontend::SDL``
+     - ``APPCUI_FRONTEND_SDL`` (``ON``)
+     - SDL2, SDL2_ttf, FreeType (+ X11 on Linux)
+   * - ``AppCUI::Frontend::Ncurses``
+     - ``APPCUI_FRONTEND_NCURSES`` (``ON`` on Linux / macOS)
+     - ncursesw
+   * - ``AppCUI::Frontend::WindowsConsole``
+     - ``APPCUI_FRONTEND_WINDOWS_CONSOLE`` (``ON`` on Windows)
+     - none
+
+By default every frontend available on the platform is linked. Turning an option ``OFF`` (for example
+``-DAPPCUI_FRONTEND_SDL=OFF`` for a console-only application) removes that frontend and its libraries from
+``libAppCUI``; requesting it afterwards makes ``Application::Init`` fail (the error is logged).
+``FrontendType::Default`` selects the native frontend of the platform (Windows console or ncurses) or, when that one is
+not linked, SDL.
+
 Supported features
 ------------------
 

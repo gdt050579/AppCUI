@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE TestTerminal.cpp)
+target_sources(AppCUICore PRIVATE TestTerminal.cpp)

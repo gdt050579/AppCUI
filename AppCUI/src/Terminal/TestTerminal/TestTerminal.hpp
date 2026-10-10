@@ -82,6 +82,12 @@ namespace Internal
         virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
+
+        // clipboard: none (a test must never read or change the clipboard of the machine it runs on)
+        virtual bool ClipboardClear() override;
+        virtual bool ClipboardHasText() override;
+        virtual bool ClipboardSetText(const ConstString& text) override;
+        virtual bool ClipboardGetText(Utils::UnicodeStringBuilder& text) override;
         virtual ~TestTerminal();
     };
 } // namespace Internal
