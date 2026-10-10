@@ -26,6 +26,12 @@ namespace Internal
         virtual void GetSystemEvent(Internal::SystemEvent& evnt) override;
         virtual bool IsEventAvailable() override;
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
+
+        // clipboard: process-private (the OS clipboard of the machine is never touched)
+        virtual bool ClipboardClear() override;
+        virtual bool ClipboardHasText() override;
+        virtual bool ClipboardSetText(const ConstString& text) override;
+        virtual bool ClipboardGetText(Utils::UnicodeStringBuilder& text) override;
         virtual ~CustomTerminal();
     };
 } // namespace Internal

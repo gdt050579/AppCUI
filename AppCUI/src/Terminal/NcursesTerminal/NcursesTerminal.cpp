@@ -1,4 +1,5 @@
 #include "NcursesTerminal.hpp"
+#include "../TerminalFactory.hpp"
 #include <poll.h>
 #include <stdio.h>
 #if __APPLE__
@@ -676,4 +677,8 @@ void DebugChar(int y, int c, const char* prefix)
     clrtoeol();
     addstr((std::string(prefix) + " " + std::to_string(c) + " " + myName.data()).c_str());
 }
+
+// AppCUI::Frontend::Ncurses -> FrontendType::Terminal (and FrontendType::Default on Unix / macOS)
+static const TerminalRegistrar ncursesTerminalRegistrar(
+      Application::FrontendType::Terminal, CreateTerminal<NcursesTerminal>, DefaultFrontendPriority::Native);
 } // namespace AppCUI::Internal

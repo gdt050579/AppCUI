@@ -1,23 +1,12 @@
 #include "Internal.hpp"
-#include "SDL.h"
 
 namespace AppCUI::OS
 {
 using namespace Utils;
 
-// A custom frontend (headless / remote screen) never touches the OS clipboard of the machine it runs on: its content
-// may belong to the local user (and must not be disclosed to a remote viewer) and a remote viewer must not be able to
-// overwrite it. Copy / paste still work inside the application through this process-private clipboard.
-static std::u16string privateClipboard;
-static bool IsCustomFrontend()
-{
-    auto app = Application::GetApplication();
-    return (app != nullptr) && (app->GetFrontendType() == AppCUI::Application::FrontendType::Custom);
-}
-
-bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t length)
-{
 #ifdef _WIN32
+static bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t length)
+{
     HANDLE hMem;
     CHECK((hMem = GlobalAlloc(GMEM_DDESHARE | GMEM_MOVEABLE, (length + 1) * characterSize)),
           false,
@@ -51,144 +40,100 @@ bool CopyTextBufferToClipboard(const void* buf, size_t characterSize, size_t len
           GetLastError());
 
     return true;
+}
 #endif
 
-    return false;
+// The clipboard belongs to the frontend: the terminal of the running application decides which clipboard is used
+// (the OS one, the one of SDL, a process-private one for a custom frontend, none for the test terminal, ...).
+static Internal::AbstractTerminal* GetClipboardTerminal()
+{
+    auto app = Application::GetApplication();
+    CHECK(app != nullptr, nullptr, "AppCUI is not initialized (there is no clipboard without a frontend) !");
+    CHECK(app->terminal != nullptr, nullptr, "AppCUI has no terminal (there is no clipboard without a frontend) !");
+    return app->terminal.get();
 }
 
 bool Clipboard::Clear()
 {
-    if (IsCustomFrontend())
-    {
-        privateClipboard.clear();
-        return true;
-    }
-    const auto& frontend = Application::GetApplication()->GetFrontendType();
-#ifdef _WIN32
-    if (frontend == AppCUI::Application::FrontendType::Default ||
-        frontend == AppCUI::Application::FrontendType::Terminal ||
-        frontend == AppCUI::Application::FrontendType::WindowsConsole)
-    {
-        CHECK(OpenClipboard(nullptr), false, "Fail to open the clipboard object !");
-        EmptyClipboard();
-        CloseClipboard();
-    }
-    else if (frontend == AppCUI::Application::FrontendType::SDL)
-    {
-        CHECK(SDL_SetClipboardText("") > 0, false, "Failed to clear clipboard: %s", SDL_GetError());
-    }
-#else
-
-#endif
-
-    return true;
+    auto terminal = GetClipboardTerminal();
+    return terminal ? terminal->ClipboardClear() : false;
 }
 
 bool Clipboard::HasText()
 {
-    if (IsCustomFrontend())
-        return !privateClipboard.empty();
-    const auto& frontend = Application::GetApplication()->GetFrontendType();
-#ifdef _WIN32
-
-    if (frontend == AppCUI::Application::FrontendType::Default ||
-        frontend == AppCUI::Application::FrontendType::Terminal ||
-        frontend == AppCUI::Application::FrontendType::WindowsConsole)
-    {
-        return ((IsClipboardFormatAvailable(CF_TEXT)) || (IsClipboardFormatAvailable(CF_UNICODETEXT)));
-    }
-    else if (frontend == AppCUI::Application::FrontendType::SDL)
-    {
-        return SDL_HasClipboardText();
-    }
-#else
-    return false;
-#endif
-
-    return false;
+    auto terminal = GetClipboardTerminal();
+    return terminal ? terminal->ClipboardHasText() : false;
 }
 
 bool Clipboard::SetText(const ConstString& text)
 {
-    if (IsCustomFrontend())
-    {
-        Utils::UnicodeStringBuilder unicode;
-        CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
-        privateClipboard.assign(unicode.ToStringView());
-        return true;
-    }
-    const auto& frontend = Application::GetApplication()->GetFrontendType();
-#ifdef _WIN32
-    ConstStringObject textObj(text);
-    if (frontend == AppCUI::Application::FrontendType::Default ||
-        frontend == AppCUI::Application::FrontendType::Terminal ||
-        frontend == AppCUI::Application::FrontendType::WindowsConsole)
-    {
-        CHECK(textObj.Data != nullptr, false, "Text should be different than nullptr !");
-
-        Utils::LocalUnicodeStringBuilder<1024> unicode;
-        if (textObj.Encoding == StringEncoding::Ascii)
-            return CopyTextBufferToClipboard(textObj.Data, sizeof(char), textObj.Length);
-        CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
-        return CopyTextBufferToClipboard(unicode.GetString(), sizeof(char16), unicode.Len());
-    }
-    else if (frontend == AppCUI::Application::FrontendType::SDL)
-    {
-        if (textObj.Encoding == StringEncoding::Ascii)
-        {
-            // GDT: temporary fix - we can't guarantee that text is a NULL terminated string
-            CHECK(SDL_SetClipboardText((const char*) textObj.Data) > 0,
-                  false,
-                  "Failed to set clipboard text: %s",
-                  SDL_GetError());
-            return true;
-        }
-        NOT_IMPLEMENTED(false, "Support for UNICODE/UTF-8/Character is not implemented yet");
-    }
-#else
-    return false;
-#endif
-
-    return false;
+    auto terminal = GetClipboardTerminal();
+    return terminal ? terminal->ClipboardSetText(text) : false;
 }
 
 bool Clipboard::GetText(Utils::UnicodeStringBuilder& text)
 {
-    if (IsCustomFrontend())
-        return text.Set(std::u16string_view(privateClipboard));
-    const auto& frontend = Application::GetApplication()->GetFrontendType();
+    auto terminal = GetClipboardTerminal();
+    return terminal ? terminal->ClipboardGetText(text) : false;
+}
+} // namespace AppCUI::OS
+
+namespace AppCUI::Internal
+{
+using namespace Utils;
+
+// Default implementation: the clipboard of the OS (Win32). Other platforms have no OS clipboard support (yet).
+bool AbstractTerminal::ClipboardClear()
+{
 #ifdef _WIN32
-    if (frontend == AppCUI::Application::FrontendType::Default ||
-        frontend == AppCUI::Application::FrontendType::Terminal ||
-        frontend == AppCUI::Application::FrontendType::WindowsConsole)
-    {
-        CHECK(OpenClipboard(nullptr), false, "Fail to open clipboard object !");
-        while (true)
-        {
-            const char16* temp = (const char16*) GetClipboardData(CF_UNICODETEXT);
-            CHECKBK(temp, "Invalid object received from clipboard data (null)");
-            CHECKBK(text.Set(temp), "Fail to copy text into String buffer !");
-            CloseClipboard();
-            return true;
-        }
-        CloseClipboard();
-        return false;
-    }
-    else if (frontend == AppCUI::Application::FrontendType::SDL)
-    {
-        if (SDL_HasClipboardText())
-        {
-            char* cliptext = SDL_GetClipboardText();
-            CHECK(cliptext != nullptr, false, "Failed to extract text from the clipboard: %s", SDL_GetError());
-            text.Set(cliptext);
-            SDL_free(cliptext);
-        }
-        return true;
-    }
+    CHECK(OpenClipboard(nullptr), false, "Fail to open the clipboard object !");
+    EmptyClipboard();
+    CloseClipboard();
+#endif
+    return true;
+}
+
+bool AbstractTerminal::ClipboardHasText()
+{
+#ifdef _WIN32
+    return ((IsClipboardFormatAvailable(CF_TEXT)) || (IsClipboardFormatAvailable(CF_UNICODETEXT)));
 #else
     return false;
 #endif
-
-    return false;
 }
-} // namespace AppCUI::OS
+
+bool AbstractTerminal::ClipboardSetText([[maybe_unused]] const ConstString& text)
+{
+#ifdef _WIN32
+    ConstStringObject textObj(text);
+    CHECK(textObj.Data != nullptr, false, "Text should be different than nullptr !");
+
+    Utils::LocalUnicodeStringBuilder<1024> unicode;
+    if (textObj.Encoding == StringEncoding::Ascii)
+        return OS::CopyTextBufferToClipboard(textObj.Data, sizeof(char), textObj.Length);
+    CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
+    return OS::CopyTextBufferToClipboard(unicode.GetString(), sizeof(char16), unicode.Len());
+#else
+    return false;
+#endif
+}
+
+bool AbstractTerminal::ClipboardGetText([[maybe_unused]] Utils::UnicodeStringBuilder& text)
+{
+#ifdef _WIN32
+    CHECK(OpenClipboard(nullptr), false, "Fail to open clipboard object !");
+    while (true)
+    {
+        const char16* temp = (const char16*) GetClipboardData(CF_UNICODETEXT);
+        CHECKBK(temp, "Invalid object received from clipboard data (null)");
+        CHECKBK(text.Set(temp), "Fail to copy text into String buffer !");
+        CloseClipboard();
+        return true;
+    }
+    CloseClipboard();
+    return false;
+#else
+    return false;
+#endif
+}
+} // namespace AppCUI::Internal

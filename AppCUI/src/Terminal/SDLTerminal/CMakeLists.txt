@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE SDLTerminal.cpp SDLTerminalInput.cpp SDLTerminalScreen.cpp)
+target_sources(AppCUIFrontendSDL PRIVATE SDLTerminal.cpp SDLTerminalInput.cpp SDLTerminalScreen.cpp)

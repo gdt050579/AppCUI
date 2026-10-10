@@ -40,6 +40,15 @@ namespace Internal
         virtual void RestoreOriginalConsoleSettings() override;
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) override;
 
+#ifdef _WIN32
+        // clipboard: the one of SDL (on the other platforms the SDL frontend keeps the default implementation of
+        // AbstractTerminal, as before the frontends were split into separate components)
+        virtual bool ClipboardClear() override;
+        virtual bool ClipboardHasText() override;
+        virtual bool ClipboardSetText(const ConstString& text) override;
+        virtual bool ClipboardGetText(Utils::UnicodeStringBuilder& text) override;
+#endif
+
       private:
         bool InitScreen(const Application::InitializationData& initData);
         bool InitInput(const Application::InitializationData& initData);

@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE Clipboard.cpp)
+target_sources(AppCUICore PRIVATE Clipboard.cpp)

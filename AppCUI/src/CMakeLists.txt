@@ -7,4 +7,3 @@ add_subdirectory(Log)
 add_subdirectory(Dialogs)
 add_subdirectory(Terminal)
 
-target_sources(AppCUI PRIVATE AppCUI.natvis)

@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE Log.cpp)
+target_sources(AppCUICore PRIVATE Log.cpp)

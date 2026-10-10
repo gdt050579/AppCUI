@@ -160,4 +160,30 @@ bool CustomTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
 {
     return this->frontend ? this->frontend->HasSupportFor(type) : false;
 }
+
+// A custom frontend (headless / remote screen) never touches the OS clipboard of the machine it runs on: its content
+// may belong to the local user (and must not be disclosed to a remote viewer) and a remote viewer must not be able to
+// overwrite it. Copy / paste still work inside the application through this process-private clipboard.
+static std::u16string privateClipboard;
+
+bool CustomTerminal::ClipboardClear()
+{
+    privateClipboard.clear();
+    return true;
+}
+bool CustomTerminal::ClipboardHasText()
+{
+    return !privateClipboard.empty();
+}
+bool CustomTerminal::ClipboardSetText(const ConstString& text)
+{
+    Utils::UnicodeStringBuilder unicode;
+    CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
+    privateClipboard.assign(unicode.ToStringView());
+    return true;
+}
+bool CustomTerminal::ClipboardGetText(Utils::UnicodeStringBuilder& text)
+{
+    return text.Set(std::u16string_view(privateClipboard));
+}
 } // namespace AppCUI::Internal

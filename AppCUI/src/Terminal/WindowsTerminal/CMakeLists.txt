@@ -1,1 +1,1 @@
-target_sources(AppCUI PRIVATE WindowsTerminal.cpp)
+target_sources(AppCUIFrontendWindowsConsole PRIVATE WindowsTerminal.cpp)

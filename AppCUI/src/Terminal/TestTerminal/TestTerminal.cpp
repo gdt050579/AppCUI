@@ -614,4 +614,20 @@ bool TestTerminal::HasSupportFor(Application::SpecialCharacterSetType /*type*/)
 {
     return true;
 }
+bool TestTerminal::ClipboardClear()
+{
+    return true;
+}
+bool TestTerminal::ClipboardHasText()
+{
+    return false;
+}
+bool TestTerminal::ClipboardSetText(const ConstString& /*text*/)
+{
+    return false;
+}
+bool TestTerminal::ClipboardGetText(Utils::UnicodeStringBuilder& /*text*/)
+{
+    return false;
+}
 } // namespace AppCUI::Internal

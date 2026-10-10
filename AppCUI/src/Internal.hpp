@@ -227,6 +227,13 @@ namespace Internal
         virtual bool HasSupportFor(Application::SpecialCharacterSetType type) = 0;
         virtual void Update();
 
+        // Clipboard (used by OS::Clipboard). The default implementation uses the clipboard of the OS (Win32 on
+        // Windows, not supported on other platforms) - see OS/Clipboard/Clipboard.cpp.
+        virtual bool ClipboardClear();
+        virtual bool ClipboardHasText();
+        virtual bool ClipboardSetText(const ConstString& text);
+        virtual bool ClipboardGetText(Utils::UnicodeStringBuilder& text);
+
         virtual ~AbstractTerminal();
 
         bool Init(const Application::InitializationData& initData);
