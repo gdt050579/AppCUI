@@ -47,3 +47,7 @@ Functions
 
 .. doxygenfunction:: AppCUI::OS::GetCurrentApplicationPath
 
+.. doxygenfunction:: AppCUI::OS::IsHostFileTransferAvailable
+
+.. doxygenfunction:: AppCUI::OS::DownloadFile
+

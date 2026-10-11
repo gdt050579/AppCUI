@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CharacterTable - AppCUI</title>
+<style>
+  @font-face { font-family: "JuliaMono"; src: url("JuliaMono-Regular.ttf") format("truetype"); font-display: block; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  #term-host { position: fixed; inset: 0; overflow: hidden; }
+  #term { display: block; cursor: default; }
+</style>
+</head>
+<body>
+<div id="term-host"><canvas id="term"></canvas></div>
+<script>
+  // browsers do not load ES modules / WebAssembly from file:// - explain it instead of failing silently
+  if (location.protocol === 'file:') {
+    document.body.innerHTML =
+      '<pre style="color:#ccc;font:15px monospace;padding:24px;white-space:pre-wrap">' +
+      'This page must be served over HTTP: browsers do not load WebAssembly from file:// URLs.\n\n' +
+      'Run, in the folder of this page:\n\n    python serve.py CharacterTable\n\n' +
+      'It serves the folder on http://127.0.0.1 and opens the example in your browser.</pre>';
+  }
+</script>
+<script type="module">
+  import createAppCUIModule from './CharacterTable.mjs';
+  import { startAppCUI } from './appcui-host.js';
+
+  const host = await startAppCUI(createAppCUIModule, document.getElementById('term'), document.getElementById('term-host'),
+                                 { fontFamily: '"JuliaMono", monospace', fontSizeCss: 16 });
+  window.appcuiHost = host; // diagnostics / automation
+</script>
+</body>
+</html>

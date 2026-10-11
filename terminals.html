@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frontends (terminals) &mdash; AppCUI 1.250.0</title>
+  <title>Frontends (terminals) &mdash; AppCUI 1.251.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
@@ -14,13 +14,13 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5d40a652"></script>
+      <script src="_static/documentation_options.js?v=2c95ec0b"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API reference" href="api/index.html" />
+    <link rel="next" title="Live demos" href="live_demos.html" />
     <link rel="prev" title="Colors" href="colors.html" /> 
 </head>
 
@@ -53,10 +53,15 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Frontends (terminals)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#frontends-linked-into-libappcui">Frontends linked into libAppCUI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#supported-features">Supported features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#browser-webassembly">Browser (WebAssembly)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#files-of-the-user">Files of the user</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#keyboard-on-ncurses-terminals">Keyboard on ncurses terminals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-frontends">Custom frontends</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="live_demos.html">Live demos</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -121,11 +126,15 @@ settings file (see <a class="reference internal" href="initialization.html"><spa
 <td><p>all</p></td>
 <td><p>a separate window rendered with SDL2 and an embedded font (JuliaMono)</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Custom</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Browser</span></code></p></td>
+<td><p>web browsers</p></td>
+<td><p>an HTML5 canvas inside a web page (<code class="docutils literal notranslate"><span class="pre">wasm32-emscripten</span></code> builds; the default there) - see below</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Custom</span></code></p></td>
 <td><p>all</p></td>
 <td><p>implemented by the application (headless, remote or recorded screens) - see below</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Tests</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Tests</span></code></p></td>
 <td><p>all</p></td>
 <td><p>an in-memory screen driven by a test script (<code class="docutils literal notranslate"><span class="pre">Application::InitForTests</span></code> / <code class="docutils literal notranslate"><span class="pre">RunTestScript</span></code>)</p></td>
 </tr>
@@ -150,7 +159,7 @@ everything else (including the <code class="docutils literal notranslate"><span 
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AppCUI::Core</span></code></p></td>
 <td><p>always built</p></td>
-<td><p>libpng, libjpeg-turbo</p></td>
+<td><p>libpng, libjpeg-turbo (only with <code class="docutils literal notranslate"><span class="pre">APPCUI_IMAGE_CODECS</span></code>, <code class="docutils literal notranslate"><span class="pre">ON</span></code> except for <code class="docutils literal notranslate"><span class="pre">wasm32-emscripten</span></code>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AppCUI::Frontend::SDL</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">APPCUI_FRONTEND_SDL</span></code> (<code class="docutils literal notranslate"><span class="pre">ON</span></code>)</p></td>
@@ -164,28 +173,34 @@ everything else (including the <code class="docutils literal notranslate"><span 
 <td><p><code class="docutils literal notranslate"><span class="pre">APPCUI_FRONTEND_WINDOWS_CONSOLE</span></code> (<code class="docutils literal notranslate"><span class="pre">ON</span></code> on Windows)</p></td>
 <td><p>none</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AppCUI::Frontend::Browser</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">APPCUI_FRONTEND_BROWSER</span></code> (<code class="docutils literal notranslate"><span class="pre">ON</span></code> for <code class="docutils literal notranslate"><span class="pre">wasm32-emscripten</span></code>, the only frontend available there)</p></td>
+<td><p>none (a JavaScript host, <code class="docutils literal notranslate"><span class="pre">AppCUI/web/appcui-host.js</span></code>)</p></td>
+</tr>
 </tbody>
 </table>
 <p>By default every frontend available on the platform is linked. Turning an option <code class="docutils literal notranslate"><span class="pre">OFF</span></code> (for example
 <code class="docutils literal notranslate"><span class="pre">-DAPPCUI_FRONTEND_SDL=OFF</span></code> for a console-only application) removes that frontend and its libraries from
 <code class="docutils literal notranslate"><span class="pre">libAppCUI</span></code>; requesting it afterwards makes <code class="docutils literal notranslate"><span class="pre">Application::Init</span></code> fail (the error is logged).
-<code class="docutils literal notranslate"><span class="pre">FrontendType::Default</span></code> selects the native frontend of the platform (Windows console or ncurses) or, when that one is
-not linked, SDL.</p>
+<code class="docutils literal notranslate"><span class="pre">FrontendType::Default</span></code> selects the native frontend of the platform (Windows console, ncurses or, in a web browser,
+the browser frontend) or, when that one is not linked, SDL.</p>
 </section>
 <section id="supported-features">
 <h2>Supported features<a class="headerlink" href="#supported-features" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 40.0%" />
-<col style="width: 20.0%" />
-<col style="width: 20.0%" />
-<col style="width: 20.0%" />
+<col style="width: 32.0%" />
+<col style="width: 17.0%" />
+<col style="width: 17.0%" />
+<col style="width: 17.0%" />
+<col style="width: 17.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Feature</p></th>
 <th class="head"><p>Windows console</p></th>
 <th class="head"><p>SDL</p></th>
 <th class="head"><p>ncurses</p></th>
+<th class="head"><p>Browser</p></th>
 </tr>
 </thead>
 <tbody>
@@ -193,13 +208,16 @@ not linked, SDL.</p>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes (8-color terminals show bright colors as normal ones; no colors below 8)</p></td>
+<td><p>Yes</p></td>
 </tr>
 <tr class="row-odd"><td><p>Unicode special characters (box drawing, arrows, …)</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes (not on the Linux text console, <code class="docutils literal notranslate"><span class="pre">TERM=linux</span></code>)</p></td>
+<td><p>Yes</p></td>
 </tr>
 <tr class="row-even"><td><p>FPS mode (<code class="docutils literal notranslate"><span class="pre">InitializationFlags::EnableFPSMode</span></code>, ~30 updates per second)</p></td>
+<td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
@@ -208,8 +226,10 @@ not linked, SDL.</p>
 <td><p>Yes</p></td>
 <td><p>No</p></td>
 <td><p>Yes</p></td>
+<td><p>Yes</p></td>
 </tr>
 <tr class="row-even"><td><p>Mouse: left button</p></td>
+<td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
@@ -218,54 +238,126 @@ not linked, SDL.</p>
 <td><p>Right only</p></td>
 <td><p>Yes</p></td>
 <td><p>No</p></td>
+<td><p>Yes</p></td>
 </tr>
 <tr class="row-even"><td><p>Mouse: double click</p></td>
 <td><p>Yes</p></td>
 <td><p>No</p></td>
 <td><p>No</p></td>
+<td><p>Yes</p></td>
 </tr>
 <tr class="row-odd"><td><p>Mouse: move and drag</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Depends on the terminal (<code class="docutils literal notranslate"><span class="pre">REPORT_MOUSE_POSITION</span></code>)</p></td>
+<td><p>Yes</p></td>
 </tr>
 <tr class="row-even"><td><p>Mouse: wheel</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>No</p></td>
+<td><p>Yes</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Ctrl+key</span></code>, <code class="docutils literal notranslate"><span class="pre">Shift+key</span></code>, <code class="docutils literal notranslate"><span class="pre">Alt+key</span></code> and their combinations</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Partial (see below)</p></td>
+<td><p>Yes, except the shortcuts reserved by the browser (<code class="docutils literal notranslate"><span class="pre">Ctrl+W</span></code>, <code class="docutils literal notranslate"><span class="pre">Ctrl+T</span></code>, <code class="docutils literal notranslate"><span class="pre">Ctrl+N</span></code>, …)</p></td>
 </tr>
 <tr class="row-even"><td><p>Clipboard</p></td>
 <td><p>Yes</p></td>
 <td><p>Windows only</p></td>
 <td><p>No</p></td>
+<td><p>Private to the page</p></td>
 </tr>
 <tr class="row-odd"><td><p>Resize events</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
+<td><p>Yes (the size of the page element)</p></td>
 </tr>
 <tr class="row-even"><td><p>Maximized / full screen / fixed size window</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>No (the terminal decides)</p></td>
+<td><p>No (the page decides)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Character size (<code class="docutils literal notranslate"><span class="pre">CharacterSize</span></code>)</p></td>
 <td><p>Yes</p></td>
 <td><p>Yes</p></td>
 <td><p>No (the terminal decides)</p></td>
+<td><p>No (<code class="docutils literal notranslate"><span class="pre">fontSizeCss</span></code> of the host)</p></td>
 </tr>
 <tr class="row-even"><td><p>Font name (<code class="docutils literal notranslate"><span class="pre">FontName</span></code>)</p></td>
 <td><p>Yes</p></td>
 <td><p>No (embedded font)</p></td>
 <td><p>No (the terminal decides)</p></td>
+<td><p>No (<code class="docutils literal notranslate"><span class="pre">fontFamily</span></code> of the host)</p></td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="browser-webassembly">
+<h2>Browser (WebAssembly)<a class="headerlink" href="#browser-webassembly" title="Link to this heading"></a></h2>
+<p>An AppCUI application compiled with <a class="reference external" href="https://emscripten.org">Emscripten</a> runs inside a web page: the browser frontend
+renders the screen into an HTML5 canvas (with the JuliaMono font) and translates the keyboard / mouse events of the
+page. The application code does not change - <code class="docutils literal notranslate"><span class="pre">Application::Init()</span></code> selects the browser frontend by default:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>emcmake<span class="w"> </span>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-wasm<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+cmake<span class="w"> </span>--build<span class="w"> </span>build-wasm<span class="w"> </span>--target<span class="w"> </span>MessageBox
+</pre></div>
+</div>
+<p>Every example becomes a small static site in <code class="docutils literal notranslate"><span class="pre">bin/wasm</span></code>: <code class="docutils literal notranslate"><span class="pre">&lt;Example&gt;.html</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;Example&gt;.mjs</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;Example&gt;.wasm</span></code>,
+next to <code class="docutils literal notranslate"><span class="pre">appcui-host.js</span></code> and <code class="docutils literal notranslate"><span class="pre">JuliaMono-Regular.ttf</span></code>. Browsers do not load WebAssembly from <code class="docutils literal notranslate"><span class="pre">file://</span></code> URLs, so
+the pages must be served over HTTP; <code class="docutils literal notranslate"><span class="pre">bin/wasm/serve.py</span></code> does that and opens an example in the browser:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>bin/wasm/serve.py<span class="w"> </span>MessageBox
+</pre></div>
+</div>
+<p>Any other web server works too, as long as it serves <code class="docutils literal notranslate"><span class="pre">.mjs</span></code> as <code class="docutils literal notranslate"><span class="pre">text/javascript</span></code> and <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> as
+<code class="docutils literal notranslate"><span class="pre">application/wasm</span></code>. A page of your own boots an application with:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createAppCUIModule</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./MyApp.mjs'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">startAppCUI</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./appcui-host.js'</span><span class="p">;</span>
+
+<span class="k">await</span><span class="w"> </span><span class="nx">startAppCUI</span><span class="p">(</span><span class="nx">createAppCUIModule</span><span class="p">,</span><span class="w"> </span><span class="nx">canvasElement</span><span class="p">,</span><span class="w"> </span><span class="nx">containerElement</span><span class="p">,</span>
+<span class="w">                  </span><span class="p">{</span><span class="w"> </span><span class="nx">fontFamily</span><span class="o">:</span><span class="w"> </span><span class="s1">'"JuliaMono", monospace'</span><span class="p">,</span><span class="w"> </span><span class="nx">fontSizeCss</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="w"> </span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The size of <code class="docutils literal notranslate"><span class="pre">containerElement</span></code> decides the number of columns and rows (resizing it resizes the application).</p>
+<ul class="simple">
+<li><p>Modal windows (<code class="docutils literal notranslate"><span class="pre">Window::Show</span></code>, <code class="docutils literal notranslate"><span class="pre">MessageBox</span></code>, <code class="docutils literal notranslate"><span class="pre">FileDialog</span></code>, …) keep their synchronous API: while a modal
+window waits for input, the C++ stack is suspended and the browser keeps running. The default build suspends with
+Asyncify (every browser); <code class="docutils literal notranslate"><span class="pre">-DAPPCUI_WASM_JSPI=ON</span></code> uses JSPI instead (smaller and faster <code class="docutils literal notranslate"><span class="pre">.wasm</span></code>, requires a
+browser with JavaScript Promise Integration).</p></li>
+<li><p>With Asyncify, <code class="docutils literal notranslate"><span class="pre">Application::Run()</span></code> does not return: the browser drives the event loop until the application
+closes and code placed after <code class="docutils literal notranslate"><span class="pre">Run()</span></code> in <code class="docutils literal notranslate"><span class="pre">main</span></code> is never executed. With JSPI, <code class="docutils literal notranslate"><span class="pre">Run()</span></code> returns normally.</p></li>
+<li><p>When the application exits (for example after its last window is closed), the page keeps the last frame, dimmed,
+under an <em>“The application has exited”</em> message with a <strong>Restart</strong> button. Pass <code class="docutils literal notranslate"><span class="pre">onExit:</span> <span class="pre">(host)</span> <span class="pre">=&gt;</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code> in
+the options of <code class="docutils literal notranslate"><span class="pre">startAppCUI</span></code> to handle the exit differently.</p></li>
+<li><p>The file system is Emscripten’s in-memory file system, separate from the user’s machine, and its files do not persist
+across page reloads. The application starts in the home folder (<code class="docutils literal notranslate"><span class="pre">/home/web_user</span></code>).</p></li>
+</ul>
+<section id="files-of-the-user">
+<h3>Files of the user<a class="headerlink" href="#files-of-the-user" title="Link to this heading"></a></h3>
+<p>The browser frontend moves files between the in-memory file system and the user’s machine:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FileDialog</span></code> lists only real locations (<strong>Home</strong>, <strong>Temp</strong>, <code class="docutils literal notranslate"><span class="pre">/</span></code>) and adds two buttons:</p>
+<ul>
+<li><p><strong>Upload</strong> opens the file picker of the browser. The picker suggests the extensions of the current file type
+filter. The picked files are copied into the folder shown by the dialog, and the first one is selected, so Enter
+opens it. The limit is 256 MB per file.</p></li>
+<li><p><strong>Download</strong> sends the selected file to the user as a browser download.</p></li>
+</ul>
+</li>
+<li><p>When a <code class="docutils literal notranslate"><span class="pre">ShowSaveFileWindow</span></code> dialog returns a path, the file is downloaded automatically once the application has
+written it, typically in the same event handler. Existing applications therefore save to the user’s machine without
+any change.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OS::IsHostFileTransferAvailable()</span></code> tells whether the frontend works this way, and <code class="docutils literal notranslate"><span class="pre">OS::DownloadFile(path)</span></code>
+downloads any file explicitly, for example a log. On the other frontends the first returns <code class="docutils literal notranslate"><span class="pre">false</span></code> and the second
+does nothing.</p></li>
+<li><p>Pass <code class="docutils literal notranslate"><span class="pre">onDownload:</span> <span class="pre">(name,</span> <span class="pre">data)</span> <span class="pre">=&gt;</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code> to <code class="docutils literal notranslate"><span class="pre">startAppCUI</span></code> to handle the downloaded bytes in the page instead of
+starting a browser download.</p></li>
+<li><p>PNG / JPG images are not supported (<code class="docutils literal notranslate"><span class="pre">APPCUI_IMAGE_CODECS</span></code> is <code class="docutils literal notranslate"><span class="pre">OFF</span></code>); BMP images are.</p></li>
+</ul>
+</section>
 </section>
 <section id="keyboard-on-ncurses-terminals">
 <h2>Keyboard on ncurses terminals<a class="headerlink" href="#keyboard-on-ncurses-terminals" title="Link to this heading"></a></h2>
@@ -423,7 +515,7 @@ down / up / move / wheel, resize, close and redraw requests.</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="colors.html" class="btn btn-neutral float-left" title="Colors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="api/index.html" class="btn btn-neutral float-right" title="API reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="live_demos.html" class="btn btn-neutral float-right" title="Live demos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

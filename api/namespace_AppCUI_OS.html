@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AppCUI::OS &mdash; AppCUI 1.250.0</title>
+  <title>AppCUI::OS &mdash; AppCUI 1.251.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=b56a3a6a" />
@@ -14,7 +14,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5d40a652"></script>
+      <script src="../_static/documentation_options.js?v=2c95ec0b"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../layout.html">Layout in AppCUI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../colors.html">Colors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../terminals.html">Frontends (terminals)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../live_demos.html">Live demos</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -222,6 +223,20 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS25GetCurrentApplicationPathEv">
 <span id="_CPPv3N6AppCUI2OS25GetCurrentApplicationPathEv"></span><span id="_CPPv2N6AppCUI2OS25GetCurrentApplicationPathEv"></span><span id="AppCUI::OS::GetCurrentApplicationPath"></span><span class="target" id="namespaceAppCUI_1_1OS_1a354cdaae1e36b57afa9a5870d09d08af"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCurrentApplicationPath</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS25GetCurrentApplicationPathEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS27IsHostFileTransferAvailableEv">
+<span id="_CPPv3N6AppCUI2OS27IsHostFileTransferAvailableEv"></span><span id="_CPPv2N6AppCUI2OS27IsHostFileTransferAvailableEv"></span><span id="AppCUI::OS::IsHostFileTransferAvailable"></span><span class="target" id="namespaceAppCUI_1_1OS_1a535339ced07e85f97bc5b7877329c16b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">IsHostFileTransferAvailable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS27IsHostFileTransferAvailableEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns true when the application runs in a sandbox whose file system is separate from the user’s machine (the Browser frontend). </p>
+<p>In that case the file dialogs show Upload / Download buttons and files can be sent to the user with DownloadFile. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6AppCUI2OS12DownloadFileERKNSt10filesystem4pathE">
+<span id="_CPPv3N6AppCUI2OS12DownloadFileERKNSt10filesystem4pathE"></span><span id="_CPPv2N6AppCUI2OS12DownloadFileERKNSt10filesystem4pathE"></span><span id="AppCUI::OS::DownloadFile__std::filesystem::pathCR"></span><span class="target" id="namespaceAppCUI_1_1OS_1a03a196d5df2ae96b3ca8ad0c4f9c88ce"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="namespace_AppCUI.html#_CPPv46AppCUI" title="AppCUI"><span class="n"><span class="pre">AppCUI</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6AppCUI2OSE" title="AppCUI::OS"><span class="n"><span class="pre">OS</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">DownloadFile</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6AppCUI2OS12DownloadFileERKNSt10filesystem4pathE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sends a copy of <code class="docutils literal notranslate"><span class="pre">file</span></code> to the user’s machine (the Browser frontend starts a download). </p>
+<p>Returns false when the frontend does not support it (see IsHostFileTransferAvailable) or the file cannot be read. </p>
+</dd></dl>
 
 </section>
 </section>
