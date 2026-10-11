@@ -193,6 +193,9 @@ The size of ``containerElement`` decides the number of columns and rows (resizin
   browser with JavaScript Promise Integration).
 * With Asyncify, ``Application::Run()`` does not return: the browser drives the event loop until the application
   closes and code placed after ``Run()`` in ``main`` is never executed. With JSPI, ``Run()`` returns normally.
+* When the application exits (for example after its last window is closed), the page keeps the last frame, dimmed,
+  under an *"The application has exited"* message with a **Restart** button. Pass ``onExit: (host) => { ... }`` in
+  the options of ``startAppCUI`` to handle the exit differently.
 * The file system is Emscripten's in-memory file system: ``FileDialog`` works, but files do not persist.
 * PNG / JPG images are not supported (``APPCUI_IMAGE_CODECS`` is ``OFF``); BMP images are.
 

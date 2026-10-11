@@ -153,11 +153,11 @@ void BrowserTerminal::OnUnInit()
 {
     if (activeTerminal != this)
         return;
+    appcui_js_on_exit(); // first: the header and the cells are still valid -> the host can paint the final frame
     activeTerminal    = nullptr;
     frameHeader.magic = 0;
     browserClipboard.clear();
     browserClipboard.shrink_to_fit(); // a later Application::Init must not inherit the clipboard
-    appcui_js_on_exit();
 }
 void BrowserTerminal::PublishLayout()
 {

@@ -27,6 +27,8 @@
  * @property {number} [lineHeight]  multiplier of ascent + descent (default 1.0)
  * @property {number} [maxColumns]  must not exceed BROWSER_MAX_COLUMNS (1024)
  * @property {number} [maxRows]     must not exceed BROWSER_MAX_ROWS (512)
+ * @property {(host: AppCUIHost) => void} [onExit]  called once the application has exited; by default the page shows
+ *                                                   an "application has exited" overlay with a Restart button
  */
 
 const ABI_MAGIC = 0x49554341;
@@ -165,8 +167,38 @@ export class AppCUIHost {
     });
   }
   onExit() {
+    if (this.exited) return;
+    this.draw(); // the final frame: a draw queued for this task would otherwise be skipped once `exited` is set
     this.exited = true;
     this.wake();
+    // the canvas keeps the last frame: without feedback a closed application looks frozen
+    if (this.opts.onExit) this.opts.onExit(this);
+    else this.showExitOverlay();
+  }
+
+  /** Default exit feedback: dims the last frame and offers to restart the application (reloads the page). */
+  showExitOverlay() {
+    const container = this.container;
+    if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
+    const overlay = document.createElement('div');
+    overlay.className = 'appcui-exit-overlay';
+    overlay.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
+      'background:rgba(0,0,0,0.65);font:16px ' + this.opts.fontFamily + ';color:' + PALETTE[15];
+    const panel = document.createElement('div');
+    panel.style.cssText = 'background:' + PALETTE[1] + ';border:3px double ' + PALETTE[15] + ';padding:20px 32px;' +
+      'text-align:center;line-height:1.6';
+    const text = document.createElement('div');
+    text.textContent = 'The application has exited.';
+    const restart = document.createElement('button');
+    restart.type = 'button';
+    restart.textContent = 'Restart';
+    restart.style.cssText = 'margin-top:14px;padding:4px 24px;font:inherit;color:#000;background:' + PALETTE[15] +
+      ';border:0;cursor:pointer';
+    restart.addEventListener('click', () => location.reload());
+    panel.append(text, restart);
+    overlay.append(panel);
+    container.append(overlay);
+    restart.focus(); // Enter / Space restarts
   }
 
   // ------------------------------------------------------------------------------------------ rendering
