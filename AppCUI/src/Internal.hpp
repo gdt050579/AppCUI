@@ -206,6 +206,16 @@ namespace Internal
         void Paint(Graphics::Renderer& renderer);
     };
 
+    struct ApplicationImpl;
+
+    // One activation of the event loop (the root loop or a modal loop); owned by whoever runs that loop.
+    struct EventLoopFrame
+    {
+        SystemEvent evnt;
+        Controls::Control* ctrl; // modal control (nullptr for the root loop)
+        bool nonBlocking;        // GetSystemEvent must not block (loop driven by an external scheduler)
+    };
+
     class AbstractTerminal
     {
       protected:
@@ -215,6 +225,9 @@ namespace Internal
         uint32 lastCursorX, lastCursorY;
         Graphics::Canvas originalScreenCanvas, screenCanvas;
         bool inited, lastCursorVisibility;
+        // set by the event loop before every GetSystemEvent call: true -> return immediately (SystemEventType::None
+        // when nothing is queued). Only frontends driven by an external scheduler (BrowserTerminal) read it.
+        bool nonBlockingEvents = false;
 
         virtual bool OnInit(const Application::InitializationData& initData)  = 0;
         virtual void RestoreOriginalConsoleSettings()                         = 0;
@@ -233,6 +246,11 @@ namespace Internal
         virtual bool ClipboardHasText();
         virtual bool ClipboardSetText(const ConstString& text);
         virtual bool ClipboardGetText(Utils::UnicodeStringBuilder& text);
+
+        // A frontend that must never block its thread (BrowserTerminal) drives the ROOT event loop itself.
+        // Returns false (default) -> the caller runs the classic blocking loop. A frontend that takes over calls
+        // `shutdown` once the loop ends and may never return to its caller.
+        virtual bool RunRootEventLoop(ApplicationImpl& app, void (*shutdown)());
 
         virtual ~AbstractTerminal();
 
@@ -314,6 +332,12 @@ namespace Internal
         bool UnInit();
         void CheckIfAppShouldClose();
         bool ExecuteEventLoop(Controls::Control* control = nullptr, bool resetState = false);
+        // ExecuteEventLoop == EnterEventLoop + while (StepEventLoop) + LeaveEventLoop; exposed separately so that a
+        // frontend that cannot block (BrowserTerminal) can run the root loop one iteration at a time
+        bool EnterEventLoop(EventLoopFrame& frame, bool resetState);
+        bool StepEventLoop(EventLoopFrame& frame);
+        void LeaveEventLoop(EventLoopFrame& frame);
+        bool HasPendingWork() const;
         void Paint();
         void RaiseEvent(
               Utils::Reference<Controls::Control> control,

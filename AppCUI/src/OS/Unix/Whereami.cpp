@@ -794,6 +794,32 @@ WAI_NOINLINE WAI_FUNCSPEC int WAI_PREFIX(getModulePath)(char* out, int capacity,
     return length;
 }
 
+#elif defined(__EMSCRIPTEN__)
+
+#    include <string.h>
+
+// A wasm module has no executable file: report a virtual one at the root of the in-memory file system (MEMFS), so
+// that "<executable>.ini" and the "Themes" folder resolve next to it.
+static const char WAI_EMSCRIPTEN_PATH[] = "/app.wasm";
+
+WAI_FUNCSPEC
+int WAI_PREFIX(getExecutablePath)(char* out, int capacity, int* dirname_length)
+{
+    const int length = static_cast<int>(sizeof(WAI_EMSCRIPTEN_PATH) - 1);
+    if ((out != nullptr) && (length <= capacity))
+    {
+        memcpy(out, WAI_EMSCRIPTEN_PATH, static_cast<size_t>(length));
+        if (dirname_length)
+            *dirname_length = 0; // index of the last '/'
+    }
+    return length;
+}
+
+WAI_NOINLINE WAI_FUNCSPEC int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
+{
+    return WAI_PREFIX(getExecutablePath)(out, capacity, dirname_length);
+}
+
 #else
 
 #    error unsupported platform

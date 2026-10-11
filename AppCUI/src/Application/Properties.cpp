@@ -48,7 +48,7 @@ bool ApplicationImpl::SetPropertyValue(uint32 propertyID, const Utils::PropertyV
     case AppCUIPropertyIDs::FRONTEND_PROPERTY_ID:
     {
         const uint32 frontEndValue = std::get<uint32>(value);
-        if (frontEndValue > (uint32) Application::FrontendType::Custom)
+        if (frontEndValue > (uint32) Application::FrontendType::Browser)
         {
             error.Format("Invalid frontend type value (%d) !", frontEndValue);
             return false;
@@ -110,7 +110,7 @@ const vector<Utils::Property> ApplicationImpl::GetPropertiesList()
           "Frontend",
           PropertyType::List,
           false,
-          "Default=0,SDL=1,Terminal=2,WindowsConsole=3,Tests=4,Custom=5" },
+          "Default=0,SDL=1,Terminal=2,WindowsConsole=3,Tests=4,Custom=5,Browser=6" },
         { BT(AppCUIPropertyIDs::THEME_NAME_PROPERTY_ID),
           "Config",
           "Theme",
