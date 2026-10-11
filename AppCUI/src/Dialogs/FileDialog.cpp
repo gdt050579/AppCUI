@@ -192,8 +192,8 @@ FileDialogWindow::FileDialogWindow(
 
     files = Factory::ListView::Create(
           splitPanelRight,
-          "x:1,y:0,w:100%,h:100%",
-          { "n:&Name,w:60%,a:l", "n:&Size,w:10%,a:r", "n:&Modified,w:30%,a:c" },
+          "l:1,t:0,r:0,b:0",
+          { "n:&Name,w:fill,a:l", "n:&Size,w:14,a:r", "n:&Modified,w:19,a:c" },
           ListViewFlags::Sortable | ListViewFlags::HideBorder | ListViewFlags::PopupSearchBar |
                 ListViewFlags::HideScrollBar);
     files->Handlers()->ComparereItem =
