@@ -5,7 +5,7 @@ namespace AppCUI::Internal
 using namespace Graphics;
 
 AbstractTerminal::AbstractTerminal()
-    : lastCursorVisibility(false), lastCursorX(0xFFFFFFFF), lastCursorY(0xFFFFFFFF), inited(false)
+    : lastCursorX(0xFFFFFFFF), lastCursorY(0xFFFFFFFF), inited(false), lastCursorVisibility(false)
 {
 }
 AbstractTerminal::~AbstractTerminal()
@@ -49,6 +49,23 @@ void AbstractTerminal::UnInit()
 bool AbstractTerminal::RunRootEventLoop(ApplicationImpl&, void (*)())
 {
     return false; // blocking frontends: Application::Run executes the classic loop
+}
+bool AbstractTerminal::HostFileTransferSupported()
+{
+    return false; // the application already works with the file system of the user
+}
+bool AbstractTerminal::UploadFromHost(
+      const std::filesystem::path&, std::string_view, bool, vector<std::filesystem::path>&, std::string& error)
+{
+    error = "File upload is not supported by this frontend";
+    return false;
+}
+bool AbstractTerminal::DownloadToHost(const std::filesystem::path&)
+{
+    return false;
+}
+void AbstractTerminal::OnSaveFileSelected(const std::filesystem::path&)
+{
 }
 void AbstractTerminal::Update()
 {

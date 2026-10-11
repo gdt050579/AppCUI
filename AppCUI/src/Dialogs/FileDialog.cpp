@@ -1,7 +1,11 @@
-#include "AppCUI.hpp"
+#include "Internal.hpp"
 
 #include <set>
 #include <stack>
+
+#ifdef MessageBox
+#    undef MessageBox // <windows.h> (through Internal.hpp) maps it to MessageBoxA / MessageBoxW
+#endif
 
 namespace AppCUI
 {
@@ -12,6 +16,9 @@ using namespace Dialogs;
 using namespace std::literals;
 
 constexpr uint32 ALL_FILES_INDEX = 0xFFFFFFFFU;
+// Upload / Download (frontends with host file transfer only) - outside of the Dialogs::Result range used by Ok/Cancel
+constexpr int BUTTON_ID_UPLOAD   = 100;
+constexpr int BUTTON_ID_DOWNLOAD = 101;
 
 static void ConvertSizeToString(uint64 size, char result[32])
 {
@@ -98,10 +105,12 @@ class FileDialogWindow : public Window
     Reference<Controls::TextField> txName;
     Reference<Controls::ComboBox> comboType;
     Reference<Controls::Button> btnOK, btnCancel;
+    Reference<Controls::Button> btnUpload, btnDownload; // only when the frontend supports host file transfer
     // TODO: Future back and forward option
     // Controls::Button btnBack, btnForward;
     vector<FSLocationData> locations;
     vector<std::set<uint32>> extensions;
+    vector<std::string> acceptFilters; // per extensions[] entry: ".ext1,.ext2" (for the file picker of the host)
     const std::set<uint32>* extFilter;
     std::filesystem::path resultedPath;
     std::filesystem::path currentPath;
@@ -120,6 +129,11 @@ class FileDialogWindow : public Window
     void ProcessTextFieldInput();
     void FileListItemClicked();
     void FileListItemChanged();
+
+    bool SelectFileByName(const std::filesystem::path& name);
+    void UploadFiles();
+    void DownloadCurrentFile();
+    void UpdateDownloadButton();
 };
 
 std::filesystem::path CanonizePath(std::filesystem::path p)
@@ -203,15 +217,29 @@ FileDialogWindow::FileDialogWindow(
     };
     files->Sort(0, SortDirection::Ascendent); // sort after the first column, ascendent
 
+    // A sandboxed frontend (the browser) has a file system of its own: a second column of buttons moves files between
+    // it and the machine of the user. Without host file transfer the layout is the classic one.
+    const bool hostTransfer = OS::IsHostFileTransferAvailable();
+
     lbName = Factory::Label::Create(this, "File &Name", "b:3,l:1,w:11");
-    txName = Factory::TextField::Create(this, fileName, "b:3,l:12,r:11", TextFieldFlags::ProcessEnter);
+    txName = Factory::TextField::Create(
+          this, fileName, hostTransfer ? "b:3,l:12,r:23" : "b:3,l:12,r:11", TextFieldFlags::ProcessEnter);
     txName->SetHotKey('N');
-    btnOK = Factory::Button::Create(this, "&Ok", "b:2,r:1,w:8", (int) Dialogs::Result::Ok);
+    if (hostTransfer)
+        btnUpload = Factory::Button::Create(this, "&Upload", "b:2,r:12,w:10", BUTTON_ID_UPLOAD);
+    btnOK = Factory::Button::Create(
+          this, "&Ok", hostTransfer ? "b:2,r:1,w:10" : "b:2,r:1,w:8", (int) Dialogs::Result::Ok);
 
-    lbExt     = Factory::Label::Create(this, "File &Type", "b:1,l:1,w:11");
-    btnCancel = Factory::Button::Create(this, "&Cancel", "b:0,r:1,w:8", (int) Dialogs::Result::Cancel);
+    lbExt = Factory::Label::Create(this, "File &Type", "b:1,l:1,w:11");
+    if (hostTransfer)
+    {
+        btnDownload = Factory::Button::Create(this, "&Download", "b:0,r:12,w:10", BUTTON_ID_DOWNLOAD);
+        btnDownload->SetEnabled(false); // enabled while the current item of the files list is a file
+    }
+    btnCancel = Factory::Button::Create(
+          this, "&Cancel", hostTransfer ? "b:0,r:1,w:10" : "b:0,r:1,w:8", (int) Dialogs::Result::Cancel);
 
-    comboType = Factory::ComboBox::Create(this, "b:1,l:12,r:11");
+    comboType = Factory::ComboBox::Create(this, hostTransfer ? "b:1,l:12,r:23" : "b:1,l:12,r:11");
     comboType->SetHotKey('T');
     ProcessExtensionFilter(extensionsFilter);
     if (comboType->GetItemsCount() > 0)
@@ -272,12 +300,32 @@ bool FileDialogWindow::ProcessExtensionFilter(const ConstString& extensiosFilter
               "Name should have at least one extension in the list, separated by coma");
 
         std::set<uint32> requiredExtensions;
+        std::string accept;
         for (const auto& extension : filterExtensions)
         {
             requiredExtensions.insert(__compute_hash__(extension.data(), extension.data() + extension.size()));
+            // the picker of the host only gets printable ASCII extensions (a hint: the dialog still filters by hash)
+            bool printable = true;
+            for (const auto ch : extension)
+            {
+                if ((ch <= u' ') || (ch >= 127) || (ch == u','))
+                {
+                    printable = false;
+                    break;
+                }
+            }
+            if (printable)
+            {
+                if (!accept.empty())
+                    accept += ',';
+                accept += '.';
+                for (const auto ch : extension)
+                    accept += static_cast<char>(ch);
+            }
         }
         CHECK(comboType->AddItem(filterName, this->extensions.size()), false, "Failed to add item to combo-box ");
         this->extensions.push_back(requiredExtensions);
+        this->acceptFilters.push_back(std::move(accept));
     }
     return true;
 }
@@ -321,6 +369,7 @@ void FileDialogWindow::FileListItemClicked()
 
 void FileDialogWindow::FileListItemChanged()
 {
+    UpdateDownloadButton();
     auto current = files->GetCurrentItem();
     if (!current.IsValid())
         return;
@@ -337,6 +386,75 @@ void FileDialogWindow::FileListItemChanged()
     {
         txName->SetText(""); // default value
     }
+}
+
+void FileDialogWindow::UpdateDownloadButton()
+{
+    if (!btnDownload.IsValid())
+        return;
+    auto current = files->GetCurrentItem();
+    btnDownload->SetEnabled(current.IsValid() && (current.GetData(0) == 2));
+}
+
+bool FileDialogWindow::SelectFileByName(const std::filesystem::path& name)
+{
+    const auto target = name.u16string();
+    std::u16string text;
+    const auto count = files->GetItemsCount();
+    for (uint32 idx = 0; idx < count; idx++)
+    {
+        auto item = files->GetItem(idx);
+        if ((item.GetData(0) != 2) || (!item.GetText(0).ToString(text)) || (text != target))
+            continue;
+        files->SetCurrentItem(item);
+        txName->SetText(target);
+        UpdateDownloadButton();
+        return true;
+    }
+    return false;
+}
+
+void FileDialogWindow::UploadFiles()
+{
+    auto app = Application::GetApplication();
+    if ((app == nullptr) || (app->terminal == nullptr) || currentPath.empty())
+        return;
+
+    std::string_view accept;
+    const auto idx = static_cast<uint32>(comboType->GetCurrentItemUserData(ALL_FILES_INDEX));
+    if (idx < acceptFilters.size())
+        accept = acceptFilters[idx];
+
+    vector<std::filesystem::path> uploaded;
+    std::string error;
+    const bool ok = app->terminal->UploadFromHost(currentPath, accept, true, uploaded, error);
+    if (!uploaded.empty())
+    {
+        // the picker of the host only *suggests* the extensions -> never hide what the user has just uploaded
+        ReloadCurrentPath();
+        if ((!SelectFileByName(uploaded[0])) && (extFilter != nullptr))
+        {
+            comboType->SetCurentItemIndex(comboType->GetItemsCount() - 1); // "All files" is always the last item
+            UpdateCurrentExtensionFilter();
+            ReloadCurrentPath();
+            SelectFileByName(uploaded[0]);
+        }
+        btnOK->SetFocus(); // a single Enter opens the uploaded file
+    }
+    if (!ok)
+        MessageBox::ShowError("Upload", error.empty() ? std::string_view("Unable to upload the file(s)") : error);
+}
+
+void FileDialogWindow::DownloadCurrentFile()
+{
+    auto current = files->GetCurrentItem();
+    if ((!current.IsValid()) || (current.GetData(0) != 2) || currentPath.empty())
+        return;
+    std::filesystem::path name;
+    if (!current.GetText(0).ToPath(name))
+        return;
+    if (!OS::DownloadFile(currentPath / name))
+        MessageBox::ShowError("Download", u"Unable to download: "s + name.u16string());
 }
 
 void FileDialogWindow::ProcessTextFieldInput()
@@ -504,6 +622,7 @@ void FileDialogWindow::ReloadCurrentPath()
     }
 
     files->Sort();
+    UpdateDownloadButton();
 }
 
 void FileDialogWindow::UpdateCurrentPath(const std::filesystem::path& newPath)
@@ -559,6 +678,14 @@ bool FileDialogWindow::OnEvent(Reference<Control> sender, Controls::Event eventT
         {
             ProcessTextFieldInput();
         }
+        else if (controlID == BUTTON_ID_UPLOAD)
+        {
+            UploadFiles();
+        }
+        else if (controlID == BUTTON_ID_DOWNLOAD)
+        {
+            DownloadCurrentFile();
+        }
         else
         {
             Exit(Dialogs::Result::Cancel);
@@ -606,9 +733,14 @@ optional<std::filesystem::path> FileDialog::ShowSaveFileWindow(
       const ConstString& fileName, const ConstString& extensionsFilter, const std::filesystem::path& path)
 {
     FileDialogWindow dlg(false, fileName, extensionsFilter, path);
-    if (dlg.Show() == Dialogs::Result::Ok)
-        return dlg.GetResultedPath();
-    return std::nullopt;
+    if (dlg.Show() != Dialogs::Result::Ok)
+        return std::nullopt;
+    auto result = dlg.GetResultedPath();
+    // a sandboxed frontend (the browser) exports the file to the user once the application has written it
+    auto app = Application::GetApplication();
+    if ((app != nullptr) && (app->terminal != nullptr))
+        app->terminal->OnSaveFileSelected(result);
+    return result;
 }
 
 optional<std::filesystem::path> FileDialog::ShowOpenFileWindow(

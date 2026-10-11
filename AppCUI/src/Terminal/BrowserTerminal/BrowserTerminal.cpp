@@ -1,6 +1,7 @@
 #include "BrowserTerminal.hpp"
 #include "../TerminalFactory.hpp"
 #include <emscripten/emscripten.h>
+#include <cstdlib>
 #include <string>
 
 // C++ -> JS imports. Numeric arguments only (no marshalling, no allocation). uint32 values and pointers reach JS as
@@ -24,6 +25,66 @@ EM_ASYNC_JS(void, appcui_js_wait_for_input, (uint32_t timeoutMs), {
     if (host) await host.waitForInput(timeoutMs >>> 0);
     else await new Promise((resolve) => setTimeout(resolve, timeoutMs >>> 0));
 });
+
+// Host file transfer (FileDialog Upload / Download, OS::DownloadFile). Strings cross the boundary as UTF-8 pointers.
+EM_JS_DEPS(appcui_browser_files, "$FS,$UTF8ToString,$stringToUTF8,$lengthBytesUTF8");
+// Lets the user pick files on the host and writes them into `dir` (MEMFS keeps the bytes in JS memory -> the wasm heap
+// does not grow). The names written are kept in Module.appcuiUploaded. Returns 0 (done or cancelled), -1 (write
+// error), -2 (a file is larger than maxBytes -> nothing is written), -3 (no host page).
+EM_ASYNC_JS(int32_t, appcui_js_upload, (const char* dir, const char* accept, int32_t multiple, uint32_t maxBytes), {
+    const host = Module["appcui"];
+    const written = [];
+    Module["appcuiUploaded"] = written;
+    if (!host || !host.pickFiles) return -3;
+    const files = await host.pickFiles(UTF8ToString(accept), multiple !== 0);
+    for (const file of files) {
+        if (file.size > (maxBytes >>> 0)) return -2;
+    }
+    let folder = UTF8ToString(dir);
+    if (!folder.endsWith("/")) folder += "/";
+    try {
+        for (const file of files) {
+            // a single path component: control characters, "/" (47) and backslash (92) become "_" (an EM_JS body
+            // must not contain a backslash: the preprocessor would turn it into a C escape sequence)
+            let name = "";
+            for (const ch of String(file.name)) {
+                const code = ch.codePointAt(0);
+                name += (code < 32 || code === 47 || code === 92) ? "_" : ch;
+            }
+            if (name === "" || name === "." || name === "..") name = "upload.bin";
+            FS.writeFile(folder + name, new Uint8Array(await file.arrayBuffer()));
+            written.push(name);
+        }
+    } catch (e) {
+        console.error("AppCUI: upload failed", e);
+        return -1;
+    }
+    return 0;
+});
+EM_JS(uint32_t, appcui_js_uploaded_count, (), {
+    const written = Module["appcuiUploaded"];
+    return written ? written.length : 0;
+});
+// Copies the index-th uploaded name (NUL terminated UTF-8) into buffer. Returns 0 if it does not exist / does not fit.
+EM_JS(uint32_t, appcui_js_uploaded_name, (uint32_t index, char* buffer, uint32_t capacity), {
+    const written = Module["appcuiUploaded"];
+    const name = written ? written[index >>> 0] : undefined;
+    if (name === undefined || lengthBytesUTF8(name) + 1 > (capacity >>> 0)) return 0;
+    stringToUTF8(name, buffer, capacity >>> 0);
+    return 1;
+});
+// Reads `path` from MEMFS and hands it to the browser as a download named `name`. Returns 1 on success.
+EM_JS(uint32_t, appcui_js_download, (const char* path, const char* name), {
+    const host = Module["appcui"];
+    if (!host || !host.download) return 0;
+    try {
+        host.download(UTF8ToString(name), FS.readFile(UTF8ToString(path)));
+        return 1;
+    } catch (e) {
+        console.error("AppCUI: download failed", e);
+        return 0;
+    }
+});
 // clang-format on
 
 namespace AppCUI::Internal
@@ -32,6 +93,9 @@ using namespace Application;
 
 constexpr uint32 FRAME_INTERVAL_MS = 33;   // ~30 fps, same cadence as SDLTerminal / CustomTerminal
 constexpr uint32 IDLE_WAIT_MS      = 1000; // modal loop without FPS mode: wake up at least once per second
+
+constexpr uint32 MAX_UPLOAD_BYTES       = 256u * 1024u * 1024u; // per file (MEMFS keeps uploads in the page memory)
+constexpr double SAVE_EXPORT_TIMEOUT_MS = 30000.0;              // a Save not written within 30 s is never downloaded
 
 static BrowserFrameHeader frameHeader{}; // zero-initialised => magic == 0 until a terminal is alive
 static BrowserTerminal* activeTerminal = nullptr;
@@ -84,8 +148,9 @@ bool BrowserInputQueue::Pop(BrowserInputEvent& e)
 
 //======================================================================================== BrowserTerminal ===
 BrowserTerminal::BrowserTerminal()
-    : lastFramesUpdateMs(0.0), pendingWidth(0), pendingHeight(0), suspendedWaits(0), resizePending(false),
-      closePending(false), redrawPending(false), fpsMode(false)
+    : pendingSaveTime(), pendingSaveSize(0), pendingSaveDeadlineMs(0.0), lastFramesUpdateMs(0.0), pendingWidth(0),
+      pendingHeight(0), suspendedWaits(0), resizePending(false), closePending(false), redrawPending(false),
+      fpsMode(false), pendingSaveExisted(false)
 {
 }
 BrowserTerminal::~BrowserTerminal()
@@ -136,6 +201,18 @@ bool BrowserTerminal::OnInit(const InitializationData& initData)
     this->fpsMode            = (initData.Flags & InitializationFlags::EnableFPSMode) != InitializationFlags::None;
     this->lastFramesUpdateMs = emscripten_get_now();
 
+    // Emscripten starts in "/" (dev, proc, tmp, home): unless the application already moved, work from the home
+    // folder -> relative paths and the default location of FileDialog are where the uploaded files of the user go
+    std::error_code err;
+    const char* home = std::getenv("HOME");
+    if ((home != nullptr) && (home[0] != 0) && (std::filesystem::current_path(err) == "/") && (!err))
+    {
+        std::filesystem::create_directories(home, err);
+        std::filesystem::current_path(home, err);
+        if (err)
+            LOG_WARNING("Unable to change the current directory to %s", home);
+    }
+
     frameHeader            = BrowserFrameHeader{};
     frameHeader.abiVersion = BROWSER_ABI_VERSION;
     PublishLayout();
@@ -158,6 +235,7 @@ void BrowserTerminal::OnUnInit()
     frameHeader.magic = 0;
     browserClipboard.clear();
     browserClipboard.shrink_to_fit(); // a later Application::Init must not inherit the clipboard
+    pendingSave.clear();              // ... nor a pending download
 }
 void BrowserTerminal::PublishLayout()
 {
@@ -281,6 +359,9 @@ void BrowserTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
     for (;;)
     {
         const bool hasEvent = Dequeue(evnt);
+        // idle: the handler that saved the file (and any modal shown from it) has returned -> the file is complete
+        if ((!hasEvent) && (!this->pendingSave.empty()))
+            CheckPendingSave();
         StampFrameUpdate(evnt);
         if (hasEvent || evnt.updateFrames || this->nonBlockingEvents)
             return;
@@ -321,6 +402,104 @@ bool BrowserTerminal::ClipboardSetText(const ConstString& text)
 bool BrowserTerminal::ClipboardGetText(Utils::UnicodeStringBuilder& text)
 {
     return text.Set(std::u16string_view(browserClipboard));
+}
+
+//===================================================================================== host file transfer ===
+static bool IsValidUploadedName(std::string_view name)
+{
+    // the name comes from the host page (untrusted): a single path component, never "." / ".."
+    if (name.empty() || (name == ".") || (name == ".."))
+        return false;
+    return name.find_first_of("/\\") == std::string_view::npos;
+}
+bool BrowserTerminal::HostFileTransferSupported()
+{
+    return true;
+}
+bool BrowserTerminal::UploadFromHost(
+      const std::filesystem::path& destFolder,
+      std::string_view accept,
+      bool multiple,
+      vector<std::filesystem::path>& uploaded,
+      std::string& error)
+{
+    uploaded.clear();
+    const std::string folder = destFolder.string(); // MEMFS paths are UTF-8
+    const std::string acceptFilter(accept);         // NUL terminated copy
+    const int32 status = appcui_js_upload(folder.c_str(), acceptFilter.c_str(), multiple ? 1 : 0, MAX_UPLOAD_BYTES);
+
+    // also after a failure: the files written before it are in the folder
+    char name[1024];
+    const uint32 count = appcui_js_uploaded_count();
+    for (uint32 index = 0; index < count; index++)
+    {
+        if (appcui_js_uploaded_name(index, name, sizeof(name)) == 0)
+            continue;
+        const std::string_view nameView(name);
+        std::error_code err;
+        if ((!IsValidUploadedName(nameView)) || (!std::filesystem::is_regular_file(destFolder / nameView, err)))
+        {
+            LOG_WARNING("Ignoring the uploaded file: %s", name);
+            continue;
+        }
+        uploaded.emplace_back(nameView);
+    }
+
+    switch (status)
+    {
+    case 0:
+        return true;
+    case -2:
+        error = "The file is too large (the upload limit is " + std::to_string(MAX_UPLOAD_BYTES >> 20) + " MB)";
+        return false;
+    case -3:
+        error = "The page does not support file uploads";
+        return false;
+    default:
+        error = "Unable to write the uploaded file(s) into " + folder;
+        return false;
+    }
+}
+bool BrowserTerminal::DownloadToHost(const std::filesystem::path& file)
+{
+    std::error_code err;
+    CHECK(std::filesystem::is_regular_file(file, err), false, "Not a file: %s", file.string().c_str());
+    const std::string path = file.string();
+    const std::string name = file.filename().string();
+    return appcui_js_download(path.c_str(), name.c_str()) != 0;
+}
+void BrowserTerminal::OnSaveFileSelected(const std::filesystem::path& file)
+{
+    // snapshot: an existing file is exported only once the application has rewritten it
+    std::error_code err;
+    this->pendingSave        = file;
+    this->pendingSaveExisted = std::filesystem::is_regular_file(file, err);
+    this->pendingSaveSize    = this->pendingSaveExisted ? std::filesystem::file_size(file, err) : 0;
+    this->pendingSaveTime =
+          this->pendingSaveExisted ? std::filesystem::last_write_time(file, err) : std::filesystem::file_time_type();
+    this->pendingSaveDeadlineMs = emscripten_get_now() + SAVE_EXPORT_TIMEOUT_MS;
+}
+void BrowserTerminal::CheckPendingSave()
+{
+    std::error_code err;
+    if (std::filesystem::is_regular_file(this->pendingSave, err))
+    {
+        const auto size = std::filesystem::file_size(this->pendingSave, err);
+        // keep the first error: a successful call resets `err`
+        const auto time =
+              err ? std::filesystem::file_time_type() : std::filesystem::last_write_time(this->pendingSave, err);
+        const bool changed =
+              (!this->pendingSaveExisted) || (size != this->pendingSaveSize) || (time != this->pendingSaveTime);
+        if ((!err) && changed)
+        {
+            const std::filesystem::path file = std::move(this->pendingSave);
+            this->pendingSave.clear();
+            DownloadToHost(file);
+            return;
+        }
+    }
+    if (emscripten_get_now() >= this->pendingSaveDeadlineMs)
+        this->pendingSave.clear(); // never written (failed / cancelled by the application)
 }
 
 // AppCUI::Frontend::Browser -> FrontendType::Browser, and FrontendType::Default (the only native frontend of a

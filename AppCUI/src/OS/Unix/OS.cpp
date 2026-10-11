@@ -5,8 +5,16 @@
 
 namespace AppCUI::OS
 {
-void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
+void GetSpecialFolders([[maybe_unused]] SpecialFolderMap& specialFolders, RootsVector& roots)
 {
+#ifdef __EMSCRIPTEN__
+    // The page has its own in-memory file system: the XDG folders (Desktop, Music, Videos, ...) do not exist there and
+    // the executable lives at "/" -> only list real locations. Files of the user arrive through FileDialog's Upload.
+    const char* home = std::getenv("HOME");
+    roots.push_back({ "Home", (home && home[0]) ? home : "/home/web_user" });
+    roots.push_back({ "Temp", "/tmp" });
+    roots.push_back({ "/ (root)", "/" });
+#else
     const auto desktop = sago::getDesktopFolder();
     if (!desktop.empty())
     {
@@ -16,7 +24,7 @@ void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
     specialFolders[SpecialFolder::AppPath] = { "App Folder", GetCurrentApplicationPath().parent_path() };
 
     const auto documents = sago::getDocumentsFolder();
-    if (!desktop.empty())
+    if (!documents.empty())
     {
         specialFolders[SpecialFolder::Documents]      = { "Documents", documents };
         specialFolders[SpecialFolder::LocalDocuments] = { "Local Documents", documents };
@@ -55,6 +63,7 @@ void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots)
     }
 
     roots.push_back({ "/ (root)", "/" });
+#endif
 }
 
 static std::filesystem::path current_application_path;

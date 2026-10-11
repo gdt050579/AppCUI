@@ -196,7 +196,29 @@ The size of ``containerElement`` decides the number of columns and rows (resizin
 * When the application exits (for example after its last window is closed), the page keeps the last frame, dimmed,
   under an *"The application has exited"* message with a **Restart** button. Pass ``onExit: (host) => { ... }`` in
   the options of ``startAppCUI`` to handle the exit differently.
-* The file system is Emscripten's in-memory file system: ``FileDialog`` works, but files do not persist.
+* The file system is Emscripten's in-memory file system, separate from the user's machine, and its files do not persist
+  across page reloads. The application starts in the home folder (``/home/web_user``).
+
+Files of the user
+~~~~~~~~~~~~~~~~~
+
+The browser frontend moves files between the in-memory file system and the user's machine:
+
+* ``FileDialog`` lists only real locations (**Home**, **Temp**, ``/``) and adds two buttons:
+
+  * **Upload** opens the file picker of the browser. The picker suggests the extensions of the current file type
+    filter. The picked files are copied into the folder shown by the dialog, and the first one is selected, so Enter
+    opens it. The limit is 256 MB per file.
+  * **Download** sends the selected file to the user as a browser download.
+
+* When a ``ShowSaveFileWindow`` dialog returns a path, the file is downloaded automatically once the application has
+  written it, typically in the same event handler. Existing applications therefore save to the user's machine without
+  any change.
+* ``OS::IsHostFileTransferAvailable()`` tells whether the frontend works this way, and ``OS::DownloadFile(path)``
+  downloads any file explicitly, for example a log. On the other frontends the first returns ``false`` and the second
+  does nothing.
+* Pass ``onDownload: (name, data) => { ... }`` to ``startAppCUI`` to handle the downloaded bytes in the page instead of
+  starting a browser download.
 * PNG / JPG images are not supported (``APPCUI_IMAGE_CODECS`` is ``OFF``); BMP images are.
 
 Keyboard on ncurses terminals

@@ -247,6 +247,23 @@ namespace Internal
         virtual bool ClipboardSetText(const ConstString& text);
         virtual bool ClipboardGetText(Utils::UnicodeStringBuilder& text);
 
+        // Host file transfer, for frontends whose file system is not the one of the user (BrowserTerminal: the
+        // in-memory MEMFS of the page). The defaults report "unsupported" -> FileDialog keeps its classic layout.
+        virtual bool HostFileTransferSupported();
+        // Copies files picked by the user on the host into `destFolder`. `accept` is a comma separated list of
+        // extensions (".txt,.log", empty = any file). `uploaded` receives the names (relative to destFolder) of the
+        // files written - also when the call fails half way. Returns false (and a message in `error`) on failure; a
+        // cancel by the user is a success with an empty `uploaded`.
+        virtual bool UploadFromHost(
+              const std::filesystem::path& destFolder,
+              std::string_view accept,
+              bool multiple,
+              vector<std::filesystem::path>& uploaded,
+              std::string& error);
+        virtual bool DownloadToHost(const std::filesystem::path& file);
+        // A Save file dialog returned `file` -> the frontend may export it once the application has written it
+        virtual void OnSaveFileSelected(const std::filesystem::path& file);
+
         // A frontend that must never block its thread (BrowserTerminal) drives the ROOT event loop itself.
         // Returns false (default) -> the caller runs the classic blocking loop. A frontend that takes over calls
         // `shutdown` once the loop ends and may never return to its caller.

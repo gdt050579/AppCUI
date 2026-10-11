@@ -2675,6 +2675,14 @@ namespace OS
     EXPORT void GetSpecialFolders(SpecialFolderMap& specialFolders, RootsVector& roots);
     EXPORT std::filesystem::path GetCurrentApplicationPath();
 
+    /// Returns true when the application runs in a sandbox whose file system is separate from the user's machine
+    /// (the Browser frontend). In that case the file dialogs show Upload / Download buttons and files can be sent to
+    /// the user with DownloadFile.
+    EXPORT bool IsHostFileTransferAvailable();
+    /// Sends a copy of `file` to the user's machine (the Browser frontend starts a download). Returns false when the
+    /// frontend does not support it (see IsHostFileTransferAvailable) or the file cannot be read.
+    EXPORT bool DownloadFile(const std::filesystem::path& file);
+
 } // namespace OS
 namespace Graphics
 {

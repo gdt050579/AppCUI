@@ -29,6 +29,9 @@
  * @property {number} [maxRows]     must not exceed BROWSER_MAX_ROWS (512)
  * @property {(host: AppCUIHost) => void} [onExit]  called once the application has exited; by default the page shows
  *                                                   an "application has exited" overlay with a Restart button
+ * @property {(name: string, data: Uint8Array) => void} [onDownload]  receives the files the application sends to the
+ *                                                   user (FileDialog Download, Save, OS::DownloadFile); by default
+ *                                                   the browser downloads them
  */
 
 const ABI_MAGIC = 0x49554341;
@@ -178,27 +181,108 @@ export class AppCUIHost {
 
   /** Default exit feedback: dims the last frame and offers to restart the application (reloads the page). */
   showExitOverlay() {
+    this.showOverlay('appcui-exit-overlay', 'The application has exited.', [
+      { label: 'Restart', onClick: () => location.reload() }, // Enter / Space restarts (the first button has focus)
+    ]);
+  }
+
+  /**
+   * An HTML panel over the canvas (dims the last frame). The first button receives the focus.
+   * @param {string} className
+   * @param {string} message
+   * @param {{ label: string, onClick: () => void }[]} buttons
+   * @returns {HTMLDivElement} the overlay - remove() it to close it
+   */
+  showOverlay(className, message, buttons) {
     const container = this.container;
     if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
     const overlay = document.createElement('div');
-    overlay.className = 'appcui-exit-overlay';
+    overlay.className = className;
     overlay.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
       'background:rgba(0,0,0,0.65);font:16px ' + this.opts.fontFamily + ';color:' + PALETTE[15];
     const panel = document.createElement('div');
     panel.style.cssText = 'background:' + PALETTE[1] + ';border:3px double ' + PALETTE[15] + ';padding:20px 32px;' +
       'text-align:center;line-height:1.6';
     const text = document.createElement('div');
-    text.textContent = 'The application has exited.';
-    const restart = document.createElement('button');
-    restart.type = 'button';
-    restart.textContent = 'Restart';
-    restart.style.cssText = 'margin-top:14px;padding:4px 24px;font:inherit;color:#000;background:' + PALETTE[15] +
-      ';border:0;cursor:pointer';
-    restart.addEventListener('click', () => location.reload());
-    panel.append(text, restart);
+    text.textContent = message;
+    panel.append(text);
+    for (const b of buttons) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = b.label;
+      button.style.cssText = 'margin:14px 6px 0;padding:4px 24px;font:inherit;color:#000;background:' + PALETTE[15] +
+        ';border:0;cursor:pointer';
+      button.addEventListener('click', b.onClick);
+      panel.append(button);
+    }
     overlay.append(panel);
     container.append(overlay);
-    restart.focus(); // Enter / Space restarts
+    const first = panel.querySelector('button');
+    if (first) first.focus();
+    return overlay;
+  }
+
+  // ------------------------------------------------------------------------------------------ host file transfer
+  /**
+   * Lets the user pick files of their machine (FileDialog -> Upload). Resolves with [] when the user cancels.
+   * Called by C++ (appcui_js_upload) while the application waits suspended for the result.
+   * @param {string} accept      ".txt,.log" or "" (any file) - only a hint for the browser picker
+   * @param {boolean} multiple
+   * @returns {Promise<File[]>}
+   */
+  pickFiles(accept, multiple) {
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.multiple = multiple;
+      if (accept) input.accept = accept;
+      input.style.display = 'none';
+      /** @type {HTMLDivElement | null} */
+      let overlay = null;
+      let done = false;
+      /** @param {File[]} files */
+      const finish = (files) => {
+        if (done) return;
+        done = true;
+        input.remove();
+        if (overlay) overlay.remove();
+        this.canvas.focus();
+        resolve(files);
+      };
+      input.addEventListener('change', () => finish(input.files ? Array.from(input.files) : []));
+      input.addEventListener('cancel', () => finish([]));
+      document.body.append(input);
+      // A file picker needs a recent user gesture. The Upload button runs right after the click / key press that
+      // pressed it, so the activation is normally still there; when it is not (stricter browsers), ask for a real
+      // click instead of failing silently.
+      const activation = /** @type {any} */ (navigator).userActivation;
+      if (!activation || activation.isActive) {
+        input.click();
+        return;
+      }
+      overlay = this.showOverlay('appcui-upload-overlay', 'Select the file(s) to upload.', [
+        { label: 'Choose files...', onClick: () => input.click() },
+        { label: 'Cancel', onClick: () => finish([]) },
+      ]);
+    });
+  }
+
+  /**
+   * Hands a file of the application to the user (FileDialog -> Download, auto-download after Save, OS::DownloadFile).
+   * @param {string} name
+   * @param {Uint8Array} data
+   */
+  download(name, data) {
+    if (this.opts.onDownload) { this.opts.onDownload(name, data); return; }
+    const url = URL.createObjectURL(new Blob([data], { type: 'application/octet-stream' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.style.display = 'none';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000); // the browser may read the blob asynchronously
   }
 
   // ------------------------------------------------------------------------------------------ rendering

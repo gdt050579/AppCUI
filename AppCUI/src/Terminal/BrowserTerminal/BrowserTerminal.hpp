@@ -6,6 +6,7 @@
 #    error "BrowserTerminal can only be built for wasm32-emscripten"
 #endif
 
+#include <filesystem>
 #include <type_traits>
 
 namespace AppCUI::Internal
@@ -82,6 +83,12 @@ class BrowserInputQueue
 class BrowserTerminal : public AbstractTerminal
 {
     BrowserInputQueue input;
+    // auto-download of the file returned by the last Save dialog: armed by OnSaveFileSelected, exported (once) when
+    // the event loop goes idle after the application has created / changed the file
+    std::filesystem::path pendingSave; // empty -> nothing armed
+    std::filesystem::file_time_type pendingSaveTime;
+    uint64 pendingSaveSize;
+    double pendingSaveDeadlineMs;
     double lastFramesUpdateMs;
     uint32 pendingWidth, pendingHeight;
     uint32 suspendedWaits; // > 0 while a modal loop is suspended inside appcui_js_wait_for_input
@@ -89,8 +96,10 @@ class BrowserTerminal : public AbstractTerminal
     bool closePending;
     bool redrawPending;
     bool fpsMode;
+    bool pendingSaveExisted;
 
     bool Dequeue(SystemEvent& evnt);
+    void CheckPendingSave();
     void StampFrameUpdate(SystemEvent& evnt);
     uint32 MillisecondsUntilNextFrame() const;
     void PublishLayout();
@@ -126,6 +135,17 @@ class BrowserTerminal : public AbstractTerminal
     bool ClipboardHasText() override;
     bool ClipboardSetText(const ConstString& text) override;
     bool ClipboardGetText(Utils::UnicodeStringBuilder& text) override;
+
+    // host file transfer: MEMFS <-> the machine of the user (file picker / browser download)
+    bool HostFileTransferSupported() override;
+    bool UploadFromHost(
+          const std::filesystem::path& destFolder,
+          std::string_view accept,
+          bool multiple,
+          vector<std::filesystem::path>& uploaded,
+          std::string& error) override;
+    bool DownloadToHost(const std::filesystem::path& file) override;
+    void OnSaveFileSelected(const std::filesystem::path& file) override;
 };
 
 // the single live instance (AppCUI is a process-wide singleton); nullptr when there is none

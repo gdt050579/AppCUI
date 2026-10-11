@@ -64,7 +64,7 @@ Windows, menus and dialogs
    * - `MessageBox <demo/MessageBox.html>`_
      - notifications, errors, warnings and questions (modal dialogs)
    * - `FileDialog <demo/FileDialog.html>`_
-     - open / save dialogs (browsing the in-memory file system of the page)
+     - open / save dialogs on the in-memory file system of the page, with Upload / Download to your machine
    * - `MenuBar <demo/MenuBar.html>`_
      - an application menu bar with sub-menus
    * - `ContextMenu <demo/ContextMenu.html>`_

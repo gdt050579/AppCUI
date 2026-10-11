@@ -1705,7 +1705,7 @@ cmake --build build-wasm --target MessageBox
 | Browser-reserved shortcuts (Ctrl+W/T/N, Ctrl+Tab) never reach the page | Document them. Ship a `[AppCUI] Keyboard.Ctrl` profile for web builds, which the existing `LoadKeyboardSettings` already supports, to remap AppCUI's Ctrl bindings. |
 | Clipboard | v1 uses the process-private clipboard, as `Custom` already does. v2 bridges DOM `copy`/`paste` events, which grant synchronous `clipboardData` access, into a fixed C++ buffer through one more export. |
 | `fillText` throughput on 4K screens with full redraws (theme change, resize) | Full redraws are rare. If profiling shows a problem, add a glyph atlas (`OffscreenCanvas`, keyed by code and fg, drawn with `drawImage`) behind the same `paintCells` loop. |
-| `std::filesystem` on MEMFS shows an empty tree in `FileDialog` | Expected in v1. Phase 2: an IDBFS mount or OPFS-backed WasmFS. |
+| `std::filesystem` on MEMFS shows an empty tree in `FileDialog` | Done: host file transfer. `AbstractTerminal` has `HostFileTransferSupported` / `UploadFromHost` / `DownloadToHost` / `OnSaveFileSelected`, overridden only by `BrowserTerminal`. `FileDialog` shows Upload / Download buttons and only real locations (Home, Temp, `/`). A path returned by a Save dialog is downloaded once the application has written it. Still to do (phase 2): persistence, through an IDBFS mount or OPFS-backed WasmFS. |
 | SDL wheel direction looks inverted relative to the DOM | Resolve in M3 against `WindowsTerminal`. |
 
 ---
