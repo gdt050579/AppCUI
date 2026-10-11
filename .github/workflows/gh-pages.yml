@@ -1,6 +1,7 @@
 name: GithubPages
 
-# Builds the documentation (guides + API reference generated from AppCUI/include/AppCUI.hpp by Doxygen and Breathe).
+# Builds the documentation (guides + API reference generated from AppCUI/include/AppCUI.hpp by Doxygen and Breathe) and
+# the live demos (the examples linked from docs/source/live_demos.rst, compiled to WebAssembly - published in demo/).
 # Every warning is an error. Pushes to main publish the result to the gh-pages branch.
 on:
   push:
@@ -10,6 +11,9 @@ on:
     paths:
       - "docs/**"
       - "AppCUI/include/AppCUI.hpp"
+      - "AppCUI/web/**"
+      - "AppCUI/src/Terminal/BrowserTerminal/**"
+      - "cmake/example.cmake"
       - ".github/workflows/gh-pages.yml"
   workflow_dispatch:
 
@@ -24,6 +28,8 @@ concurrency:
 jobs:
   docs:
     runs-on: ubuntu-24.04
+    env:
+      EMSDK_VERSION: "6.0.12" # the Emscripten release the browser frontend is tested with
     steps:
       - uses: actions/checkout@v7
 
@@ -61,6 +67,39 @@ jobs:
       - name: Build documentation
         working-directory: docs
         run: python -m sphinx -W --keep-going -b html -d build/doctrees source build/html
+
+      # Live demos. The emsdk cache also keeps the Emscripten system libraries built by the first compilation.
+      - name: Cache emsdk
+        id: cache-emsdk
+        uses: actions/cache@v6
+        with:
+          path: ~/emsdk
+          key: emsdk-${{ env.EMSDK_VERSION }}-linux
+
+      - name: Install emsdk
+        if: steps.cache-emsdk.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git ~/emsdk
+          ~/emsdk/emsdk install "$EMSDK_VERSION"
+
+      - name: Build live demos
+        run: |
+          sudo apt-get install -y ninja-build
+          ~/emsdk/emsdk activate "$EMSDK_VERSION"
+          source ~/emsdk/emsdk_env.sh
+          # the demos are exactly the examples linked as demo/<Example>.html by the live demos page
+          mapfile -t demos < <(grep -oE 'demo/[A-Za-z0-9]+\.html' docs/source/live_demos.rst | sed 's#demo/##; s#\.html##' | sort -u)
+          echo "Live demos: ${demos[*]}"
+          test "${#demos[@]}" -gt 0
+          emcmake cmake -S . -B build-wasm -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-wasm --parallel --target "${demos[@]}"
+          # a static site: <Example>.html / .mjs / .wasm + the shared host script and font (cp fails on a missing file)
+          mkdir -p docs/build/html/demo
+          for demo in "${demos[@]}"; do
+            cp "bin/wasm/$demo.html" "bin/wasm/$demo.mjs" "bin/wasm/$demo.wasm" docs/build/html/demo/
+          done
+          cp bin/wasm/appcui-host.js bin/wasm/JuliaMono-Regular.ttf docs/build/html/demo/
+          du -sh docs/build/html/demo
 
       - name: Publish to gh-pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

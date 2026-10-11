@@ -48,6 +48,15 @@ static std::string getHome()
     std::string res;
     int uid             = getuid();
     const char* homeEnv = std::getenv("HOME");
+#ifdef __EMSCRIPTEN__
+    // the virtual POSIX environment of Emscripten always runs as uid 0 and has no passwd database: HOME
+    // (/home/web_user) is the only source of a home directory there
+    if (homeEnv)
+    {
+        res = homeEnv;
+        return res;
+    }
+#endif
     if (uid != 0 && homeEnv)
     {
         // We only acknowlegde HOME if not root.
@@ -64,7 +73,7 @@ static std::string getHome()
     std::vector<char> buffer;
     buffer.resize(bufsize);
     int error_code = getpwuid_r(uid, &pwd, buffer.data(), buffer.size(), &pw);
-    if (error_code)
+    if ((error_code != 0) || (pw == nullptr)) // pw stays nullptr (with error_code == 0) when there is no entry
     {
         throw std::runtime_error("Unable to get passwd struct.");
     }

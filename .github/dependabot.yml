@@ -1,0 +1,40 @@
+# Dependabot version updates: https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+# Every update arrives as a pull request against main, so ci.yml / codeql-analysis.yml / gh-pages.yml validate it
+# before anything is merged.
+version: 2
+updates:
+  # Actions used by the workflows and by the composite build action (.github/actions/build).
+  - package-ecosystem: "github-actions"
+    directories:
+      - "/"
+      - "/.github/actions/*"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "CI"
+
+  # The vcpkg submodule (and with it every C/C++ dependency from vcpkg.json). Dependabot moves it to the latest commit
+  # of microsoft/vcpkg master, not to a release tag. Monthly, because each bump invalidates the vcpkg binary cache and
+  # rebuilds all the dependencies on every CI runner.
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "vcpkg"
+
+  # Python packages of the documentation build (docs/requirements.txt).
+  - package-ecosystem: "pip"
+    directory: "/docs"
+    schedule:
+      interval: "monthly"
+    groups:
+      docs:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "Docs"

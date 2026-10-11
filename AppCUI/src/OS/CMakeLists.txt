@@ -1,4 +1,4 @@
-target_sources(AppCUICore PRIVATE DataObject.cpp DateTime.cpp StaticFileMethods.cpp MemoryFile.cpp)
+target_sources(AppCUICore PRIVATE DataObject.cpp DateTime.cpp StaticFileMethods.cpp MemoryFile.cpp HostFiles.cpp)
 if (MSVC)
     add_subdirectory(Windows)
 elseif (UNIX)

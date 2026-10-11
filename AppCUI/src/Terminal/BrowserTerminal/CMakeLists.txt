@@ -1,0 +1,1 @@
+target_sources(AppCUIFrontendBrowser PRIVATE BrowserTerminal.cpp BrowserExports.cpp BrowserMainLoop.cpp)

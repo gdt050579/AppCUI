@@ -6,6 +6,9 @@
 
 This logo is an [application](https://github.com/gdt050579/AppCUI/tree/main/Examples/Logo) made with `AppCUI`.
 
+**[Try the live demos in your browser](https://gdt050579.github.io/AppCUI/live_demos.html)** - the AppCUI examples
+compiled to WebAssembly, no installation needed.
+
 ## General description 
 
 **AppCUI** is a cross-platform [TUI](https://en.wikipedia.org/wiki/Text-based_user_interface) builder. The users of this library can construct an interface using its basic building blocks such as: _Window_, _Button_, _Label_, etc.
@@ -52,7 +55,8 @@ While the rendering of components, layering and colors management is done in the
 1. `Windows Console` is available on Windows systems and provides full functionality for interaction like mouse click, drag, keyboard, resizing, etc.
 2. `SDL2` is available as a frontend for all systems including Windows, OSX and Unix. It also provides full functionality. Apps based on SDL2 will run in a separate window.
 3. `NCurses` with limited functionality is available for Unix and OSX systems. Apps based on ncurses will run in any terminal, including `iterm`, `terminal`, `xterm` and so on, but will not have the whole set of mouse movements or access to the full keyboard button range (due to limitations in terminals themselves).
-4. `Custom` - a frontend implemented by the application itself (`Application::CustomFrontendInterface`): headless rendering for tests or screenshots, a screen streamed over the network, recorded sessions, ...
+4. `Browser` - an HTML5 canvas inside a web page, for applications compiled to WebAssembly with Emscripten. The same app runs in the browser with full mouse and keyboard support - see the [live demos](https://gdt050579.github.io/AppCUI/live_demos.html).
+5. `Custom` - a frontend implemented by the application itself (`Application::CustomFrontendInterface`): headless rendering for tests or screenshots, a screen streamed over the network, recorded sessions, ...
 
 While frontends may be different, AppCUI strives to provide cross-platform support so that the same app looks, feels and behaves the same on every system.
 

@@ -37,9 +37,10 @@ bool File::OpenRead(const std::filesystem::path& path)
 bool File::Create(const std::filesystem::path& path, bool overwriteExisting)
 {
     Close();
+    // same semantics as the Windows version: overwrite -> CREATE_ALWAYS (create or truncate), else CREATE_NEW
     int fileId =
           open(path.string().c_str(),
-               overwriteExisting ? O_CREAT | O_RDWR | O_EXCL : O_CREAT | O_RDWR,
+               overwriteExisting ? O_CREAT | O_RDWR | O_TRUNC : O_CREAT | O_RDWR | O_EXCL,
                S_IRWXU | S_IRWXG | S_IRWXO);
     CHECK(fileId >= 0, false, "ERROR: %s", strerror(errno));
     this->FileID.fid = fileId;
