@@ -26,6 +26,11 @@
             "name": "sdl2"
         },
         {
+            "name": "dbus",
+            "default-features": false,
+            "platform": "linux"
+        },
+        {
             "name": "sdl2-ttf"
         },
         {
