@@ -46,6 +46,10 @@ void AbstractTerminal::UnInit()
     // OS specific On-unit
     OnUnInit();
 }
+bool AbstractTerminal::RunRootEventLoop(ApplicationImpl&, void (*)())
+{
+    return false; // blocking frontends: Application::Run executes the classic loop
+}
 void AbstractTerminal::Update()
 {
     OnFlushToScreen();

@@ -48,12 +48,8 @@ bool Application::RunTestScript(std::string_view testScript)
     CHECK(Run(), false, "Execution error (Run method failed)");
     return scriptResult;
 }
-bool Application::Run()
+static void ShutdownAfterRun()
 {
-    CHECK(app, false, "Application has not been initialized !");
-    CHECK(app->Inited, false, "Application has not been corectly initialized !");
-    app->loopStatus = LoopStatus::Normal;
-    app->ExecuteEventLoop();
     LOG_INFO("Uninit text field/area default menu ");
     Controls::UninitTextFieldDefaultMenu();
     Controls::UninitTextAreaDefaultMenu();
@@ -63,6 +59,26 @@ bool Application::Run()
     LOG_INFO("Uninit successfully");
     delete app;
     app = nullptr;
+}
+static void ShutdownAfterRunSingleApp()
+{
+    LOG_INFO("Starting to un-init AppCUI ...");
+    app->UnInit();
+    Log::Unit();
+    LOG_INFO("Uninit successfully");
+    delete app;
+    app = nullptr;
+}
+bool Application::Run()
+{
+    CHECK(app, false, "Application has not been initialized !");
+    CHECK(app->Inited, false, "Application has not been corectly initialized !");
+    app->loopStatus = LoopStatus::Normal;
+    // a frontend that cannot block (browser) runs the loop itself and calls ShutdownAfterRun when it ends
+    if (app->terminal->RunRootEventLoop(*app, ShutdownAfterRun))
+        return true;
+    app->ExecuteEventLoop();
+    ShutdownAfterRun();
     return true;
 }
 bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
@@ -86,13 +102,10 @@ bool Application::RunSingleApp(unique_ptr<Controls::SingleApp> singleApp)
     ((ControlContext*) (app->AppDesktop->Context))->Margins.Bottom = bottom;
 
     // all good - start the loop
+    if (app->terminal->RunRootEventLoop(*app, ShutdownAfterRunSingleApp))
+        return true;
     app->ExecuteEventLoop();
-    LOG_INFO("Starting to un-init AppCUI ...");
-    app->UnInit();
-    Log::Unit();
-    LOG_INFO("Uninit successfully");
-    delete app;
-    app = nullptr;
+    ShutdownAfterRunSingleApp();
     return true;
 }
 bool Application::GetApplicationSize(Graphics::Size& size)
@@ -295,7 +308,11 @@ Controls::Control* GetFocusedControl(Controls::Control* ctrl);
 void UpdateCommandBar()
 {
     if (!app->cmdBar)
+    {
+        // nothing to update - leaving the flag set would force a full repaint on every event loop iteration
+        app->cmdBarUpdate = false;
         return;
+    }
     app->cmdBar->Clear();
     Controls::Control* obj;
     if (app->ModalControlsCount == 0)
@@ -1285,9 +1302,21 @@ void ApplicationImpl::CheckIfAppShouldClose()
 }
 bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
 {
+    EventLoopFrame frame{};
+    frame.ctrl        = ctrl;
+    frame.nonBlocking = false;
+    if (!EnterEventLoop(frame, resetState))
+        return false;
+    while (StepEventLoop(frame))
+    {
+    }
+    LeaveEventLoop(frame);
+    return true;
+}
+bool ApplicationImpl::EnterEventLoop(EventLoopFrame& frame, bool resetState)
+{
     CHECK(app->Inited, false, "Application has not been corectly initialized !");
 
-    Internal::SystemEvent evnt{};
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->MouseLockedControl = nullptr;
     this->mouseLockedObject  = MouseLockedObject::None;
@@ -1302,114 +1331,121 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
     }
 
     PackControl(true);
-    if (ctrl != nullptr)
+    if (frame.ctrl != nullptr)
     {
         CHECK(ModalControlsCount < MAX_MODAL_CONTROLS_STACK, false, "Too many modal calls !");
-        ModalControlsStack[ModalControlsCount] = ctrl;
+        ModalControlsStack[ModalControlsCount] = frame.ctrl;
         ModalControlsCount++;
     }
     // update command bar
     UpdateCommandBar();
-
-    while (loopStatus == LoopStatus::Normal)
+    return true;
+}
+bool ApplicationImpl::StepEventLoop(EventLoopFrame& frame)
+{
+    if (loopStatus != LoopStatus::Normal)
+        return false;
+    if (!toDelete.empty())
     {
-        if (!toDelete.empty())
+        for (auto c : toDelete)
         {
-            for (auto c : toDelete)
-            {
-                // delete any potential references
-                if (this->MouseLockedControl == c)
-                    this->MouseLockedControl = nullptr;
-                if (this->MouseOverControl == c)
-                    this->MouseOverControl = nullptr;
-                if (this->ExpandedControl == c)
-                    this->ExpandedControl = nullptr;
-                delete c;
-            }
-            toDelete.clear();
+            // delete any potential references
+            if (this->MouseLockedControl == c)
+                this->MouseLockedControl = nullptr;
+            if (this->MouseOverControl == c)
+                this->MouseOverControl = nullptr;
+            if (this->ExpandedControl == c)
+                this->ExpandedControl = nullptr;
+            delete c;
         }
-        if (this->cmdBarUpdate)
+        toDelete.clear();
+    }
+    if (this->cmdBarUpdate)
+    {
+        UpdateCommandBar();
+        RepaintStatus |= REPAINT_STATUS_DRAW;
+    }
+    if (RepaintStatus != REPAINT_STATUS_NONE)
+    {
+        if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
+            ComputePositions();
+        if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
         {
-            UpdateCommandBar();
-            RepaintStatus |= REPAINT_STATUS_DRAW;
-        }
-        if (RepaintStatus != REPAINT_STATUS_NONE)
-        {
+            RepaintStatus = REPAINT_STATUS_NONE;
+            this->Paint();
+            // pentru cazul in care OnFocus sau OnLoseFocus schimba repaint status
             if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
                 ComputePositions();
+            if (this->cmdBarUpdate)
+                UpdateCommandBar();
             if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
-            {
-                RepaintStatus = REPAINT_STATUS_NONE;
                 this->Paint();
-                // pentru cazul in care OnFocus sau OnLoseFocus schimba repaint status
-                if ((RepaintStatus & REPAINT_STATUS_COMPUTE_POSITION) != 0)
-                    ComputePositions();
-                if (this->cmdBarUpdate)
-                    UpdateCommandBar();
-                if ((RepaintStatus & REPAINT_STATUS_DRAW) != 0)
-                    this->Paint();
-                this->terminal->Update();
-            }
-            RepaintStatus = REPAINT_STATUS_NONE;
+            this->terminal->Update();
         }
-        this->terminal->GetSystemEvent(evnt);
-        // keyboard profile: physical modifiers -> logical modifiers (keys, shift state and mouse modifiers)
-        if (!Application::GetModifierMap().IsIdentity())
-            evnt.keyCode = Application::GetModifierMap().ToLogical(evnt.keyCode);
-        if (evnt.updateFrames)
-        {
-            if (ProcessUpdateFrameEvent(this->AppDesktop))
-                this->RepaintStatus |= REPAINT_STATUS_DRAW;
-            for (uint32 tr = 0; tr < ModalControlsCount; tr++)
-                if (ProcessUpdateFrameEvent(this->ModalControlsStack[tr]))
-                    this->RepaintStatus |= REPAINT_STATUS_DRAW;
-        }
-        switch (evnt.eventType)
-        {
-        case SystemEventType::AppClosed:
-            loopStatus = LoopStatus::StopApp;
-            break;
-        case SystemEventType::AppResized:
-            if (((evnt.newWidth != this->terminal->screenCanvas.GetWidth()) ||
-                 (evnt.newHeight != this->terminal->screenCanvas.GetHeight())) &&
-                (evnt.newWidth > 0) && (evnt.newHeight > 0))
-            {
-                LOG_INFO("New size for app: %dx%d", evnt.newWidth, evnt.newHeight);
-                this->terminal->screenCanvas.Resize(evnt.newWidth, evnt.newHeight);
-                this->AppDesktop->Resize(evnt.newWidth, evnt.newHeight);
-                if (this->cmdBar)
-                    this->cmdBar->SetDesktopSize(evnt.newWidth, evnt.newHeight);
-                if (this->menu)
-                    this->menu->SetWidth(evnt.newWidth);
-                this->RepaintStatus = REPAINT_STATUS_ALL;
-            }
-            break;
-        case SystemEventType::MouseDown:
-            OnMouseDown(evnt.mouseX, evnt.mouseY, evnt.mouseButton, evnt.keyCode);
-            break;
-        case SystemEventType::MouseUp:
-            OnMouseUp(evnt.mouseX, evnt.mouseY, evnt.mouseButton, evnt.keyCode);
-            break;
-        case SystemEventType::MouseMove:
-            OnMouseMove(evnt.mouseX, evnt.mouseY, evnt.mouseButton, evnt.keyCode);
-            break;
-        case SystemEventType::MouseWheel:
-            OnMouseWheel(evnt.mouseX, evnt.mouseY, evnt.mouseWheel, evnt.keyCode);
-            break;
-        case SystemEventType::KeyPressed:
-            ProcessKeyPress(evnt.keyCode, evnt.unicodeCharacter);
-            break;
-        case SystemEventType::ShiftStateChanged:
-            ProcessShiftState(evnt.keyCode);
-            break;
-        case SystemEventType::RequestRedraw:
-            this->RepaintStatus = REPAINT_STATUS_ALL;
-            break;
-        default:
-            break;
-        }
+        RepaintStatus = REPAINT_STATUS_NONE;
     }
-    if (ctrl != nullptr)
+    this->terminal->nonBlockingEvents = frame.nonBlocking;
+    this->terminal->GetSystemEvent(frame.evnt);
+    // keyboard profile: physical modifiers -> logical modifiers (keys, shift state and mouse modifiers)
+    if (!Application::GetModifierMap().IsIdentity())
+        frame.evnt.keyCode = Application::GetModifierMap().ToLogical(frame.evnt.keyCode);
+    if (frame.evnt.updateFrames)
+    {
+        if (ProcessUpdateFrameEvent(this->AppDesktop))
+            this->RepaintStatus |= REPAINT_STATUS_DRAW;
+        for (uint32 tr = 0; tr < ModalControlsCount; tr++)
+            if (ProcessUpdateFrameEvent(this->ModalControlsStack[tr]))
+                this->RepaintStatus |= REPAINT_STATUS_DRAW;
+    }
+    switch (frame.evnt.eventType)
+    {
+    case SystemEventType::AppClosed:
+        loopStatus = LoopStatus::StopApp;
+        break;
+    case SystemEventType::AppResized:
+        if (((frame.evnt.newWidth != this->terminal->screenCanvas.GetWidth()) ||
+             (frame.evnt.newHeight != this->terminal->screenCanvas.GetHeight())) &&
+            (frame.evnt.newWidth > 0) && (frame.evnt.newHeight > 0))
+        {
+            LOG_INFO("New size for app: %dx%d", frame.evnt.newWidth, frame.evnt.newHeight);
+            this->terminal->screenCanvas.Resize(frame.evnt.newWidth, frame.evnt.newHeight);
+            this->AppDesktop->Resize(frame.evnt.newWidth, frame.evnt.newHeight);
+            if (this->cmdBar)
+                this->cmdBar->SetDesktopSize(frame.evnt.newWidth, frame.evnt.newHeight);
+            if (this->menu)
+                this->menu->SetWidth(frame.evnt.newWidth);
+            this->RepaintStatus = REPAINT_STATUS_ALL;
+        }
+        break;
+    case SystemEventType::MouseDown:
+        OnMouseDown(frame.evnt.mouseX, frame.evnt.mouseY, frame.evnt.mouseButton, frame.evnt.keyCode);
+        break;
+    case SystemEventType::MouseUp:
+        OnMouseUp(frame.evnt.mouseX, frame.evnt.mouseY, frame.evnt.mouseButton, frame.evnt.keyCode);
+        break;
+    case SystemEventType::MouseMove:
+        OnMouseMove(frame.evnt.mouseX, frame.evnt.mouseY, frame.evnt.mouseButton, frame.evnt.keyCode);
+        break;
+    case SystemEventType::MouseWheel:
+        OnMouseWheel(frame.evnt.mouseX, frame.evnt.mouseY, frame.evnt.mouseWheel, frame.evnt.keyCode);
+        break;
+    case SystemEventType::KeyPressed:
+        ProcessKeyPress(frame.evnt.keyCode, frame.evnt.unicodeCharacter);
+        break;
+    case SystemEventType::ShiftStateChanged:
+        ProcessShiftState(frame.evnt.keyCode);
+        break;
+    case SystemEventType::RequestRedraw:
+        this->RepaintStatus = REPAINT_STATUS_ALL;
+        break;
+    default:
+        break;
+    }
+    return loopStatus == LoopStatus::Normal;
+}
+void ApplicationImpl::LeaveEventLoop(EventLoopFrame& frame)
+{
+    if (frame.ctrl != nullptr)
     {
         if (ModalControlsCount > 0)
             ModalControlsCount--;
@@ -1433,7 +1469,10 @@ bool ApplicationImpl::ExecuteEventLoop(Control* ctrl, bool resetState)
     }
     // pack extended control
     PackControl(true);
-    return true;
+}
+bool ApplicationImpl::HasPendingWork() const
+{
+    return (!toDelete.empty()) || cmdBarUpdate || (RepaintStatus != REPAINT_STATUS_NONE);
 }
 void ApplicationImpl::SendCommand(int command)
 {

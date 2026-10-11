@@ -44,12 +44,24 @@ if (MSVC)
 else()
     set(APPCUI_FRONTEND_WINDOWS_CONSOLE_DEFAULT OFF)
 endif()
-if (UNIX)
+if (UNIX AND NOT EMSCRIPTEN)
     set(APPCUI_FRONTEND_NCURSES_DEFAULT ON)
 else()
     set(APPCUI_FRONTEND_NCURSES_DEFAULT OFF)
 endif()
-option(APPCUI_FRONTEND_SDL "Link the SDL2 frontend (AppCUI::Frontend::SDL) into libAppCUI" ON)
+# a wasm32-emscripten build gets the browser frontend and nothing that needs a native window system / tty
+if (EMSCRIPTEN)
+    set(APPCUI_FRONTEND_SDL_DEFAULT OFF)
+    set(APPCUI_FRONTEND_BROWSER_DEFAULT ON)
+    set(APPCUI_IMAGE_CODECS_DEFAULT OFF)
+else()
+    set(APPCUI_FRONTEND_SDL_DEFAULT ON)
+    set(APPCUI_FRONTEND_BROWSER_DEFAULT OFF)
+    set(APPCUI_IMAGE_CODECS_DEFAULT ON)
+endif()
+option(APPCUI_FRONTEND_SDL "Link the SDL2 frontend (AppCUI::Frontend::SDL) into libAppCUI" ${APPCUI_FRONTEND_SDL_DEFAULT})
+option(APPCUI_FRONTEND_BROWSER "Link the HTML5 canvas frontend (AppCUI::Frontend::Browser) into libAppCUI" ${APPCUI_FRONTEND_BROWSER_DEFAULT})
+option(APPCUI_IMAGE_CODECS "PNG / JPG support in Graphics::Image (libpng + libjpeg-turbo)" ${APPCUI_IMAGE_CODECS_DEFAULT})
 option(APPCUI_FRONTEND_NCURSES "Link the ncurses frontend (AppCUI::Frontend::Ncurses) into libAppCUI" ${APPCUI_FRONTEND_NCURSES_DEFAULT})
 option(APPCUI_FRONTEND_WINDOWS_CONSOLE "Link the Windows console frontend (AppCUI::Frontend::WindowsConsole) into libAppCUI" ${APPCUI_FRONTEND_WINDOWS_CONSOLE_DEFAULT})
 
@@ -58,6 +70,12 @@ if (APPCUI_FRONTEND_NCURSES AND NOT UNIX)
 endif()
 if (APPCUI_FRONTEND_WINDOWS_CONSOLE AND NOT MSVC)
     message(FATAL_ERROR "${PROJECT_NAME} => APPCUI_FRONTEND_WINDOWS_CONSOLE is only available on Windows (MSVC)")
+endif()
+if (APPCUI_FRONTEND_BROWSER AND NOT EMSCRIPTEN)
+    message(FATAL_ERROR "${PROJECT_NAME} => APPCUI_FRONTEND_BROWSER is only available for wasm32-emscripten")
+endif()
+if (EMSCRIPTEN AND (APPCUI_FRONTEND_SDL OR APPCUI_FRONTEND_NCURSES OR APPCUI_FRONTEND_WINDOWS_CONSOLE))
+    message(FATAL_ERROR "${PROJECT_NAME} => only AppCUI::Frontend::Browser is supported for wasm32-emscripten")
 endif()
 
 # every object file ends up in the shared libAppCUI -> same settings as the sources of a SHARED target
@@ -74,29 +92,31 @@ add_library(AppCUI::Core ALIAS AppCUICore)
 appcui_configure_component(AppCUICore)
 target_include_directories(AppCUICore PUBLIC "${INCLUDE_DIR}")
 
-find_package(JPEG REQUIRED)
-find_package(libjpeg-turbo CONFIG REQUIRED)
-find_package(PNG REQUIRED)
-
-if (UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
     target_link_libraries(AppCUICore PUBLIC ${CMAKE_DL_LIBS})
 endif()
 
-message("PNG_LIBRARIES => ${PNG_LIBRARIES}")
-target_include_directories(AppCUICore PRIVATE ${PNG_INCLUDE_DIR})
-target_link_libraries(AppCUICore PUBLIC ${PNG_LIBRARIES})
+if (APPCUI_IMAGE_CODECS)
+    find_package(JPEG REQUIRED)
+    find_package(libjpeg-turbo CONFIG REQUIRED)
+    find_package(PNG REQUIRED)
 
-message("JPEG_LIBRARIES => ${JPEG_LIBRARIES}")
-target_include_directories(AppCUICore PRIVATE ${JPEG_INCLUDE_DIR})
-target_link_libraries(AppCUICore PUBLIC ${JPEG_LIBRARIES})
-target_link_libraries(AppCUICore PUBLIC $<IF:$<TARGET_EXISTS:libjpeg-turbo::turbojpeg>,libjpeg-turbo::turbojpeg,libjpeg-turbo::turbojpeg-static>)
+    message("PNG_LIBRARIES => ${PNG_LIBRARIES}")
+    target_include_directories(AppCUICore PRIVATE ${PNG_INCLUDE_DIR})
+    target_link_libraries(AppCUICore PUBLIC ${PNG_LIBRARIES})
+
+    message("JPEG_LIBRARIES => ${JPEG_LIBRARIES}")
+    target_include_directories(AppCUICore PRIVATE ${JPEG_INCLUDE_DIR})
+    target_link_libraries(AppCUICore PUBLIC ${JPEG_LIBRARIES})
+    target_link_libraries(AppCUICore PUBLIC $<IF:$<TARGET_EXISTS:libjpeg-turbo::turbojpeg>,libjpeg-turbo::turbojpeg,libjpeg-turbo::turbojpeg-static>)
+endif()
 
 if (APPLE)
     # (kept as before the frontend split: the whole library is compiled with it on macOS)
     add_definitions(-D_XOPEN_SOURCE_EXTENDED)
 endif()
 
-if (UNIX AND NOT APPLE AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
+if (UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT (CMAKE_SYSTEM_NAME MATCHES "FreeBSD"))
     target_link_libraries(AppCUICore PUBLIC stdc++fs)
 endif()
 
@@ -222,12 +242,36 @@ if (APPCUI_FRONTEND_WINDOWS_CONSOLE)
     target_link_libraries(AppCUIFrontendWindowsConsole PRIVATE AppCUICore)
 endif()
 
+# ---------------------------------------------------------------------------------------------------------------------
+# AppCUI::Frontend::Browser
+# ---------------------------------------------------------------------------------------------------------------------
+if (APPCUI_FRONTEND_BROWSER)
+    add_library(AppCUIFrontendBrowser OBJECT)
+    add_library(AppCUI::Frontend::Browser ALIAS AppCUIFrontendBrowser)
+    appcui_configure_component(AppCUIFrontendBrowser)
+    target_link_libraries(AppCUIFrontendBrowser PRIVATE AppCUICore)
+    # new code: held to zero warnings from day one
+    target_compile_options(AppCUIFrontendBrowser PRIVATE -Werror)
+    if (APPCUI_WASM_JSPI)
+        # JSPI: the root event loop blocks (suspending main) instead of running as an emscripten main loop
+        target_compile_definitions(AppCUIFrontendBrowser PRIVATE APPCUI_WASM_JSPI)
+    endif()
+endif()
+
 add_subdirectory("${SRC_DIR}")
 
 # ---------------------------------------------------------------------------------------------------------------------
 # libAppCUI (public target used by the examples, the tests and every consumer)
 # ---------------------------------------------------------------------------------------------------------------------
-add_library(${PROJECT_NAME} SHARED)
+# wasm32-emscripten links a single module: libAppCUI is a static archive there (AppCUIStatic), consumed through the
+# AppCUI INTERFACE target defined at the end of this file
+if (EMSCRIPTEN)
+    set(APPCUI_LIBRARY_TARGET AppCUIStatic)
+    add_library(${APPCUI_LIBRARY_TARGET} STATIC)
+else()
+    set(APPCUI_LIBRARY_TARGET ${PROJECT_NAME})
+    add_library(${APPCUI_LIBRARY_TARGET} SHARED)
+endif()
 
 # versioning
 file(READ "${MAIN_HEADER}" appcui_content)
@@ -236,10 +280,10 @@ set(APPCUI_VERSION ${CMAKE_MATCH_1})
 message("${PROJECT_NAME} version: ${APPCUI_VERSION}")
 string(REPLACE "." "," VERSION_LIST ${APPCUI_VERSION})
 set(APPCUI_VERSION_LIST ${VERSION_LIST},0)
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${APPCUI_VERSION} SOVERSION ${APPCUI_VERSION})
+set_target_properties(${APPCUI_LIBRARY_TARGET} PROPERTIES VERSION ${APPCUI_VERSION} SOVERSION ${APPCUI_VERSION})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "lib")
-target_compile_definitions(${PROJECT_NAME} PRIVATE -DBUILD_AS_DYNAMIC_LIB)
+set_target_properties(${APPCUI_LIBRARY_TARGET} PROPERTIES PREFIX "lib")
+target_compile_definitions(${APPCUI_LIBRARY_TARGET} PRIVATE -DBUILD_AS_DYNAMIC_LIB)
 
 if (MSVC)
     set(WINRC_FOLDER "windows.rc")
@@ -247,13 +291,13 @@ if (MSVC)
     configure_file("resources/windows.rc.in" ${WINRC_FOLDER} @ONLY)
     target_sources(${PROJECT_NAME} PRIVATE ${WINRC_FOLDER})
 endif()
-target_sources(${PROJECT_NAME} PRIVATE "${SRC_DIR}/AppCUI.natvis")
+target_sources(${APPCUI_LIBRARY_TARGET} PRIVATE "${SRC_DIR}/AppCUI.natvis")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE AppCUICore)
+target_link_libraries(${APPCUI_LIBRARY_TARGET} PRIVATE AppCUICore)
 set(APPCUI_LINKED_FRONTENDS "")
-foreach(frontend SDL Ncurses WindowsConsole)
+foreach(frontend SDL Ncurses WindowsConsole Browser)
     if (TARGET AppCUIFrontend${frontend})
-        target_link_libraries(${PROJECT_NAME} PRIVATE AppCUIFrontend${frontend})
+        target_link_libraries(${APPCUI_LIBRARY_TARGET} PRIVATE AppCUIFrontend${frontend})
         list(APPEND APPCUI_LINKED_FRONTENDS ${frontend})
     endif()
 endforeach()
@@ -261,7 +305,33 @@ message(STATUS "${PROJECT_NAME} => frontends linked into lib${PROJECT_NAME}: ${A
 
 # Preserve source file paths in debug mode for shared lib
 if (DEBUG_BUILD)
-    set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
+    set_target_properties(${APPCUI_LIBRARY_TARGET} PROPERTIES DEBUG_POSTFIX "d")
+endif()
+
+if (EMSCRIPTEN)
+    # Every frontend registers itself from a static initializer that nothing references: as a plain archive member
+    # it would be dropped by the linker (and FrontendType::Default would find no frontend) -> consumers link the
+    # archive whole. CMAKE_LINK_LIBRARY_USING_WHOLE_ARCHIVE is provided by the root CMakeLists.txt when needed.
+    add_library(${PROJECT_NAME} INTERFACE)
+    target_link_libraries(${PROJECT_NAME} INTERFACE "$<LINK_LIBRARY:WHOLE_ARCHIVE,${APPCUI_LIBRARY_TARGET}>")
+    target_include_directories(${PROJECT_NAME} INTERFACE "${INCLUDE_DIR}")
+
+    # runtime contract of the browser frontend, inherited by every executable that links AppCUI
+    if (APPCUI_WASM_JSPI) # option declared in the root CMakeLists.txt (it also selects the exception model)
+        set(APPCUI_WASM_SUSPEND "-sJSPI=1")
+    else()
+        set(APPCUI_WASM_SUSPEND "-sASYNCIFY=1" "-sASYNCIFY_STACK_SIZE=131072")
+    endif()
+    target_link_options(${PROJECT_NAME} INTERFACE
+        ${APPCUI_WASM_SUSPEND}
+        "-sSTACK_SIZE=1048576"
+        "-sALLOW_MEMORY_GROWTH=1"
+        "-sMODULARIZE=1"
+        "-sEXPORT_ES6=1"
+        "-sEXPORT_NAME=createAppCUIModule"
+        "-sENVIRONMENT=web"
+        "-sEXPORTED_RUNTIME_METHODS=HEAPU8,HEAPU32"
+        "-sFILESYSTEM=1")
 endif()
 
 # sln configuration for MSVC

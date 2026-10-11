@@ -14,10 +14,11 @@ namespace
         DefaultFrontendPriority defaultPriority;
     };
 
-    constexpr uint32 FRONTEND_TYPES_COUNT = static_cast<uint32>(FrontendType::Custom) + 1;
+    constexpr uint32 FRONTEND_TYPES_COUNT = static_cast<uint32>(FrontendType::Browser) + 1;
     static_assert(static_cast<uint32>(FrontendType::Default) == 0);
     static_assert(static_cast<uint32>(FrontendType::Tests) == 4);
     static_assert(static_cast<uint32>(FrontendType::Custom) == 5);
+    static_assert(static_cast<uint32>(FrontendType::Browser) == 6);
 
     // Indexed by FrontendType. Only constant expressions are used to initialize it (constant initialization), so it is
     // valid before any dynamic initializer runs -> the registrars of the frontends can use it regardless of the order
@@ -29,12 +30,13 @@ namespace
         { nullptr, DefaultFrontendPriority::None },                        // WindowsConsole (AppCUI::Frontend::WindowsConsole)
         { CreateTerminal<TestTerminal>, DefaultFrontendPriority::None },   // Tests          (core)
         { CreateTerminal<CustomTerminal>, DefaultFrontendPriority::None }, // Custom         (core)
+        { nullptr, DefaultFrontendPriority::None },                        // Browser        (AppCUI::Frontend::Browser)
     };
 
     [[maybe_unused]] const char* GetFrontendName(uint32 index)
     {
         constexpr const char* names[FRONTEND_TYPES_COUNT] = { "Default", "SDL",   "Terminal",
-                                                              "WindowsConsole", "Tests", "Custom" };
+                                                              "WindowsConsole", "Tests", "Custom", "Browser" };
         return index < FRONTEND_TYPES_COUNT ? names[index] : "Unknown";
     }
 

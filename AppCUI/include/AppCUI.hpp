@@ -13,6 +13,7 @@
 #include <vector>
 #include <functional>
 #include <string.h>
+#include <cstring>
 #include <initializer_list>
 #include <cstdint>
 #ifdef _MSC_VER
@@ -618,7 +619,99 @@ namespace Graphics
         static uint32 GetSupportedCodePagesCount();
     };
 }; // namespace Graphics
+} // namespace AppCUI
 
+/// Character traits of Graphics::Character, required by Utils::CharacterView (std::basic_string_view<Character>).
+/// libc++ 19+ (Emscripten, recent LLVM / Apple toolchains) no longer ships the generic std::char_traits<T>; this
+/// specialization keeps the semantics of that generic template: characters compare by their code only (through the
+/// implicit char16 conversion of Character), colors are ignored.
+template <>
+struct std::char_traits<AppCUI::Graphics::Character>
+{
+    using char_type = AppCUI::Graphics::Character;
+    using int_type  = AppCUI::uint64; // wider than any packed character -> eof() never collides with a character
+
+    static constexpr void assign(char_type& r, const char_type& a) noexcept
+    {
+        r = a;
+    }
+    static constexpr bool eq(const char_type& a, const char_type& b) noexcept
+    {
+        return a.Code == b.Code;
+    }
+    static constexpr bool lt(const char_type& a, const char_type& b) noexcept
+    {
+        return a.Code < b.Code;
+    }
+    static constexpr int compare(const char_type* a, const char_type* b, std::size_t count) noexcept
+    {
+        for (; count > 0; count--, a++, b++)
+        {
+            if (a->Code != b->Code)
+                return a->Code < b->Code ? -1 : 1;
+        }
+        return 0;
+    }
+    static constexpr std::size_t length(const char_type* s) noexcept
+    {
+        std::size_t count = 0;
+        while (s[count].Code != 0)
+            count++;
+        return count;
+    }
+    static constexpr const char_type* find(const char_type* s, std::size_t count, const char_type& a) noexcept
+    {
+        for (; count > 0; count--, s++)
+        {
+            if (s->Code == a.Code)
+                return s;
+        }
+        return nullptr;
+    }
+    static char_type* move(char_type* dest, const char_type* src, std::size_t count) noexcept
+    {
+        if (count > 0)
+            std::memmove(dest, src, count * sizeof(char_type));
+        return dest;
+    }
+    static char_type* copy(char_type* dest, const char_type* src, std::size_t count) noexcept
+    {
+        if (count > 0)
+            std::memcpy(dest, src, count * sizeof(char_type));
+        return dest;
+    }
+    static char_type* assign(char_type* dest, std::size_t count, char_type a) noexcept
+    {
+        for (std::size_t index = 0; index < count; index++)
+            dest[index] = a;
+        return dest;
+    }
+    static int_type to_int_type(const char_type& c) noexcept
+    {
+        return c.PackedValue;
+    }
+    static char_type to_char_type(int_type value) noexcept
+    {
+        char_type c{};
+        c.PackedValue = static_cast<AppCUI::uint32>(value);
+        return c;
+    }
+    static constexpr bool eq_int_type(int_type a, int_type b) noexcept
+    {
+        return a == b;
+    }
+    static constexpr int_type eof() noexcept
+    {
+        return ~static_cast<int_type>(0);
+    }
+    static constexpr int_type not_eof(int_type value) noexcept
+    {
+        return value == eof() ? 0 : value;
+    }
+};
+
+namespace AppCUI
+{
 namespace Utils
 {
     class EXPORT String;
@@ -5568,6 +5661,7 @@ namespace Application
         WindowsConsole = 3,
         Tests          = 4,
         Custom         = 5, // implemented by the application (see CustomFrontendInterface)
+        Browser        = 6, ///< HTML5 canvas inside a web page (wasm32-emscripten builds only)
     };
     /// Built-in color themes.
     enum class ThemeType : uint32
