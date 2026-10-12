@@ -6031,7 +6031,8 @@ namespace Endian
 // if it's msvc, we assume little endian
 #    define GVIEW_LITTLE_ENDIAN
 #elif defined(__BYTE_ORDER__)
-#    if __BYTE_ORDER__ == __LITTLE_ENDIAN__
+// GCC and Clang name the byte-order constants __ORDER_*_ENDIAN__ (__LITTLE_ENDIAN__ is undefined on GCC and is 1 on Clang)
+#    if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #        define GVIEW_LITTLE_ENDIAN
 #    else
 #        define GVIEW_BIG_ENDIAN
