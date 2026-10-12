@@ -17,8 +17,8 @@ class MainMenuState : public State, public Handlers::OnKeyEventInterface
 
     MainMenuState(const MainMenuState& other)     = default;
     MainMenuState(MainMenuState&& other) noexcept = default;
-    MainMenuState& operator=(const MainMenuState& other) = default;
-    MainMenuState& operator=(MainMenuState&& other) noexcept = default;
+    MainMenuState& operator=(const MainMenuState& other)     = delete;
+    MainMenuState& operator=(MainMenuState&& other) noexcept = delete;
 
     ~MainMenuState();
 
@@ -44,6 +44,6 @@ class MainMenuState : public State, public Handlers::OnKeyEventInterface
   private:
     bool DoActionForControl(int controlID);
 
-    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar);
+    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar) override;
 };
 } // namespace Tetris

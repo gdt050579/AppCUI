@@ -150,7 +150,7 @@ class TreeExample : public Window, public Handlers::OnTreeViewItemToggleInterfac
                 child.SetData(Reference<std::u16string>(&cpath));
             }
         }
-        catch (std::exception& e)
+        catch ([[maybe_unused]] std::exception& e)
         {
 #ifdef _DEBUG
             LOG_ERROR("%s", e.what());

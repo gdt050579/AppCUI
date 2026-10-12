@@ -1644,7 +1644,7 @@ void PropertyListCallbacksInjector::OnComboBoxCurrentItemChanged(Reference<Contr
     const bool enableButton = context->selectionType != PropertySelectionType::NonSerializable;
     context->saveButton->SetEnabled(enableButton);
 }
-void PropertyListCallbacksInjector::OnButtonPressed(Reference<Controls::Button> r)
+void PropertyListCallbacksInjector::OnButtonPressed(Reference<Controls::Button>)
 {
     context->SaveSerializableFields();
 }
@@ -1974,8 +1974,8 @@ bool PropertyListContext::IsItemFiltered(const PropertyInfo& p) const
     {
         if (hasSerializableProperties)
         {
-            if (selectionType == PropertySelectionType::Serializable && !p.isSerializable ||
-                selectionType == PropertySelectionType::NonSerializable && p.isSerializable)
+            if ((selectionType == PropertySelectionType::Serializable && !p.isSerializable) ||
+                (selectionType == PropertySelectionType::NonSerializable && p.isSerializable))
                 return false;
         }
         return true;
@@ -1984,8 +1984,8 @@ bool PropertyListContext::IsItemFiltered(const PropertyInfo& p) const
     {
         if (hasSerializableProperties)
         {
-            if (selectionType == PropertySelectionType::Serializable && !p.isSerializable ||
-                selectionType == PropertySelectionType::NonSerializable && p.isSerializable)
+            if ((selectionType == PropertySelectionType::Serializable && !p.isSerializable) ||
+                (selectionType == PropertySelectionType::NonSerializable && p.isSerializable))
                 return false;
         }
         return true;

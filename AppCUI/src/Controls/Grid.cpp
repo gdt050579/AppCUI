@@ -26,6 +26,18 @@ constexpr auto minCellWidth  = 0x03U;
 constexpr auto minCellHeight = 0x02U;
 constexpr size_t maxContentDisplayLength = 0x02U;
 
+// Keeps only the low byte of every UTF-16 code unit (lossy for non-ASCII), as the Grid text getters always have.
+static std::string TruncateToNarrow(std::u16string_view text)
+{
+    std::string result;
+    result.reserve(text.size());
+    for (const auto ch : text)
+    {
+        result.push_back(static_cast<char>(ch));
+    }
+    return result;
+}
+
 Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     : Control(new GridControlContext(), "", layout, false)
 {
@@ -47,8 +59,6 @@ Grid::Grid(string_view layout, uint32 columnsNo, uint32 rowsNo, GridFlags flags)
     context->headers.reserve(context->columnsNo);
     context->SetDefaultHeaderValues();
     context->ReserveMap();
-
-    Application::Config* cfg = Application::GetAppConfig();
 
     Sort();
     Filter();
@@ -768,7 +778,7 @@ void Controls::Grid::Filter()
 std::optional<std::pair<std::string, std::vector<std::string>>> Grid::GetSelectedColumnContent()
 {
     auto context       = reinterpret_cast<GridControlContext*>(Context);
-    uint32 columnIndex = -1;
+    uint32 columnIndex;
     if (context->anchorCellIndex != InvalidCellIndex)
     {
         columnIndex = context->anchorCellIndex % context->columnsNo;
@@ -777,20 +787,17 @@ std::optional<std::pair<std::string, std::vector<std::string>>> Grid::GetSelecte
     {
         columnIndex = context->hoveredCellIndex % context->columnsNo;
     }
-
-    if (columnIndex == -1)
+    else
     {
         return {};
     }
 
-    std::u16string columnNameu16 = (context->headers[columnIndex + 1]).content;
-    std::string columnName       = { columnNameu16.begin(), columnNameu16.end() };
+    std::string columnName = TruncateToNarrow(context->headers[columnIndex + 1].content);
     std::vector<std::string> contents;
-    for (auto cell : (*context->cells)[columnIndex])
+    contents.reserve((*context->cells)[columnIndex].size());
+    for (const auto& cell : (*context->cells)[columnIndex])
     {
-        std::u16string cellContentu16 = cell.content;
-        std::string cellContent       = { cellContentu16.begin(), cellContentu16.end() };
-        contents.push_back(cellContent);
+        contents.push_back(TruncateToNarrow(cell.content));
     }
 
     return std::make_pair(columnName, contents);
@@ -817,16 +824,11 @@ std::optional<std::string> Grid::GetSelectedCellContent()
     const auto cellColumn = cellIndex % context->columnsNo;
     const auto cellRow    = cellIndex / context->columnsNo;
     std::u16string_view u16strView((*context->cells)[cellColumn][cellRow].content);
-    std::string contentAsString;
     if (u16strView.ends_with(u"_BL"))
     {
-        contentAsString = { u16strView.begin(), u16strView.end() - 3 };
+        u16strView.remove_suffix(3);
     }
-    else
-    {
-        contentAsString = { u16strView.begin(), u16strView.end() };
-    }
-    return contentAsString;
+    return TruncateToNarrow(u16strView);
 }
 
 void GridControlContext::FilterColumn(int columnIndex)
@@ -836,8 +838,8 @@ void GridControlContext::FilterColumn(int columnIndex)
 
     ProgressStatus::Init("Searching...", rowsNo);
     LocalString<512> ls;
-    const char* format = "Reading [%d/%d] rows...";
-    for (auto rowIndex = 0; rowIndex < rowsNo; rowIndex++)
+    const char* format = "Reading [%u/%u] rows...";
+    for (uint32 rowIndex = 0; rowIndex < rowsNo; rowIndex++)
     {
         ProgressStatus::Update(rowIndex, ls.Format(format, rowIndex, rowsNo));
         if ((*cells)[columnIndex][rowIndex].content.find(columnsFilter[columnIndex]) != std::u16string::npos)
@@ -856,17 +858,17 @@ void GridControlContext::FilterColumn(int columnIndex)
     auto tmpRow   = std::vector<GridCellData>(filteredRows.size());
     newCells.reserve(columnsNo);
 
-    for (auto columnIndex = 0; columnIndex < columnsNo; columnIndex++)
+    for (uint32 colIndex = 0; colIndex < columnsNo; colIndex++)
     {
-        for (auto filteredIndex = 0; filteredIndex < filteredRows.size(); filteredIndex++)
+        for (size_t filteredIndex = 0; filteredIndex < filteredRows.size(); filteredIndex++)
         {
-            tmpRow[filteredIndex] = (*cells)[columnIndex][filteredRows[filteredIndex]];
+            tmpRow[filteredIndex] = (*cells)[colIndex][filteredRows[filteredIndex]];
         }
         newCells.push_back(tmpRow);
     }
 
     *cells = newCells;
-    rowsNo = filteredRows.size();
+    rowsNo = static_cast<uint32>(filteredRows.size());
 }
 
 void GridControlContext::DrawBoxes(Renderer& renderer)
@@ -914,10 +916,10 @@ void GridControlContext::DrawBoxes(Renderer& renderer)
         const auto rowIndex    = hoveredCellIndex / columnsNo;
 
         const auto xLeft  = std::max<>(minX, (int) (offsetX + columnIndex * cWidth));
-        const auto xRight = offsetX + (columnIndex + 1) * cWidth;
+        const auto xRight = offsetX + static_cast<int32>((columnIndex + 1) * cWidth);
 
         const auto yTop    = std::max<>(minY, (int) (offsetY + rowIndex * cHeight));
-        const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
+        const auto yBottom = offsetY + static_cast<int32>((rowIndex + 1) * cHeight);
 
         const auto color = Cfg->Cursor.Inactive;
         if (xLeft >= xRight)
@@ -983,8 +985,8 @@ void GridControlContext::DrawLines(Renderer& renderer)
     int minX = cWidth - 1;
     int minY = cHeight - 1;
 
-    const uint32 toAddColumn = std::max<>(0, deltaX / (int) cWidth);
-    const uint32 toAddRow    = std::max<>(0, deltaY / (int) cHeight);
+    const int toAddColumn = std::max<>(0, deltaX / (int) cWidth);
+    const int toAddRow    = std::max<>(0, deltaY / (int) cHeight);
 
     const auto color = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
     for (auto i = toAddColumn; i < END(Layout.Width, offsetX, cWidth, columnsNo) + 1; i++)
@@ -996,9 +998,9 @@ void GridControlContext::DrawLines(Renderer& renderer)
 
             if ((flags & GridFlags::HideHorizontalLines) == GridFlags::None)
             {
-                if (i < columnsNo)
+                if (i < static_cast<int>(columnsNo))
                 {
-                    const auto endX = offsetX + (i + 1) * cWidth;
+                    const auto endX = offsetX + static_cast<int>((i + 1) * cWidth);
                     if (x >= endX)
                     {
                         continue;
@@ -1009,9 +1011,9 @@ void GridControlContext::DrawLines(Renderer& renderer)
 
             if ((flags & GridFlags::HideVerticalLines) == GridFlags::None)
             {
-                if (j < rowsNo)
+                if (j < static_cast<int>(rowsNo))
                 {
-                    const auto endY = offsetY + (j + 1) * cHeight;
+                    const auto endY = offsetY + static_cast<int>((j + 1) * cHeight);
                     if (y >= endY)
                     {
                         continue;
@@ -1022,7 +1024,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
         }
     }
 
-    const auto drawLines = [&](uint32 cellIndex, GridCellStatus cellType)
+    const auto drawLines = [&](uint32 cellIndex, GridCellStatus /*cellType*/)
     {
         ColorPair vertical, horizontal;
         horizontal = vertical = Cfg->Cursor.Inactive;
@@ -1036,7 +1038,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
         const auto rowIndex    = cellIndex / columnsNo;
 
         const auto xLeft  = std::max<>(minX, (int) (offsetX + columnIndex * cWidth));
-        const auto xRight = offsetX + (columnIndex + 1) * cWidth;
+        const auto xRight = offsetX + static_cast<int32>((columnIndex + 1) * cWidth);
 
         if (xLeft >= xRight)
         {
@@ -1044,7 +1046,7 @@ void GridControlContext::DrawLines(Renderer& renderer)
         }
 
         const auto yTop    = std::max<>(minY, (int) (offsetY + rowIndex * cHeight));
-        const auto yBottom = offsetY + (rowIndex + 1) * cHeight;
+        const auto yBottom = offsetY + static_cast<int32>((rowIndex + 1) * cHeight);
         if (yTop >= yBottom)
         {
             return;
@@ -1184,7 +1186,7 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
     {
         const auto columnIndex = hoveredCellIndex % columnsNo;
         const auto rowIndex    = hoveredCellIndex / columnsNo;
-        if (!(columnIndex < toAddColumn && rowIndex < toAddRow))
+        if (!(static_cast<int32>(columnIndex) < toAddColumn && static_cast<int32>(rowIndex) < toAddRow))
         {
             DrawCellBackground(renderer, GridCellStatus::Hovered, hoveredCellIndex);
         }
@@ -1196,7 +1198,7 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
         {
             const auto columnIndex = cellIndex % columnsNo;
             const auto rowIndex    = cellIndex / columnsNo;
-            if (columnIndex < toAddColumn || rowIndex < toAddRow)
+            if (static_cast<int32>(columnIndex) < toAddColumn || static_cast<int32>(rowIndex) < toAddRow)
             {
                 continue;
             }
@@ -1205,7 +1207,8 @@ void GridControlContext::DrawCellsBackground(Graphics::Renderer& renderer)
     }
 }
 
-void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCellStatus cellType, uint32 i, uint32 j)
+void GridControlContext::DrawCellBackground(
+      Graphics::Renderer& renderer, GridCellStatus /*cellType*/, uint32 i, uint32 j)
 {
     const auto xLeft  = offsetX + i * cWidth;
     const auto xRight = offsetX + (i + 1) * cWidth;
@@ -1213,8 +1216,8 @@ void GridControlContext::DrawCellBackground(Graphics::Renderer& renderer, GridCe
     const auto yTop    = offsetY + j * cHeight;
     const auto yBottom = offsetY + (j + 1) * cHeight;
 
-    int cellIndex   = j * columnsNo + i;
-    ColorPair color = Cfg->Cursor.Inactive;
+    const uint32 cellIndex = j * columnsNo + i;
+    ColorPair color        = Cfg->Cursor.Inactive;
     if (cellIndex == anchorCellIndex)
     {
         color = Cfg->Cursor.OverInactiveItem;
@@ -1302,7 +1305,7 @@ bool GridControlContext::DrawCellContent(Graphics::Renderer& renderer, uint32 ce
     {
         std::u16string partialStr = u"BLOB ";
         auto dataContentLength            = std::min<>(maxContentDisplayLength, data.content.size() / 4);
-        for (auto lengthIndex = 0; lengthIndex < dataContentLength; lengthIndex++)
+        for (size_t lengthIndex = 0; lengthIndex < dataContentLength; lengthIndex++)
         {
             std::bitset<4> bitset(data.content.substr(lengthIndex * 4, 4));
             partialStr +=
@@ -1342,7 +1345,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     const auto lineColor = Cfg->Lines.GetColor(GetControlState(ControlStateFlags::All));
 
     const int32 beginAdd = START_INDEX_DRAW(left, offsetX, cWidth);
-    for (auto i = beginAdd + 1; i <= augmentedColumnsNo; i++)
+    for (auto i = beginAdd + 1; i <= static_cast<int32>(augmentedColumnsNo); i++)
     {
         const int x    = offsetX + (i - 1) * cWidth;
         const int y    = top;
@@ -1402,7 +1405,7 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
     wtp.Flags = WriteTextFlags::SingleLine | WriteTextFlags::ClipToWidth | WriteTextFlags::FitTextToWidth;
     wtp.Color = Cfg->Text.Normal;
 
-    for (auto i = beginAdd + 1; i < headers.size(); i++)
+    for (auto i = beginAdd + 1; i < static_cast<int32>(headers.size()); i++)
     {
         const auto it = headers[i];
         wtp.X         = offsetX + (i - 1) * cWidth + 1; // 1 -> line
@@ -1427,7 +1430,6 @@ bool GridControlContext::DrawHeader(Graphics::Renderer& renderer)
 
         // draw header for index column, then skip those who should not be drawn
     }
-    const auto color = Cfg->Cursor;
     if (rowsNo != 0)
     {
         renderer.WriteSpecialCharacter(right + 1, bottom + 1, AppCUI::Graphics::SpecialChars::BoxMidleRight, lineColor);
@@ -1453,7 +1455,7 @@ bool GridControlContext::DrawIndexesColumn(Graphics::Renderer& renderer)
     renderer.DrawVerticalLine(left - 1, top, bottom, lineColor);
     renderer.DrawVerticalLine(right + 1, top, bottom, lineColor);
 
-    const int32 beginAdd = std::max<>(0, (int) deltaY / (int) cHeight - 1);
+    const uint32 beginAdd = static_cast<uint32>(std::max<>(0, (int) deltaY / (int) cHeight - 1));
     for (auto i = beginAdd; i <= rowsNo; i++)
     {
         const int x    = left - 1;
@@ -1487,7 +1489,7 @@ bool GridControlContext::DrawIndexesColumn(Graphics::Renderer& renderer)
         wtp.Align = TextAlignament::Center;
 
         LocalString<10> ls;
-        renderer.WriteText(ls.Format("%d", i), wtp);
+        renderer.WriteText(ls.Format("%u", i), wtp);
     }
 
     return true;

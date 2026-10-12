@@ -37,26 +37,33 @@ void SnakeBody::SetInitialPosition(const Point& initialPosition)
 
 void SnakeBody::UpdatePosition(const Point& delta)
 {
-    const Point p{ body[0].first.X + delta.X, body[0].first.Y + delta.Y };
-    const ColorPair c{ body[0].second };
-    body.insert(body.begin(), { p, c });
+    if (body.empty())
+    {
+        return;
+    }
 
+    const Point head{ body[0].first.X + delta.X, body[0].first.Y + delta.Y };
     if (snakeAte)
     {
-        snakeAte       = false;
+        // grow by one segment: every segment moves one slot towards the tail (keeping its color)
+        // and the segment right behind the head takes the color of what was eaten
+        snakeAte = false;
+        body.push_back(body.back());
+        for (size_t i = body.size() - 2; i > 0; i--)
+        {
+            body[i] = body[i - 1];
+        }
         body[1].second = lastColorAte;
     }
-    else // pass the color before popping
+    else
     {
-        for (auto i = 0; i < static_cast<int>(body.size()) - 1; i++)
+        // same length: positions follow the head, colors stay where they are
+        for (size_t i = body.size() - 1; i > 0; i--)
         {
-            auto& entry        = body[i];
-            const auto& nEntry = body[i + 1ULL];
-            entry.second       = nEntry.second;
+            body[i].first = body[i - 1].first;
         }
-
-        body.pop_back();
     }
+    body[0].first = head;
 }
 
 void SnakeBody::Ate(const ColorPair& color)

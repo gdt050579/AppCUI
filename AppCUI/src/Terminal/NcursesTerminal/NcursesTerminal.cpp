@@ -13,7 +13,7 @@
 static std::string get_self_path()
 {
     char self[PATH_MAX] = { 0 };
-    int nchar           = readlink("/proc/self/exe", self, sizeof self);
+    int nchar           = static_cast<int>(readlink("/proc/self/exe", self, sizeof self - 1));
     if (nchar < 0 || nchar >= PATH_MAX)
     {
         return self;
@@ -112,7 +112,10 @@ bool NcursesTerminal::OnInit(const Application::InitializationData& initData)
     if (setTerminInfo)
     {
         auto path = get_self_path();
-        path.substr(0, path.find_last_of('/'));
+        if (const auto lastSlash = path.find_last_of('/'); lastSlash != std::string::npos)
+        {
+            path.resize(lastSlash);
+        }
         path += "/terminfo";
         std::cout << "Your terminfo path is: " << path << '\n';
         CHECK(setenv("TERMINFO", path.c_str(), true), false, "");
@@ -184,14 +187,8 @@ void NcursesTerminal::OnFlushToScreen()
         for (size_t x = 0; x < width; x++)
         {
             const Graphics::Character ch = charsBuffer[y * width + x];
-            const cchar_t t              
-            { 
-                .attr = 0, 
-                .chars = { ch.Code, 0 },
-#if __APPLE__
-                .ext_color = {}
-#endif
-            };
+            cchar_t t{};
+            t.chars[0] = static_cast<wchar_t>(ch.Code);
             colors.SetColor(ch.Color.Foreground, ch.Color.Background);
             mvadd_wch(y, x, &t);
             colors.UnsetColor(ch.Color.Foreground, ch.Color.Background);

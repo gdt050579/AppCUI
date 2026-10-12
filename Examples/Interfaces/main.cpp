@@ -16,6 +16,10 @@ class MyWin : public Window,
     Reference<Button> b;
 
   public:
+    // the handler-interface overloads below would otherwise hide Control's own focus virtuals
+    using Window::OnFocus;
+    using Window::OnLoseFocus;
+
     MyWin() : Window("Test", "d:c,w:40,h:10", WindowFlags::None)
     {
         b = this->CreateChildControl<Button>("Push Me", "x:1,y:1,w:10", 123, ButtonFlags::None);

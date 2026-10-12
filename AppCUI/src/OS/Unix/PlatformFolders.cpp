@@ -283,7 +283,7 @@ std::string getCacheDir()
 #endif
 }
 
-void appendAdditionalDataDirectories(std::vector<std::string>& homes)
+void appendAdditionalDataDirectories([[maybe_unused]] std::vector<std::string>& homes)
 {
 #ifdef _WIN32
     homes.push_back(GetAppDataCommon());
@@ -292,7 +292,7 @@ void appendAdditionalDataDirectories(std::vector<std::string>& homes)
 #endif
 }
 
-void appendAdditionalConfigDirectories(std::vector<std::string>& homes)
+void appendAdditionalConfigDirectories([[maybe_unused]] std::vector<std::string>& homes)
 {
 #ifdef _WIN32
     homes.push_back(GetAppDataCommon());

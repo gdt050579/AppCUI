@@ -23,8 +23,8 @@ namespace Internal
         SDL_Renderer* renderer;
         std::unique_ptr<char[]> fontBuffer;
         TTF_Font* font;
-        size_t charWidth;
-        size_t charHeight;
+        int charWidth;
+        int charHeight;
         bool autoRedraw;
 
         std::unordered_map<uint32, SDL_Texture*> characterCache;

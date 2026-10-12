@@ -856,12 +856,12 @@ struct TreeItem
     variant<GenericRef, uint64> data{ nullptr };
     bool expanded     = false;
     bool isExpandable = false;
-    vector<ItemHandle> children;
+    vector<ItemHandle> children{};
     uint32 depth                      = 1;
     bool markedAsFound                = false;
     bool hasAChildThatIsMarkedAsFound = false;
     TreeViewItem::Type type           = TreeViewItem::Type::Normal;
-    ColorPair color;
+    ColorPair color{};
     uint32 priority = 0;
 };
 
@@ -1195,8 +1195,8 @@ enum class PropertySelectionType : uint8
     Both
 };
 struct PropertyListContext;
-struct PropertyListCallbacksInjector : public AppCUI::Handlers::OnComboBoxCurrentItemChangedInterface,
-                                       public AppCUI::Handlers::OnButtonPressedInterface
+struct PropertyListCallbacksInjector final : public AppCUI::Handlers::OnComboBoxCurrentItemChangedInterface,
+                                             public AppCUI::Handlers::OnButtonPressedInterface
 {
     Reference<PropertyListContext> context;
     void OnComboBoxCurrentItemChanged(Reference<Controls::ComboBox> cbox) override;
