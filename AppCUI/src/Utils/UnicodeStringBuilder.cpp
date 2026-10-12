@@ -261,7 +261,7 @@ bool UnicodeStringBuilder::Add(const ConstString& text)
             }
             p++;
         }
-        this->length += (uint32) (p - this->chars);
+        this->length = (uint32) (p - this->chars);
         return true;
     }
     RETURNERROR(false, "Fail to Set a string (unknwon variant type)");
