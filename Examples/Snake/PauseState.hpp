@@ -18,8 +18,8 @@ class PauseState : public State, public Handlers::OnKeyEventInterface
 
     PauseState(const PauseState& other)     = default;
     PauseState(PauseState&& other) noexcept = default;
-    PauseState& operator=(const PauseState& other) = default;
-    PauseState& operator=(PauseState&& other) noexcept = default;
+    PauseState& operator=(const PauseState& other)     = delete;
+    PauseState& operator=(PauseState&& other) noexcept = delete;
 
     ~PauseState();
 
@@ -42,6 +42,6 @@ class PauseState : public State, public Handlers::OnKeyEventInterface
     Reference<Button> exitButton           = nullptr;
 
     bool DoActionForControl(int controlID);
-    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar);
+    bool OnKeyEvent(Reference<Control> control, Key keyCode, char16_t unicodeChar) override;
 };
 } // namespace Tetris

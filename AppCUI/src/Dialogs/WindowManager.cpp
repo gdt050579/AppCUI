@@ -77,7 +77,7 @@ class SingleLineWindow : public Controls::Window
         input->SetFocus();
     }
 
-    bool OnEvent(Reference<Control> c, Event eventType, int id) override
+    bool OnEvent(Reference<Control>, Event eventType, int id) override
     {
         if (eventType == Event::WindowClose || eventType == Event::WindowAccept)
         {
@@ -194,7 +194,7 @@ void InternalWindowManager::CloseDescendants(ItemHandle id)
     }
 }
 
-void InternalWindowManager::OnTreeViewCurrentItemChanged(Reference<Controls::TreeView> tree, TreeViewItem& item)
+void InternalWindowManager::OnTreeViewCurrentItemChanged(Reference<Controls::TreeView>, TreeViewItem& item)
 {
     auto win = item.GetData<Window>();
     if (!win.IsValid())

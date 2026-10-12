@@ -1,5 +1,6 @@
 [Dd]ebug/
 [Rr]elease/
+logs
 .vs/
 *.vcxproj.filters
 *.vcxproj.user

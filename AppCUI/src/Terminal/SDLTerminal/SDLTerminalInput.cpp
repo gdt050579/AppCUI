@@ -213,8 +213,8 @@ void SDLTerminal::GetSystemEvent(Internal::SystemEvent& evnt)
             if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
             {
                 evnt.eventType = SystemEventType::AppResized;
-                evnt.newWidth  = e.window.data1 / charWidth;
-                evnt.newHeight = e.window.data2 / charHeight;
+                evnt.newWidth  = static_cast<uint32>(e.window.data1 / charWidth);
+                evnt.newHeight = static_cast<uint32>(e.window.data2 / charHeight);
             }
             else if (e.window.event == SDL_WINDOWEVENT_CLOSE)
             {

@@ -66,7 +66,7 @@ constexpr static std::array<SDL_Color, NR_COLORS> appcuiColorToSDLColor = {
 // that will be our cell width and cell height.
 bool SDLTerminal::InitFont(const InitializationData& initData)
 {
-    size_t fontSize = 0;
+    int fontSize = 0;
     switch (initData.CharSize)
     {
     case CharacterSize::Tiny:
@@ -107,8 +107,8 @@ bool SDLTerminal::InitFont(const InitializationData& initData)
     int fontCharHeight = 0;
     // Hopefully we're using a fixed size font so all the char widths are the same
     TTF_SizeText(font, "A", &fontCharWidth, &fontCharHeight);
-    this->charWidth  = static_cast<size_t>(fontCharWidth);
-    this->charHeight = static_cast<size_t>(fontCharHeight);
+    this->charWidth  = fontCharWidth;
+    this->charHeight = fontCharHeight;
 
     // Check if it has the box drawing characters
     CHECK(TTF_GlyphIsProvided(font, 0x2550), false, "The provided font doesn't support box chars!");
@@ -162,16 +162,16 @@ bool SDLTerminal::InitScreen(const InitializationData& initData)
     CHECK(renderer, false, "Failed to initialize SDL Renderer: %s", SDL_GetError());
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-    const size_t widthInChars  = pixelWidth / charWidth;
-    const size_t heightInChars = pixelHeight / charHeight;
+    const auto widthInChars  = static_cast<uint32>(pixelWidth / static_cast<size_t>(charWidth));
+    const auto heightInChars = static_cast<uint32>(pixelHeight / static_cast<size_t>(charHeight));
     CHECK(screenCanvas.Create(widthInChars, heightInChars),
           false,
-          "Failed to create an internal canvas of %d x %d size",
+          "Failed to create an internal canvas of %u x %u size",
           widthInChars,
           heightInChars);
     CHECK(originalScreenCanvas.Create(widthInChars, heightInChars),
           false,
-          "Failed to create the original screen canvas of %d x %d size",
+          "Failed to create the original screen canvas of %u x %u size",
           widthInChars,
           heightInChars);
 
@@ -258,8 +258,8 @@ void SDLTerminal::OnFlushToScreen()
 
             if (glyphTexture != nullptr)
             {
-                WindowRect.x = charWidth * x;
-                WindowRect.y = charHeight * y;
+                WindowRect.x = charWidth * static_cast<int>(x);
+                WindowRect.y = charHeight * static_cast<int>(y);
                 SDL_RenderCopy(renderer, glyphTexture, nullptr, &WindowRect);
             }
         }

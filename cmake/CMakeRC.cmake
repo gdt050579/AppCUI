@@ -34,7 +34,7 @@ endif()
 
 set(_version 2.0.0)
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.13)
 include(CMakeParseArguments)
 
 if(COMMAND cmrc_add_resource_library)
@@ -498,7 +498,7 @@ function(cmrc_add_resource_library name)
     add_library(${name} ${ARG_TYPE} ${libcpp})
     set_property(TARGET ${name} PROPERTY CMRC_LIBDIR "${libdir}")
     set_property(TARGET ${name} PROPERTY CMRC_NAMESPACE "${ARG_NAMESPACE}")
-    target_compile_options(${name} PRIVATE -fPIC)
+    set_property(TARGET ${name} PROPERTY POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(${name} PUBLIC cmrc::base)
     set_property(TARGET ${name} PROPERTY CMRC_IS_RESOURCE_LIBRARY TRUE)
     if(ARG_ALIAS)

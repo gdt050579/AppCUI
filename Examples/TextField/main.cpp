@@ -39,6 +39,9 @@ class MyWin : public AppCUI::Controls::Window,
     AppCUI::Controls::Menu mnu;
 
   public:
+    // the handler-interface overload below would otherwise hide Control::OnAfterSetText()
+    using Window::OnAfterSetText;
+
     MyWin() : Window("Text Field Example", "d:c,w:70,h:22", WindowFlags::Sizeable)
     {
         Factory::Label::Create(this, "&Normal text", "x:1,y:1,w:15");

@@ -6,12 +6,13 @@ namespace AppCUI::Graphics
 bool LoadPNGToImage(Image& img, const uint8* imageBuffer, uint32 size)
 {
     /* Initialize the 'png_image' structure. */
-    png_image image{ .version = PNG_IMAGE_VERSION }; /* The control structure used by libpng */
+    png_image image{}; /* The control structure used by libpng */
+    image.version = PNG_IMAGE_VERSION;
 
     /* The first argument is the file to read: */
     CHECK(png_image_begin_read_from_memory(&image, imageBuffer, size) != 0, false, "Failed to read PNG from memory!");
 
-    std::unique_ptr<png_byte> buffer(new png_byte[PNG_IMAGE_SIZE(image)]);
+    std::unique_ptr<png_byte[]> buffer(new png_byte[PNG_IMAGE_SIZE(image)]);
     CHECK(png_image_finish_read(&image, NULL, buffer.get(), 0, NULL) != 0, false, "");
 
     CHECK(img.Create(image.width, image.height), false, "Fail to create a %ux%u size image", image.width, image.height);

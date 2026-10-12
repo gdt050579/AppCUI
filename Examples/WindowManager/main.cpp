@@ -34,7 +34,7 @@ class MyWin : public Window
         cmd.SetCommand(Key::F6, "AddNotes", COMMAND_ID_ADD_NOTES);
         return true;
     }
-    bool OnKeyEvent(Input::Key keyCode, char16 UnicodeChar) override
+    bool OnKeyEvent(Input::Key keyCode, char16) override
     {
         if (keyCode == Key::N1)
         {

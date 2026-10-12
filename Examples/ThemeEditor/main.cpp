@@ -60,7 +60,7 @@ struct WindowWithColors : public Dialogs::OnThemeChangedInterface, public Dialog
           Graphics::Renderer& r,
           int startingX,
           int startingY,
-          Graphics::Size sz,
+          Graphics::Size,
           const Application::Config::CustomColorNameStorage& colors) override
     {
         if (categoryName == "ACustomSimpleColor")

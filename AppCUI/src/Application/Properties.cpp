@@ -85,9 +85,8 @@ bool ApplicationImpl::SetPropertyValue(uint32 propertyID, const Utils::PropertyV
     return false;
 }
 
-void ApplicationImpl::SetCustomPropertyValue(uint32 propertyID)
+void ApplicationImpl::SetCustomPropertyValue(uint32)
 {
-    
 }
 
 bool ApplicationImpl::IsPropertyValueReadOnly(uint32 propertyID)

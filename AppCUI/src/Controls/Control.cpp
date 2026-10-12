@@ -1720,13 +1720,13 @@ void Controls::Control::OnFocus()
 void Controls::Control::OnLoseFocus()
 {
 }
-void Controls::Control::OnMouseReleased(int, int, Input::MouseButton, Input::Key keyCode)
+void Controls::Control::OnMouseReleased(int, int, Input::MouseButton, Input::Key)
 {
 }
-void Controls::Control::OnMousePressed(int, int, Input::MouseButton, Input::Key keyCode)
+void Controls::Control::OnMousePressed(int, int, Input::MouseButton, Input::Key)
 {
 }
-bool Controls::Control::OnMouseDrag(int, int, Input::MouseButton, Input::Key keyCode)
+bool Controls::Control::OnMouseDrag(int, int, Input::MouseButton, Input::Key)
 {
     return false;
 }
@@ -1742,7 +1742,7 @@ bool Controls::Control::OnMouseLeave()
 {
     return false;
 }
-bool Controls::Control::OnMouseWheel(int, int, Input::MouseWheel, Input::Key keyCode)
+bool Controls::Control::OnMouseWheel(int, int, Input::MouseWheel, Input::Key)
 {
     return false;
 }
