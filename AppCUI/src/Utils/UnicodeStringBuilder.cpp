@@ -171,18 +171,19 @@ UnicodeStringBuilder::UnicodeStringBuilder(
 UnicodeStringBuilder::UnicodeStringBuilder(const UnicodeStringBuilder& obj)
 {
     Create(nullptr, 0);
-    if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+    if (!Set(u16string_view(obj.chars, obj.length)))
         Destroy();
 }
 UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
 {
-    if (obj.length & LOCAL_BUFFER_FLAG)
+    // LOCAL_BUFFER_FLAG lives in 'allocated' (not in 'length')
+    if (obj.allocated & LOCAL_BUFFER_FLAG)
     {
-        // if this is a local buffer --> copy it
+        // if this is a local buffer --> copy it (never take ownership of another object's stack buffer)
         this->chars     = nullptr;
         this->length    = 0;
         this->allocated = 0;
-        if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        if (!Set(u16string_view(obj.chars, obj.length)))
             Destroy();
     }
     else
@@ -197,23 +198,34 @@ UnicodeStringBuilder::UnicodeStringBuilder(UnicodeStringBuilder&& obj) noexcept
 }
 UnicodeStringBuilder& UnicodeStringBuilder::operator=(const UnicodeStringBuilder& obj)
 {
-    if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+    if (this == &obj)
+        return *this;
+    if (!Set(u16string_view(obj.chars, obj.length)))
         Destroy();
     return *this;
 }
 UnicodeStringBuilder& UnicodeStringBuilder::operator=(UnicodeStringBuilder&& obj) noexcept
 {
-    if (obj.length & LOCAL_BUFFER_FLAG)
+    if (this == &obj)
+        return *this;
+    // LOCAL_BUFFER_FLAG lives in 'allocated' (not in 'length')
+    if (obj.allocated & LOCAL_BUFFER_FLAG)
     {
-        // if this is a local buffer --> copy it
-        if (!Set(u16string_view(obj.chars, obj.length & 0x7FFFFFFF)))
+        // if this is a local buffer --> copy it (never take ownership of another object's stack buffer)
+        if (!Set(u16string_view(obj.chars, obj.length)))
             Destroy();
     }
     else
     {
-        std::swap(this->chars, obj.chars);
-        std::swap(this->length, obj.length);
-        std::swap(this->allocated, obj.allocated);
+        // release our buffer and steal obj's heap buffer
+        // (no swap: it would hand our local/stack buffer to obj, which may outlive us)
+        Destroy();
+        this->chars     = obj.chars;
+        this->length    = obj.length;
+        this->allocated = obj.allocated;
+        obj.chars       = nullptr;
+        obj.length      = 0;
+        obj.allocated   = 0;
     }
     return *this;
 }
@@ -336,9 +348,11 @@ void UnicodeStringBuilder::ToString(std::u8string& output) const
         auto* e = p + this->length;
         while (p < e)
         {
+            // ConvertUnicodeCharToUTF8Chat stores the bytes in reverse order (last continuation byte first)
             ConvertUnicodeCharToUTF8Chat(*p, u8Char);
             for (int i = (int32) u8Char.Length - 1; i >= 0; i--)
                 output += u8Char.Values[i];
+            p++;
         }
     }
 }
