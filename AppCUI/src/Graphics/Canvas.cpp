@@ -12,7 +12,7 @@ bool Canvas::Create(uint32 width, uint32 height, int fillCharacter, ColorPair co
 {
     CHECK(width > 0, false, "Width must be greater than 0.");
     CHECK(height > 0, false, "Height must be greater than 0.");
-    if ((width == this->Width) && (height = this->Height))
+    if ((this->Characters != nullptr) && (width == this->Width) && (height == this->Height))
     {
         // no re-allocation required
         CHECK(Clear(fillCharacter, color), false, "");
