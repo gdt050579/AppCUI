@@ -85,6 +85,17 @@ EM_JS(uint32_t, appcui_js_download, (const char* path, const char* name), {
         return 0;
     }
 });
+// Copy: hands `length` UTF-16 code units at `text` to the host, which writes them to the system clipboard. Fire and
+// forget: the browser answers asynchronously and may refuse (no user activation, insecure context, permissions);
+// the application keeps its private copy either way. ignoreBOM: a leading U+FEFF is text, not a byte order mark; lone
+// surrogates become U+FFFD (a system clipboard cannot hold them).
+EM_JS(void, appcui_js_clipboard_write, (const char16_t* text, uint32_t length), {
+    const host = Module["appcui"];
+    if (!host || !host.writeClipboard) return;
+    const start = text >>> 0;
+    const decoder = new TextDecoder("utf-16le", { ignoreBOM: true });
+    host.writeClipboard(decoder.decode(HEAPU8.subarray(start, start + (length >>> 0) * 2)));
+});
 // clang-format on
 
 namespace AppCUI::Internal
@@ -100,6 +111,13 @@ constexpr double SAVE_EXPORT_TIMEOUT_MS = 30000.0;              // a Save not wr
 static BrowserFrameHeader frameHeader{}; // zero-initialised => magic == 0 until a terminal is alive
 static BrowserTerminal* activeTerminal = nullptr;
 static std::u16string browserClipboard;
+
+// a large paste must not pin its buffer until Application::Close (cold path: copy / paste only)
+static void ReleaseUnusedClipboardCapacity()
+{
+    if (browserClipboard.capacity() > 2u * browserClipboard.size() + 4096u)
+        browserClipboard.shrink_to_fit();
+}
 
 BrowserFrameHeader& GetBrowserFrameHeader()
 {
@@ -383,9 +401,25 @@ bool BrowserTerminal::HasSupportFor(Application::SpecialCharacterSetType type)
     return type != Application::SpecialCharacterSetType::Auto;
 }
 
+char16* BrowserTerminal::PrepareClipboardFromHost(uint32 length)
+{
+    // an oversized paste empties the clipboard: the paste key that follows must not insert stale text
+    browserClipboard.clear();
+    if (length > BROWSER_MAX_CLIPBOARD)
+    {
+        ReleaseUnusedClipboardCapacity();
+        RETURNERROR(
+              nullptr, "The pasted text is too large (%u characters, the limit is %u)", length, BROWSER_MAX_CLIPBOARD);
+    }
+    browserClipboard.resize(length);
+    ReleaseUnusedClipboardCapacity();
+    return browserClipboard.data(); // char16 == char16_t; valid (NUL terminated) even when length is 0
+}
 bool BrowserTerminal::ClipboardClear()
 {
     browserClipboard.clear();
+    ReleaseUnusedClipboardCapacity();
+    appcui_js_clipboard_write(browserClipboard.data(), 0);
     return true;
 }
 bool BrowserTerminal::ClipboardHasText()
@@ -397,6 +431,9 @@ bool BrowserTerminal::ClipboardSetText(const ConstString& text)
     Utils::UnicodeStringBuilder unicode;
     CHECK(unicode.Set(text), false, "Fail to convert ConstString into unicode buffer !");
     browserClipboard.assign(unicode.ToStringView());
+    ReleaseUnusedClipboardCapacity();
+    // the private copy is the source of truth for in-app pastes, even if the browser refuses the write below
+    appcui_js_clipboard_write(browserClipboard.data(), static_cast<uint32>(browserClipboard.size()));
     return true;
 }
 bool BrowserTerminal::ClipboardGetText(Utils::UnicodeStringBuilder& text)

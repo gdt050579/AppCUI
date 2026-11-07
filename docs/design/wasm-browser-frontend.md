@@ -315,6 +315,7 @@ class BrowserTerminal : public AbstractTerminal
     bool RunRootEventLoop(ApplicationImpl& app, void (*shutdown)()) override; // BrowserMainLoop.cpp
 
     // clipboard: process-private in v1 (same policy as CustomTerminal); v2 bridges DOM copy/paste events
+    // (superseded: the bridge is implemented, see the Clipboard row of the risks table)
     bool ClipboardClear() override;
     bool ClipboardHasText() override;
     bool ClipboardSetText(const ConstString& text) override;
@@ -844,6 +845,7 @@ EMSCRIPTEN_KEEPALIVE int32 appcui_browser_redraw()
 | `columns`, `rows` | JS `uint32` | `1…1024` × `1…512`. The product is at most 2¹⁹ cells (2 MB), so `w*h*sizeof(Character)` cannot overflow `uint32` |
 | `frameSeq`, `layoutSeq` | C++ `uint32` | Unsigned wrap is defined; JS compares with `!==` only |
 | `droppedEvents` | C++ `uint32` | Saturating increment |
+| clipboard `length` | JS `uint32` | `≤ BROWSER_MAX_CLIPBOARD` (8 Mi code units); larger → `nullptr` and an empty clipboard. JS rebuilds its `Uint16Array` view after the call (the resize may grow the memory) |
 | FPS timing | `double` ms | NaN/negative guarded; `uint32` produced only from `[0, 33)` |
 | Pointers | C++ → JS | `static_assert(sizeof(void*) == 4)`; JS applies `>>> 0` then `>>> 2` (cells are 4-byte aligned, asserted in JS on rebind) |
 
@@ -1703,7 +1705,7 @@ cmake --build build-wasm --target MessageBox
 | Asyncify code size (+30–50 %) | `ASYNCIFY_REMOVE` for `Graphics::*` (validated with `ASSERTIONS=2`), `-Oz` and `wasm-opt`. Move to JSPI once the M1 matrix is green. |
 | `ASYNCIFY` + `-fwasm-exceptions` rejected by the pinned emsdk | Fall back to `-fexceptions`. Pin the emsdk version in CI. |
 | Browser-reserved shortcuts (Ctrl+W/T/N, Ctrl+Tab) never reach the page | Document them. Ship a `[AppCUI] Keyboard.Ctrl` profile for web builds, which the existing `LoadKeyboardSettings` already supports, to remap AppCUI's Ctrl bindings. |
-| Clipboard | v1 uses the process-private clipboard, as `Custom` already does. v2 bridges DOM `copy`/`paste` events, which grant synchronous `clipboardData` access, into a fixed C++ buffer through one more export. |
+| Clipboard | Done (ABI version 2). Copy: `ClipboardSetText` / `ClipboardClear` keep the private copy and call `appcui_js_clipboard_write` → `AppCUIHost.writeClipboard` → `navigator.clipboard.writeText` (fire and forget, refusals are logged). Paste: the host does not `preventDefault` the paste chords (`Ctrl+V`, `Shift+Insert`, `Cmd+V`), so the browser fires `paste` with synchronous `clipboardData`; the handler copies the text into the C++ clipboard through `appcui_browser_clipboard_buffer(length)` (the C++ side owns the buffer, so no `_malloc` export is needed), then delivers the deferred key. Without a `paste` event the key is delivered after 100 ms with the previous clipboard. `navigator.clipboard.readText` is not used: it is asynchronous and prompts in Firefox / Safari. |
 | `fillText` throughput on 4K screens with full redraws (theme change, resize) | Full redraws are rare. If profiling shows a problem, add a glyph atlas (`OffscreenCanvas`, keyed by code and fg, drawn with `drawImage`) behind the same `paintCells` loop. |
 | `std::filesystem` on MEMFS shows an empty tree in `FileDialog` | Done: host file transfer. `AbstractTerminal` has `HostFileTransferSupported` / `UploadFromHost` / `DownloadToHost` / `OnSaveFileSelected`, overridden only by `BrowserTerminal`. `FileDialog` shows Upload / Download buttons and only real locations (Home, Temp, `/`). A path returned by a Save dialog is downloaded once the application has written it. Still to do (phase 2): persistence, through an IDBFS mount or OPFS-backed WasmFS. |
 | SDL wheel direction looks inverted relative to the DOM | Resolve in M3 against `WindowsTerminal`. |

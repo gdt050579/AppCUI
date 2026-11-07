@@ -12,11 +12,12 @@
 namespace AppCUI::Internal
 {
 constexpr uint32 BROWSER_ABI_MAGIC       = 0x49554341; // "ACUI" read as a little endian uint32
-constexpr uint32 BROWSER_ABI_VERSION     = 1;          // bump on ANY change of the structures / exports below
+constexpr uint32 BROWSER_ABI_VERSION     = 2;          // bump on ANY change of the structures / exports below
 constexpr uint32 BROWSER_MAX_COLUMNS     = 1024;       // 1024 x 512 cells x 4 bytes = 2 MB per canvas
 constexpr uint32 BROWSER_MAX_ROWS        = 512;
 constexpr uint32 BROWSER_DEFAULT_COLUMNS = 80;
 constexpr uint32 BROWSER_DEFAULT_ROWS    = 25;
+constexpr uint32 BROWSER_MAX_CLIPBOARD   = 8u * 1024u * 1024u; // UTF-16 code units pasted from the page (16 MB)
 
 // Shared ABI with the JavaScript host (appcui-host.js): 16 little endian uint32 words, read through
 // HEAPU32[(ptr >>> 2) + i]. Lives in static storage -> stable address for the lifetime of the module.
@@ -113,6 +114,8 @@ class BrowserTerminal : public AbstractTerminal
     void RequestResize(uint32 width, uint32 height);
     void RequestClose();
     void RequestRedraw();
+    // paste from the page: the clipboard is resized to `length` UTF-16 code units and returned for JS to fill
+    char16* PrepareClipboardFromHost(uint32 length);
     bool HasPendingInput() const;
     inline bool IsSuspendedInModalLoop() const
     {
@@ -130,7 +133,8 @@ class BrowserTerminal : public AbstractTerminal
     bool HasSupportFor(Application::SpecialCharacterSetType type) override;
     bool RunRootEventLoop(ApplicationImpl& app, void (*shutdown)()) override; // BrowserMainLoop.cpp
 
-    // clipboard: process-private (same policy as CustomTerminal)
+    // clipboard: a private copy (always readable by the application) kept in sync with the page - SetText / Clear also
+    // write the system clipboard (navigator.clipboard), a DOM paste replaces the copy (PrepareClipboardFromHost)
     bool ClipboardClear() override;
     bool ClipboardHasText() override;
     bool ClipboardSetText(const ConstString& text) override;

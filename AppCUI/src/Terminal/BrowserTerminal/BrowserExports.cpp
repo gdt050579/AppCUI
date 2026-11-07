@@ -146,4 +146,15 @@ EMSCRIPTEN_KEEPALIVE int32 appcui_browser_redraw()
     term->RequestRedraw();
     return 1;
 }
+// Paste from the page (a DOM `paste` event): replaces the clipboard of the application with `length` UTF-16 code
+// units. Returns the byte address (2-byte aligned) where JS writes them - valid only until the next call into wasm
+// (JS must re-read the heap buffer after this call: resizing may grow the memory) - or 0 (no terminal, or length >
+// BROWSER_MAX_CLIPBOARD, which leaves the clipboard empty). Any code unit is accepted, as from a native clipboard.
+EMSCRIPTEN_KEEPALIVE char16_t* appcui_browser_clipboard_buffer(uint32 length)
+{
+    auto* term = GetActiveBrowserTerminal();
+    if (term == nullptr)
+        return nullptr;
+    return term->PrepareClipboardFromHost(length);
+}
 } // extern "C"
