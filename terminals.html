@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frontends (terminals) &mdash; AppCUI 1.256.0</title>
+  <title>Frontends (terminals) &mdash; AppCUI 1.257.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=a2ce1dc5"></script>
+      <script src="_static/documentation_options.js?v=d31b579c"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#supported-features">Supported features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#browser-webassembly">Browser (WebAssembly)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#files-of-the-user">Files of the user</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clipboard">Clipboard</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#keyboard-on-ncurses-terminals">Keyboard on ncurses terminals</a></li>
@@ -268,7 +269,7 @@ the browser frontend) or, when that one is not linked, SDL.</p>
 <td><p>Yes</p></td>
 <td><p>Windows only</p></td>
 <td><p>No</p></td>
-<td><p>Private to the page</p></td>
+<td><p>Yes (see <a class="reference internal" href="#browser-clipboard"><span class="std std-ref">Clipboard</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Resize events</p></td>
 <td><p>Yes</p></td>
@@ -356,6 +357,30 @@ does nothing.</p></li>
 <li><p>Pass <code class="docutils literal notranslate"><span class="pre">onDownload:</span> <span class="pre">(name,</span> <span class="pre">data)</span> <span class="pre">=&gt;</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code> to <code class="docutils literal notranslate"><span class="pre">startAppCUI</span></code> to handle the downloaded bytes in the page instead of
 starting a browser download.</p></li>
 <li><p>PNG / JPG images are not supported (<code class="docutils literal notranslate"><span class="pre">APPCUI_IMAGE_CODECS</span></code> is <code class="docutils literal notranslate"><span class="pre">OFF</span></code>); BMP images are.</p></li>
+</ul>
+</section>
+<section id="clipboard">
+<span id="browser-clipboard"></span><h3>Clipboard<a class="headerlink" href="#clipboard" title="Link to this heading"></a></h3>
+<p>The browser frontend shares the clipboard of the application with the system clipboard, in both directions:</p>
+<ul class="simple">
+<li><p><strong>Copy.</strong> <code class="docutils literal notranslate"><span class="pre">OS::Clipboard::SetText</span></code> (and therefore every copy of the controls) also writes the text to the system
+clipboard with <code class="docutils literal notranslate"><span class="pre">navigator.clipboard.writeText</span></code>, and <code class="docutils literal notranslate"><span class="pre">OS::Clipboard::Clear</span></code> writes an empty text. Browsers allow
+this only on a secure page (<code class="docutils literal notranslate"><span class="pre">https://</span></code> or <code class="docutils literal notranslate"><span class="pre">http://localhost</span></code>) and right after a key press or a click, which is
+how a copy is normally started. When the browser refuses, the page logs a warning in the console and the copied
+text still stays available to the application. Safari may refuse the write, because the copy runs shortly after
+the key press, not inside its event handler.</p></li>
+<li><p><strong>Paste.</strong> <code class="docutils literal notranslate"><span class="pre">Ctrl+V</span></code>, <code class="docutils literal notranslate"><span class="pre">Shift+Insert</span></code> (Windows / Linux) and, on macOS, <code class="docutils literal notranslate"><span class="pre">Cmd+V</span></code> (delivered to the application as <code class="docutils literal notranslate"><span class="pre">Ctrl+V</span></code>) make
+the browser send the text of the system clipboard to the page. The text replaces the clipboard of the application
+before the key reaches it, so <code class="docutils literal notranslate"><span class="pre">OS::Clipboard::GetText</span></code> and every paste of the controls return the text copied
+in another tab or application. The browser does not ask for any permission. When the system clipboard has no text
+(an image, files, nothing), the application pastes its own last copied text. Pastes of more than 8 Mi UTF-16
+characters are rejected and leave the clipboard empty.</p></li>
+<li><p>The system clipboard is read only when the user pastes with one of those keys (or with <strong>Paste</strong> in the menu of the
+browser). A paste started otherwise, for example from the context menu of a <code class="docutils literal notranslate"><span class="pre">TextField</span></code>, uses the last text
+copied in the application or pasted into it; that menu item stays disabled until the application has copied or
+pasted some text.</p></li>
+<li><p>A page that embeds the application in an <code class="docutils literal notranslate"><span class="pre">&lt;iframe&gt;</span></code> must allow the clipboard:
+<code class="docutils literal notranslate"><span class="pre">&lt;iframe</span> <span class="pre">allow=&quot;clipboard-write&quot;</span> <span class="pre">...&gt;</span></code>.</p></li>
 </ul>
 </section>
 </section>

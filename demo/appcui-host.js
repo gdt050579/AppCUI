@@ -1,6 +1,6 @@
 // @ts-check
 // AppCUI BrowserTerminal host: HTML5 canvas renderer + DOM input bridge.
-// Pinned to BROWSER_ABI_VERSION = 1 (AppCUI/src/Terminal/BrowserTerminal/BrowserTerminal.hpp).
+// Pinned to BROWSER_ABI_VERSION = 2 (AppCUI/src/Terminal/BrowserTerminal/BrowserTerminal.hpp).
 //
 // Hot paths (draw / input handlers) allocate nothing per frame or per event: cells are diffed against a shadow copy,
 // glyph strings and colors come from pre-built tables, and wasm memory views are only rebuilt when the screen buffer
@@ -8,6 +8,7 @@
 
 /**
  * @typedef {object} AppCUIModule
+ * @property {Uint8Array} HEAPU8
  * @property {Uint32Array} HEAPU32
  * @property {() => number} _appcui_browser_abi_version
  * @property {() => number} _appcui_browser_frame_header
@@ -18,6 +19,7 @@
  * @property {(columns: number, rows: number) => number} _appcui_browser_resize
  * @property {() => number} _appcui_browser_close
  * @property {() => number} _appcui_browser_redraw
+ * @property {(length: number) => number} _appcui_browser_clipboard_buffer
  */
 
 /**
@@ -35,7 +37,7 @@
  */
 
 const ABI_MAGIC = 0x49554341;
-const ABI_VERSION = 1;
+const ABI_VERSION = 2;
 // BrowserFrameHeader word indexes
 const H_MAGIC = 0, H_ABI = 1, H_FRAME_SEQ = 2, H_LAYOUT_SEQ = 3, H_CELLS_PTR = 4, H_WIDTH = 5, H_HEIGHT = 6,
   H_CURSOR_X = 7, H_CURSOR_Y = 8, H_CURSOR_VISIBLE = 9;
@@ -44,6 +46,9 @@ const MOD_ALT = 0x1000, MOD_CTRL = 0x2000, MOD_SHIFT = 0x4000;
 const MOUSE_DOWN = 0, MOUSE_UP = 1, MOUSE_MOVE = 2;
 const BTN_LEFT = 0x01, BTN_CENTER = 0x02, BTN_RIGHT = 0x04, BTN_DOUBLE = 0x08;
 const DOUBLE_CLICK_MS = 400;
+// A paste chord waits for the `paste` event the browser fires right after the keydown (same task); if none comes
+// (some browsers / embedders), the key is delivered anyway once this expires and the application pastes its own copy.
+const PASTE_EVENT_TIMEOUT_MS = 100;
 
 // Graphics::Color 0..15 (same RGB values as SDLTerminalScreen.cpp)
 const PALETTE = [
@@ -133,6 +138,11 @@ export class AppCUIHost {
     this.lastCellX = -1; this.lastCellY = -1; this.lastButtons = -1;
     this.lastDownTime = 0; this.lastDownX = -1; this.lastDownY = -1;
     this.gridCols = 0; this.gridRows = 0;
+    // clipboard: the paste chord (Input::Key) waiting for its `paste` event, 0 = none
+    this.pasteKey = 0;
+    this.pasteTimer = 0;
+    this.flushPasteBound = () => this.flushPaste();
+    this.clipboardWarned = false;
 
     this.measure();
     this.computeGrid();
@@ -283,6 +293,58 @@ export class AppCUIHost {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000); // the browser may read the blob asynchronously
+  }
+
+  // ------------------------------------------------------------------------------------------ clipboard
+  /**
+   * Copy (Clipboard::SetText / Clear): writes the system clipboard. Called by C++ (appcui_js_clipboard_write) while
+   * the application handles the key press / click that copied, which normally still carries the user activation the
+   * browser requires. Fire and forget: a refusal is only logged - the application keeps its private copy.
+   * @param {string} text
+   */
+  writeClipboard(text) {
+    const clipboard = navigator.clipboard;
+    if (!clipboard || typeof clipboard.writeText !== 'function') {
+      // insecure context (http:// other than localhost) or an old browser
+      if (!this.clipboardWarned) {
+        this.clipboardWarned = true;
+        console.warn('AppCUI: navigator.clipboard is not available - copied text stays inside the application');
+      }
+      return;
+    }
+    try {
+      clipboard.writeText(text).catch((err) => console.warn('AppCUI: the browser refused the clipboard write', err));
+    } catch (err) {
+      console.warn('AppCUI: the browser refused the clipboard write', err);
+    }
+  }
+
+  /**
+   * Paste: replaces the clipboard of the application with `text` (a DOM paste event, not navigator.clipboard.readText:
+   * that one is asynchronous and asks the user for permission in some browsers).
+   * @param {string} text
+   */
+  setClipboard(text) {
+    const mod = this.mod;
+    if (!mod) return;
+    const length = text.length;
+    const ptr = mod._appcui_browser_clipboard_buffer(length) >>> 0;
+    if (ptr === 0 || (ptr & 1) !== 0) {
+      console.warn('AppCUI: the pasted text was rejected (' + length + ' characters)');
+      return;
+    }
+    // created after the call: making room may have grown (replaced) the wasm memory
+    const dst = new Uint16Array(mod.HEAPU8.buffer, ptr, length);
+    for (let i = 0; i < length; i++) dst[i] = text.charCodeAt(i); // UTF-16 as is (surrogate pairs included)
+  }
+
+  /** Delivers the paste chord that waits for its `paste` event (if any). */
+  flushPaste() {
+    if (this.pasteTimer) { clearTimeout(this.pasteTimer); this.pasteTimer = 0; }
+    const key = this.pasteKey;
+    if (key === 0) return;
+    this.pasteKey = 0;
+    if (this.mod && !this.exited && this.mod._appcui_browser_key(key >>> 0, 0)) this.wake();
   }
 
   // ------------------------------------------------------------------------------------------ rendering
@@ -564,24 +626,58 @@ export class AppCUIHost {
 
     c.addEventListener('keydown', (e) => {
       if (!this.mod || this.exited) return;
-      e.preventDefault();
+      if (this.pasteKey !== 0) this.flushPaste(); // keep the order of the keys
       const mods = this.modsOf(e);
+      const code = KEY[e.code] ?? 0;
+      // Paste chords (Ctrl+V, Shift+Insert, Cmd+V on macOS) keep their default action: the browser then fires `paste`
+      // with the text of the system clipboard, and the paste handler below delivers the key after storing that text.
+      // V is matched by position (e.code, e.g. Cyrillic layouts) or by character (e.key, e.g. Dvorak), like browsers do.
+      const isV = code === KEY.KeyV || e.key === 'v' || e.key === 'V';
+      if ((isV && (mods === MOD_CTRL || (mods === 0 && e.metaKey && !e.ctrlKey))) ||
+          (code === KEY.Insert && mods === MOD_SHIFT && !e.metaKey)) {
+        this.mods = mods;
+        this.pasteKey = (isV ? KEY.KeyV : code) | (mods === 0 ? MOD_CTRL : mods); // Cmd+V -> Ctrl+V
+        this.pasteTimer = window.setTimeout(this.flushPasteBound, PASTE_EVENT_TIMEOUT_MS);
+        return;
+      }
+      e.preventDefault();
       if (MODIFIER_CODES.has(e.code)) { this.updateMods(mods); return; }
       this.mods = mods;
       // AltGr arrives as Ctrl+Alt on Windows: it produces text, not a Ctrl+Alt chord -> keep only Shift
       const altGr = e.getModifierState('AltGraph');
       const keyMods = altGr ? (mods & MOD_SHIFT) : mods;
-      const code = KEY[e.code] ?? 0;
       let ch = 0;
       if (e.key.length === 1 && (keyMods & (MOD_CTRL | MOD_ALT)) === 0) ch = e.key.charCodeAt(0);
       const key = code === 0 ? 0 : (code | keyMods);
       if (this.mod._appcui_browser_key(key >>> 0, ch >>> 0)) this.wake();
     });
-    c.addEventListener('keyup', (e) => { if (MODIFIER_CODES.has(e.code)) this.updateMods(this.modsOf(e)); });
+    c.addEventListener('keyup', (e) => {
+      if (!MODIFIER_CODES.has(e.code)) return;
+      // a released modifier ends the chord (its `paste` event, if any, already fired): the key goes before the new state
+      if (this.pasteKey !== 0) this.flushPaste();
+      this.updateMods(this.modsOf(e));
+    });
+    // Clipboard events target the node of the selection (usually <body>), not the focused canvas: listen on the
+    // document and handle only the pastes meant for the canvas (focused, or a paste chord pressed on it).
+    const doc = c.ownerDocument;
+    // WebKit dispatches `paste` on non-editable content only when `beforepaste` is cancelled
+    doc.addEventListener('beforepaste', (e) => { if (doc.activeElement === c) e.preventDefault(); });
+    doc.addEventListener('paste', (e) => {
+      if (!this.mod || this.exited) return;
+      if (this.pasteKey === 0 && doc.activeElement !== c) return; // pasted into another element of the page
+      e.preventDefault();
+      // '' when the system clipboard holds no text (an image, files, nothing): the application keeps its own copy
+      const text = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+      if (text.length !== 0) this.setClipboard(text);
+      // a paste without a paste chord (e.g. the Edit menu of the browser) is delivered as Ctrl+V
+      if (this.pasteKey === 0) this.pasteKey = KEY.KeyV | MOD_CTRL;
+      this.flushPaste();
+    });
     c.addEventListener('blur', () => this.updateMods(0)); // never leave a stuck Ctrl / Alt / Shift
 
     c.addEventListener('pointerdown', (e) => {
       if (!this.mod || this.exited) return;
+      if (this.pasteKey !== 0) this.flushPaste();
       c.focus();
       c.setPointerCapture(e.pointerId); // keep receiving moves while dragging outside the canvas
       this.cellOf(e);

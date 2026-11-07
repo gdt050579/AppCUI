@@ -132,7 +132,7 @@ Supported features
      - Yes
      - Windows only
      - No
-     - Private to the page
+     - Yes (see :ref:`browser-clipboard`)
    * - Resize events
      - Yes
      - Yes
@@ -220,6 +220,32 @@ The browser frontend moves files between the in-memory file system and the user'
 * Pass ``onDownload: (name, data) => { ... }`` to ``startAppCUI`` to handle the downloaded bytes in the page instead of
   starting a browser download.
 * PNG / JPG images are not supported (``APPCUI_IMAGE_CODECS`` is ``OFF``); BMP images are.
+
+.. _browser-clipboard:
+
+Clipboard
+~~~~~~~~~
+
+The browser frontend shares the clipboard of the application with the system clipboard, in both directions:
+
+* **Copy.** ``OS::Clipboard::SetText`` (and therefore every copy of the controls) also writes the text to the system
+  clipboard with ``navigator.clipboard.writeText``, and ``OS::Clipboard::Clear`` writes an empty text. Browsers allow
+  this only on a secure page (``https://`` or ``http://localhost``) and right after a key press or a click, which is
+  how a copy is normally started. When the browser refuses, the page logs a warning in the console and the copied
+  text still stays available to the application. Safari may refuse the write, because the copy runs shortly after
+  the key press, not inside its event handler.
+* **Paste.** ``Ctrl+V``, ``Shift+Insert`` (Windows / Linux) and, on macOS, ``Cmd+V`` (delivered to the application as ``Ctrl+V``) make
+  the browser send the text of the system clipboard to the page. The text replaces the clipboard of the application
+  before the key reaches it, so ``OS::Clipboard::GetText`` and every paste of the controls return the text copied
+  in another tab or application. The browser does not ask for any permission. When the system clipboard has no text
+  (an image, files, nothing), the application pastes its own last copied text. Pastes of more than 8 Mi UTF-16
+  characters are rejected and leave the clipboard empty.
+* The system clipboard is read only when the user pastes with one of those keys (or with **Paste** in the menu of the
+  browser). A paste started otherwise, for example from the context menu of a ``TextField``, uses the last text
+  copied in the application or pasted into it; that menu item stays disabled until the application has copied or
+  pasted some text.
+* A page that embeds the application in an ``<iframe>`` must allow the clipboard:
+  ``<iframe allow="clipboard-write" ...>``.
 
 Keyboard on ncurses terminals
 -----------------------------
