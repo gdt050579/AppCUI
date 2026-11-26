@@ -92,6 +92,7 @@ namespace Internal
         void HandleKeyNormalMode(SystemEvent& evt, const int c);
         void BuildKeyTranslationTable();
         bool TranslateKey(const int c, Key& keyCode, char16& unicodeCharacter);
+        bool ReadUtf8Character(const int lead, char16& character);
         void HandleKeyComboMode(SystemEvent& evt, const int c);
 
         void DrawModifiers(
