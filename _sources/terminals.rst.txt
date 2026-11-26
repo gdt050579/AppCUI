@@ -258,6 +258,12 @@ recognizes:
   described by the terminfo entry of the terminal (xterm-compatible terminals report all of them);
 * ``Alt+<key>`` when the terminal sends Alt (Meta) as an ``Escape`` prefix (on macOS enable "Use Option as Meta key"
   in Terminal / iTerm2);
+* characters typed in UTF-8 (letters of the keyboard layout such as ``ș`` or ``ă``), delivered as the typed character;
+* ``Backspace`` and ``Ctrl+H`` apart: the erase character of the terminal (``stty erase``, what Backspace really sends)
+  decides, so on macOS Terminal (Backspace sends ``DEL`` while its ``xterm-256color`` entry says ``kbs=^H``)
+  ``Ctrl+H`` is ``Ctrl+H``;
+* ``Shift+F5`` - ``Shift+F12`` of macOS Terminal (``ESC [25~`` ... ``ESC [34~``, codes the ``xterm-256color`` entry does
+  not define), added only when the terminal description does not already use those codes;
 * **combo mode**, for combinations the terminal can not send: press :kbd:`\`` (backtick), toggle the modifiers with
   :kbd:`a` (Alt), :kbd:`c` (Ctrl) and :kbd:`s` (Shift), then press a letter or a digit (``1`` - ``9``, ``0`` are the
   function keys ``F1`` - ``F10``). :kbd:`Space` keeps combo mode active for several keys and :kbd:`Escape` leaves it.
@@ -265,6 +271,22 @@ recognizes:
 
 The ``Keyboard.Ctrl`` / ``Keyboard.Alt`` keys of the settings file (see :doc:`initialization`) remap the modifiers
 when a terminal or a keyboard layout makes some of them hard to use.
+
+**macOS Terminal / iTerm2.** Without "Use Option as Meta key", ``Option+<letter>`` types a character (``Option+F`` is
+``ƒ``) and never reaches the application as ``Alt+<letter>``: enable it (Terminal: *Settings > Profiles > Keyboard*).
+macOS Terminal sends ``Option+Left`` / ``Option+Right`` as ``ESC b`` / ``ESC f`` by default, the same bytes as ``Alt+B`` /
+``Alt+F``, so they arrive as ``Alt+B`` / ``Alt+F``. To get ``Alt+Left`` / ``Alt+Right``, edit those two entries of the
+profile's key list (*Send Text*): press :kbd:`Escape` in the text field (it shows ``\033``), then type ``[1;3D`` for
+``⌥←`` and ``[1;3C`` for ``⌥→``. AppCUI recognizes these codes even when the terminal description does not list them.
+
+Two limits of the ncurses frontend:
+
+* ``Backspace`` / ``Ctrl+H`` follow the erase character of the terminal. A terminal whose Backspace key sends ``^H``
+  while ``stty erase`` is ``^?`` (PuTTY set to "Control-H", some serial or telnet hops) delivers Backspace as
+  ``Ctrl+H``: run ``stty erase ^H`` in that terminal before starting the application.
+* The macOS Shift+F5 - Shift+F12 codes are the VT220 codes of F15 - F20; a terminal that sends them for its own F13 -
+  F20 under ``TERM=xterm`` (PuTTY in VT220 function key mode, the F13 - F20 keys of Apple keyboards) has them read as
+  Shift+F5 - Shift+F12.
 
 Custom frontends
 ----------------

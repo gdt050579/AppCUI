@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frontends (terminals) &mdash; AppCUI 1.257.0</title>
+  <title>Frontends (terminals) &mdash; AppCUI 1.258.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=d31b579c"></script>
+      <script src="_static/documentation_options.js?v=6508f818"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -394,6 +394,12 @@ modified navigation keys (arrows, <code class="docutils literal notranslate"><sp
 described by the terminfo entry of the terminal (xterm-compatible terminals report all of them);</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Alt+&lt;key&gt;</span></code> when the terminal sends Alt (Meta) as an <code class="docutils literal notranslate"><span class="pre">Escape</span></code> prefix (on macOS enable “Use Option as Meta key”
 in Terminal / iTerm2);</p></li>
+<li><p>characters typed in UTF-8 (letters of the keyboard layout such as <code class="docutils literal notranslate"><span class="pre">ș</span></code> or <code class="docutils literal notranslate"><span class="pre">ă</span></code>), delivered as the typed character;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Backspace</span></code> and <code class="docutils literal notranslate"><span class="pre">Ctrl+H</span></code> apart: the erase character of the terminal (<code class="docutils literal notranslate"><span class="pre">stty</span> <span class="pre">erase</span></code>, what Backspace really sends)
+decides, so on macOS Terminal (Backspace sends <code class="docutils literal notranslate"><span class="pre">DEL</span></code> while its <code class="docutils literal notranslate"><span class="pre">xterm-256color</span></code> entry says <code class="docutils literal notranslate"><span class="pre">kbs=^H</span></code>)
+<code class="docutils literal notranslate"><span class="pre">Ctrl+H</span></code> is <code class="docutils literal notranslate"><span class="pre">Ctrl+H</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Shift+F5</span></code> - <code class="docutils literal notranslate"><span class="pre">Shift+F12</span></code> of macOS Terminal (<code class="docutils literal notranslate"><span class="pre">ESC</span> <span class="pre">[25~</span></code> … <code class="docutils literal notranslate"><span class="pre">ESC</span> <span class="pre">[34~</span></code>, codes the <code class="docutils literal notranslate"><span class="pre">xterm-256color</span></code> entry does
+not define), added only when the terminal description does not already use those codes;</p></li>
 <li><p><strong>combo mode</strong>, for combinations the terminal can not send: press <kbd class="kbd docutils literal notranslate">`</kbd> (backtick), toggle the modifiers with
 <kbd class="kbd docutils literal notranslate">a</kbd> (Alt), <kbd class="kbd docutils literal notranslate">c</kbd> (Ctrl) and <kbd class="kbd docutils literal notranslate">s</kbd> (Shift), then press a letter or a digit (<code class="docutils literal notranslate"><span class="pre">1</span></code> - <code class="docutils literal notranslate"><span class="pre">9</span></code>, <code class="docutils literal notranslate"><span class="pre">0</span></code> are the
 function keys <code class="docutils literal notranslate"><span class="pre">F1</span></code> - <code class="docutils literal notranslate"><span class="pre">F10</span></code>). <kbd class="kbd docutils literal notranslate">Space</kbd> keeps combo mode active for several keys and <kbd class="kbd docutils literal notranslate">Escape</kbd> leaves it.
@@ -401,6 +407,21 @@ The selected modifiers are shown on the screen while combo mode is active.</p></
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">Keyboard.Ctrl</span></code> / <code class="docutils literal notranslate"><span class="pre">Keyboard.Alt</span></code> keys of the settings file (see <a class="reference internal" href="initialization.html"><span class="doc">Initialization</span></a>) remap the modifiers
 when a terminal or a keyboard layout makes some of them hard to use.</p>
+<p><strong>macOS Terminal / iTerm2.</strong> Without “Use Option as Meta key”, <code class="docutils literal notranslate"><span class="pre">Option+&lt;letter&gt;</span></code> types a character (<code class="docutils literal notranslate"><span class="pre">Option+F</span></code> is
+<code class="docutils literal notranslate"><span class="pre">ƒ</span></code>) and never reaches the application as <code class="docutils literal notranslate"><span class="pre">Alt+&lt;letter&gt;</span></code>: enable it (Terminal: <em>Settings &gt; Profiles &gt; Keyboard</em>).
+macOS Terminal sends <code class="docutils literal notranslate"><span class="pre">Option+Left</span></code> / <code class="docutils literal notranslate"><span class="pre">Option+Right</span></code> as <code class="docutils literal notranslate"><span class="pre">ESC</span> <span class="pre">b</span></code> / <code class="docutils literal notranslate"><span class="pre">ESC</span> <span class="pre">f</span></code> by default, the same bytes as <code class="docutils literal notranslate"><span class="pre">Alt+B</span></code> /
+<code class="docutils literal notranslate"><span class="pre">Alt+F</span></code>, so they arrive as <code class="docutils literal notranslate"><span class="pre">Alt+B</span></code> / <code class="docutils literal notranslate"><span class="pre">Alt+F</span></code>. To get <code class="docutils literal notranslate"><span class="pre">Alt+Left</span></code> / <code class="docutils literal notranslate"><span class="pre">Alt+Right</span></code>, edit those two entries of the
+profile’s key list (<em>Send Text</em>): press <kbd class="kbd docutils literal notranslate">Escape</kbd> in the text field (it shows <code class="docutils literal notranslate"><span class="pre">\033</span></code>), then type <code class="docutils literal notranslate"><span class="pre">[1;3D</span></code> for
+<code class="docutils literal notranslate"><span class="pre">⌥←</span></code> and <code class="docutils literal notranslate"><span class="pre">[1;3C</span></code> for <code class="docutils literal notranslate"><span class="pre">⌥→</span></code>. AppCUI recognizes these codes even when the terminal description does not list them.</p>
+<p>Two limits of the ncurses frontend:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Backspace</span></code> / <code class="docutils literal notranslate"><span class="pre">Ctrl+H</span></code> follow the erase character of the terminal. A terminal whose Backspace key sends <code class="docutils literal notranslate"><span class="pre">^H</span></code>
+while <code class="docutils literal notranslate"><span class="pre">stty</span> <span class="pre">erase</span></code> is <code class="docutils literal notranslate"><span class="pre">^?</span></code> (PuTTY set to “Control-H”, some serial or telnet hops) delivers Backspace as
+<code class="docutils literal notranslate"><span class="pre">Ctrl+H</span></code>: run <code class="docutils literal notranslate"><span class="pre">stty</span> <span class="pre">erase</span> <span class="pre">^H</span></code> in that terminal before starting the application.</p></li>
+<li><p>The macOS Shift+F5 - Shift+F12 codes are the VT220 codes of F15 - F20; a terminal that sends them for its own F13 -
+F20 under <code class="docutils literal notranslate"><span class="pre">TERM=xterm</span></code> (PuTTY in VT220 function key mode, the F13 - F20 keys of Apple keyboards) has them read as
+Shift+F5 - Shift+F12.</p></li>
+</ul>
 </section>
 <section id="custom-frontends">
 <h2>Custom frontends<a class="headerlink" href="#custom-frontends" title="Link to this heading"></a></h2>
