@@ -1,4 +1,5 @@
 #include "NcursesTerminal.hpp"
+#include "TerminalKeyDecoding.hpp"
 #include "../TerminalFactory.hpp"
 #include <poll.h>
 #include <stdio.h>
@@ -432,6 +433,16 @@ void NcursesTerminal::BuildKeyTranslationTable()
             keyTranslationMatrix[KEY_F(fn)] = F_KEY_BLOCKS[block] | static_cast<Key>(static_cast<uint32>(Key::F1) + i);
         }
     }
+#ifdef NCURSES_EXT_FUNCS
+    // Shift+F5 .. Shift+F12 of macOS Terminal: VT220 codes the xterm descriptions do not define (TerminalKeyDecoding.hpp).
+    // Only a sequence the terminal description does not know is added (rxvt / linux define them as other keys).
+    for (const auto& shifted : TerminalKeys::MAC_SHIFTED_FUNCTION_KEYS)
+    {
+        const std::string sequence(shifted.sequence);
+        if (key_defined(sequence.c_str()) == 0)
+            define_key(sequence.c_str(), KEY_F(TerminalKeys::ShiftedFunctionKeyNumber(shifted.functionKey)));
+    }
+#endif
 
     // Ctrl + letter is delivered as the control codes 1..26
     for (uint32 i = 0; i < 26; i++)
@@ -443,10 +454,16 @@ void NcursesTerminal::BuildKeyTranslationTable()
     keyTranslationMatrix[10]        = Key::Enter; // Ctrl+J
     keyTranslationMatrix[13]        = Key::Enter; // Ctrl+M
     keyTranslationMatrix[KEY_ENTER] = Key::Enter;
-    // 0x08 is Backspace only for terminals whose backspace key sends ^H, otherwise it is Ctrl+H
-    const char* kbs = tigetstr(const_cast<char*>("kbs"));
-    if (IsValidCapability(kbs) && (kbs[0] == '\b') && (kbs[1] == 0))
+    // 0x08 is Backspace only when the Backspace key sends ^H, otherwise it is Ctrl+H. The erase character of the terminal
+    // (what Backspace really sends) decides before kbs: macOS Terminal sends DEL while its xterm-256color says kbs=^H
+    const char* kbs       = tigetstr(const_cast<char*>("kbs"));
+    const bool kbsIsCtrlH = IsValidCapability(kbs) && (kbs[0] == '\b') && (kbs[1] == 0);
+    if (TerminalKeys::IsCtrlHBackspace(kbsIsCtrlH, static_cast<unsigned char>(erasechar())))
         keyTranslationMatrix[8] = Key::Backspace;
+#ifdef NCURSES_EXT_FUNCS
+    else if (kbsIsCtrlH)
+        define_key("\b", 0); // with the keypad on, ncurses would return KEY_BACKSPACE for ^H (kbs): it stays Ctrl+H
+#endif
     keyTranslationMatrix[KEY_DELETE]    = Key::Backspace; // 0x7F (DEL) is what most terminals send for Backspace
     keyTranslationMatrix[KEY_BACKSPACE] = Key::Backspace;
     keyTranslationMatrix[KEY_ESCAPE]    = Key::Escape;
@@ -499,6 +516,27 @@ void NcursesTerminal::BuildKeyTranslationTable()
             const int code = key_defined(sequence);
             if (code > 0)
                 keyTranslationMatrix[code] = XTERM_MODIFIERS[modifier] | ek.key;
+        }
+    }
+    // modified arrows the terminal description does not list (an older terminfo; the macOS Terminal profile edit that
+    // makes Option+Left / Option+Right send \033[1;3D / \033[1;3C): the xterm form, under codes of AppCUI's own
+    struct ArrowKey
+    {
+        char final;
+        Key key;
+    };
+    constexpr ArrowKey ARROW_KEYS[] = { { 'A', Key::Up }, { 'B', Key::Down }, { 'C', Key::Right }, { 'D', Key::Left } };
+    int privateCode = TerminalKeys::PRIVATE_KEY_CODE_BASE;
+    for (const auto& arrow : ARROW_KEYS)
+    {
+        for (uint32 modifier = 2; modifier <= 8; modifier++)
+        {
+            const std::string sequence = TerminalKeys::XtermModifiedKeySequence(modifier, arrow.final);
+            if (key_defined(sequence.c_str()) != 0) // known (the extended names above) or a prefix of another sequence
+                continue;
+            if (define_key(sequence.c_str(), privateCode) == OK)
+                keyTranslationMatrix[privateCode] = XTERM_MODIFIERS[modifier] | arrow.key;
+            privateCode++;
         }
     }
 #endif
@@ -558,6 +596,17 @@ void NcursesTerminal::HandleKeyNormalMode(SystemEvent& evt, const int c)
         // terminals send Alt/Meta + key (e.g. "Use Option as Meta key" on macOS) as ESC followed by the key, in the
         // same write -> if another byte is already available it is an Alt combination, otherwise a plain Escape
         const int next = getch(); // non-blocking (nodelay)
+        if ((next >= 0x80) && (next <= 0xFF))
+        {
+            // Meta + a character typed in UTF-8 (Option+ș with "Use Option as Meta key"): there is no Alt+<character> key,
+            // the character is delivered (never an Escape that would close a dialog, then the character)
+            char16 character = 0;
+            if (ReadUtf8Character(next, character))
+                evt.unicodeCharacter = character;
+            else
+                evt.eventType = SystemEventType::None;
+            return;
+        }
         if (next != ERR)
         {
             Key key        = Key::None;
@@ -575,8 +624,55 @@ void NcursesTerminal::HandleKeyNormalMode(SystemEvent& evt, const int c)
         return;
     }
 
+    if ((c >= 0x80) && (c <= 0xFF))
+    {
+        // UTF-8 input: a letter of the keyboard layout (s with comma, a with breve, ...) or, on macOS without "Use Option as
+        // Meta key", Option+letter (f with hook, ...): delivered as the typed character
+        char16 character = 0;
+        if (ReadUtf8Character(c, character))
+            evt.unicodeCharacter = character;
+        else
+            evt.eventType = SystemEventType::None; // malformed, a stray continuation byte, or beyond the BMP (char16)
+        return;
+    }
+
     if (!TranslateKey(c, evt.keyCode, evt.unicodeCharacter))
         evt.eventType = SystemEventType::None;
+}
+
+// The rest of a UTF-8 sequence that starts with `lead` (the terminal sends it in one write; a short wait covers a sequence
+// split between two reads, e.g. over ssh). False for a malformed sequence or a character beyond the BMP.
+bool NcursesTerminal::ReadUtf8Character(const int lead, char16& character)
+{
+    unsigned char bytes[4]    = { static_cast<unsigned char>(lead), 0, 0, 0 };
+    const unsigned int length = TerminalKeys::Utf8SequenceLength(bytes[0]);
+    if (length == 0)
+        return false;
+    unsigned int count = 1;
+    unsigned int waits = 0;
+    while (count < length)
+    {
+        const int next = getch(); // non-blocking (nodelay)
+        if (next == ERR)
+        {
+            if (waits++ >= 3)
+                break;
+            pollfd readFD{ STDIN_FILENO, POLLIN, 0 };
+            poll(&readFD, 1, 10);
+            continue;
+        }
+        if ((next < 0x80) || (next > 0xBF))
+        {
+            ungetch(next); // not part of the sequence: it is the next key
+            break;
+        }
+        bytes[count++] = static_cast<unsigned char>(next);
+    }
+    char32_t codePoint = 0;
+    if ((count != length) || !TerminalKeys::DecodeUtf8(bytes, count, codePoint) || (codePoint > 0xFFFF))
+        return false;
+    character = static_cast<char16>(codePoint);
+    return true;
 }
 
 void NcursesTerminal::HandleKeyComboMode(SystemEvent& evt, const int c)
@@ -610,11 +706,12 @@ void NcursesTerminal::HandleKeyComboMode(SystemEvent& evt, const int c)
         return;
     }
 
-    if (islower(c))
+    // ASCII only: islower / isdigit of a byte above 0x7F depend on the locale, and of a KEY_* code are undefined
+    if ((c >= 'a') && (c <= 'z'))
     {
         evt.keyCode |= static_cast<Key>(comboKeysMask) | static_cast<Key>(static_cast<uint32>(Key::A) + (c - 'a'));
     }
-    else if (isdigit(c))
+    else if ((c >= '0') && (c <= '9'))
     {
         int functionKeyIndex = c - '0' - 1;
         if (c == 48)
