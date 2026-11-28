@@ -5671,12 +5671,33 @@ namespace Application
         Custom         = 5, // implemented by the application (see CustomFrontendInterface)
         Browser        = 6, ///< HTML5 canvas inside a web page (wasm32-emscripten builds only)
     };
-    /// Built-in color themes.
+    /// Built-in color themes (defined in code: they need no file and work on every frontend). New themes are only
+    /// appended, so the value of an existing theme never changes. See EnumerateThemes / GetThemeName.
     enum class ThemeType : uint32
     {
-        Default = 0,
-        Dark    = 1,
-        Light   = 2,
+        Default      = 0,
+        Dark         = 1,
+        Light        = 2,
+        HighContrast = 3, ///< accessibility: strong foreground / background separation
+        Midnight     = 4, ///< dark blue / black
+        Ocean        = 5, ///< teal / cyan
+        Forest       = 6, ///< green / olive
+        RetroGreen   = 7, ///< green on black (monochrome terminal)
+    };
+    /// Where a theme listed by Application::EnumerateThemes comes from.
+    enum class ThemeSource : uint32
+    {
+        BuiltIn  = 0, ///< one of the ThemeType themes
+        File     = 1, ///< a `<Name>.theme` file from the themes folder
+        Settings = 2, ///< an `[AppCUI.Theme.<Name>]` section of the settings file (edited themes, browser frontend)
+    };
+    /// A theme known to the theme registry (see Application::EnumerateThemes).
+    struct ThemeInfo
+    {
+        std::string Name;        ///< the value of `[AppCUI] Theme=` (built-ins: e.g. "HighContrast")
+        std::string DisplayName; ///< the name shown to the user (built-ins: e.g. "High Contrast")
+        ThemeSource Source;      ///< built-in, `.theme` file or settings section
+        ThemeType Type;          ///< the built-in theme (for a file or a settings section: its base, ThemeType::Default)
     };
     /// Characters used to draw lines, borders, arrows and other special characters.
     enum class SpecialCharacterSetType : uint32
@@ -5943,8 +5964,39 @@ namespace Application
     EXPORT Utils::Reference<Controls::Desktop> GetDesktop();
     /// Stops the event loop (the application closes).
     EXPORT void Close();
-    /// Switches to a built-in theme.
+    /// Switches to a built-in theme. The colors registered with Dialogs::ThemeEditor::RegisterCustomColors return to
+    /// their registered values and every Dialogs::OnThemeChangedInterface listener is notified.
     EXPORT void SetTheme(ThemeType themeType);
+    /// Switches to a theme by name: a built-in theme (see GetThemeType; a `<Name>.theme` file of the themes folder, if
+    /// any, is applied over it), else an `[AppCUI.Theme.<name>]` section of the settings file, else `<name>.theme`
+    /// from the themes folder (applied over ThemeType::Default). Listeners are notified. Returns false (and keeps the
+    /// current theme) if the theme can not be found or loaded.
+    EXPORT bool SetTheme(std::string_view themeName);
+    /// Name of the current theme (see ThemeInfo::Name); empty if the colors were edited in the theme editor and not
+    /// saved under a name.
+    EXPORT std::string GetCurrentThemeName();
+
+    /// Theme registry: the canonical name of a built-in theme (e.g. "HighContrast"); empty for an invalid value.
+    EXPORT std::string_view GetThemeName(ThemeType themeType);
+    /// Theme registry: the name of a built-in theme shown to the user (e.g. "High Contrast").
+    EXPORT std::string_view GetThemeDisplayName(ThemeType themeType);
+    /// Theme registry: the built-in theme called `themeName`. Case-insensitive; spaces, '-' and '_' are ignored (so
+    /// "High Contrast", "high-contrast" and "HIGHCONTRAST" all match). std::nullopt if `themeName` is not built-in.
+    EXPORT std::optional<ThemeType> GetThemeType(std::string_view themeName);
+    /// Theme registry: true if `themeName` names a built-in theme (see GetThemeType).
+    EXPORT bool IsBuiltInTheme(std::string_view themeName);
+    /// Theme registry: every built-in theme (in ThemeType order), then the `[AppCUI.Theme.<Name>]` sections of the
+    /// settings file, then the `*.theme` files of the themes folder. A name is listed once (case-insensitive; the first
+    /// source wins, the way SetTheme resolves it). Without an initialized application, only the built-in themes are
+    /// listed.
+    EXPORT std::vector<ThemeInfo> EnumerateThemes();
+    /// Writes `[AppCUI] Theme=<themeName>` to the settings (GetAppSettings) and saves them to GetAppSettingsFile(), so
+    /// that the next start uses this theme (with InitializationFlags::LoadSettingsFile). Built-in names are written in
+    /// their canonical form. Returns false if the name is empty or the settings could not be saved.
+    EXPORT bool SaveThemeToSettings(std::string_view themeName);
+    /// True if the application uses a settings file (InitializationFlags::LoadSettingsFile): the theme dialogs only
+    /// offer to keep a theme after a restart in that case.
+    EXPORT bool UsesSettingsFile();
     /// Changes the characters used to draw lines, borders and other special characters.
     EXPORT bool SetSpecialCharacterSet(SpecialCharacterSetType characterSetType);
     /// AppCUI settings exposed as properties (for a PropertyList).
@@ -5963,6 +6015,8 @@ namespace Dialogs
         static void ShowWarning(const ConstString& title, const ConstString& message);
         static Result ShowOkCancel(const ConstString& title, const ConstString& message);
         static Result ShowYesNoCancel(const ConstString& title, const ConstString& message);
+        /// Returns Result::Yes or Result::No (closing the window / Esc means No).
+        static Result ShowYesNo(const ConstString& title, const ConstString& message);
     };
 
     /// Modal open / save file dialogs.
@@ -6021,6 +6075,20 @@ namespace Dialogs
         static void RemovePreviewDrawListener(OnThemePreviewWindowDrawInterface* previewInterface);
         static bool RegisterOnThemeChangeCallback(OnThemeChangedInterface* listener);
         static void RemoveOnThemeChangeCallback(OnThemeChangedInterface* listener);
+    };
+
+    /// Lets the user pick a theme from Application::EnumerateThemes (built-in themes first, then `.theme` files and
+    /// themes stored in the settings file). Moving through the list previews the theme on the whole application; Enter
+    /// / "Apply" keeps it, Esc / "Cancel" restores the theme that was active when the dialog opened. "Edit..." opens
+    /// the theme editor on the selected theme. When the application uses a settings file, Apply asks whether the theme
+    /// should be kept after a restart (Application::SaveThemeToSettings).
+    class EXPORT ThemePicker
+    {
+        ThemePicker() = delete;
+
+      public:
+        /// Returns true if a theme was applied (Apply, or Apply in the theme editor), false if the dialog was cancelled.
+        static bool Show();
     };
 } // namespace Dialogs
 

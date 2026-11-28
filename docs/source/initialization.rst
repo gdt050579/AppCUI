@@ -63,11 +63,15 @@ writes the section with its default values:
    Size = default            ; default, maximized, fullscreen or <width>x<height> (for example 120x40)
    CharacterSize = default   ; default, tiny, small, normal, large or huge
    Fixed = false             ; true = the terminal window can not be resized
-   Theme = default           ; default, dark, light or the name of a .theme file from ThemeFolder
+   Theme = default           ; a built-in theme (Default, Dark, Light, HighContrast, Midnight, Ocean, Forest,
+                             ; RetroGreen) or the name of a theme from ThemeFolder / the settings (see Themes)
    ThemeFolder = Themes      ; folder (relative to the executable) with .theme files
    CharacterSet = auto       ; auto, unicode, ascii or linux (special characters used to draw lines and borders)
    Keyboard.Ctrl = Ctrl      ; keyboard profile: the modifier(s) produced by the physical Ctrl key
    Keyboard.Alt = Alt        ; keyboard profile: the modifier(s) produced by the physical Alt key
+
+The theme dialogs write ``Theme`` (and may add an ``[AppCUI.Theme.Custom]`` section) when the user keeps a theme after
+a restart; see :doc:`themes`.
 
 ``Keyboard.Ctrl`` / ``Keyboard.Alt`` remap the modifier keys for every key press and mouse event (for example
 ``Keyboard.Ctrl = Alt`` and ``Keyboard.Alt = Ctrl`` swap them, which helps on keyboards or terminals where some
@@ -92,9 +96,9 @@ InitializationData
        CharacterSize CharSize;                           // character size (SDL, Windows console)
        InitializationFlags Flags;                        // see above
        string_view FontName;                             // font name (Windows console)
-       Utils::FixSizeString<32> ThemeName;               // name of a .theme file to load from ThemeFolder
+       Utils::FixSizeString<32> ThemeName;               // a theme name (built-in, settings section or .theme file)
        Utils::String ThemeFolder;                        // default: "Themes"
-       ThemeType Theme;                                  // Default, Dark or Light
+       ThemeType Theme;                                  // built-in theme (also the base of a loaded theme)
        SpecialCharacterSetType SpecialCharacterSet;      // Auto, Unicode, LinuxTerminal or Ascii
        Controls::Desktop* (*CustomDesktopConstructor)(); // creates a custom desktop (nullptr = default desktop)
        CustomFrontendInterface* CustomFrontend;          // required when Frontend is FrontendType::Custom
@@ -116,7 +120,10 @@ with:
 
    enum class CharacterSize : uint32 { Default = 0, Tiny, Small, Normal, Large, Huge };
 
-   enum class ThemeType : uint32 { Default = 0, Dark = 1, Light = 2 };
+   enum class ThemeType : uint32
+   {
+       Default = 0, Dark = 1, Light = 2, HighContrast = 3, Midnight = 4, Ocean = 5, Forest = 6, RetroGreen = 7
+   };
 
    enum class SpecialCharacterSetType : uint32 { Auto = 0, Unicode = 1, LinuxTerminal = 2, Ascii = 3 };
 

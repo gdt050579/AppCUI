@@ -7,4 +7,5 @@ target_sources(AppCUICore PRIVATE
     MenuBar.cpp
     ToolTip.cpp
     Properties.cpp
+    Themes.cpp
 )

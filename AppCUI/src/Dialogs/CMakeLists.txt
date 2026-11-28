@@ -3,4 +3,5 @@ target_sources(AppCUICore PRIVATE
 	FileDialog.cpp
 	WindowManager.cpp
 	ThemeEditor.cpp
+	ThemePicker.cpp
 )

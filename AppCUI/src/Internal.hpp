@@ -280,7 +280,49 @@ namespace Internal
         void SetTheme(AppCUI::Application::Config& config, AppCUI::Application::ThemeType type);
         bool Save(AppCUI::Application::Config& config, const std::filesystem::path& outputFile);
         bool Load(AppCUI::Application::Config& config, const std::filesystem::path& inputFile);
+        // the content of a `.theme` file
+        bool SaveToString(AppCUI::Application::Config& config, std::string& output);
+        bool LoadFromString(AppCUI::Application::Config& config, string_view text);
+        bool LoadFromIni(AppCUI::Application::Config& config, Utils::IniObject& ini);
     }; // namespace Config
+
+    // the settings file was written (browser frontend: the host page keeps a copy of it)
+    void OnSettingsFileSaved(const std::filesystem::path& path);
+
+    struct ApplicationImpl;
+    namespace Themes
+    {
+        // name used for colors edited in the theme editor and kept after a restart
+        constexpr string_view CUSTOM_THEME_NAME = "Custom";
+        // prefix of the settings sections that hold a whole theme ([AppCUI.Theme.<Name>])
+        constexpr string_view SETTINGS_SECTION_PREFIX = "AppCUI.Theme.";
+
+        // Builds the theme `name` into `config` (only on success): a built-in theme, else the [AppCUI.Theme.<name>]
+        // section of the settings, else <name>.theme from config.ThemesFolder (both over the `base` built-in theme).
+        // Registered custom colors return to their registered values first. `resolvedName` receives the name to show
+        // / save (canonical for built-ins).
+        bool Apply(Application::Config& config,
+                   string_view name,
+                   Application::ThemeType base,
+                   ApplicationImpl* app,
+                   std::string& resolvedName);
+        // custom color categories registered with ThemeEditor::RegisterCustomColors -> their registered values
+        void ResetCustomColors(Application::Config& config, ApplicationImpl* app);
+        // a theme stored in a settings section, in the format of a .theme file flattened to "<Section>.<Key>" keys
+        bool SaveToSettingsSection(Application::Config& config, Utils::IniObject& settings, string_view name);
+        bool LoadFromSettingsSection(Application::Config& config, Utils::IniObject& settings, string_view name);
+        bool HasSettingsSection(Utils::IniObject& settings, string_view name);
+        // the two theme configurations hold the same colors (custom colors included)
+        bool SameColors(Application::Config& a, Application::Config& b);
+        // Asks whether the theme that was just applied should be kept after a restart and, on Yes, saves it: `name`
+        // when the colors are those of a known theme, else (edited colors) as the "Custom" theme. Does nothing if the
+        // application does not use a settings file.
+        void AskToKeepAfterRestart(Application::Config& applied, string_view name, bool edited);
+        // applies `newConfig` to the application, records its name and notifies the theme listeners
+        void Activate(const Application::Config& newConfig, string_view name);
+        // the theme editor on the current colors; true if its changes were applied
+        bool ShowEditor();
+    } // namespace Themes
 
     struct ApplicationImpl : public Utils::PropertiesInterface
     {
@@ -292,6 +334,10 @@ namespace Internal
         unique_ptr<MenuBar> menu;
         vector<Controls::Control*> toDelete;
         std::set<Dialogs::OnThemeChangedInterface*> themeChangedListeners;
+        // values given to ThemeEditor::RegisterCustomColors (restored on every theme switch)
+        std::map<std::string, Application::Config::CustomColorNameStorage> customColorDefaults;
+        std::string currentThemeName; // see Application::GetCurrentThemeName
+        bool usesSettingsFile;        // InitializationFlags::LoadSettingsFile
 
         Controls::Desktop* AppDesktop;
         ToolTipController ToolTip;
@@ -344,7 +390,6 @@ namespace Internal
 
         // Common implementations
         void LoadSettingsFile(Application::InitializationData& initData);
-        bool LoadThemeFile(Application::InitializationData& initData);
         bool Init(Application::InitializationData& initData);
         bool UnInit();
         void CheckIfAppShouldClose();
