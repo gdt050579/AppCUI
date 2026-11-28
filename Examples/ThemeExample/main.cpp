@@ -14,6 +14,7 @@ constexpr int CMD_LOAD_THEME_EDITOR       = 4;
 constexpr int CMD_CHANGE_CHARSET_UNICODE  = 5;
 constexpr int CMD_CHANGE_CHARSET_LINUXTTY = 6;
 constexpr int CMD_CHANGE_CHARSET_ASCII    = 7;
+constexpr int CMD_PICK_THEME              = 8;
 
 class ExampleWin : public Window
 {
@@ -49,6 +50,7 @@ class ExampleWin : public Window
 
         Factory::Button::Create(this, "&Load Dialog", "l:2,b:0,w:21", CMD_LOAD_DIALOG);
         Factory::Button::Create(this, "Theme &Editor", "l:2,b:2,w:21", CMD_LOAD_THEME_EDITOR);
+        Factory::Button::Create(this, "&Themes...", "l:2,b:4,w:21", CMD_PICK_THEME);
 
         Factory::TextArea::Create(this, "MultiLine\nText", "x:25,y:16,w:40,h:5", TextAreaFlags::ShowLineNumbers);
     }
@@ -90,6 +92,10 @@ class ExampleWin : public Window
             case CMD_LOAD_THEME_EDITOR:
                 Dialogs::ThemeEditor::Show();
                 return true;
+            case CMD_PICK_THEME:
+                // every built-in theme + the .theme files; Apply asks whether to keep it in ThemeExample.ini
+                Dialogs::ThemePicker::Show();
+                return true;
             }
         }
         return false;
@@ -125,7 +131,8 @@ void BuildAppMenu()
 int main()
 {
     InitializationData initData;
-    initData.Flags = InitializationFlags::Menu | InitializationFlags::CommandBar;
+    // LoadSettingsFile: [AppCUI] Theme= from ThemeExample.ini (written when a theme is kept after a restart)
+    initData.Flags = InitializationFlags::Menu | InitializationFlags::CommandBar | InitializationFlags::LoadSettingsFile;
     initData.Theme = ThemeType::Default;
     if (!Application::Init(initData))
         return 1;

@@ -240,6 +240,7 @@ void Config_SetDarkTheme(Config& cfg)
           { Color::Black, Color::DarkBlue },
           { Color::Magenta, Color::Yellow },
           { Color::DarkRed, Color::Olive });
+    cfg.Button.ShadowColor      = { Color::Black, Color::Transparent }; // the value inherited from Default before
     cfg.Text.Normal             = { Color::Silver, Color::Transparent };
     cfg.Text.HotKey             = { Color::Aqua, Color::Transparent };
     cfg.Text.Inactive           = { Color::DarkBlue, Color::Transparent };
@@ -433,6 +434,7 @@ void Config_SetLightTheme(Config& cfg)
           { Color::Gray, Color::Silver },
           { Color::Magenta, Color::Yellow },
           { Color::DarkRed, Color::Olive });
+    cfg.Button.ShadowColor      = { Color::Black, Color::Transparent }; // the value inherited from Default before
     cfg.Text.Normal             = { Color::Black, Color::Transparent };
     cfg.Text.HotKey             = { Color::DarkRed, Color::Transparent };
     cfg.Text.Inactive           = { Color::Gray, Color::Transparent };
@@ -583,6 +585,274 @@ void Config_SetLightTheme(Config& cfg)
     cfg.Window.Background.Info     = Color::Silver;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Built-in themes defined by a palette of roles: Config_SetPaletteTheme writes every field of the configuration from
+// it, so a palette theme can not leave a color group unset. The colors were checked against the 16-color palettes of
+// the frontends (Windows console / SDL / browser use the Campbell palette, ncurses the xterm one): roles shown next to
+// each other never share a color pair, and text keeps a readable contrast in both palettes.
+// ---------------------------------------------------------------------------------------------------------------------
+struct PaletteTheme
+{
+    // window backgrounds
+    Color Back, InactiveBack, ErrorBack, WarningBack, InfoBack;
+    // drawn over the window background (transparent background)
+    Color Text, Focused, Inactive, Frame, Accent, Hover, Error, Warning, Emphasized1, Emphasized2, Emphasized3, Checked,
+          Unchecked, Shadow;
+    ColorPair HotKey, TextHovered, Highlighted; // may carry a background (high contrast / monochrome themes)
+    ColorPair Desktop;
+    // controls with their own background
+    ColorPair Panel, PanelHotKey; // buttons, headers, tabs
+    ColorPair Focus, FocusHotKey; // focused button / header, selected tab or menu item
+    ColorPair Hot, HotHotKey;     // hovered
+    ColorPair Selection;          // selected text / items, pressed button
+    ColorPair InactiveControl;    // disabled button
+    ColorPair Menu, MenuHotKey, MenuInactive, ParentMenu, ParentMenuHotKey, ParentMenuInactive;
+    ColorPair Cursor, CursorInactive, CursorOverInactive, CursorOverSelection;
+    ColorPair SearchMarker, SimilarText;
+    Color EditorBack;
+    ColorPair ScrollBar, ScrollThumb, ToolTip, ProgressEmpty, ProgressFull;
+};
+
+void Config_SetPaletteTheme(Config& cfg, const PaletteTheme& p)
+{
+    constexpr Color T = Color::Transparent;
+
+    cfg.SearchBar.Set(p.Focus, p.Panel, { p.Inactive, p.Back }, p.Hot, p.Selection);
+    cfg.Border.Set({ p.Accent, T }, { p.Frame, T }, { p.Inactive, T }, { p.Hover, T }, p.Selection);
+    cfg.Lines.Set({ p.Focused, T }, { p.Frame, T }, { p.Inactive, T }, { p.Hover, T }, p.Selection);
+    cfg.Editor.Set(
+          { p.Focused, p.EditorBack },
+          { p.Text, p.EditorBack },
+          { p.Inactive, p.EditorBack },
+          { p.Hover, p.EditorBack },
+          p.Selection);
+    cfg.LineMarker.Set(p.Focus, p.Panel, { p.Inactive, p.EditorBack }, p.Hot, p.Selection);
+
+    cfg.Button.Text.Set(p.Focus, p.Panel, p.InactiveControl, p.Hot, p.Selection);
+    cfg.Button.HotKey.Set(p.FocusHotKey, p.PanelHotKey, p.InactiveControl, p.HotHotKey, p.Selection);
+    cfg.Button.ShadowColor = { p.Shadow, T };
+
+    cfg.Text.Normal      = { p.Text, T };
+    cfg.Text.HotKey      = p.HotKey;
+    cfg.Text.Inactive    = { p.Inactive, T };
+    cfg.Text.Error       = { p.Error, T };
+    cfg.Text.Warning     = { p.Warning, T };
+    cfg.Text.Hovered     = p.TextHovered;
+    cfg.Text.Focused     = { p.Focused, T };
+    cfg.Text.Highlighted = p.Highlighted;
+    cfg.Text.Emphasized1 = { p.Emphasized1, T };
+    cfg.Text.Emphasized2 = { p.Emphasized2, T };
+    cfg.Text.Emphasized3 = { p.Emphasized3, T };
+
+    cfg.Symbol.Inactive  = { p.Inactive, T };
+    cfg.Symbol.Hovered   = p.Hot;
+    cfg.Symbol.Pressed   = p.Selection;
+    cfg.Symbol.Checked   = { p.Checked, T };
+    cfg.Symbol.Unchecked = { p.Unchecked, T };
+    cfg.Symbol.Unknown   = { p.Warning, T };
+    cfg.Symbol.Desktop   = p.Desktop;
+    cfg.Symbol.Arrows    = { p.Accent, T };
+    cfg.Symbol.Close     = { p.Error, T };
+    cfg.Symbol.Maximized = { p.Accent, T };
+    cfg.Symbol.Resize    = { p.Accent, T };
+
+    cfg.Cursor.Normal           = p.Cursor;
+    cfg.Cursor.Inactive         = p.CursorInactive;
+    cfg.Cursor.OverInactiveItem = p.CursorOverInactive;
+    cfg.Cursor.OverSelection    = p.CursorOverSelection;
+
+    cfg.Selection.Editor       = p.Selection;
+    cfg.Selection.LineMarker   = p.Selection;
+    cfg.Selection.Text         = p.Selection;
+    cfg.Selection.SearchMarker = p.SearchMarker;
+    cfg.Selection.SimilarText  = p.SimilarText;
+
+    cfg.ProgressStatus.Empty = p.ProgressEmpty;
+    cfg.ProgressStatus.Full  = p.ProgressFull;
+
+    cfg.Menu.Text.Set(p.Menu, p.Menu, p.MenuInactive, p.Hot, p.Focus);
+    cfg.Menu.HotKey.Set(p.MenuHotKey, p.MenuHotKey, p.MenuInactive, p.HotHotKey, p.FocusHotKey);
+    cfg.Menu.ShortCut = cfg.Menu.HotKey;
+    cfg.Menu.Symbol   = cfg.Menu.HotKey;
+
+    cfg.ParentMenu.Text.Set(p.ParentMenu, p.ParentMenu, p.ParentMenuInactive, p.Hot, p.Focus);
+    cfg.ParentMenu.HotKey.Set(
+          p.ParentMenuHotKey, p.ParentMenuHotKey, p.ParentMenuInactive, p.HotHotKey, p.FocusHotKey);
+    cfg.ParentMenu.ShortCut = cfg.ParentMenu.HotKey;
+    cfg.ParentMenu.Symbol   = cfg.ParentMenu.HotKey;
+
+    cfg.Header.Text.Set(p.Focus, p.Panel, { p.Inactive, T }, p.Hot, p.Selection);
+    cfg.Header.HotKey.Set(p.FocusHotKey, p.PanelHotKey, { p.Inactive, T }, p.HotHotKey, p.Selection);
+    cfg.Header.Symbol = cfg.Header.Text;
+
+    cfg.ScrollBar.Bar.Set(p.ScrollBar, p.ScrollBar, { p.Inactive, T }, p.Hot, p.Selection);
+    cfg.ScrollBar.Arrows = cfg.ScrollBar.Bar;
+    cfg.ScrollBar.Position.Set(p.ScrollThumb, p.ScrollThumb, { p.Inactive, T }, p.Hot, p.Selection);
+
+    cfg.ToolTip.Text  = p.ToolTip;
+    cfg.ToolTip.Arrow = { p.ToolTip.Background, p.Back };
+
+    cfg.Tab.Text.Set(p.Panel, p.Panel, { p.Inactive, T }, p.Hot, p.Focus);
+    cfg.Tab.HotKey.Set(p.PanelHotKey, p.PanelHotKey, { p.Inactive, T }, p.HotHotKey, p.FocusHotKey);
+    cfg.Tab.ListText                     = cfg.Tab.Text;
+    cfg.Tab.ListText.PressedOrSelected   = p.Selection;
+    cfg.Tab.ListHotKey                   = cfg.Tab.HotKey;
+    cfg.Tab.ListHotKey.PressedOrSelected = p.Selection;
+
+    cfg.Window.Background.Normal   = p.Back;
+    cfg.Window.Background.Inactive = p.InactiveBack;
+    cfg.Window.Background.Error    = p.ErrorBack;
+    cfg.Window.Background.Warning  = p.WarningBack;
+    cfg.Window.Background.Info     = p.InfoBack;
+}
+
+// Accessibility: bright text on black; every highlight (focus, hover, selection, cursor) is a solid background; the
+// focused window border is yellow, the other borders white.
+constexpr PaletteTheme HIGH_CONTRAST_THEME = {
+    .Back = Color::Black, .InactiveBack = Color::Black, .ErrorBack = Color::DarkRed, .WarningBack = Color::Black,
+    .InfoBack = Color::Black,
+    .Text = Color::Silver, .Focused = Color::White, .Inactive = Color::Gray, .Frame = Color::White,
+    .Accent = Color::Yellow, .Hover = Color::Aqua, .Error = Color::Red, .Warning = Color::Yellow,
+    .Emphasized1 = Color::Aqua, .Emphasized2 = Color::Green, .Emphasized3 = Color::Pink, .Checked = Color::Green,
+    .Unchecked = Color::Red, .Shadow = Color::Gray,
+    .HotKey = { Color::Yellow, Color::Transparent }, .TextHovered = { Color::Aqua, Color::Transparent },
+    .Highlighted = { Color::Black, Color::Yellow },
+    .Desktop = { Color::Gray, Color::Black },
+    .Panel = { Color::White, Color::DarkBlue }, .PanelHotKey = { Color::Yellow, Color::DarkBlue },
+    .Focus = { Color::Black, Color::Yellow }, .FocusHotKey = { Color::DarkRed, Color::Yellow },
+    .Hot = { Color::Black, Color::Aqua }, .HotHotKey = { Color::DarkRed, Color::Aqua },
+    .Selection = { Color::Black, Color::White },
+    .InactiveControl = { Color::Gray, Color::Black },
+    .Menu = { Color::White, Color::Black }, .MenuHotKey = { Color::Yellow, Color::Black },
+    .MenuInactive = { Color::Gray, Color::Black },
+    .ParentMenu = { Color::Silver, Color::Black }, .ParentMenuHotKey = { Color::Yellow, Color::Black },
+    .ParentMenuInactive = { Color::Gray, Color::Black },
+    .Cursor = { Color::Black, Color::Green }, .CursorInactive = { Color::Black, Color::Gray },
+    .CursorOverInactive = { Color::Gray, Color::White }, .CursorOverSelection = { Color::White, Color::Magenta },
+    .SearchMarker = { Color::Black, Color::Aqua }, .SimilarText = { Color::Black, Color::Green },
+    .EditorBack = Color::Black,
+    .ScrollBar = { Color::Black, Color::Silver }, .ScrollThumb = { Color::DarkBlue, Color::Silver },
+    .ToolTip = { Color::Black, Color::Yellow },
+    .ProgressEmpty = { Color::White, Color::DarkBlue }, .ProgressFull = { Color::Black, Color::Yellow },
+};
+
+// Dark blue / black: black windows, dark blue panels and menus, blue and aqua accents.
+constexpr PaletteTheme MIDNIGHT_THEME = {
+    .Back = Color::Black, .InactiveBack = Color::Black, .ErrorBack = Color::DarkRed, .WarningBack = Color::Magenta,
+    .InfoBack = Color::DarkBlue,
+    .Text = Color::Silver, .Focused = Color::White, .Inactive = Color::Gray, .Frame = Color::Silver,
+    .Accent = Color::Blue, .Hover = Color::Yellow, .Error = Color::Red, .Warning = Color::Olive,
+    .Emphasized1 = Color::Blue, .Emphasized2 = Color::Aqua, .Emphasized3 = Color::Pink, .Checked = Color::Green,
+    .Unchecked = Color::Red, .Shadow = Color::DarkBlue,
+    .HotKey = { Color::Aqua, Color::Transparent }, .TextHovered = { Color::Yellow, Color::Transparent },
+    .Highlighted = { Color::White, Color::DarkBlue },
+    .Desktop = { Color::DarkBlue, Color::Black },
+    .Panel = { Color::White, Color::DarkBlue }, .PanelHotKey = { Color::Yellow, Color::DarkBlue },
+    .Focus = { Color::Black, Color::Aqua }, .FocusHotKey = { Color::Magenta, Color::Aqua },
+    .Hot = { Color::Black, Color::Silver }, .HotHotKey = { Color::DarkRed, Color::Silver },
+    .Selection = { Color::Black, Color::Blue },
+    .InactiveControl = { Color::Gray, Color::DarkBlue },
+    .Menu = { Color::White, Color::DarkBlue }, .MenuHotKey = { Color::Yellow, Color::DarkBlue },
+    .MenuInactive = { Color::Gray, Color::DarkBlue },
+    .ParentMenu = { Color::Silver, Color::Black }, .ParentMenuHotKey = { Color::Aqua, Color::Black },
+    .ParentMenuInactive = { Color::Gray, Color::Black },
+    .Cursor = { Color::Black, Color::Aqua }, .CursorInactive = { Color::Black, Color::Gray },
+    .CursorOverInactive = { Color::Gray, Color::White }, .CursorOverSelection = { Color::Black, Color::Yellow },
+    .SearchMarker = { Color::Black, Color::Olive }, .SimilarText = { Color::Black, Color::Green },
+    .EditorBack = Color::Black,
+    .ScrollBar = { Color::Silver, Color::DarkBlue }, .ScrollThumb = { Color::Aqua, Color::DarkBlue },
+    .ToolTip = { Color::Black, Color::Silver },
+    .ProgressEmpty = { Color::White, Color::DarkBlue }, .ProgressFull = { Color::Black, Color::Aqua },
+};
+
+// Teal / cyan: dark blue water, aqua text and panels; teal desktop, scroll bars and tool tips.
+constexpr PaletteTheme OCEAN_THEME = {
+    .Back = Color::DarkBlue, .InactiveBack = Color::Black, .ErrorBack = Color::DarkRed, .WarningBack = Color::Magenta,
+    .InfoBack = Color::Black,
+    .Text = Color::Aqua, .Focused = Color::White, .Inactive = Color::Gray, .Frame = Color::Aqua,
+    .Accent = Color::White, .Hover = Color::Yellow, .Error = Color::Red, .Warning = Color::Olive,
+    .Emphasized1 = Color::Green, .Emphasized2 = Color::Pink, .Emphasized3 = Color::Silver, .Checked = Color::Green,
+    .Unchecked = Color::Red, .Shadow = Color::Black,
+    .HotKey = { Color::Yellow, Color::Transparent }, .TextHovered = { Color::White, Color::Transparent },
+    .Highlighted = { Color::Black, Color::Aqua },
+    .Desktop = { Color::DarkBlue, Color::Teal },
+    .Panel = { Color::Black, Color::Aqua }, .PanelHotKey = { Color::DarkRed, Color::Aqua },
+    .Focus = { Color::Black, Color::White }, .FocusHotKey = { Color::DarkRed, Color::White },
+    .Hot = { Color::Black, Color::Yellow }, .HotHotKey = { Color::DarkRed, Color::Yellow },
+    .Selection = { Color::Black, Color::Green },
+    .InactiveControl = { Color::Gray, Color::Black },
+    .Menu = { Color::Black, Color::Aqua }, .MenuHotKey = { Color::DarkRed, Color::Aqua },
+    .MenuInactive = { Color::Gray, Color::Aqua },
+    .ParentMenu = { Color::Black, Color::Silver }, .ParentMenuHotKey = { Color::DarkRed, Color::Silver },
+    .ParentMenuInactive = { Color::Gray, Color::Silver },
+    .Cursor = { Color::Black, Color::Aqua }, .CursorInactive = { Color::Black, Color::Teal },
+    .CursorOverInactive = { Color::Gray, Color::White }, .CursorOverSelection = { Color::Black, Color::White },
+    .SearchMarker = { Color::Black, Color::Olive }, .SimilarText = { Color::White, Color::Magenta },
+    .EditorBack = Color::DarkBlue,
+    .ScrollBar = { Color::Black, Color::Teal }, .ScrollThumb = { Color::White, Color::Teal },
+    .ToolTip = { Color::Black, Color::Teal },
+    .ProgressEmpty = { Color::Black, Color::Teal }, .ProgressFull = { Color::Black, Color::White },
+};
+
+// Green / olive: black windows with olive frames, dark green panels, olive focus and green highlights.
+constexpr PaletteTheme FOREST_THEME = {
+    .Back = Color::Black, .InactiveBack = Color::Black, .ErrorBack = Color::DarkRed, .WarningBack = Color::Magenta,
+    .InfoBack = Color::DarkBlue,
+    .Text = Color::Silver, .Focused = Color::White, .Inactive = Color::Gray, .Frame = Color::Olive,
+    .Accent = Color::Green, .Hover = Color::Yellow, .Error = Color::Red, .Warning = Color::Olive,
+    .Emphasized1 = Color::Green, .Emphasized2 = Color::Olive, .Emphasized3 = Color::Aqua, .Checked = Color::Green,
+    .Unchecked = Color::Red, .Shadow = Color::Gray,
+    .HotKey = { Color::Yellow, Color::Transparent }, .TextHovered = { Color::Green, Color::Transparent },
+    .Highlighted = { Color::Black, Color::Olive },
+    .Desktop = { Color::DarkGreen, Color::Black },
+    .Panel = { Color::Black, Color::DarkGreen }, .PanelHotKey = { Color::DarkBlue, Color::DarkGreen },
+    .Focus = { Color::Black, Color::Olive }, .FocusHotKey = { Color::DarkBlue, Color::Olive },
+    .Hot = { Color::Black, Color::Green }, .HotHotKey = { Color::DarkBlue, Color::Green },
+    .Selection = { Color::Black, Color::Yellow },
+    .InactiveControl = { Color::Gray, Color::Black },
+    .Menu = { Color::Black, Color::Silver }, .MenuHotKey = { Color::DarkRed, Color::Silver },
+    .MenuInactive = { Color::Gray, Color::Silver },
+    .ParentMenu = { Color::Black, Color::Gray }, .ParentMenuHotKey = { Color::White, Color::Gray },
+    .ParentMenuInactive = { Color::Silver, Color::Gray },
+    .Cursor = { Color::Black, Color::Green }, .CursorInactive = { Color::Black, Color::Gray },
+    .CursorOverInactive = { Color::Gray, Color::White }, .CursorOverSelection = { Color::Black, Color::Aqua },
+    .SearchMarker = { Color::White, Color::DarkRed }, .SimilarText = { Color::Black, Color::Aqua },
+    .EditorBack = Color::Black,
+    .ScrollBar = { Color::Black, Color::DarkGreen }, .ScrollThumb = { Color::Yellow, Color::DarkGreen },
+    .ToolTip = { Color::Black, Color::Olive },
+    .ProgressEmpty = { Color::Black, Color::DarkGreen }, .ProgressFull = { Color::Black, Color::Yellow },
+};
+
+// Monochrome green terminal: green on black, highlights in inverse video. Gray / silver / white stand for the dim and
+// bright intensities; red is kept for errors only.
+constexpr PaletteTheme RETRO_GREEN_THEME = {
+    .Back = Color::Black, .InactiveBack = Color::Black, .ErrorBack = Color::DarkRed, .WarningBack = Color::Black,
+    .InfoBack = Color::Black,
+    .Text = Color::Green, .Focused = Color::Green, .Inactive = Color::Gray, .Frame = Color::DarkGreen,
+    .Accent = Color::Green, .Hover = Color::Green, .Error = Color::Red, .Warning = Color::White,
+    .Emphasized1 = Color::Silver, .Emphasized2 = Color::DarkGreen, .Emphasized3 = Color::White,
+    .Checked = Color::Green, .Unchecked = Color::DarkGreen, .Shadow = Color::DarkGreen,
+    .HotKey = { Color::Black, Color::DarkGreen }, .TextHovered = { Color::Black, Color::Green },
+    .Highlighted = { Color::Black, Color::Green },
+    .Desktop = { Color::DarkGreen, Color::Black },
+    .Panel = { Color::Black, Color::DarkGreen }, .PanelHotKey = { Color::Green, Color::Black },
+    .Focus = { Color::Black, Color::Green }, .FocusHotKey = { Color::Green, Color::Black },
+    .Hot = { Color::Green, Color::Black }, .HotHotKey = { Color::Black, Color::Green },
+    .Selection = { Color::Black, Color::Silver },
+    .InactiveControl = { Color::Gray, Color::Black },
+    .Menu = { Color::Black, Color::DarkGreen }, .MenuHotKey = { Color::Green, Color::Black },
+    .MenuInactive = { Color::Gray, Color::Black },
+    .ParentMenu = { Color::DarkGreen, Color::Black }, .ParentMenuHotKey = { Color::Green, Color::Black },
+    .ParentMenuInactive = { Color::Gray, Color::Black },
+    .Cursor = { Color::Black, Color::Green }, .CursorInactive = { Color::Black, Color::DarkGreen },
+    .CursorOverInactive = { Color::Black, Color::Gray }, .CursorOverSelection = { Color::White, Color::DarkGreen },
+    .SearchMarker = { Color::Black, Color::Gray }, .SimilarText = { Color::Black, Color::DarkGreen },
+    .EditorBack = Color::Black,
+    .ScrollBar = { Color::DarkGreen, Color::Black }, .ScrollThumb = { Color::Green, Color::Black },
+    .ToolTip = { Color::Black, Color::Green },
+    .ProgressEmpty = { Color::Black, Color::DarkGreen }, .ProgressFull = { Color::Black, Color::Green },
+};
+
 bool WriteKeyToString(Color col, std::string_view name, Utils::String& output)
 {
     CHECK(output.Add(name), false, "");
@@ -620,16 +890,17 @@ bool WriteKeyToString(const ObjectColorState& col, std::string_view name, Utils:
 #define WRITE_COLOR(key, name)      CHECK(WriteKeyToString(key, name, temp), false, "Fail to write key: %s", name);
 #define WRITE_SECTION(name)         CHECK(temp.Add(name), false, "Fail to create section: %s", name);
 
+// a key that is missing keeps the current value (the base theme applied before loading)
 #define READ_COLORSTATE(key, name)                                                                                     \
-    config.key.Focused           = sect.GetValue(#name ".Focused").ToColorPair();                                      \
-    config.key.Normal            = sect.GetValue(#name ".Normal").ToColorPair();                                       \
-    config.key.Inactive          = sect.GetValue(#name ".Inactive").ToColorPair();                                     \
-    config.key.Hovered           = sect.GetValue(#name ".Hovered").ToColorPair();                                      \
-    config.key.PressedOrSelected = sect.GetValue(#name ".Pressed").ToColorPair();
-#define READ_COLORPAIR(key, name) config.key = sect.GetValue(#name).ToColorPair();
-#define READ_COLOR(key, name)     config.key = sect.GetValue(#name).ToColor();
+    config.key.Focused           = sect.GetValue(#name ".Focused").ToColorPair(config.key.Focused);                    \
+    config.key.Normal            = sect.GetValue(#name ".Normal").ToColorPair(config.key.Normal);                      \
+    config.key.Inactive          = sect.GetValue(#name ".Inactive").ToColorPair(config.key.Inactive);                  \
+    config.key.Hovered           = sect.GetValue(#name ".Hovered").ToColorPair(config.key.Hovered);                    \
+    config.key.PressedOrSelected = sect.GetValue(#name ".Pressed").ToColorPair(config.key.PressedOrSelected);
+#define READ_COLORPAIR(key, name) config.key = sect.GetValue(#name).ToColorPair(config.key);
+#define READ_COLOR(key, name)     config.key = sect.GetValue(#name).ToColor(config.key);
 
-bool Internal::Config::Save(Application::Config& config, const std::filesystem::path& outputFile)
+bool Internal::Config::SaveToString(Application::Config& config, std::string& output)
 {
     AppCUI::Utils::LocalString<8192> temp;
 
@@ -657,6 +928,7 @@ bool Internal::Config::Save(Application::Config& config, const std::filesystem::
     WRITE_COLORPAIR(config.Text.Highlighted, "Highlighted");
     WRITE_COLORPAIR(config.Text.Emphasized1, "Emphasized1");
     WRITE_COLORPAIR(config.Text.Emphasized2, "Emphasized2");
+    WRITE_COLORPAIR(config.Text.Emphasized3, "Emphasized3");
 
     WRITE_SECTION("\n[Symbol]\n");
     WRITE_COLORPAIR(config.Symbol.Inactive, "Inactive");
@@ -730,14 +1002,30 @@ bool Internal::Config::Save(Application::Config& config, const std::filesystem::
     if (!config.SerializeCustomColors(temp))
         return false;
 
-    // save
-    return File::WriteContent(outputFile, temp.ToStringView());
+    output = temp.ToStringView();
+    return true;
+}
+bool Internal::Config::Save(Application::Config& config, const std::filesystem::path& outputFile)
+{
+    std::string text;
+    CHECK(SaveToString(config, text), false, "Fail to serialize the theme");
+    return File::WriteContent(outputFile, string_view(text));
 }
 bool Internal::Config::Load(Application::Config& config, const std::filesystem::path& inputFile)
 {
     Utils::IniObject ini;
-    Utils::IniSection sect;
     CHECK(ini.CreateFromFile(inputFile), false, "");
+    return LoadFromIni(config, ini);
+}
+bool Internal::Config::LoadFromString(Application::Config& config, string_view text)
+{
+    Utils::IniObject ini;
+    CHECK(ini.CreateFromString(text), false, "");
+    return LoadFromIni(config, ini);
+}
+bool Internal::Config::LoadFromIni(Application::Config& config, Utils::IniObject& ini)
+{
+    Utils::IniSection sect;
     if ((sect = ini.GetSection("General")).Exists())
     {
         READ_COLORSTATE(SearchBar, SearchBar);
@@ -750,7 +1038,8 @@ bool Internal::Config::Load(Application::Config& config, const std::filesystem::
     {
         READ_COLORSTATE(Button.Text, Text);
         READ_COLORSTATE(Button.HotKey, HotKey);
-        READ_COLORPAIR(Button.ShadowColor, ShadowColor);
+        READ_COLORPAIR(Button.ShadowColor, ShadowColor); // older name of the key
+        READ_COLORPAIR(Button.ShadowColor, Shadow);      // the name Save writes
     }
     if ((sect = ini.GetSection("Text")).Exists())
     {
@@ -764,6 +1053,7 @@ bool Internal::Config::Load(Application::Config& config, const std::filesystem::
         READ_COLORPAIR(Text.Highlighted, Highlighted);
         READ_COLORPAIR(Text.Emphasized1, Emphasized1);
         READ_COLORPAIR(Text.Emphasized2, Emphasized2);
+        READ_COLORPAIR(Text.Emphasized3, Emphasized3);
     }
     if ((sect = ini.GetSection("Symbol")).Exists())
     {
@@ -860,6 +1150,21 @@ void Internal::Config::SetTheme(Application::Config& config, ThemeType theme)
         break;
     case ThemeType::Light:
         Config_SetLightTheme(config);
+        break;
+    case ThemeType::HighContrast:
+        Config_SetPaletteTheme(config, HIGH_CONTRAST_THEME);
+        break;
+    case ThemeType::Midnight:
+        Config_SetPaletteTheme(config, MIDNIGHT_THEME);
+        break;
+    case ThemeType::Ocean:
+        Config_SetPaletteTheme(config, OCEAN_THEME);
+        break;
+    case ThemeType::Forest:
+        Config_SetPaletteTheme(config, FOREST_THEME);
+        break;
+    case ThemeType::RetroGreen:
+        Config_SetPaletteTheme(config, RETRO_GREEN_THEME);
         break;
     default:
         Config_SetDefaultTheme(config);
@@ -987,12 +1292,11 @@ bool Config::DeserializeCustomColors(Utils::IniObject& configFile)
             // else: unknown type -> skip
             LOG_WARNING("Unknown entryType: %s", entryType.data());
         }
-        CategoryColorsData categoryColorsData   = {};
-        categoryColorsData.data                 = std::move(colorsStorage);
-        auto existingCategory                   = CustomColors.find(std::string(categoryName));
-        if (existingCategory != CustomColors.end())
-            categoryColorsData.previewInterface = existingCategory->second.previewInterface;
-        CustomColors[std::string(categoryName)] = std::move(categoryColorsData);
+        // overlay the loaded values: the colors of the category that the theme does not mention (e.g. registered after
+        // the theme was saved) keep their values, so a listener can always read every registered name
+        auto& category = CustomColors[std::string(categoryName)];
+        for (auto& [colorName, color] : colorsStorage)
+            category.data[colorName] = std::move(color);
     }
     return true;
 }

@@ -34,6 +34,10 @@
  * @property {(name: string, data: Uint8Array) => void} [onDownload]  receives the files the application sends to the
  *                                                   user (FileDialog Download, Save, OS::DownloadFile); by default
  *                                                   the browser downloads them
+ * @property {Storage | null} [settingsStorage]  keeps the settings file of the application (`<app>.ini`, written by
+ *                                                   Application::SaveAppSettings, e.g. the theme kept by the theme
+ *                                                   dialogs) across page loads; default `localStorage`, null = the
+ *                                                   settings last only as long as the page
  */
 
 const ABI_MAGIC = 0x49554341;
@@ -293,6 +297,39 @@ export class AppCUIHost {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000); // the browser may read the blob asynchronously
+  }
+
+  // ------------------------------------------------------------------------------------------ settings file
+  // The settings file lives in the in-memory file system of the page. AppCUI restores it from here before it reads it
+  // (Application::Init with LoadSettingsFile) and hands it back after every Application::SaveAppSettings.
+  /** @returns {Storage | null} */
+  settingsStorage() {
+    if (this.opts.settingsStorage !== undefined) return this.opts.settingsStorage;
+    try { return window.localStorage; } catch { return null; } // blocked storage (privacy settings, sandboxed frame)
+  }
+  /** @param {string} path */
+  settingsKey(path) {
+    return 'appcui.settings:' + location.pathname + ':' + path; // one entry per page (application) and file
+  }
+  /**
+   * The stored content of the settings file at `path`, or null.
+   * @param {string} path
+   * @returns {string | null}
+   */
+  readSettings(path) {
+    const storage = this.settingsStorage();
+    if (!storage) return null;
+    try { return storage.getItem(this.settingsKey(path)); } catch { return null; }
+  }
+  /**
+   * Keeps the content of the settings file at `path` for the next page load.
+   * @param {string} path
+   * @param {string} text
+   */
+  writeSettings(path, text) {
+    const storage = this.settingsStorage();
+    if (!storage) return;
+    try { storage.setItem(this.settingsKey(path), text); } catch (e) { console.warn('AppCUI: can not keep ' + path, e); }
   }
 
   // ------------------------------------------------------------------------------------------ clipboard

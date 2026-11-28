@@ -101,6 +101,25 @@ bool ApplicationImpl::IsPropertyValueReadOnly(uint32 propertyID)
     return false;
 }
 #define BT(t) static_cast<uint32>(t)
+// "Default=0,Dark=1,..." built from the theme registry (a Property keeps a view of it -> static storage)
+static string_view BuiltInThemesPropertyList()
+{
+    static const std::string list = []() {
+        std::string result;
+        for (const auto& theme : Application::EnumerateThemes())
+        {
+            if (theme.Source != Application::ThemeSource::BuiltIn)
+                continue;
+            if (!result.empty())
+                result += ',';
+            result += theme.Name;
+            result += '=';
+            result += std::to_string(static_cast<uint32>(theme.Type));
+        }
+        return result;
+    }();
+    return list;
+}
 const vector<Utils::Property> ApplicationImpl::GetPropertiesList()
 {
     return {
@@ -115,7 +134,7 @@ const vector<Utils::Property> ApplicationImpl::GetPropertiesList()
           "Theme",
           PropertyType::List,
           false,
-          "Default=0,Dark=1,Light=2" },
+          BuiltInThemesPropertyList() },
         //{ BT(AppCUIPropertyIDs::THEME_FOLDER_PROPERTY_ID), "Config", "ThemeFolder", PropertyType::UTF8, true },
         { BT(AppCUIPropertyIDs::CHARACTER_SET_PROPERTY_ID),
           "Config",

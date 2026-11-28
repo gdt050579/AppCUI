@@ -430,6 +430,7 @@ class ConfigProperty : public PropertiesInterface
     {
         categoriesName.clear();
         categoriesData.clear();
+        customProperties.clear(); // holds pointers into obj.CustomColors (replaced when another theme is loaded)
         catIDCount = static_cast<CatID>(CatType::Count) + static_cast<uint32>(obj.CustomColors.size());
 
         CatID currentCategoryID = static_cast<CatID>(CatType::None);
@@ -2279,10 +2280,12 @@ class ThemeEditorDialog : public Window
     Reference<PreviewControl> pc;
     Reference<ComboBox> previewWindow;
     Reference<ComboBox> themeMode;
+    std::vector<Application::ThemeInfo> themes; // the items of themeMode (Application::EnumerateThemes)
+    bool initializing;                          // themeMode events raised while the dialog is built are ignored
 
   public:
     ThemeEditorDialog(const AppCUI::Application::Config& configObject)
-        : Window("Theme editor", "d:c,w:80,h:25", WindowFlags::Sizeable), cfg(configObject)
+        : Window("Theme editor", "d:c,w:80,h:25", WindowFlags::Sizeable), cfg(configObject), initializing(true)
     {
         auto sp = Factory::Splitter::Create(this, "l:1,t:3,b:3,r:0", SplitterFlags::Vertical);
         sp->SetSecondPanelSize(30);
@@ -2300,27 +2303,28 @@ class ThemeEditorDialog : public Window
         previewWindow->SetHotKey('W');
         Factory::Label::Create(this, "&Theme mode", "x:40,y:1,w:11");
         themeMode = Factory::ComboBox::Create(this, "l:53,r:1,t:1");
-        themeMode->AddItem("Default", static_cast<uint64>(Application::ThemeType::Default));
-        themeMode->AddItem("Dark", static_cast<uint64>(Application::ThemeType::Dark));
-        themeMode->AddItem("Light", static_cast<uint64>(Application::ThemeType::Light));
-        themeMode->SetCurentItemIndex(0);
+        themes    = Application::EnumerateThemes();
+        for (uint32 index = 0; index < static_cast<uint32>(themes.size()); index++)
+            themeMode->AddItem(std::string_view(themes[index].DisplayName), index);
         themeMode->SetHotKey('T');
         cfg.SetPreviewWindowID(PreviewWindowID::Normal);
 
-        switch (cfg.GetConfig().Theme)
+        // select the theme the edited colors come from: the current theme, else its built-in base
+        const std::string currentName = Application::GetCurrentThemeName();
+        uint32 selected        = static_cast<uint32>(cfg.GetConfig().Theme);
+        if (selected >= themes.size())
+            selected = 0;
+        for (uint32 index = 0; index < static_cast<uint32>(themes.size()); index++)
         {
-        case Application::ThemeType::Default:
-            themeMode->SetCurentItemIndex(0);
-            break;
-        case Application::ThemeType::Dark:
-            themeMode->SetCurentItemIndex(1);
-            break;
-        case Application::ThemeType::Light:
-            themeMode->SetCurentItemIndex(2);
-            break;
-        default:
-            break;
+            if (!currentName.empty() &&
+                Utils::String::Equals(themes[index].Name.c_str(), currentName.c_str(), true))
+            {
+                selected = index;
+                break;
+            }
         }
+        themeMode->SetCurentItemIndex(selected);
+        initializing = false;
     }
     void UpdateCategoryAndProperty()
     {
@@ -2365,13 +2369,34 @@ class ThemeEditorDialog : public Window
                 MessageBox::ShowError("Load", "Fail to load theme from file !");
             }
         }
-        cfg.ReInitializeFields();
+        RefreshProperties();
     }
 
+    // the custom color properties are numbered again (the loaded theme may add categories) -> rebuild the list
+    void RefreshProperties()
+    {
+        cfg.ReInitializeFields();
+        prop->SetObject(&cfg);
+        UpdateCategoryAndProperty();
+    }
+    std::string_view SelectedThemeName()
+    {
+        const auto index = static_cast<size_t>(themeMode->GetCurrentItemUserData(themes.size()));
+        return index < themes.size() ? std::string_view(themes[index].Name) : std::string_view();
+    }
     void OnApplyTheme()
     {
-        (*Application::GetAppConfig()) = cfg.GetConfig();
-        Application::GetApplication()->TriggerThemeChange();
+        // were the colors edited (or loaded from another file) since the selected theme was applied ?
+        auto& edited = cfg.GetConfig();
+        Application::Config reference = edited;
+        std::string themeName;
+        const bool known = Internal::Themes::Apply(
+              reference, SelectedThemeName(), Application::ThemeType::Default, Application::GetApplication(), themeName);
+        const bool isEdited = !known || !Internal::Themes::SameColors(edited, reference);
+
+        // apply for this session (and notify the theme listeners), then offer to keep it after a restart
+        Internal::Themes::Activate(edited, isEdited ? std::string_view() : std::string_view(themeName));
+        Internal::Themes::AskToKeepAfterRestart(edited, themeName, isEdited);
     }
 
     bool OnEvent(Reference<Control> control, Event eventType, int ID) override
@@ -2411,8 +2436,19 @@ class ThemeEditorDialog : public Window
             }
             if (control == themeMode)
             {
-                const auto themeID = static_cast<AppCUI::Application::ThemeType>(themeMode->GetCurrentItemUserData(0));
-                Internal::Config::SetTheme(cfg.GetConfig(), themeID);
+                if (initializing)
+                    return true; // keep the colors the editor was opened with
+                std::string themeName;
+                if (!Internal::Themes::Apply(
+                          cfg.GetConfig(),
+                          SelectedThemeName(),
+                          Application::ThemeType::Default,
+                          Application::GetApplication(),
+                          themeName))
+                {
+                    MessageBox::ShowError("Theme", "Fail to load the selected theme !");
+                }
+                RefreshProperties();
                 return true;
             }
         }
@@ -2441,23 +2477,26 @@ private:
         auto themeFolder = cfg.GetConfig().ThemesFolder;
         if (themeFolder.empty())
             themeFolder = OS::GetCurrentApplicationPath().parent_path();
-        auto themeName = themeMode->GetCurrentItemText();
-        themeName.Add(".theme");
-        std::string fileName;
-        themeName.ToString(fileName);
+        std::string fileName(SelectedThemeName());
+        if (fileName.empty())
+            fileName = Internal::Themes::CUSTOM_THEME_NAME;
+        fileName += ".theme";
 
         return { themeFolder, fileName };
     }
 };
 
-void ThemeEditor::Show()
+bool ShowThemeEditorDialog()
 {
     auto* cfg = Application::GetAppConfig();
-    if (cfg)
-    {
-        ThemeEditorDialog dlg(*cfg);
-        dlg.Show();
-    }
+    if (!cfg)
+        return false;
+    ThemeEditorDialog dlg(*cfg);
+    return dlg.Show() == Dialogs::Result::Ok;
+}
+void ThemeEditor::Show()
+{
+    ShowThemeEditorDialog();
 }
 
 bool ThemeEditor::RegisterCustomColors(
@@ -2473,6 +2512,11 @@ bool ThemeEditor::RegisterCustomColors(
     {
         MessageBox::ShowError("Error", "You cannot have spaces inside the color category name!");
         return false;
+    }
+    if (category_name.empty() || category_name.find('.') != std::string::npos)
+    {
+        // a theme kept in the settings stores the colors as "CustomColors.<category>.<color>" keys
+        RETURNERROR(false, "Invalid color category name '%s' (empty or with a '.')", category_name.c_str());
     }
 
     if (colors.empty())
@@ -2504,10 +2548,12 @@ bool ThemeEditor::RegisterCustomColors(
     for (auto& [colorName, color] : colors)
     {
         if (colorsCategory.data.contains(colorName))
-            continue;
+            continue; // already loaded from the theme file
         colorsCategory.data[colorName] = color;
     }
     colorsCategory.previewInterface = previewInterface;
+    // the registered values are what every theme switch restores (built-in themes do not define custom colors)
+    app->customColorDefaults[category_name] = std::move(colors);
     return true;
 }
 
@@ -2552,3 +2598,8 @@ void ThemeEditor::RemoveOnThemeChangeCallback(OnThemeChangedInterface* listener)
 }
 
 } // namespace AppCUI::Dialogs
+
+bool AppCUI::Internal::Themes::ShowEditor()
+{
+    return AppCUI::Dialogs::ShowThemeEditorDialog();
+}

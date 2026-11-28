@@ -1,7 +1,42 @@
 #include "../Terminal/TerminalFactory.hpp"
 #include "../Terminal/TestTerminal/TestTerminal.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <math.h>
+
+#ifdef __EMSCRIPTEN__
+#    include <emscripten.h>
+// Browser frontend: the settings file lives in the page's in-memory file system (lost on reload). The host page
+// (appcui-host.js) keeps a copy in localStorage: it is restored before the settings are loaded and stored again after
+// every SaveAppSettings. Without a host (or with storage disabled) both calls do nothing.
+EM_JS_DEPS(appcui_settings_storage, "$FS,$UTF8ToString");
+EM_JS(void, appcui_js_restore_settings, (const char* path), {
+    const host = Module["appcui"];
+    if (!host || !host.readSettings)
+        return;
+    const p    = UTF8ToString(path);
+    const text = host.readSettings(p);
+    if (typeof text !== 'string')
+        return;
+    try {
+        FS.writeFile(p, text);
+    } catch (e) {
+        console.warn('AppCUI: can not restore the settings file ' + p, e);
+    }
+});
+EM_JS(void, appcui_js_store_settings, (const char* path), {
+    const host = Module["appcui"];
+    if (!host || !host.writeSettings)
+        return;
+    const p = UTF8ToString(path);
+    try {
+        host.writeSettings(p, FS.readFile(p, { encoding: 'utf8' }));
+    } catch (e) {
+        console.warn('AppCUI: can not keep the settings file ' + p, e);
+    }
+});
+#endif
 
 namespace AppCUI
 {
@@ -240,13 +275,6 @@ Application::Config* Application::GetAppConfig()
     CHECK(app, nullptr, "Application has not been initialized !");
     return &app->config;
 }
-void Application::SetTheme(ThemeType themeType)
-{
-    if (app)
-    {
-        Internal::Config::SetTheme(app->config, themeType);
-    }
-}
 Utils::IniObject* Application::GetAppSettings()
 {
     CHECK(app, nullptr, "Application has not been initialized !");
@@ -258,7 +286,14 @@ bool Application::SaveAppSettings()
     auto appPath = Application::GetAppSettingsFile();
     CHECK(!appPath.empty(), false, "OS::GetCurrentApplicationPath failed !");
     CHECK(app->settings.Save(appPath), false, "Fail to save ini setting to file: %s", appPath.string().c_str());
+    Internal::OnSettingsFileSaved(appPath);
     return true;
+}
+void Internal::OnSettingsFileSaved([[maybe_unused]] const std::filesystem::path& path)
+{
+#ifdef __EMSCRIPTEN__
+    appcui_js_store_settings(path.string().c_str());
+#endif
 }
 std::filesystem::path Application::GetAppSettingsFile()
 {
@@ -271,7 +306,23 @@ void Application::UpdateAppCUISettings(Utils::IniObject& ini, bool clearExisting
 {
     auto sect = ini["AppCUI"];
     if (clearExistingSettings)
+    {
         sect.Clear();
+        // themes kept by the theme dialogs ([AppCUI.Theme.<Name>]) belong to the AppCUI settings too
+        constexpr string_view prefix = Internal::Themes::SETTINGS_SECTION_PREFIX;
+        std::vector<std::string> themeSections;
+        for (auto& section : ini.GetSections())
+        {
+            const auto name = section.GetName();
+            if (name.size() > prefix.size() &&
+                std::equal(prefix.begin(), prefix.end(), name.begin(), [](char a, char b) {
+                    return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+                }))
+                themeSections.emplace_back(name);
+        }
+        for (const auto& name : themeSections)
+            ini.DeleteSection(name);
+    }
     sect.UpdateValue("Frontend", "default", true);
     sect.UpdateValue("Size", "default", true);
     sect.UpdateValue("CharacterSize", "default", true);
@@ -626,6 +677,7 @@ ApplicationImpl::ApplicationImpl()
     this->InitFlags          = Application::InitializationFlags::None;
     this->LastMouseX         = -1;
     this->LastMouseY         = -1;
+    this->usesSettingsFile   = false;
 }
 ApplicationImpl::~ApplicationImpl()
 {
@@ -647,25 +699,6 @@ void ApplicationImpl::Destroy()
     this->RepaintStatus      = REPAINT_STATUS_ALL;
     this->mouseLockedObject  = MouseLockedObject::None;
 }
-bool ApplicationImpl::LoadThemeFile(Application::InitializationData& initData)
-{
-    auto appPath = config.ThemesFolder;
-    if (!std::filesystem::exists(appPath))
-    {
-        LOG_WARNING("Folder theme %s does not exist. It will be created.", appPath.string().c_str());
-        std::filesystem::create_directory(appPath);
-        return false;
-    }
-
-    appPath += (string_view) initData.ThemeName;
-    appPath.replace_extension(".theme");
-    if (Internal::Config::Load(this->config, appPath) == false)
-    {
-        LOG_WARNING("Fail to load theme file from: %s --> reverting to default theme", appPath.string().c_str());
-        return false;
-    }
-    return true;
-}
 void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData)
 {
     auto appPath = OS::GetCurrentApplicationPath();
@@ -677,6 +710,9 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     }
     appPath.replace_extension(".ini");
     LOG_INFO("Initializing AppCUI using: %s", appPath.string().c_str());
+#ifdef __EMSCRIPTEN__
+    appcui_js_restore_settings(appPath.string().c_str());
+#endif
 
     if (this->settings.CreateFromFile(appPath) == false)
     {
@@ -760,18 +796,13 @@ void ApplicationImpl::LoadSettingsFile(Application::InitializationData& initData
     if (fixedWindows)
         initData.Flags |= Application::InitializationFlags::FixedSize;
 
-    // themes
+    // themes: a built-in theme, or Default as the base of a theme stored in the settings / a <name>.theme file
     if (themeName)
     {
-        initData.ThemeName = themeName;
-        if (String::Equals(themeName, "Dark", true))
-            initData.Theme = Application::ThemeType::Dark;
-        else if (String::Equals(themeName, "Light", true))
-            initData.Theme = Application::ThemeType::Light;
-        else
-        {
-            initData.Theme     = Application::ThemeType::Default;
-        }
+        // the name is kept: Init applies <name>.theme over a built-in theme when that file exists
+        const auto builtInTheme = Application::GetThemeType(themeName);
+        initData.Theme          = builtInTheme.value_or(Application::ThemeType::Default);
+        initData.ThemeName      = themeName;
     }
 
     if (themeFolder)
@@ -803,6 +834,7 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
 
     if ((initData.Flags & Application::InitializationFlags::LoadSettingsFile) != Application::InitializationFlags::None)
     {
+        usesSettingsFile = true;
         LoadSettingsFile(initData);
     }
 
@@ -836,19 +868,20 @@ bool ApplicationImpl::Init(Application::InitializationData& initData)
         config.ThemesFolder = themesFolderFullPath;
     }
 
+    if (Application::GetThemeName(initData.Theme).empty())
+        initData.Theme = Application::ThemeType::Default;
     config.Theme = initData.Theme;
+    Internal::Config::SetTheme(config, initData.Theme);
+    currentThemeName = Application::GetThemeName(initData.Theme);
     if (!initData.ThemeName.Empty())
     {
-        // Force the default theme first because some themes might be incomplete
-        Internal::Config::SetTheme(config, initData.Theme);
-        if (!LoadThemeFile(initData))
+        // a built-in name, a theme stored in the settings or <name>.theme (over initData.Theme: it may be incomplete);
+        // if it can not be loaded, initData.Theme stays
+        if (!Internal::Themes::Apply(
+                  config, (string_view) initData.ThemeName, initData.Theme, this, currentThemeName))
         {
-            Internal::Config::SetTheme(config, initData.Theme);
+            LOG_WARNING("Fail to load theme '%s' --> using the built-in theme", initData.ThemeName.GetText());
         }
-    }
-    else
-    {
-        Internal::Config::SetTheme(config, initData.Theme);
     }
 
     if (initData.CustomDesktopConstructor)

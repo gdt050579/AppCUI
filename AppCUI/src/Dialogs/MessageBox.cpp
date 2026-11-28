@@ -8,6 +8,7 @@ enum class MessageBoxButtons
 {
     Ok,
     OkCancel,
+    YesNo,
     YesNoCancel
 };
 
@@ -41,6 +42,10 @@ Result CreateMessageBoxWindow(
         Factory::Button::Create(wnd, "&Cancel", "x:31,y:6,w:15", (int) Result::Cancel);
         Factory::Button::Create(wnd, "&Ok", "x:15,y:6,w:15", (int) Result::Ok)->SetFocus();
         break;
+    case MessageBoxButtons::YesNo:
+        Factory::Button::Create(wnd, "&No", "x:31,y:6,w:15", (int) Result::No);
+        Factory::Button::Create(wnd, "&Yes", "x:15,y:6,w:15", (int) Result::Yes)->SetFocus();
+        break;
     case MessageBoxButtons::YesNoCancel:
         Factory::Button::Create(wnd, "&No", "x:23,y:6,w:15", (int) Result::No);
         Factory::Button::Create(wnd, "&Cancel", "x:39,y:6,w:15", (int) Result::Cancel);
@@ -66,6 +71,12 @@ void MessageBox::ShowWarning(const ConstString& title, const ConstString& messag
 Result MessageBox::ShowYesNoCancel(const ConstString& title, const ConstString& message)
 {
     return CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MessageBoxButtons::YesNoCancel);
+}
+Result MessageBox::ShowYesNo(const ConstString& title, const ConstString& message)
+{
+    const auto result =
+          CreateMessageBoxWindow(title, message, WindowFlags::NotifyWindow, MessageBoxButtons::YesNo);
+    return result == Result::Yes ? Result::Yes : Result::No; // closing the window (Esc) means No
 }
 Result MessageBox::ShowOkCancel(const ConstString& title, const ConstString& message)
 {

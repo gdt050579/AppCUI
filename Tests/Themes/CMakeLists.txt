@@ -1,0 +1,8 @@
+set(PROJECT_NAME themetests)
+# theme registry, built-in themes, theme persistence and the ThemePicker dialog (in-memory test frontend: no terminal)
+include_directories(../../AppCUI/include)
+add_executable(${PROJECT_NAME} ThemeTests.cpp)
+add_dependencies(${PROJECT_NAME} AppCUI)
+target_link_libraries(${PROJECT_NAME} PRIVATE AppCUI)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tests")
+add_test(NAME Themes COMMAND ${PROJECT_NAME} WORKING_DIRECTORY $<TARGET_FILE_DIR:${PROJECT_NAME}>)
