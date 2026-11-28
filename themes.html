@@ -1,0 +1,303 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Themes &mdash; AppCUI 1.259.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=14ddb241"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Frontends (terminals)" href="terminals.html" />
+    <link rel="prev" title="Colors" href="colors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            AppCUI
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Themes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#built-in-themes">Built-in themes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#switching-themes">Switching themes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-theme-registry">The theme registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#theme-names-that-are-not-built-in">Theme names that are not built-in</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-theme-picker">The theme picker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-theme-editor">The theme editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keeping-a-theme-after-a-restart">Keeping a theme after a restart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-colors">Custom colors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="live_demos.html">Live demos</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">AppCUI development</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AppCUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Themes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/themes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="themes">
+<h1>Themes<a class="headerlink" href="#themes" title="Link to this heading"></a></h1>
+<p>A theme gives a color to every element AppCUI draws (window backgrounds, borders, buttons, menus, list cursors,
+selections, scroll bars, …). The colors of the current theme are in <code class="docutils literal notranslate"><span class="pre">Application::GetAppConfig()</span></code>.</p>
+<section id="built-in-themes">
+<h2>Built-in themes<a class="headerlink" href="#built-in-themes" title="Link to this heading"></a></h2>
+<p>The built-in themes are defined in code: they need no file and work on every frontend, the web browser included.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">ThemeType</span></code></p></th>
+<th class="head"><p>name</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Default</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Default</span></code></p></td>
+<td><p>dark blue windows, light buttons and menus</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Dark</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Dark</span></code></p></td>
+<td><p>black windows</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Light</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Light</span></code></p></td>
+<td><p>light windows, dark text</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HighContrast</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HighContrast</span></code></p></td>
+<td><p>accessibility: bright text on black, every highlight (focus, hover, selection, cursor) is a solid background,
+the focused window border is yellow</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Midnight</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Midnight</span></code></p></td>
+<td><p>black windows, dark blue panels and menus, blue / aqua accents</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Ocean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Ocean</span></code></p></td>
+<td><p>dark blue windows with aqua text and panels, teal desktop and scroll bars</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Forest</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Forest</span></code></p></td>
+<td><p>black windows with olive frames, green / olive panels</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RetroGreen</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RetroGreen</span></code></p></td>
+<td><p>monochrome green terminal: green on black, highlights in inverse video</p></td>
+</tr>
+</tbody>
+</table>
+<p>New themes are only appended to <code class="docutils literal notranslate"><span class="pre">ThemeType</span></code>, so the value of an existing theme never changes. The colors of the
+built-in themes were checked against the 16-color palettes of the frontends (the Windows console, SDL and the browser
+use the Campbell palette, ncurses the xterm one): two roles shown next to each other never share a color pair.</p>
+</section>
+<section id="switching-themes">
+<h2>Switching themes<a class="headerlink" href="#switching-themes" title="Link to this heading"></a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Application</span><span class="o">::</span><span class="n">SetTheme</span><span class="p">(</span><span class="n">Application</span><span class="o">::</span><span class="n">ThemeType</span><span class="o">::</span><span class="n">Ocean</span><span class="p">);</span><span class="w">   </span><span class="c1">// a built-in theme</span>
+<span class="n">Application</span><span class="o">::</span><span class="n">SetTheme</span><span class="p">(</span><span class="s">"Ocean"</span><span class="p">);</span><span class="w">                          </span><span class="c1">// the same, by name</span>
+<span class="n">Application</span><span class="o">::</span><span class="n">SetTheme</span><span class="p">(</span><span class="s">"MyColors"</span><span class="p">);</span><span class="w">                       </span><span class="c1">// MyColors.theme (or a settings section, see below)</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Application</span><span class="o">::</span><span class="n">GetCurrentThemeName</span><span class="p">();</span><span class="w">          </span><span class="c1">// "Ocean", "MyColors", ...</span>
+</pre></div>
+</div>
+<p>Every switch notifies the listeners registered with <code class="docutils literal notranslate"><span class="pre">Dialogs::ThemeEditor::RegisterOnThemeChangeCallback</span></code>. The colors
+registered with <code class="docutils literal notranslate"><span class="pre">Dialogs::ThemeEditor::RegisterCustomColors</span></code> return to their registered values first (the built-in
+themes do not define custom colors); a <code class="docutils literal notranslate"><span class="pre">.theme</span></code> file may then change them.</p>
+</section>
+<section id="the-theme-registry">
+<h2>The theme registry<a class="headerlink" href="#the-theme-registry" title="Link to this heading"></a></h2>
+<p>The registry maps theme names to themes; it is used by the settings file, the <code class="docutils literal notranslate"><span class="pre">Theme</span></code> property of
+<code class="docutils literal notranslate"><span class="pre">Application::GetAppPropertiesObject()</span></code>, the theme editor and the theme picker.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="nf">GetThemeName</span><span class="p">(</span><span class="n">ThemeType</span><span class="w"> </span><span class="n">type</span><span class="p">);</span><span class="w">          </span><span class="c1">// "HighContrast"</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="nf">GetThemeDisplayName</span><span class="p">(</span><span class="n">ThemeType</span><span class="w"> </span><span class="n">type</span><span class="p">);</span><span class="w">   </span><span class="c1">// "High Contrast"</span>
+<span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">ThemeType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetThemeType</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">IsBuiltInTheme</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ThemeInfo</span><span class="o">&gt;</span><span class="w"> </span><span class="n">EnumerateThemes</span><span class="p">();</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">GetThemeType</span></code> ignores the case, spaces, <code class="docutils literal notranslate"><span class="pre">-</span></code> and <code class="docutils literal notranslate"><span class="pre">_</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;High</span> <span class="pre">Contrast&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;high-contrast&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;HIGHCONTRAST&quot;</span></code> all name <code class="docutils literal notranslate"><span class="pre">ThemeType::HighContrast</span></code>. <code class="docutils literal notranslate"><span class="pre">EnumerateThemes</span></code> lists every built-in theme (in
+<code class="docutils literal notranslate"><span class="pre">ThemeType</span></code> order), then the themes stored in the settings file, then the <code class="docutils literal notranslate"><span class="pre">*.theme</span></code> files of the themes folder
+(<code class="docutils literal notranslate"><span class="pre">ThemeInfo::Source</span></code> tells them apart; a name is listed once, the way <code class="docutils literal notranslate"><span class="pre">SetTheme</span></code> resolves it).</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">&lt;Name&gt;.theme</span></code> file named after a built-in theme (for example <code class="docutils literal notranslate"><span class="pre">Dark.theme</span></code>) customizes that theme: it is applied
+over the built-in colors whenever the built-in theme is selected.</p>
+</section>
+<section id="theme-names-that-are-not-built-in">
+<h2>Theme names that are not built-in<a class="headerlink" href="#theme-names-that-are-not-built-in" title="Link to this heading"></a></h2>
+<p>A name that is not built-in (in <code class="docutils literal notranslate"><span class="pre">[AppCUI]</span> <span class="pre">Theme=</span></code>, <code class="docutils literal notranslate"><span class="pre">InitializationData::ThemeName</span></code> or <code class="docutils literal notranslate"><span class="pre">Application::SetTheme</span></code>)
+is looked up, in this order:</p>
+<ol class="arabic simple">
+<li><p>in an <code class="docutils literal notranslate"><span class="pre">[AppCUI.Theme.&lt;name&gt;]</span></code> section of the settings file;</p></li>
+<li><p>in <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;.theme</span></code> from the themes folder (<code class="docutils literal notranslate"><span class="pre">[AppCUI]</span> <span class="pre">ThemeFolder</span></code>, default <code class="docutils literal notranslate"><span class="pre">Themes</span></code> next to the executable).</p></li>
+</ol>
+<p>The theme is applied over the <code class="docutils literal notranslate"><span class="pre">Default</span></code> theme (over <code class="docutils literal notranslate"><span class="pre">InitializationData::Theme</span></code> at start-up), so a theme that sets
+only a few colors is still complete. If it can not be found, the current theme stays.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">.theme</span></code> file is an ini file (the theme editor writes it with <strong>Save…</strong>):</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Text]</span>
+<span class="na">Normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Silver,Transparent</span>
+<span class="na">HotKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Aqua,Transparent</span>
+
+<span class="k">[Window]</span>
+<span class="na">Normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">DarkBlue</span>
+</pre></div>
+</div>
+<p>An <code class="docutils literal notranslate"><span class="pre">[AppCUI.Theme.&lt;name&gt;]</span></code> settings section holds the same keys, prefixed with the name of their section:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[AppCUI.Theme.Custom]</span>
+<span class="na">Text.Normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Silver,Transparent</span>
+<span class="na">Text.HotKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Aqua,Transparent</span>
+<span class="na">Window.Normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">DarkBlue</span>
+</pre></div>
+</div>
+</section>
+<section id="the-theme-picker">
+<h2>The theme picker<a class="headerlink" href="#the-theme-picker" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Dialogs::ThemePicker::Show()</span></code> lists the themes of <code class="docutils literal notranslate"><span class="pre">EnumerateThemes</span></code>. Moving through the list previews the theme
+on the whole application; <strong>Enter</strong> / <strong>Apply</strong> keeps it, <strong>Esc</strong> / <strong>Cancel</strong> restores the theme that was active when
+the dialog opened. <strong>Edit…</strong> opens the theme editor on the selected theme. <code class="docutils literal notranslate"><span class="pre">Show</span></code> returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if a theme was
+applied.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Dialogs</span><span class="o">::</span><span class="n">ThemePicker</span><span class="o">::</span><span class="n">Show</span><span class="p">())</span>
+<span class="w">    </span><span class="n">LOG_INFO</span><span class="p">(</span><span class="s">"New theme: %s"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">Application</span><span class="o">::</span><span class="n">GetCurrentThemeName</span><span class="p">()).</span><span class="n">c_str</span><span class="p">());</span>
+</pre></div>
+</div>
+</section>
+<section id="the-theme-editor">
+<h2>The theme editor<a class="headerlink" href="#the-theme-editor" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Dialogs::ThemeEditor::Show()</span></code> edits every color of the current theme. <strong>Theme mode</strong> starts from any theme of the
+registry; <strong>Save…</strong> / <strong>Load…</strong> write and read <code class="docutils literal notranslate"><span class="pre">.theme</span></code> files; <strong>Apply</strong> applies the colors.</p>
+</section>
+<section id="keeping-a-theme-after-a-restart">
+<h2>Keeping a theme after a restart<a class="headerlink" href="#keeping-a-theme-after-a-restart" title="Link to this heading"></a></h2>
+<p>When the application uses a settings file (<code class="docutils literal notranslate"><span class="pre">InitializationFlags::LoadSettingsFile</span></code>), <strong>Apply</strong> in the theme picker
+and in the theme editor asks <em>“Keep this theme after a restart? (saved to the .ini)”</em>:</p>
+<ul class="simple">
+<li><p><strong>No</strong>: the theme lasts for this session only.</p></li>
+<li><p><strong>Yes</strong>, a built-in theme or a theme file that was not edited: <code class="docutils literal notranslate"><span class="pre">[AppCUI]</span> <span class="pre">Theme=&lt;name&gt;</span></code> is written to the settings
+file.</p></li>
+<li><p><strong>Yes</strong>, colors edited in the theme editor: they are saved as <code class="docutils literal notranslate"><span class="pre">Custom.theme</span></code> in the themes folder (the folder is
+created if needed; an existing <code class="docutils literal notranslate"><span class="pre">Custom.theme</span></code> is only overwritten after a confirmation) and <code class="docutils literal notranslate"><span class="pre">Theme=Custom</span></code> is
+written.</p></li>
+</ul>
+<p>In the web browser (WebAssembly), files written to the themes folder do not survive a page reload, but the settings file
+does: the host page keeps it in <code class="docutils literal notranslate"><span class="pre">localStorage</span></code> (see the <code class="docutils literal notranslate"><span class="pre">settingsStorage</span></code> option of <code class="docutils literal notranslate"><span class="pre">startAppCUI</span></code>), one entry per
+page, so two AppCUI applications of the same site do not share their settings. Every key of the settings file persists
+this way, not only the theme. Edited colors are therefore stored in an <code class="docutils literal notranslate"><span class="pre">[AppCUI.Theme.Custom]</span></code> section of the settings
+file instead of <code class="docutils literal notranslate"><span class="pre">Custom.theme</span></code>.</p>
+<p>Without a settings file, the question is not asked and the theme lasts for this session only. An application can also
+write the setting itself:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Application</span><span class="o">::</span><span class="n">SaveThemeToSettings</span><span class="p">(</span><span class="s">"Midnight"</span><span class="p">);</span><span class="w">   </span><span class="c1">// [AppCUI] Theme=Midnight, saved to &lt;executable&gt;.ini</span>
+</pre></div>
+</div>
+<p>Only the theme keys change on disk: the settings file is read again and saved with the new value (the in-memory
+settings, <code class="docutils literal notranslate"><span class="pre">GetAppSettings()</span></code>, receive the same value but are not written, so unsaved changes of other modules stay
+in memory). <code class="docutils literal notranslate"><span class="pre">Application::UpdateAppCUISettings(ini,</span> <span class="pre">true)</span></code> (reset to the defaults) also removes the
+<code class="docutils literal notranslate"><span class="pre">[AppCUI.Theme.&lt;Name&gt;]</span></code> sections.</p>
+</section>
+<section id="custom-colors">
+<h2>Custom colors<a class="headerlink" href="#custom-colors" title="Link to this heading"></a></h2>
+<p>Applications add their own color categories with <code class="docutils literal notranslate"><span class="pre">Dialogs::ThemeEditor::RegisterCustomColors</span></code>; the theme editor
+shows them and <code class="docutils literal notranslate"><span class="pre">.theme</span></code> files save them (<code class="docutils literal notranslate"><span class="pre">[CustomColors.&lt;category&gt;]</span></code> sections). A category name can not contain
+spaces or <code class="docutils literal notranslate"><span class="pre">.</span></code>. Implement
+<code class="docutils literal notranslate"><span class="pre">Dialogs::OnThemeChangedInterface</span></code> and register it with <code class="docutils literal notranslate"><span class="pre">Dialogs::ThemeEditor::RegisterOnThemeChangeCallback</span></code> to
+read the new values (<code class="docutils literal notranslate"><span class="pre">config.CustomColors</span></code>) after every theme switch: preview in the picker, Apply and Cancel.</p>
+<p>A theme that saves only some colors of a category (for example a <code class="docutils literal notranslate"><span class="pre">.theme</span></code> written before a color was registered)
+changes only those: the other colors of the category keep their values, so a listener can always read every name it
+registered.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="colors.html" class="btn btn-neutral float-left" title="Colors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="terminals.html" class="btn btn-neutral float-right" title="Frontends (terminals)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Gavriluț Dragoș and the AppCUI contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

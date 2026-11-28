@@ -14,6 +14,7 @@ Classes
 * :doc:`CustomFrontendInterface <class_AppCUI_Application_CustomFrontendInterface>` - A frontend implemented by the application instead of a real terminal (headless / remote / recording screens).
 * :doc:`FrontendEvent <class_AppCUI_Application_FrontendEvent>` - An input event produced by a custom frontend (see CustomFrontendInterface::WaitForEvent).
 * :doc:`InitializationData <class_AppCUI_Application_InitializationData>` - Every parameter of Application::Init.
+* :doc:`ThemeInfo <class_AppCUI_Application_ThemeInfo>` - A theme known to the theme registry (see Application::EnumerateThemes).
 
 .. toctree::
    :hidden:
@@ -23,6 +24,7 @@ Classes
    class_AppCUI_Application_CustomFrontendInterface
    class_AppCUI_Application_FrontendEvent
    class_AppCUI_Application_InitializationData
+   class_AppCUI_Application_ThemeInfo
 
 Enumerations
 ------------
@@ -34,6 +36,8 @@ Enumerations
 .. doxygenenum:: AppCUI::Application::FrontendType
 
 .. doxygenenum:: AppCUI::Application::ThemeType
+
+.. doxygenenum:: AppCUI::Application::ThemeSource
 
 .. doxygenenum:: AppCUI::Application::SpecialCharacterSetType
 
@@ -94,7 +98,25 @@ Functions
 
 .. doxygenfunction:: AppCUI::Application::Close
 
-.. doxygenfunction:: AppCUI::Application::SetTheme
+.. doxygenfunction:: AppCUI::Application::SetTheme(ThemeType)
+
+.. doxygenfunction:: AppCUI::Application::SetTheme(std::string_view)
+
+.. doxygenfunction:: AppCUI::Application::GetCurrentThemeName
+
+.. doxygenfunction:: AppCUI::Application::GetThemeName
+
+.. doxygenfunction:: AppCUI::Application::GetThemeDisplayName
+
+.. doxygenfunction:: AppCUI::Application::GetThemeType
+
+.. doxygenfunction:: AppCUI::Application::IsBuiltInTheme
+
+.. doxygenfunction:: AppCUI::Application::EnumerateThemes
+
+.. doxygenfunction:: AppCUI::Application::SaveThemeToSettings
+
+.. doxygenfunction:: AppCUI::Application::UsesSettingsFile
 
 .. doxygenfunction:: AppCUI::Application::SetSpecialCharacterSet
 

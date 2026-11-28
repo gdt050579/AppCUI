@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; AppCUI 1.258.0</title>
+  <title>Index &mdash; AppCUI 1.259.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
@@ -13,7 +13,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=6508f818"></script>
+      <script src="_static/documentation_options.js?v=14ddb241"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="initialization.html">Initialization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="themes.html">Themes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="live_demos.html">Live demos</a></li>
 </ul>
@@ -182,6 +183,8 @@
 </li>
       <li><a href="api/class_AppCUI_Application_CustomFrontendInterface.html#_CPPv4N6AppCUI11Application23CustomFrontendInterfaceD0Ev">AppCUI::Application::CustomFrontendInterface::~CustomFrontendInterface (C++ function)</a>
 </li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application15EnumerateThemesEv">AppCUI::Application::EnumerateThemes (C++ function)</a>
+</li>
       <li><a href="api/class_AppCUI_Application_FrontendEvent.html#_CPPv4N6AppCUI11Application13FrontendEventE">AppCUI::Application::FrontendEvent (C++ struct)</a>
 </li>
       <li><a href="api/class_AppCUI_Application_FrontendEvent.html#_CPPv4N6AppCUI11Application13FrontendEvent6ButtonE">AppCUI::Application::FrontendEvent::Button (C++ member)</a>
@@ -250,6 +253,8 @@
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application18GetAppSettingsFileEv">AppCUI::Application::GetAppSettingsFile (C++ function)</a>
 </li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application19GetCurrentThemeNameEv">AppCUI::Application::GetCurrentThemeName (C++ function)</a>
+</li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application16GetCurrentWindowEv">AppCUI::Application::GetCurrentWindow (C++ function)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application10GetDesktopEv">AppCUI::Application::GetDesktop (C++ function)</a>
@@ -257,6 +262,12 @@
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application14GetDesktopSizeERN8Graphics4SizeE">AppCUI::Application::GetDesktopSize (C++ function)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application14GetModifierMapEv">AppCUI::Application::GetModifierMap (C++ function)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application19GetThemeDisplayNameE9ThemeType">AppCUI::Application::GetThemeDisplayName (C++ function)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application12GetThemeNameE9ThemeType">AppCUI::Application::GetThemeName (C++ function)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application12GetThemeTypeENSt11string_viewE">AppCUI::Application::GetThemeType (C++ function)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application4InitEN11Application19InitializationFlagsE">AppCUI::Application::Init (C++ function)</a>, <a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application4InitER18InitializationData">[1]</a>
 </li>
@@ -312,6 +323,8 @@
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application19InitializationFlags15SingleWindowAppE">AppCUI::Application::InitializationFlags::SingleWindowApp (C++ enumerator)</a>
 </li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application14IsBuiltInThemeENSt11string_viewE">AppCUI::Application::IsBuiltInTheme (C++ function)</a>
+</li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application10RaiseEventEN5Utils9ReferenceIN8Controls7ControlEEEN5Utils9ReferenceIN8Controls7ControlEEEN8Controls5EventEi">AppCUI::Application::RaiseEvent (C++ function)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application3RunEv">AppCUI::Application::Run (C++ function)</a>
@@ -322,11 +335,13 @@
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application15SaveAppSettingsEv">AppCUI::Application::SaveAppSettings (C++ function)</a>
 </li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application19SaveThemeToSettingsENSt11string_viewE">AppCUI::Application::SaveThemeToSettings (C++ function)</a>
+</li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application14SetModifierMapERKN5Input11ModifierMapE">AppCUI::Application::SetModifierMap (C++ function)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application22SetSpecialCharacterSetE23SpecialCharacterSetType">AppCUI::Application::SetSpecialCharacterSet (C++ function)</a>
 </li>
-      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application8SetThemeE9ThemeType">AppCUI::Application::SetTheme (C++ function)</a>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application8SetThemeE9ThemeType">AppCUI::Application::SetTheme (C++ function)</a>, <a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application8SetThemeENSt11string_viewE">[1]</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application23SpecialCharacterSetTypeE">AppCUI::Application::SpecialCharacterSetType (C++ enum)</a>
 </li>
@@ -338,15 +353,45 @@
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application23SpecialCharacterSetType7UnicodeE">AppCUI::Application::SpecialCharacterSetType::Unicode (C++ enumerator)</a>
 </li>
+      <li><a href="api/class_AppCUI_Application_ThemeInfo.html#_CPPv4N6AppCUI11Application9ThemeInfoE">AppCUI::Application::ThemeInfo (C++ struct)</a>
+</li>
+      <li><a href="api/class_AppCUI_Application_ThemeInfo.html#_CPPv4N6AppCUI11Application9ThemeInfo11DisplayNameE">AppCUI::Application::ThemeInfo::DisplayName (C++ member)</a>
+</li>
+      <li><a href="api/class_AppCUI_Application_ThemeInfo.html#_CPPv4N6AppCUI11Application9ThemeInfo4NameE">AppCUI::Application::ThemeInfo::Name (C++ member)</a>
+</li>
+      <li><a href="api/class_AppCUI_Application_ThemeInfo.html#_CPPv4N6AppCUI11Application9ThemeInfo6SourceE">AppCUI::Application::ThemeInfo::Source (C++ member)</a>
+</li>
+      <li><a href="api/class_AppCUI_Application_ThemeInfo.html#_CPPv4N6AppCUI11Application9ThemeInfo4TypeE">AppCUI::Application::ThemeInfo::Type (C++ member)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application11ThemeSourceE">AppCUI::Application::ThemeSource (C++ enum)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application11ThemeSource7BuiltInE">AppCUI::Application::ThemeSource::BuiltIn (C++ enumerator)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application11ThemeSource4FileE">AppCUI::Application::ThemeSource::File (C++ enumerator)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application11ThemeSource8SettingsE">AppCUI::Application::ThemeSource::Settings (C++ enumerator)</a>
+</li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeTypeE">AppCUI::Application::ThemeType (C++ enum)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType4DarkE">AppCUI::Application::ThemeType::Dark (C++ enumerator)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType7DefaultE">AppCUI::Application::ThemeType::Default (C++ enumerator)</a>
 </li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType6ForestE">AppCUI::Application::ThemeType::Forest (C++ enumerator)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType12HighContrastE">AppCUI::Application::ThemeType::HighContrast (C++ enumerator)</a>
+</li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType5LightE">AppCUI::Application::ThemeType::Light (C++ enumerator)</a>
 </li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType8MidnightE">AppCUI::Application::ThemeType::Midnight (C++ enumerator)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType5OceanE">AppCUI::Application::ThemeType::Ocean (C++ enumerator)</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application9ThemeType10RetroGreenE">AppCUI::Application::ThemeType::RetroGreen (C++ enumerator)</a>
+</li>
       <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application20UpdateAppCUISettingsERN5Utils9IniObjectEb">AppCUI::Application::UpdateAppCUISettings (C++ function)</a>, <a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application20UpdateAppCUISettingsEb">[1]</a>
+</li>
+      <li><a href="api/namespace_AppCUI_Application.html#_CPPv4N6AppCUI11Application16UsesSettingsFileEv">AppCUI::Application::UsesSettingsFile (C++ function)</a>
 </li>
       <li><a href="api/namespace_AppCUI.html#_CPPv4N6AppCUI6char16E">AppCUI::char16 (C++ type)</a>
 </li>
@@ -2152,6 +2197,8 @@
 </li>
       <li><a href="api/class_AppCUI_Controls_TreeViewItem.html#_CPPv4N6AppCUI8Controls12TreeViewItem4Type9GrayedOutE">AppCUI::Controls::TreeViewItem::Type::GrayedOut (C++ enumerator)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/class_AppCUI_Controls_TreeViewItem.html#_CPPv4N6AppCUI8Controls12TreeViewItem4Type11HighlightedE">AppCUI::Controls::TreeViewItem::Type::Highlighted (C++ enumerator)</a>
 </li>
       <li><a href="api/class_AppCUI_Controls_TreeViewItem.html#_CPPv4N6AppCUI8Controls12TreeViewItem4Type6NormalE">AppCUI::Controls::TreeViewItem::Type::Normal (C++ enumerator)</a>
@@ -2172,8 +2219,6 @@
 </li>
       <li><a href="api/namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls16UserControlFlags23ScrollBarOutsideControlE">AppCUI::Controls::UserControlFlags::ScrollBarOutsideControl (C++ enumerator)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls16UserControlFlags23ShowHorizontalScrollBarE">AppCUI::Controls::UserControlFlags::ShowHorizontalScrollBar (C++ enumerator)</a>
 </li>
       <li><a href="api/namespace_AppCUI_Controls.html#_CPPv4N6AppCUI8Controls16UserControlFlags21ShowVerticalScrollBarE">AppCUI::Controls::UserControlFlags::ShowVerticalScrollBar (C++ enumerator)</a>
@@ -2332,6 +2377,8 @@
 </li>
       <li><a href="api/class_AppCUI_Dialogs_MessageBox.html#_CPPv4N6AppCUI7Dialogs10MessageBox11ShowWarningERK11ConstStringRK11ConstString">AppCUI::Dialogs::MessageBox::ShowWarning (C++ function)</a>
 </li>
+      <li><a href="api/class_AppCUI_Dialogs_MessageBox.html#_CPPv4N6AppCUI7Dialogs10MessageBox9ShowYesNoERK11ConstStringRK11ConstString">AppCUI::Dialogs::MessageBox::ShowYesNo (C++ function)</a>
+</li>
       <li><a href="api/class_AppCUI_Dialogs_MessageBox.html#_CPPv4N6AppCUI7Dialogs10MessageBox15ShowYesNoCancelERK11ConstStringRK11ConstString">AppCUI::Dialogs::MessageBox::ShowYesNoCancel (C++ function)</a>
 </li>
       <li><a href="api/class_AppCUI_Dialogs_OnThemeChangedInterface.html#_CPPv4N6AppCUI7Dialogs23OnThemeChangedInterfaceE">AppCUI::Dialogs::OnThemeChangedInterface (C++ struct)</a>
@@ -2369,6 +2416,10 @@
       <li><a href="api/class_AppCUI_Dialogs_ThemeEditor.html#_CPPv4N6AppCUI7Dialogs11ThemeEditor25RemovePreviewDrawListenerEP33OnThemePreviewWindowDrawInterface">AppCUI::Dialogs::ThemeEditor::RemovePreviewDrawListener (C++ function)</a>
 </li>
       <li><a href="api/class_AppCUI_Dialogs_ThemeEditor.html#_CPPv4N6AppCUI7Dialogs11ThemeEditor4ShowEv">AppCUI::Dialogs::ThemeEditor::Show (C++ function)</a>
+</li>
+      <li><a href="api/class_AppCUI_Dialogs_ThemePicker.html#_CPPv4N6AppCUI7Dialogs11ThemePickerE">AppCUI::Dialogs::ThemePicker (C++ class)</a>
+</li>
+      <li><a href="api/class_AppCUI_Dialogs_ThemePicker.html#_CPPv4N6AppCUI7Dialogs11ThemePicker4ShowEv">AppCUI::Dialogs::ThemePicker::Show (C++ function)</a>
 </li>
       <li><a href="api/class_AppCUI_Dialogs_WindowManager.html#_CPPv4N6AppCUI7Dialogs13WindowManagerE">AppCUI::Dialogs::WindowManager (C++ class)</a>
 </li>

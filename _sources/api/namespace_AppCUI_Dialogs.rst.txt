@@ -14,6 +14,7 @@ Classes
 * :doc:`OnThemeChangedInterface <class_AppCUI_Dialogs_OnThemeChangedInterface>`
 * :doc:`OnThemePreviewWindowDrawInterface <class_AppCUI_Dialogs_OnThemePreviewWindowDrawInterface>`
 * :doc:`ThemeEditor <class_AppCUI_Dialogs_ThemeEditor>`
+* :doc:`ThemePicker <class_AppCUI_Dialogs_ThemePicker>` - Lets the user pick a theme from Application::EnumerateThemes (built-in themes first, then .theme files and themes stored in the settings file).
 * :doc:`WindowManager <class_AppCUI_Dialogs_WindowManager>`
 
 .. toctree::
@@ -24,6 +25,7 @@ Classes
    class_AppCUI_Dialogs_OnThemeChangedInterface
    class_AppCUI_Dialogs_OnThemePreviewWindowDrawInterface
    class_AppCUI_Dialogs_ThemeEditor
+   class_AppCUI_Dialogs_ThemePicker
    class_AppCUI_Dialogs_WindowManager
 
 Enumerations

@@ -20,6 +20,7 @@ by the application. Try it now: the :doc:`live_demos` run the AppCUI examples in
    initialization
    layout
    colors
+   themes
    terminals
    live_demos
 

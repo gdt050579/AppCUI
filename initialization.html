@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Initialization &mdash; AppCUI 1.258.0</title>
+  <title>Initialization &mdash; AppCUI 1.259.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=b56a3a6a" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=6508f818"></script>
+      <script src="_static/documentation_options.js?v=14ddb241"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -56,6 +56,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="layout.html">Layout in AppCUI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="themes.html">Themes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminals.html">Frontends (terminals)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="live_demos.html">Live demos</a></li>
 </ul>
@@ -164,13 +165,16 @@ writes the section with its default values:</p>
 <span class="na">Size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">default</span><span class="w">            </span><span class="c1">; default, maximized, fullscreen or &lt;width&gt;x&lt;height&gt; (for example 120x40)</span>
 <span class="na">CharacterSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">default</span><span class="w">   </span><span class="c1">; default, tiny, small, normal, large or huge</span>
 <span class="na">Fixed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span><span class="w">             </span><span class="c1">; true = the terminal window can not be resized</span>
-<span class="na">Theme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">default</span><span class="w">           </span><span class="c1">; default, dark, light or the name of a .theme file from ThemeFolder</span>
+<span class="na">Theme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">default</span><span class="w">           </span><span class="c1">; a built-in theme (Default, Dark, Light, HighContrast, Midnight, Ocean, Forest,</span>
+<span class="w">                          </span><span class="c1">; RetroGreen) or the name of a theme from ThemeFolder / the settings (see Themes)</span>
 <span class="na">ThemeFolder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Themes</span><span class="w">      </span><span class="c1">; folder (relative to the executable) with .theme files</span>
 <span class="na">CharacterSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">auto</span><span class="w">       </span><span class="c1">; auto, unicode, ascii or linux (special characters used to draw lines and borders)</span>
 <span class="na">Keyboard.Ctrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Ctrl</span><span class="w">      </span><span class="c1">; keyboard profile: the modifier(s) produced by the physical Ctrl key</span>
 <span class="na">Keyboard.Alt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Alt</span><span class="w">        </span><span class="c1">; keyboard profile: the modifier(s) produced by the physical Alt key</span>
 </pre></div>
 </div>
+<p>The theme dialogs write <code class="docutils literal notranslate"><span class="pre">Theme</span></code> (and may add an <code class="docutils literal notranslate"><span class="pre">[AppCUI.Theme.Custom]</span></code> section) when the user keeps a theme after
+a restart; see <a class="reference internal" href="themes.html"><span class="doc">Themes</span></a>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Keyboard.Ctrl</span></code> / <code class="docutils literal notranslate"><span class="pre">Keyboard.Alt</span></code> remap the modifier keys for every key press and mouse event (for example
 <code class="docutils literal notranslate"><span class="pre">Keyboard.Ctrl</span> <span class="pre">=</span> <span class="pre">Alt</span></code> and <code class="docutils literal notranslate"><span class="pre">Keyboard.Alt</span> <span class="pre">=</span> <span class="pre">Ctrl</span></code> swap them, which helps on keyboards or terminals where some
 combinations are not available). Values are combinations of <code class="docutils literal notranslate"><span class="pre">Ctrl</span></code>, <code class="docutils literal notranslate"><span class="pre">Alt</span></code> (or <code class="docutils literal notranslate"><span class="pre">Opt</span></code> / <code class="docutils literal notranslate"><span class="pre">Option</span></code>) and
@@ -189,9 +193,9 @@ frontends (see <a class="reference internal" href="terminals.html"><span class="
 <span class="w">    </span><span class="n">CharacterSize</span><span class="w"> </span><span class="n">CharSize</span><span class="p">;</span><span class="w">                           </span><span class="c1">// character size (SDL, Windows console)</span>
 <span class="w">    </span><span class="n">InitializationFlags</span><span class="w"> </span><span class="n">Flags</span><span class="p">;</span><span class="w">                        </span><span class="c1">// see above</span>
 <span class="w">    </span><span class="n">string_view</span><span class="w"> </span><span class="n">FontName</span><span class="p">;</span><span class="w">                             </span><span class="c1">// font name (Windows console)</span>
-<span class="w">    </span><span class="n">Utils</span><span class="o">::</span><span class="n">FixSizeString</span><span class="o">&lt;</span><span class="mi">32</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ThemeName</span><span class="p">;</span><span class="w">               </span><span class="c1">// name of a .theme file to load from ThemeFolder</span>
+<span class="w">    </span><span class="n">Utils</span><span class="o">::</span><span class="n">FixSizeString</span><span class="o">&lt;</span><span class="mi">32</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ThemeName</span><span class="p">;</span><span class="w">               </span><span class="c1">// a theme name (built-in, settings section or .theme file)</span>
 <span class="w">    </span><span class="n">Utils</span><span class="o">::</span><span class="n">String</span><span class="w"> </span><span class="n">ThemeFolder</span><span class="p">;</span><span class="w">                        </span><span class="c1">// default: "Themes"</span>
-<span class="w">    </span><span class="n">ThemeType</span><span class="w"> </span><span class="n">Theme</span><span class="p">;</span><span class="w">                                  </span><span class="c1">// Default, Dark or Light</span>
+<span class="w">    </span><span class="n">ThemeType</span><span class="w"> </span><span class="n">Theme</span><span class="p">;</span><span class="w">                                  </span><span class="c1">// built-in theme (also the base of a loaded theme)</span>
 <span class="w">    </span><span class="n">SpecialCharacterSetType</span><span class="w"> </span><span class="n">SpecialCharacterSet</span><span class="p">;</span><span class="w">      </span><span class="c1">// Auto, Unicode, LinuxTerminal or Ascii</span>
 <span class="w">    </span><span class="n">Controls</span><span class="o">::</span><span class="n">Desktop</span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">CustomDesktopConstructor</span><span class="p">)();</span><span class="w"> </span><span class="c1">// creates a custom desktop (nullptr = default desktop)</span>
 <span class="w">    </span><span class="n">CustomFrontendInterface</span><span class="o">*</span><span class="w"> </span><span class="n">CustomFrontend</span><span class="p">;</span><span class="w">          </span><span class="c1">// required when Frontend is FrontendType::Custom</span>
@@ -211,7 +215,10 @@ frontends (see <a class="reference internal" href="terminals.html"><span class="
 
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">CharacterSize</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">Tiny</span><span class="p">,</span><span class="w"> </span><span class="n">Small</span><span class="p">,</span><span class="w"> </span><span class="n">Normal</span><span class="p">,</span><span class="w"> </span><span class="n">Large</span><span class="p">,</span><span class="w"> </span><span class="n">Huge</span><span class="w"> </span><span class="p">};</span>
 
-<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ThemeType</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">Dark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Light</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">};</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ThemeType</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">uint32</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">Dark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Light</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">HighContrast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Midnight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">Ocean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">Forest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">RetroGreen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span>
+<span class="p">};</span>
 
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SpecialCharacterSetType</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">uint32</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Auto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">Unicode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">LinuxTerminal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">Ascii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">};</span>
 </pre></div>
