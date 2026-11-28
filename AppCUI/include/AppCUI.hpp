@@ -5968,8 +5968,8 @@ namespace Application
     /// their registered values and every Dialogs::OnThemeChangedInterface listener is notified.
     EXPORT void SetTheme(ThemeType themeType);
     /// Switches to a theme by name: a built-in theme (see GetThemeType; a `<Name>.theme` file of the themes folder, if
-    /// any, is applied over it), else an `[AppCUI.Theme.<name>]` section of the settings file, else `<name>.theme`
-    /// from the themes folder (applied over ThemeType::Default). Listeners are notified. Returns false (and keeps the
+    /// any, is applied over it), else an `[AppCUI.Theme.NAME]` section of the settings file (NAME = themeName), else
+    /// `<name>.theme` from the themes folder (applied over ThemeType::Default). Listeners are notified. Returns false (and keeps the
     /// current theme) if the theme can not be found or loaded.
     EXPORT bool SetTheme(std::string_view themeName);
     /// Name of the current theme (see ThemeInfo::Name); empty if the colors were edited in the theme editor and not
@@ -5985,7 +5985,7 @@ namespace Application
     EXPORT std::optional<ThemeType> GetThemeType(std::string_view themeName);
     /// Theme registry: true if `themeName` names a built-in theme (see GetThemeType).
     EXPORT bool IsBuiltInTheme(std::string_view themeName);
-    /// Theme registry: every built-in theme (in ThemeType order), then the `[AppCUI.Theme.<Name>]` sections of the
+    /// Theme registry: every built-in theme (in ThemeType order), then the `[AppCUI.Theme.NAME]` sections of the
     /// settings file, then the `*.theme` files of the themes folder. A name is listed once (case-insensitive; the first
     /// source wins, the way SetTheme resolves it). Without an initialized application, only the built-in themes are
     /// listed.
